@@ -1,0 +1,6 @@
+/.venv/
+/venv/
+/.cache/
+/artifacts/
+/scratch/
+/web/fonts/

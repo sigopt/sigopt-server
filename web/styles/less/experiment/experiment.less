@@ -1,0 +1,157 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../libs/bootstrap.less";
+@import "../libs/buttons.less";
+@import "../libs/mixins.less";
+
+.admin-experiment-page {
+  .alert-glyph {
+    color: @brand-danger;
+    margin-right: 10px;
+  }
+
+  .experiment-info-tiles {
+    .info-tile {
+      .make-xs-column(12);
+      margin: 10px 0;
+
+      .unstyled-links();
+
+      .info-tile-content {
+        .cutout(auto);
+        color: @brand-dark-grey;
+        text-align: center;
+        word-break: break-all;
+      }
+
+      .data {
+        color: @brand-light-blue;
+        font-weight: bold;
+      }
+
+      .source {
+        font-size: 12px;
+        text-transform: capitalize;
+      }
+
+      .spinner {
+        display: inline-block;
+        margin-right: 10px;
+      }
+    }
+
+    .chiclets {
+      .make-row();
+      .chiclet {
+        .make-xs-column(4, 0);
+
+        &:not(:first-of-type) {
+          border-left: 1px solid @divider-grey;
+        }
+      }
+    }
+
+    .chiclet-info-tile,
+    .list-info-tile,
+    .button-tile {
+      .make-sm-column(6);
+      .make-md-column(4);
+    }
+
+    .text-list-tile {
+      .make-md-column(8);
+      .info-tile-content li {
+        font-size: 12px;
+        text-transform: lowercase;
+        &:first-letter {
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .chiclet-info-tile {
+      .info-tile-content {
+        .chiclets {
+          margin-bottom: 10px;
+        }
+      }
+    }
+
+    .button-tile {
+      .info-tile-content {
+        button {
+          margin-bottom: 10px;
+        }
+      }
+    }
+
+    .list-info-tile,
+    .text-list-tile {
+      .info-tile-content {
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0 20px 10px;
+
+          li {
+            text-align: left;
+          }
+        }
+      }
+    }
+
+    .experiment-overview-tile {
+      .make-xs-column(12);
+
+      .info-tile-content {
+        .header,
+        .chiclets {
+          .make-xs-column(12);
+          .make-sm-column(6);
+        }
+
+        .header {
+          @media screen and (min-width: @screen-sm-min) {
+            text-align: left;
+          }
+
+          .spinner {
+            vertical-align: top;
+            margin-top: 10px;
+          }
+
+          .header-titles {
+            display: inline-block;
+
+            a {
+              text-decoration: underline;
+            }
+
+            .client-name,
+            .experiment-created,
+            .experiment-runtime,
+            .user-name {
+              font-size: 12px;
+            }
+
+            .experiment-created,
+            .experiment-runtime {
+              color: @brand-dark-grey;
+              font-weight: normal;
+            }
+          }
+        }
+
+        .chiclets {
+          margin-bottom: 10px;
+          @media screen and (min-width: @screen-sm-min) {
+            margin: 42px 0;
+          }
+        }
+      }
+    }
+  }
+}

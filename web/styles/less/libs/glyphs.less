@@ -1,0 +1,57 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@glyph-en-dash: "\2013";
+
+@import "@fortawesome/fontawesome-free/less/regular.less";
+@import "@fortawesome/fontawesome-free/less/solid.less";
+@import "@fortawesome/fontawesome-free/less/_mixins.less";
+
+.glyph() {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-family: "Font Awesome 6 Free" !important;
+  font-style: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-rendering: auto;
+}
+
+// Base class for any fontawesome font, sets the bare minimum in order to render correctly across browsers
+._fa-class(@weight) {
+  .glyph();
+  font-weight: @weight;
+}
+
+// Base implementation for setting the "content" field to the name of the glyph
+// The less file will fail to compile if you specify an invalid glyph
+._set-glyph-content(@name) {
+  @var-name: "fa-var-@{name}";
+  content: @@var-name;
+}
+
+// Use this to fill in a glyph in CSS. For example, you can do
+// a::after {
+//   .render-glyph(caret-down);
+// }
+// to insert a caret-down after a link.
+// Use this when your glyph is defined entirely in CSS and does not have an associated
+// javascript component
+.render-glyph(@name, @weight: @solid) {
+  .fa-icon();
+  ._fa-class(@weight);
+  ._set-glyph-content(@name);
+}
+
+// You must call this in order to make sure an icon is supported by the Glyph JS
+// You shouldn't need to call this function outside of this file, all invocations should
+// follow in the list below
+.support-glyph(@name) {
+  .fa-@{name}:before {
+    .glyph();
+    ._set-glyph-content(@name);
+  }
+}

@@ -1,0 +1,221 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./chart.less";
+@import "../libs/glyphs.less";
+@import "../libs/mixins.less";
+@import "./libs/observation_modal.less";
+
+@chart-height: 350px;
+
+.experiment-analysis-page {
+  @section-padding: 20px;
+
+  .dropdown-btn-label {
+    white-space: nowrap;
+    @media screen and (max-width: @screen-sm-min) {
+      white-space: normal;
+    }
+  }
+
+  .experiment-improvement,
+  .importance-table,
+  .history-chart-4d,
+  .history-chart,
+  .pareto-frontier-metric-chart,
+  .pareto-frontier-parameter-chart,
+  .task-distribution {
+    padding: @section-padding;
+    .make-lg-column(6);
+    .make-xs-column(12);
+
+    .chart {
+      height: @chart-height;
+      margin: 0 auto;
+    }
+
+    .chart-detail-section {
+      text-align: center;
+    }
+  }
+
+  .experiment-improvement,
+  .importance-table,
+  .history-chart-4d,
+  .history-chart,
+  .pareto-frontier-metric-chart,
+  .pareto-frontier-parameter-chart,
+  .training-runs-cell,
+  .task-distribution {
+    border-bottom: 2px solid @divider-grey;
+  }
+
+  .training-runs-cell {
+    padding: @section-padding;
+    > * {
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .chart {
+      height: @chart-height;
+      width: @chart-height * 2;
+    }
+  }
+
+  .parcoords-chart {
+    padding: @section-padding;
+    .chart {
+      height: @chart-height;
+      margin: 0 auto;
+    }
+
+    .par-coords-empty {
+      width: 80%;
+      margin: 0 auto 10px auto;
+      .btn {
+        margin-left: 10px;
+      }
+    }
+
+    .controls {
+      width: 80%;
+      margin: auto;
+      color: @brand-dark-grey;
+      label {
+        font-weight: bold;
+      }
+
+      .multi-select {
+        .multi-select__group-heading {
+          font-size: 12px;
+          padding: 3px 20px 3px 20px;
+        }
+        .multi-select__option {
+          font-size: 14px;
+          line-height: 20px;
+          padding: 3px 20px 3px 20px;
+        }
+      }
+    }
+  }
+
+  .experiment-info-content {
+    padding: 0;
+  }
+
+  .param-select-line {
+    color: @brand-dark-grey;
+    margin-bottom: 20px;
+    text-align: center;
+
+    .dropdown {
+      max-width: 350px;
+      @media screen and (min-width: @screen-sm-max) {
+        max-width: 500px;
+      }
+    }
+
+    .dropdown-menu {
+      max-height: 190px;
+      overflow-y: auto;
+
+      @media screen and (min-width: @screen-sm-max) {
+        left: 50%;
+        max-width: unset;
+        min-width: 100%;
+        right: auto;
+        transform: translate(-50%, 0);
+        width: unset;
+      }
+    }
+  }
+
+  .importance-table .table-responsive .table td {
+    max-width: 140px;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+
+  .importance-view-select-line {
+    text-align: center;
+  }
+
+  .importance-view-select-line .btn {
+    margin-left: 20px;
+  }
+
+  .multiple-metric-sort-link {
+    color: black;
+    &::after {
+      .render-glyph(caret-down);
+      display: inline-block;
+      margin-left: 5px;
+      visibility: hidden;
+    }
+    &:hover {
+      color: @brand-dark-blue;
+    }
+    &.descending::after {
+      visibility: visible;
+    }
+    &.ascending::after {
+      .render-glyph(caret-up);
+      visibility: visible;
+    }
+  }
+
+  .metric-header:nth-of-type(1) {
+    color: @brand-light-blue;
+    margin-left: 30px;
+  }
+
+  .metric-header:nth-of-type(2) {
+    color: @brand-orange;
+    margin-left: 15px;
+  }
+
+  .metric-holder:nth-of-type(1) .progress-bar {
+    background-color: @brand-light-blue;
+  }
+
+  .metric-holder:nth-of-type(2) .progress-bar {
+    background-color: @brand-orange;
+  }
+
+  .multiple-metric-sort-link .progress {
+    margin-bottom: 5px;
+  }
+
+  @media screen and (min-width: @screen-lg-min) {
+    .table-row {
+      display: table;
+      width: 100%;
+
+      .experiment-improvement,
+      .importance-table,
+      .history-chart-4d,
+      .history-chart,
+      .pareto-frontier-metric-chart,
+      .pareto-frontier-parameter-chart,
+      .task-distribution {
+        display: table-cell;
+        float: none;
+        vertical-align: top;
+      }
+
+      > :not(:last-child) {
+        border-right: 2px solid @divider-grey;
+      }
+
+      .task-distribution {
+        .chart {
+          width: 50%;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,674 @@
+version: "3"
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  test-client:
+    logging: &logging
+      options:
+        max-file: "5"
+        max-size: "5m"
+    command:
+      - sleep
+      - infinity
+    environment:
+      - "HOST_PWD=${HOST_PWD}"
+      - SIGOPT_API_URL=https://sigopt.ninja:4443/api
+      - SIGOPT_APP_URL=https://sigopt.ninja:4443
+      - SIGOPT_API_TOKEN=client_token
+      - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt/root-ca.crt
+    image: sigopt/python:latest
+    volumes:
+      - &rootca-volume ./artifacts/tls:/etc/ssl/certs/sigopt:ro
+      - ./test:/sigopt-server/test:ro
+    working_dir: /sigopt-server
+    depends_on:
+      - api
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+    security_opt:
+      - "no-new-privileges:true"
+  test-runner:
+    logging:
+      <<: *logging
+    command:
+      - sleep
+      - infinity
+    environment:
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
+      - HOST_PWD
+      - REQUESTS_CA_BUNDLE=/sigopt-server/artifacts/tls/root-ca.crt
+      - *api-tls-verify-env
+    image: sigopt/test-runner-web:latest
+    volumes:
+      - /dev/shm:/dev/shm
+      - &babelrc ./.babelrc:/sigopt-server/.babelrc:ro
+      - *rootca-volume
+      - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
+      - ./config:/sigopt-server/config:ro
+      - ./failure_console_logs:/sigopt-server/failure_console_logs
+      - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro,cached
+      - ./pytest.ini:/sigopt-server/pytest.ini:ro
+      - ./screenshots:/sigopt-server/screenshots
+      - ./scratch:/sigopt-server/scratch:ro
+      - ./scripts:/sigopt-server/scripts:cached
+      - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro,cached
+      - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro,cached
+      - ./test:/sigopt-server/test:delegated
+      - ./web:/sigopt-server/web:ro,cached
+      - ./webpack.config.script.babel.js:/sigopt-server/webpack.config.script.babel.js
+      - /var/run/docker.sock:/var/run/docker.sock
+      - &test-routes-volume test-routes:/sigopt-server/artifacts/web/routes
+    working_dir: /sigopt-server
+    depends_on:
+      - postgres
+      - redis
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+          pids: 256
+    security_opt:
+      - "no-new-privileges:true"
+  generate-routes:
+    logging:
+      <<: *logging
+    command:
+      - ./scripts/compile/generate_routes
+      - "${sigopt_server_config_file}"
+    image: sigopt/node:latest
+    volumes:
+      - *babelrc
+      - *test-routes-volume
+      - web-cache:/sigopt-server/.cache
+      - ./config:/sigopt-server/config:ro
+      - ./scripts:/sigopt-server/scripts:ro
+      - ./scratch:/sigopt-server/scratch:ro
+      - ./web:/sigopt-server/web:ro,cached
+      - ./webpack.config.script.babel.js:/sigopt-server/webpack.config.script.babel.js:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    security_opt:
+      - "no-new-privileges:true"
+  createdb:
+    logging:
+      <<: *logging
+    environment:
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
+    image: sigopt/python:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./config:/sigopt-server/config:ro
+      - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
+      - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
+      - ./scratch:/sigopt-server/scratch:ro
+      - ./src/python:/sigopt-server/src/python:ro
+    working_dir: /sigopt-server
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+    read_only: true
+    security_opt:
+      - "no-new-privileges:true"
+  init-web:
+    logging:
+      <<: *logging
+    command:
+      - sh
+      - -e
+      - -c
+      - |
+        rm -rf /server-bin/* /static-artifacts/*
+    image: sigopt/node:latest
+    volumes:
+      - server-bin:/server-bin
+      - static-artifacts:/static-artifacts
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 8M
+    security_opt:
+      - "no-new-privileges:true"
+  qworker:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command: &qworker_command
+      - qworkerwatch
+    environment:
+      - &pythonpath PYTHONPATH=/sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
+      - &config sigopt_server_config_file
+      - &git_hash sigopt_server_version
+      - MESSAGE_GROUP=optimization
+    image: sigopt/python:latest
+    stdin_open: true
+    tty: true
+    volumes: &zigopt_volumes
+      - ./config:/sigopt-server/config:ro
+      - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
+      - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
+      - ./scratch:/sigopt-server/scratch:rw
+      - ./src/python:/sigopt-server/src/python:ro
+    working_dir: /sigopt-server
+    depends_on: &zigopt_depends_on
+      - postgres
+      - redis
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 32
+    read_only: true
+    healthcheck: &qworker-healthcheck
+      test:
+        - CMD
+        - bash
+        - -e
+        - -opipefail
+        - -c
+        - ps awx | grep zigopt.queue.api
+      interval: "1s"
+      timeout: "1s"
+      retries: 1
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+  qworker-analytics:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command: *qworker_command
+    environment:
+      - *pythonpath
+      - *config
+      - *git_hash
+      - "sigopt.queue.pull_queue_name=dev-analytics-messages"
+      - MESSAGE_GROUP=analytics
+    image: sigopt/python:latest
+    stdin_open: true
+    tty: true
+    volumes: *zigopt_volumes
+    working_dir: /sigopt-server
+    depends_on: *zigopt_depends_on
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 32
+    read_only: true
+    healthcheck:
+      <<: *qworker-healthcheck
+    security_opt:
+      - "no-new-privileges:true"
+  api:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command:
+      - bash
+      - -c
+      - "while true; do python -m zigopt.api.main --debug --threaded; sleep 1; done"
+    environment: &sigopt-server-env
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
+      - sigopt_server_config_file
+      - sigopt_server_version
+      - SIGOPT_CONTAINER_ENV=x
+    image: sigopt/python:latest
+    ports:
+      - target: 5000
+        host_ip: 127.0.0.1
+    stdin_open: true
+    tty: true
+    volumes:
+      - "./artifacts/tls:/etc/ssl/sigopt:ro"
+      - "./config:/sigopt-server/config:ro"
+      - "./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro"
+      - "./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro"
+      - "./scratch:/sigopt-server/scratch:ro"
+      - "./src/python:/sigopt-server/src/python:ro"
+    working_dir: /sigopt-server
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      default:
+        aliases:
+          - api-server.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 16
+    read_only: true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import requests
+          requests.get("http://localhost:5000/health").raise_for_status()
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+      start_period: "15s"
+    security_opt:
+      - "no-new-privileges:true"
+  documentation:
+    logging:
+      <<: *logging
+    command:
+      - bash
+      - -c
+      - "python -m zigopt.api.documentation"
+      - docker cp documentation:/sigopt-server/scratch/swagger.json .
+    environment:
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
+      - sigopt_server_config_file
+      - sigopt_server_version
+      - SIGOPT_CONTAINER_ENV=x
+      - SIGOPT_SWAGGER_PATH=/sigopt-server/artifacts/
+      - SIGOPT_SWAGGER_FILENAME=swagger.json
+    image: sigopt/python:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - "./artifacts/tls:/etc/ssl/sigopt:ro"
+      - "./config:/sigopt-server/config:ro"
+      - "./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro"
+      - "./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro"
+      - "./artifacts:/sigopt-server/artifacts:rw"
+      - "./src/python:/sigopt-server/src/python:ro"
+    working_dir: /sigopt-server
+    security_opt:
+      - "no-new-privileges:true"
+  nginx:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command:
+      - nginx-debug
+      - -g
+      - "daemon off;"
+    ports:
+      - "127.0.0.1:4443:4443"
+      - "127.0.0.1:7800:7800"
+      - "127.0.0.1:9000:9000"
+    image: sigopt/nginx:latest
+    volumes:
+      - "./artifacts/tls:/etc/ssl/sigopt"
+      - "./nginx:/etc/nginx:ro"
+      - nginx-cache:/var/cache/nginx
+      - nginx-var:/var/run/nginx
+    working_dir: /sigopt-server
+    networks:
+      default:
+        aliases:
+          - sigopt.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+          pids: 2
+    read_only: true
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/run/nginx/nginx.pid"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+    security_opt:
+      - "no-new-privileges:true"
+  protowatch:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command:
+      - protowatch
+    image: sigopt/python:latest
+    volumes:
+      - "./src/protobuf:/sigopt-server/src/protobuf:ro"
+      - "./src/python:/sigopt-server/src/python"
+      - "./web/js:/sigopt-server/web/js"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+          pids: 8
+    read_only: true
+    healthcheck: &qworker-healthcheck
+      test:
+        - CMD
+        - bash
+        - -e
+        - -opipefail
+        - -c
+        - ps awx | grep run_command_on_change.py
+      interval: "30s"
+      timeout: "1s"
+      retries: 1
+      start_period: "1s"
+    security_opt:
+      - "no-new-privileges:true"
+  repl:
+    logging:
+      <<: *logging
+    command:
+      - ipython
+      - -i
+      - .pyrepl.py
+      - --
+      - "--config=${sigopt_server_config_file}"
+    environment: *sigopt-server-env
+    image: sigopt/python:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./artifacts/tls:/etc/ssl/sigopt:ro
+      - .pyrepl.py:/sigopt-server/.pyrepl.py:ro
+      - ./config:/sigopt-server/config:ro
+      - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
+      - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
+      - ./scratch:/sigopt-server/scratch:ro
+      - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro
+    working_dir: /sigopt-server
+    security_opt:
+      - "no-new-privileges:true"
+  web-client:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command:
+      - bash
+      - -c
+      - |
+        while true; do
+          yarn -s webpack-dev-server --config=./web/js/webpack/client_side.config.babel.js --env=NODE_ENV=development "--env=sigopt_server_config_file=${sigopt_server_config_file}"
+          sleep 1
+        done
+    environment:
+      - sigopt_server_version
+      - &node-ca-certs-env "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
+      - "NODE_OPTIONS=--max-old-space-size=4096"
+    image: sigopt/node:latest
+    user: root
+    stdin_open: true
+    tty: true
+    volumes: &web-volumes
+      - web-cache:/sigopt-server/.cache
+      - server-bin:/sigopt-server/artifacts/web/server
+      - static-artifacts:/sigopt-server/artifacts/web/static
+      - *babelrc
+      - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
+      - ./config:/sigopt-server/config:ro
+      - ./scratch:/sigopt-server/scratch:ro
+      - ./web:/sigopt-server/web:ro,cached
+    tmpfs:
+      - /tmp
+    networks:
+      default:
+        aliases:
+          - webpack.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 4G
+          pids: 64
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7800"]
+      interval: "10s"
+      timeout: "10s"
+      retries: 3
+      start_period: "1m"
+    security_opt:
+      - "no-new-privileges:true"
+  web-server:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command:
+      - bash
+      - -c
+      - |
+        while true; do
+          yarn -s webpack-dev-server --config=./web/js/webpack/server_side.config.babel.js --env=NODE_ENV=development "--env=sigopt_server_config_file=${sigopt_server_config_file}"
+          sleep 1
+        done
+    environment:
+      - sigopt_server_version
+      - *node-ca-certs-env
+      - "NODE_OPTIONS=--max-old-space-size=4096"
+      - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
+    image: sigopt/node:latest
+    user: root
+    stdin_open: true
+    tty: true
+    volumes: *web-volumes
+    tmpfs:
+      - /tmp
+    ports:
+      - target: 4000
+        host_ip: 127.0.0.1
+    networks:
+      default:
+        aliases:
+          - app-server.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 4G
+          pids: 64
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000"]
+      interval: "10s"
+      timeout: "10s"
+      retries: 3
+      start_period: "2m"
+    security_opt:
+      - "no-new-privileges:true"
+  smtp:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    command:
+      - sh
+      - -c
+      - |
+        while true; do
+          python -m integration.utils.mail --verbose
+        done
+    environment:
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server/sigoptaux:/sigopt-server
+    image: sigopt/python:latest
+    volumes:
+      - ./config:/sigopt-server/config:ro
+      - ./scratch:/sigopt-server/scratch:ro
+      - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro,cached
+      - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro,cached
+      - ./test/integration:/sigopt-server/test/integration:ro,cached
+    working_dir: /sigopt-server
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+          pids: 16
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6002/health"]
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+      start_period: "30s"
+    security_opt:
+      - "no-new-privileges:true"
+
+  postgres:
+    restart: on-failure:5
+    logging:
+      <<: *logging
+    image: "postgres:${POSTGRES_VERSION}"
+    volumes:
+      - pgvolume:/var/lib/postgresql/data
+      - pg-var:/var/run/postgresql
+    tmpfs:
+      - /tmp
+    read_only: true
+    ports:
+      - target: 5432
+        host_ip: 127.0.0.1
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+          pids: 32
+    healthcheck:
+      test:
+        ["CMD", "psql", "-h", "localhost", "-U", "postgres", "-c", "SELECT 1;"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+  redis:
+    restart: on-failure:5
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+    logging:
+      <<: *logging
+    image: "redis:${REDIS_VERSION}"
+    ports:
+      - target: 6379
+        host_ip: 127.0.0.1
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 128M
+          pids: 8
+    read_only: true
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+  init-minio-cookiejar:
+    image: "quay.io/minio/mc"
+    entrypoint: ["/bin/sh", "-e", "-c"]
+    command:
+      - |
+        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc mb --ignore-existing sigopt/sigopt-cookiejar
+    depends_on:
+      - minio
+  init-minio-filestorage:
+    image: "quay.io/minio/mc"
+    entrypoint: ["/bin/sh", "-e", "-c"]
+    command:
+      - |
+        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc mb --ignore-existing sigopt/sigopt-development-user-uploads
+    depends_on:
+      - minio
+  minio:
+    logging:
+      <<: *logging
+    image: "quay.io/minio/minio"
+    ports:
+      - "9000"
+    networks:
+      default:
+        aliases:
+          - minio
+    environment:
+      - MINIO_ROOT_USER=ROOTUSER
+      - MINIO_ROOT_PASSWORD=CHANGEME123
+    volumes:
+      - minio-data:/var/lib/minio/data
+      - minio-config:/root/.minio
+    command:
+      - "server"
+      - "/var/lib/minio/data"
+      - "--console-address"
+      - ":9009"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 128M
+          pids: 32
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9000"]
+      interval: "5s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+  mongodb:
+    logging:
+      <<: *logging
+    image: "mongo:${MONGODB_VERSION}"
+    ports:
+      - "127.0.0.1:27017:27017"
+    container_name: "mongodb"
+    security_opt:
+      - "no-new-privileges:true"
+
+  hyperopt-mongo-worker:
+    logging:
+      <<: *logging
+    image: sigopt/hyperopt:latest
+    depends_on:
+      - mongodb
+    container_name: "hyperopt-mongo-worker"
+    command: ["bash", "start-worker.sh"]
+    volumes:
+      - ../sigopt-python:/sigopt-python:ro
+    security_opt:
+      - "no-new-privileges:true"
+
+volumes:
+  minio-config: {}
+  minio-data: {}
+  nginx-cache: {}
+  nginx-var: {}
+  pg-var: {}
+  pgvolume: {}
+  server-bin: {}
+  static-artifacts: {}
+  test-routes: {}
+  web-cache: {}

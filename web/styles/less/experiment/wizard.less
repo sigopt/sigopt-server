@@ -1,0 +1,50 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./chart.less";
+@import "../libs/bootstrap.less";
+@import "../libs/constants.less";
+@import "../libs/mixins.less";
+
+.wizard-modal .modal-body {
+  padding: 0px;
+  .wizard-carousel {
+    background: @blue-radial-gradient;
+    min-height: 650px;
+    .carousel {
+      min-height: 650px;
+      .carousel-control {
+        background-image: initial;
+      }
+    }
+    .arrows {
+      font-size: 3em;
+      position: absolute;
+      top: 48%;
+    }
+    img {
+      padding: 10%;
+      padding-bottom: 5%;
+      max-height: 400px;
+    }
+    h3,
+    p {
+      padding: 1%;
+      width: 70%;
+      color: white;
+    }
+    img,
+    h3,
+    p {
+      margin: auto;
+      text-align: center;
+    }
+    a[href] {
+      color: white;
+      font-weight: bold;
+    }
+  }
+}

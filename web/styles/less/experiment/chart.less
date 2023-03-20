@@ -1,0 +1,60 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../libs/constants.less";
+@import "../libs/forms.less";
+@import "../dropdown.less";
+
+.chart-detail-section() {
+  text-align: center;
+}
+
+.chart.js-plotly-plot .plotly {
+  .modebar {
+    bottom: 0px;
+    display: none;
+    text-transform: capitalize;
+    top: initial;
+  }
+
+  &:hover .modebar {
+    display: initial;
+  }
+}
+
+.param-select-holder {
+  .form-horizontal;
+  border-spacing: 10px 5px;
+  color: @brand-dark-grey;
+  display: inline-block;
+  margin: 0 auto;
+  padding: 10px 40px;
+
+  .param-select-line {
+    display: table-row;
+    label {
+      display: table-cell;
+      padding: 2px 5px;
+      text-align: right;
+      white-space: nowrap; // This means occupy minimum space necessary - https://stackoverflow.com/a/1060967
+    }
+    .dropdown {
+      display: table-cell;
+      min-width: 200px;
+      @media screen and (max-width: @screen-sm-min) {
+        min-width: 100%;
+      }
+    }
+    .dropdown-menu li a {
+      @media screen and (max-width: @screen-sm-min) {
+        white-space: normal;
+      }
+    }
+  }
+}
+
+.unified-chart {
+  text-align: center;
+}

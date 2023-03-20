@@ -1,0 +1,112 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "alerts.less";
+@import "constants.less";
+@import "bootstrap.less";
+@import "navlink.less";
+
+.page-margin {
+  margin: 0 0 1em 0;
+  @media (max-width: @grid-float-breakpoint) {
+    margin: 1em;
+  }
+}
+
+.alert-session {
+  .alert;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: @box-shadow;
+  .page-margin;
+
+  .text-holder {
+    p {
+      font-size: 16px;
+      line-height: 28px;
+      margin-bottom: 0;
+    }
+    margin: 5px 0;
+  }
+  .btn-holder {
+    @media screen and (min-width: @screen-sm-min) {
+      text-align: right;
+      button {
+        display: inline-block;
+      }
+    }
+    margin: 5px 0;
+  }
+}
+.alert-session.guest {
+  .alert-info;
+}
+
+.end-session-button {
+  .make-nav-link();
+  .make-nav-link-cta();
+  background-color: hsla(0, 0%, 100%, 0.73);
+  color: #004d80;
+  line-height: 18px;
+  margin-left: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@page-content-margin-size: 2em;
+
+.content {
+  #page-container {
+    margin-top: 2em;
+    @media screen and (min-width: @screen-sm-min) {
+      padding-left: @page-content-margin-size;
+      padding-right: @page-content-margin-size;
+    }
+    padding-bottom: @page-content-margin-size;
+  }
+
+  &[data-show-sidebar="false"] {
+    #page-container {
+      max-width: 1550px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  &[data-show-sidebar="true"] {
+    @media (min-width: @grid-float-breakpoint) {
+      display: flex;
+      #page-container {
+        // To constrain the width of the page from growing with children,
+        // this was done for convenience. A better solution would be grid
+        // and an alternative would be floats.
+        padding-left: 0;
+        width: ~"calc(100% - @{navbar-width})";
+      }
+    }
+  }
+}
+
+.make-page-style() {
+  background-color: white;
+  margin-bottom: @page-content-margin-size;
+  border-radius: 8px;
+  box-shadow: @box-shadow;
+  @media (max-width: @grid-float-breakpoint) {
+    margin: 1em;
+  }
+}
+
+.page-content {
+  .make-page-style();
+}
+
+#flash-box {
+  .alert {
+    .page-margin;
+    box-shadow: @box-shadow;
+    text-align: center;
+  }
+}

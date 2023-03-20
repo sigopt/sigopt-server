@@ -1,0 +1,375 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./chart.less";
+@import "../components/status_glyphs.less";
+@import "./libs/summary.less";
+@import "../libs/cta.less";
+@import "./libs/history_table.less";
+@import "./libs/mixins.less";
+@import "./libs/observation_modal.less";
+
+@chart-height: 350px;
+
+.experiment-view-page {
+  .btn-holder {
+    padding: 5px 0;
+    .btn {
+      margin-bottom: 25px;
+      margin-left: 22px;
+    }
+  }
+
+  .observation-warning {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .experiment-info-content {
+    padding: 0;
+    .alert {
+      margin-top: 0px;
+    }
+  }
+
+  @section-padding: 20px;
+  .share-experiment-holder {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 0 40px 0 40px;
+    .btn {
+      margin-bottom: 10px;
+    }
+  }
+  .share-experiment-holder,
+  .paging-holder {
+    .centered-button-holder();
+  }
+  .bordered() {
+    border-top: 2px solid @divider-grey;
+    padding: @section-padding;
+  }
+
+  .add-data-prompt,
+  .optimizely-description,
+  .recent-data {
+    .make-xs-column(12);
+    padding-bottom: @section-padding;
+    padding-top: @section-padding;
+  }
+
+  .observation-budget-progress {
+    padding: 0 @section-padding @section-padding @section-padding;
+    position: relative;
+    .observation-count-progress {
+      text-transform: capitalize;
+      font-weight: normal;
+      font-size: 14px;
+    }
+  }
+
+  .top-cell {
+    .bordered();
+    position: relative;
+    padding: 0;
+    .cell-content {
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+    }
+  }
+
+  @top-cell-height: 550px;
+  @top-cell-padding: 30px;
+  @media (min-width: @screen-md-min) {
+    .top-cell {
+      .cell-content {
+        &.chart-holder {
+          padding-top: @top-cell-padding;
+        }
+        overflow-y: auto;
+        display: inline-block;
+      }
+    }
+    .improvement .cell-content {
+      max-height: @top-cell-height;
+    }
+  }
+
+  @media screen and (min-width: @screen-md-min) {
+    .top-row {
+      display: table;
+      width: 100%;
+      .top-cell,
+      .add-data-prompt {
+        display: table-cell;
+      }
+      .top-cell {
+        width: 50%;
+      }
+      .add-data-prompt {
+        width: 100%;
+      }
+      > :not(:last-child) {
+        border-right: 2px solid @divider-grey;
+      }
+    }
+  }
+
+  .improvement {
+    .value-section {
+      margin-bottom: 20px;
+    }
+    .info-message {
+      display: none;
+    }
+  }
+
+  .improvement {
+    padding: 0;
+    vertical-align: middle;
+    .info-message {
+      display: none;
+    }
+    .summary-holder {
+      display: inline-block;
+    }
+  }
+
+  .loading {
+    padding-top: 75px;
+  }
+
+  @media (min-width: @screen-md-min) {
+    .improvement:before {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+  }
+
+  @max-height: 22px;
+  .history-animate-enter {
+    .fixed-row {
+      max-height: 0;
+      transform: scaleY(0);
+    }
+    &.history-animate-enter-active {
+      .fixed-row {
+        max-height: @max-height;
+        transform: scaleY(1);
+        transition: transform @transition-length ease-in;
+      }
+    }
+  }
+  .history-animate-exit {
+    .fixed-row {
+      max-height: @max-height;
+      transform: scaleY(1);
+    }
+    &.history-animate-exit-active {
+      .fixed-row {
+        max-height: 0;
+        transform: scaleY(0);
+        transition: all @transition-length ease-in;
+      }
+    }
+  }
+
+  .observation-budget-progress {
+    .far,
+    .fas {
+      bottom: 38px;
+      color: @charcoal;
+      position: absolute;
+      right: 26px;
+    }
+  }
+
+  .chart-holder {
+    .chart {
+      height: 350px;
+      margin: 0 auto;
+      width: 100%;
+      .bg {
+        fill: fadeout(@light-black, 92%);
+        stroke: fadeout(@light-black, 92%);
+      }
+      .grid {
+        stroke: fadeout(@light-black, 80%);
+      }
+      .dot {
+        fill: @brand-light-blue;
+      }
+      .stddev {
+        fill: @brand-light-blue;
+        stroke: @brand-light-blue;
+        stroke-width: 1px;
+      }
+      .x.axis,
+      .y.axis {
+        path {
+          display: none;
+        }
+      }
+      .y.axis .tick line {
+        display: none;
+      }
+    }
+    .chart-detail-section {
+      text-align: center;
+    }
+  }
+  .recent-data {
+    .bordered();
+    background-color: @white;
+    .recent-data-label {
+      .make-title-label();
+    }
+    .paging-button {
+      color: @light-black;
+    }
+    th,
+    tr {
+      color: @brand-dark-grey;
+    }
+  }
+  .recent-data:before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .experiment-summary {
+    &.scroll {
+      padding: @top-cell-padding;
+    }
+    .improvement-animate-enter {
+      opacity: 0;
+      &.improvement-animate-enter-active {
+        opacity: 1;
+        transition: opacity @transition-length ease-in-out;
+      }
+    }
+    .improvement-animate-exit {
+      left: @section-padding;
+      opacity: 1;
+      position: absolute;
+      right: @section-padding;
+      top: @section-padding;
+      &.improvement-animate-exit-active {
+        opacity: 0;
+        transition: opacity @transition-length ease-in-out;
+      }
+    }
+  }
+
+  .spinner {
+    margin: 20px;
+  }
+
+  .add-data-options {
+    .make-row();
+    margin-bottom: 10px;
+    .cta-tiles(380px);
+    .cta-tile-holder {
+      .header {
+        height: 80px;
+      }
+      .make-xs-column(12);
+      .make-sm-column(4);
+    }
+    .create-button {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 40px;
+      margin: auto;
+
+      .btn {
+        display: inline-block;
+        min-width: 150px;
+      }
+    }
+  }
+
+  .pareto-frontier-metric-chart {
+    .chart {
+      height: @chart-height;
+      margin: 0 auto;
+      max-width: 100%;
+    }
+  }
+}
+
+.runs-table {
+  padding-left: 15px;
+  padding-right: 15px;
+  .run {
+    button {
+      box-shadow: none;
+      background-color: transparent;
+      transition: none;
+      padding: 0 1em;
+      &:hover {
+        box-shadow: none;
+        transform: none;
+      }
+      &:active {
+        box-shadow: none;
+      }
+      &:not(.collapsed) {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .run-details {
+    td {
+      border-top: 0;
+      table {
+        display: inline-block;
+        margin-right: 1em;
+        vertical-align: top;
+        tr {
+          th {
+            font-weight: @semibold;
+          }
+          th,
+          td {
+            padding: 0 1em 0 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+#modal-root {
+  .download-modal .modal-content div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .download-modal-row {
+      margin: 5px 0;
+    }
+  }
+  .observation-modal .visit-history {
+    text-align: center;
+  }
+}

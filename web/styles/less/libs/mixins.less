@@ -1,0 +1,362 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "constants.less";
+
+// Mixins only! This is included on every page, so it
+// should compile to 0 bytes.
+
+.pull-left-xs() {
+  float: left !important;
+}
+.pull-right-xs() {
+  float: right !important;
+}
+
+.pull-left-sm() {
+  @media screen and (min-width: 768px) {
+    float: left !important;
+  }
+}
+
+.pull-right-sm() {
+  @media screen and (min-width: 768px) {
+    float: right !important;
+  }
+}
+
+.pull-left-md() {
+  @media screen and (min-width: 992px) {
+    float: left !important;
+  }
+}
+
+.pull-right-md() {
+  @media screen and (min-width: 992px) {
+    float: right !important;
+  }
+}
+
+.pull-left-lg() {
+  @media screen and (min-width: 1200px) {
+    float: left !important;
+  }
+}
+
+.pull-right-lg() {
+  @media screen and (min-width: 1200px) {
+    float: right !important;
+  }
+}
+
+.centered-holder() {
+  text-align: center;
+  > * {
+    display: inline-block;
+    text-align: initial;
+    &.btn {
+      text-align: center;
+    }
+  }
+}
+
+.centered-button-holder() {
+  text-align: center;
+  .btn {
+    display: inline-block;
+  }
+  > * {
+    text-align: initial;
+  }
+}
+
+.link-active() {
+  color: @brand-dark-blue;
+  font-weight: @light;
+  &.active {
+    font-weight: normal;
+    border-bottom: 3px solid @brand-dark-blue;
+    text-decoration: none;
+  }
+  &:hover {
+    border-bottom: 3px solid @brand-dark-blue;
+    text-decoration: none;
+  }
+  a:hover,
+  a:focus,
+  a:active,
+  a:visited {
+    background-color: inherit;
+    color: @brand-dark-blue;
+    text-decoration: none;
+  }
+}
+
+.unstyled-links() {
+  color: inherit;
+  a:hover,
+  a:focus,
+  a:active,
+  a:visited,
+  &:hover,
+  &:focus,
+  &:active,
+  &:visited {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+}
+
+.make-clearfix() {
+  &:after {
+    clear: both;
+    content: " ";
+    display: table;
+  }
+}
+
+// These center vertically mixins are brittle and only work sometimes
+.center-content-vertically-parent(@min-width, @height) {
+  @media screen and (min-width: @min-width) {
+    height: @height;
+  }
+}
+
+.display-flex() {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.center-content-vertically() {
+  .display-flex();
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  > * {
+    display: block;
+  }
+}
+
+.center-vertically() {
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.make-btn-xs() {
+  font-size: 12px;
+  line-height: 17px;
+  padding: 3px 10px;
+}
+
+.make-btn-sm() {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 5px 15px;
+}
+
+.make-btn-md() {
+  font-size: 16px;
+  line-height: 23px;
+  padding: 7px 20px;
+}
+
+.make-btn-lg() {
+  font-size: 18px;
+  line-height: 26px;
+  padding: 9px 25px;
+}
+
+.make-pic(@height, @width) {
+  background-repeat: no-repeat;
+  background-size: @width;
+  height: @height;
+  width: @width;
+}
+
+.make-bio-pic(@height, @width, @shadow-color: @divider-grey) {
+  .make-pic(@height, @width);
+  box-shadow: 10px 10px @shadow-color;
+}
+
+.headline-h1-text(@size: 36px) {
+  color: @brand-dark-blue;
+  font-size: @size;
+  font-weight: normal;
+  line-height: round(@size * 1.4);
+  margin: 0 0 5px 0;
+}
+
+.headline-h2-text(@size: 18px) {
+  color: @light-black;
+  font-size: @size;
+  font-weight: @light;
+  line-height: round(@size * 1.4);
+  margin: 0;
+}
+
+.make-headline-text(@h1-size: 36px, @h2-size: 18px) {
+  h1 {
+    .headline-h1-text(@h1-size);
+  }
+  h2,
+  p,
+  .subheading {
+    .headline-h2-text(@h2-size);
+  }
+}
+
+.make-headline() {
+  .make-headline-text();
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 768px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 30px;
+  padding-top: 30px;
+}
+
+.colored-top-banner(@padding: 40px) {
+  background: @blue-radial-gradient;
+  color: @white;
+  padding: @padding;
+  h1 {
+    font-size: 32px;
+    line-height: 43px;
+    text-align: center;
+  }
+  p,
+  .p {
+    display: block;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: @light;
+    margin-bottom: 20px;
+    > a {
+      color: @white;
+      text-decoration: underline;
+    }
+  }
+}
+
+.alternating-sections-mixin(@color: @light-grey) {
+  &:nth-of-type(odd) {
+    background-color: @color;
+  }
+}
+
+.alternating-sections-mixin-even(@color: @light-grey) {
+  &:nth-of-type(even) {
+    background-color: @color;
+  }
+}
+
+// SigOpt Button variants
+//
+// Easily pump out default styles, as well as :hover, :focus, :active,
+// and disabled options for all buttons
+
+.sigopt-button-variant(@color; @background; @border) {
+  color: @color;
+  background-color: @background;
+  border-color: @border;
+
+  &:focus,
+  &.focus {
+    color: @color;
+    background-color: darken(@background, 5%);
+    border-color: darken(@border, 25%);
+  }
+  &:hover {
+    color: @color;
+    background-color: darken(@background, 5%);
+    border-color: darken(@border, 12%);
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    color: @color;
+    background-color: darken(@background, 5%);
+    border-color: darken(@border, 12%);
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: @color;
+      background-color: darken(@background, 5%);
+      border-color: darken(@border, 25%);
+    }
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &:hover,
+    &:focus,
+    &.focus {
+      background-color: @background;
+      border-color: @border;
+    }
+  }
+
+  .badge {
+    color: @background;
+    background-color: @color;
+  }
+}
+
+// Cutout for CTA Tiles
+.cutout(@height) {
+  height: @height;
+  background-color: @white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 8px @divider-grey, 0px 2px 2px #aaaaaa;
+  display: block;
+  overflow: hidden;
+  position: relative;
+
+  .header,
+  .footer {
+    background-color: @white;
+    overflow: hidden;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    z-index: 1;
+  }
+  .header {
+    color: @light-black;
+    font-weight: bold;
+    top: 0;
+  }
+  .footer {
+    color: @brand-dark-grey;
+    font-weight: @semibold;
+    bottom: 0;
+  }
+}
+
+.make-dl-horizontal() {
+  dt {
+    margin-right: 20px;
+    white-space: normal;
+
+    // Bootstrap gives these a padding-top of 5px, which causes them to be
+    // misaligned with the adjacent dd which has no padding
+    padding-top: 0;
+  }
+}

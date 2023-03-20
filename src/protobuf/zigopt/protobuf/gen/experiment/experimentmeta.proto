@@ -1,0 +1,161 @@
+syntax = "proto2";
+
+message ExperimentMeta {
+  enum ExperimentType {
+    // normal sigopt experiment
+    OFFLINE = 0;
+    RANDOM = 1;
+    GRID = 2;
+  }
+
+  repeated ExperimentParameter all_parameters_unsorted = 1 [json_name='parameters'];
+  optional ExperimentType experiment_type = 2 [json_name='experiment_type'];
+  optional string client_provided_data = 3 [json_name='client_provided_data'];
+  optional int32 observation_budget = 4 [json_name='observation_budget'];
+  optional bool development = 5 [json_name='development'];
+  repeated ExperimentMetric metrics = 6 [json_name='metrics'];
+  repeated ExperimentConstraint constraints = 7 [json_name='constraints'];
+  optional int32 num_solutions = 8 [default=1, json_name='num_solutions'];
+  optional bool force_hitandrun_sampling = 9 [json_name='force_hitandrun_sampling'];
+  repeated ExperimentConditional conditionals = 10 [json_name='cndls'];
+  optional int32 parallel_bandwidth = 11 [default=1, json_name='p'];
+  repeated Task tasks = 12 [json_name='tsk'];
+  map<string, MetricImportanceMap> importance_maps = 13 [json_name='imaps'];
+  optional bool runs_only = 14 [default=false, json_name="ro"];
+
+  optional int64 unused_int64_key_for_testing = 999 [json_name='uuuuu'];
+}
+
+message MetricImportance {
+  optional double importance = 1 [json_name='i'];
+}
+
+message MetricImportanceMap {
+  map<string, MetricImportance> importances = 1 [json_name='imps'];
+}
+
+message ExperimentConditional {
+  optional string name = 1 [json_name='n'];
+  repeated ExperimentConditionalValue values = 2 [json_name='vs'];
+
+  // This is needed to make ExperimentConditionals look like ExperimentParameters for the purposes of
+  // reading from the assignments map. This is plausibly useful, if we ever allow deleting / adding conditionals,
+  // but we do not allow it now
+  optional double replacement_value_if_missing = 3 [json_name='r'];
+}
+
+message ExperimentConditionalValue {
+  optional string name = 1 [json_name='n'];
+  optional int32 enum_index = 2 [json_name='i'];
+}
+
+message ExperimentThreshold {
+  optional string name = 1 [json_name='name'];
+  optional Bounds bounds = 2 [json_name='bounds'];
+}
+
+enum ExperimentParameterType {
+  PARAMETER_DOUBLE = 0;
+  PARAMETER_INT = 1;
+  PARAMETER_CATEGORICAL = 2;
+}
+
+message Prior {
+  enum PriorType {
+    NORMAL = 0;
+    LAPLACE = 1;
+    BETA = 2;
+  }
+  oneof prior {
+    NormalPrior normal_prior = 1 [json_name='n'];
+    LaplacePrior laplace_prior = 2 [json_name='l'];
+    BetaPrior beta_prior = 3 [json_name='b'];
+  }
+  optional PriorType prior_type = 4 [json_name='t'];
+}
+
+message NormalPrior {
+  optional double mean = 1 [json_name='m'];
+  optional double scale = 2 [json_name='s'];
+}
+
+message LaplacePrior {
+  optional double mean = 1 [json_name='m'];
+  optional double scale = 2 [json_name='s'];
+}
+
+message BetaPrior {
+  optional double shape_a = 1 [json_name='s_a'];
+  optional double shape_b = 2 [json_name='s_b'];
+}
+
+message ExperimentParameter {
+  enum Transformation {
+    TRANSFORMATION_NONE = 0;
+    TRANSFORMATION_LOG = 1;
+  }
+  optional string name = 1 [json_name='name'];
+  optional Bounds bounds = 2 [json_name='bounds'];
+  optional ExperimentParameterType param_type = 3 [json_name='param_type'];
+  repeated ExperimentCategoricalValue all_categorical_values = 4 [json_name='all_categorical_values'];
+  optional bool deleted = 5 [json_name='deleted'];
+  optional double replacement_value_if_missing = 6 [json_name='replacement_value_if_missing'];
+  optional bool ignore_default = 7 [json_name='ignore_default'];
+
+  // Follows the same convention as ObservationParam, where categoricals
+  // are represented by their enum index
+  repeated double grid_values = 8 [json_name='grid_values'];
+  repeated ParameterCondition conditions = 9 [json_name='cnds'];
+  optional Prior prior = 10 [json_name='p'];
+  optional Transformation transformation = 11 [json_name='t'];
+}
+
+message ParameterCondition {
+  optional string name = 1 [json_name='n'];
+  repeated double values = 2 [json_name='vs'];
+}
+
+message ExperimentCategoricalValue {
+  optional string name = 1 [json_name='name'];
+  optional int32 enum_index = 2 [json_name='enum_index'];
+  optional bool deleted = 3 [json_name='deleted'];
+}
+
+message Bounds {
+  optional double minimum = 1 [json_name='minimum'];
+  optional double maximum = 2 [json_name='maximum'];
+}
+
+enum MetricObjective {
+  MAXIMIZE = 0;
+  MINIMIZE = 1;
+}
+
+message ExperimentMetric {
+  enum MetricStrategy {
+    OPTIMIZE = 0;
+    STORE = 1;
+    CONSTRAINT = 2;
+  }
+
+  optional string name = 1 [json_name='name'];
+  optional MetricObjective objective = 2 [default=MAXIMIZE, json_name='obj'];
+  optional double threshold = 3 [json_name='t'];
+  optional MetricStrategy strategy = 4 [default=OPTIMIZE, json_name='s'];
+}
+
+message ExperimentConstraint {
+  optional string type = 1 [json_name='type'];
+  repeated Term terms = 2 [json_name='terms'];
+  optional double rhs = 3 [json_name='rhs'];
+}
+
+message Term {
+  optional string name = 1 [json_name='name'];
+  optional double coeff = 2 [json_name='coeff'];
+}
+
+message Task {
+  optional string name = 1 [json_name='name'];
+  optional double cost = 2 [default=1, json_name='cost'];
+}

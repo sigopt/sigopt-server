@@ -1,0 +1,129 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../../../styles/less/libs/bootstrap.less";
+@import "../../../../styles/less/libs/constants.less";
+
+@thumb-size: 30px;
+@preview-size: 250px;
+.files-section {
+  .fullscreen-viewer {
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  @media screen and (min-width: @screen-lg-min) {
+    .files {
+      display: inline-block;
+      width: calc(100% - @preview-size - 10px);
+    }
+    .preview {
+      position: sticky;
+      top: 15px;
+      display: inline-block;
+      width: @preview-size;
+      float: right;
+    }
+  }
+  @media screen and (max-width: @screen-md-max) {
+    .preview {
+      display: none;
+    }
+  }
+  .files {
+    .thumbnail-header {
+      min-width: @thumb-size;
+    }
+    .type-header {
+      min-width: 5em;
+    }
+    .size-header {
+      min-width: 5em;
+    }
+    .controls-header {
+      min-width: 7em;
+    }
+  }
+  .preview {
+    width: @preview-size;
+    float: right;
+    text-align: center;
+    .preview-content-wrapper {
+      position: relative;
+      height: @preview-size;
+      width: @preview-size;
+      img {
+        height: @preview-size;
+        width: @preview-size;
+      }
+      .file-control.fullscreen-btn {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+        color: @brand-dark-blue;
+        background-color: #fff;
+        opacity: 0.6;
+        transition: opacity 0.5s;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  .file {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 5px;
+    &.selected .file-control.preview-btn {
+      background-color: @brand-light-blue;
+      color: #fff;
+    }
+    &:hover {
+      background-color: @sigopt-greyblue-light;
+      cursor: pointer;
+    }
+    img.user-file {
+      max-width: @thumb-size;
+      max-height: @thumb-size;
+      min-width: @thumb-size;
+      min-height: @thumb-size;
+      object-fit: contain;
+    }
+    .file-control {
+      float: right;
+      background-color: #fff;
+      transition: opacity 0.5s;
+      opacity: 0.6;
+      &:hover {
+        opacity: 1;
+      }
+    }
+    .file-control-spacing {
+      float: right;
+      height: 1px;
+      min-width: 5px;
+    }
+    @media screen and (min-width: @screen-lg-min) {
+      .fullscreen-btn {
+        display: none;
+      }
+    }
+    @media screen and (max-width: @screen-md-max) {
+      .preview-btn {
+        display: none;
+      }
+    }
+  }
+}
+
+img.user-file {
+  width: 100%;
+  object-fit: contain;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: pixelated;
+}

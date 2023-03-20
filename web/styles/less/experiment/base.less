@@ -1,0 +1,214 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./libs/mixins.less";
+@import "../libs/legacy_base.less";
+@import "../sidebar.less";
+
+@transition-length: 800ms;
+
+.experiment-page {
+  .getting-started-intro {
+    background-color: @brand-light-blue;
+    padding: 20px;
+    a,
+    p,
+    h2 {
+      color: @white;
+    }
+    a {
+      font-weight: @semibold;
+    }
+    p {
+      font-size: 16px;
+      font-weight: @light;
+      line-height: 24px;
+    }
+  }
+  .deleted-alert,
+  .development-alert,
+  .grid-alert {
+    .alert;
+    margin-top: 10px;
+    .alert-description {
+      .make-xs-column(12);
+      .make-sm-column(9);
+      display: block;
+      margin: 8px 0;
+    }
+  }
+  .deleted-alert {
+    .alert-danger;
+    .undelete-button-holder {
+      .make-xs-column(12);
+      .make-sm-column(3);
+      display: block;
+      text-align: right;
+      @media screen and (max-width: @screen-xs-max) {
+        text-align: center;
+      }
+      > * {
+        display: inline-block;
+      }
+    }
+  }
+  .development-alert,
+  .grid-alert {
+    .alert-info;
+  }
+
+  .title-label {
+    .make-title-label();
+  }
+
+  .glyph-label {
+    .fas,
+    .far {
+      color: @light-purple;
+    }
+  }
+
+  .page-body {
+    .experiment-info {
+      min-height: 230px;
+      .subtitle {
+        color: @light-black;
+        font-weight: @light;
+        margin-top: 0;
+        margin-bottom: 25px;
+      }
+    }
+  }
+
+  .progress {
+    background-color: @divider-grey;
+    .progress-bar {
+      background-color: @brand-light-blue;
+    }
+  }
+
+  h2 .tooltip-trigger {
+    vertical-align: middle;
+  }
+}
+
+.row.share-experiment-row {
+  margin: 0 20px;
+}
+.share-modal .modal-content {
+  .centered-button-holder {
+    .centered-button-holder();
+  }
+  .generate-share-btn {
+    margin-top: 10px;
+  }
+  min-height: 50px;
+  background-color: @light-grey;
+}
+
+.experiment-table-holder {
+  @row-height: 40px;
+  position: relative;
+  table {
+    padding: 20px;
+    th {
+      color: @light-black;
+      font-size: 13px;
+      font-weight: @semibold;
+      line-height: 18px;
+    }
+    tr {
+      color: @light-black;
+      font-size: 15px;
+      font-weight: @light;
+      line-height: 19px;
+    }
+    tbody {
+      border-bottom: 1px solid @table-border-color;
+      @media screen and (max-width: @screen-xs-max) {
+        border-bottom: 0;
+      }
+    }
+    &.header-as-row {
+      tr:not(:only-child) {
+        border-top: 1px solid @divider-grey;
+      }
+      th,
+      td {
+        border-top: 0;
+      }
+    }
+  }
+  &.vertical-table-holder {
+    table {
+      tbody {
+        tr {
+          th,
+          td {
+            border-top: 0;
+          }
+        }
+      }
+      tbody {
+        border-top: 2px solid @table-border-color;
+        tr:first-child {
+          th,
+          td {
+            padding-top: 15px;
+          }
+        }
+        tr:last-child {
+          th,
+          td {
+            padding-bottom: 15px;
+          }
+        }
+        tr {
+          th,
+          td {
+            height: 3em;
+            vertical-align: middle;
+          }
+          th {
+            width: 30%;
+          }
+        }
+      }
+      tbody:not(:only-of-type):first-child {
+        @media screen and (max-width: @screen-xs-max) {
+          // Workaround for changing bootstrap tables:
+          // Reduce the border by the amount added by the
+          // border width applied to the parent div for small screens
+          border-top: 1px solid @table-border-color;
+        }
+      }
+    }
+  }
+}
+
+.next-values-block,
+.add-data-block {
+  .title-label,
+  .report-description {
+    display: block;
+    text-align: center;
+  }
+  .report-description {
+    color: @light-black;
+    font-size: 15px;
+    font-weight: @light;
+    line-height: 20px;
+    margin-bottom: 30px;
+  }
+}
+
+.assignment-table {
+  width: 100%;
+  th,
+  td {
+    width: 50%;
+    display: inline-block;
+  }
+}

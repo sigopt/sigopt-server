@@ -1,0 +1,109 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "bootstrap/less/buttons.less";
+@import "bootstrap.less";
+@import "constants.less";
+@import "mixins.less";
+
+.hover-lift() {
+  box-shadow: @button-shadow;
+  transition: transform 0.2s ease;
+  &:hover {
+    box-shadow: @button-shadow-hover;
+    transform: @hover-shift;
+  }
+}
+
+.btn {
+  .hover-lift();
+  &:extend(.btn all);
+  background-image: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: @light;
+  line-height: 22px;
+
+  &.btn-xs {
+    .make-btn-xs();
+  }
+  &.btn-sm {
+    .make-btn-sm();
+  }
+  &.btn-md {
+    .make-btn-md();
+  }
+  &.btn-lg {
+    .make-btn-lg();
+  }
+  .caret {
+    margin-left: 4px;
+  }
+}
+
+.btn-primary {
+  .sigopt-button-variant(@white; @brand-blue; darken(@brand-blue, 5%));
+}
+.btn-secondary {
+  .sigopt-button-variant(@white; @brand-dark-blue; darken(@brand-dark-blue, 5%));
+}
+.btn-default {
+  .sigopt-button-variant(@light-black; @light-grey; darken(@light-grey, 5%));
+}
+.btn-orange {
+  .sigopt-button-variant(@white; @brand-orange; darken(@brand-orange, 5%));
+}
+.btn-white-border {
+  .sigopt-button-variant(@light-black; @white; @brand-blue);
+}
+
+.btn-add,
+.btn-remove {
+  background-color: #a8b5ba;
+  border-radius: 17px;
+  color: @white;
+  height: 34px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 0;
+  position: relative;
+  text-align: center;
+  width: 34px;
+  .far,
+  .fas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+
+  &.btn-xs {
+    border-radius: 11px;
+    padding: 0;
+    height: 22px;
+    width: 22px;
+    .far,
+    .fas {
+      height: 12px;
+      width: 12px;
+      margin: -6px 0 0 -6px;
+    }
+  }
+}
+
+.basic-button {
+  font-weight: normal;
+  height: 36px;
+  &-white {
+    background: @white;
+    color: @brand-dark-blue;
+    &:hover {
+      background-color: @brand-dark-blue;
+      color: white;
+    }
+  }
+  &-active-green {
+    background-color: rgb(177, 228, 177);
+  }
+}

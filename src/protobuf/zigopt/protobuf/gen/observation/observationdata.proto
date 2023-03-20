@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+import "zigopt/protobuf/gen/experiment/experimentmeta.proto";
+
+message ObservationData {
+  optional int64 timestamp = 1 [json_name='timestamp'];
+  optional bool reported_failure = 2 [json_name='reported_failure'];
+  optional string client_provided_data = 3 [json_name='client_provided_data'];
+  optional bool deleted = 4 [json_name='deleted'];
+  repeated ObservationValue values = 5 [json_name='values'];
+  optional ObservationMetrics metrics = 6 [json_name='metrics'];
+  map<string, double> assignments_map = 7 [json_name='assignments_map'];
+  optional Task task = 8 [json_name='t'];
+}
+
+
+message ObservationValue {
+  optional string name = 1 [json_name='name'];
+  optional double value = 2 [json_name='value'];
+  optional double value_var = 3 [json_name='value_var'];
+}
+
+message ObservationMetrics {
+  optional int64 suggestion_observation_time = 12 [json_name='suggestion_observation_time'];
+  optional int64 num_open_suggestions = 13 [json_name='num_open_suggestions'];
+}

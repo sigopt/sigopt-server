@@ -1,0 +1,123 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./libs/history_table.less";
+@import "./libs/observation_modal.less";
+
+.experiment-suggestions-page {
+  .parallel-bandwidth-warning {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  h2 {
+    margin-top: 0;
+  }
+  .suggestion-section {
+    margin-bottom: 20px;
+  }
+  .modal-content .spinner {
+    width: 100%;
+    left: 0;
+    position: relative;
+    right: 0;
+    top: 0;
+  }
+
+  .history-table {
+    font-weight: @light;
+    tr:hover {
+      background-color: @divider-grey;
+    }
+
+    .header {
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: @semibold;
+    }
+
+    .right-button {
+      float: right;
+      margin: 0 5px;
+    }
+
+    td.white-space-pre {
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 13px;
+      a.header {
+        cursor: default;
+        &:hover {
+          color: @brand-primary;
+        }
+      }
+    }
+
+    .sort-descending,
+    .sort-ascending {
+      margin-left: 5px;
+    }
+  }
+
+  .suggestion-button-group {
+    text-align: right;
+    .btn {
+      margin: 0 5px;
+    }
+  }
+}
+
+#modal-root {
+  .suggestion-table,
+  .modal-content {
+    background-color: @light-grey;
+    .submit-button {
+      float: inherit;
+      margin: auto;
+    }
+  }
+
+  .alert {
+    border-radius: 0;
+    margin: 0 0 10px 0;
+    text-align: center;
+  }
+
+  .assignments-form {
+    .form-group.row {
+      label {
+        .make-xs-column(12);
+        .make-sm-column(2);
+      }
+      div {
+        .make-xs-column(12);
+        .make-sm-column(10);
+      }
+    }
+  }
+
+  .add-data-block,
+  .alternative-uploads-block {
+    .make-xs-column(10);
+    .make-xs-column-offset(1);
+    .loading {
+      min-height: 50px;
+    }
+
+    .centered-button-holder {
+      .centered-button-holder();
+    }
+
+    .spinner {
+      left: 0;
+      position: relative;
+      right: 0;
+      top: 0;
+    }
+  }
+}

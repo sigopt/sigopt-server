@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+./tools/lint/python/run_linters.sh "$@"
+
+./pp ./tools/lint/bash/run_linters.py
+
+./tools/lint/common/run_linters.sh
+
+./tools/lint/json/lint.sh --fix
+
+git ls-files '*.json' | xargs yarn prettier --write

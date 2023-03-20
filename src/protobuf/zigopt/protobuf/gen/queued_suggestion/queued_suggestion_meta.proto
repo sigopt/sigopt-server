@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+import "zigopt/protobuf/gen/suggest/suggestion.proto";
+
+message QueuedSuggestionMeta {
+  required SuggestionData suggestion_data = 1 [json_name='assignments'];
+  optional bool deleted = 2 [json_name='deleted'];
+}

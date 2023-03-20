@@ -1,0 +1,23 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+// Base styles that should be included on every custom page stylesheet
+
+// Import all of Bootstrap - this makes the CSS huge. That's why this is
+// legacy_base. For new pages you should just import the styles from
+// bootstrap you need
+@import "bootstrap/less/bootstrap.less";
+
+// Import the styles that are actually necessary on every page
+@import "./base.less";
+
+// Import SigOpt styles - going forward we should be more choosy about which
+// pages we include these on
+@import "./buttons.less";
+@import "./code.less";
+@import "./forms.less";
+@import "./icons.less";
+@import "./paging.less";
+@import "./tabs.less";

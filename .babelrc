@@ -1,0 +1,17 @@
+{
+  "plugins": ["@babel/plugin-proposal-class-properties"],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "corejs": 2,
+        "targets": {
+          "browsers": "last 2 versions",
+          "ie": 11
+        },
+        "useBuiltIns": "usage"
+      }
+    ],
+    "@babel/preset-react"
+  ]
+}

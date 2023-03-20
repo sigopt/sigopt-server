@@ -1,0 +1,24 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./bootstrap.less";
+
+@form-control-padding: @padding-base-vertical + 1;
+
+.make-field() {
+  .btn,
+  .edit-button {
+    margin-left: 5px;
+  }
+  .form-control {
+    margin-bottom: 0;
+  }
+  .field-editor {
+    margin: (-@form-control-padding + 1) 0;
+    .form-control {
+      margin: 0;
+    }
+  }
+}

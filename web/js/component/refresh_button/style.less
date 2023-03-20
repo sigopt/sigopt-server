@@ -1,0 +1,26 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../../styles/less/libs/buttons.less";
+@import "../../../styles/less/libs/constants.less";
+
+.refresh-btn {
+  &.refreshing {
+    span.fas {
+      @keyframes refresh-rotation {
+        from {
+          transform: rotate(0);
+        }
+        to {
+          transform: rotate(180deg);
+        }
+      }
+      animation-name: refresh-rotation;
+      animation-duration: 0.7s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+    }
+  }
+}

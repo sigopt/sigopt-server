@@ -1,0 +1,89 @@
+syntax = "proto2";
+
+import "google/protobuf/struct.proto";
+
+message Dataset {
+}
+
+message SourceCode {
+  optional string content = 1 [json_name='c'];
+  optional string hash = 2 [json_name='g'];
+}
+
+message Log {
+  optional string content = 1 [json_name='c'];
+}
+
+message TrainingRunModel {
+  optional string type = 1 [json_name='t'];
+}
+
+message FeatureImportances {
+    map<string, float> scores = 1 [json_name='s'];
+    optional string type = 2 [json_name='t'];
+}
+
+message SysMetadata {
+    optional FeatureImportances feature_importances = 1 [json_name='fi'];
+}
+
+// TODO(SN-1065): Should this just be ObservationValue? Since we are already storing
+// in a different format below, may be an appropriate opportunity to use a more
+// terse struct with slimmer JSON keys and no `name` field
+message TrainingRunValue {
+  optional double value = 1 [json_name='v'];
+  optional double value_var = 2 [json_name='r'];
+}
+
+message AssignmentsRunMeta {
+  optional string source = 1 [json_name='s'];
+}
+
+message AssignmentsSources {
+  optional int32 sort = 1 [json_name='s'];
+  optional bool default_show = 2 [json_name='d'];
+}
+
+message TrainingRunData {
+  enum TrainingRunState {
+    ACTIVE = 0;
+    COMPLETED = 1;
+    FAILED = 2;
+  }
+
+  optional google.protobuf.Struct metadata = 1 [json_name='m'];
+
+  map<string, Dataset> datasets = 2 [json_name='d'];
+  optional SourceCode source_code = 3 [json_name='c'];
+  map<string, Log> logs = 4 [json_name='l'];
+
+  // Unfortunately, we can't reuse assignments / values here from observations,
+  // because we don't have the list of categorical values we would need to
+  // rebuild the categorical value from the double value
+  // TODO(SN-1066): Think about the best data model here
+  optional google.protobuf.Struct assignments_struct = 5 [json_name='a'];
+
+  // NOTE: This also deviates from how we store values on other
+  // objects. This is so we can enable filtering by values. If that's not necessary,
+  // we could consider rethinking how we store this
+  map<string, TrainingRunValue> values_map = 6 [json_name='v'];
+
+  optional TrainingRunState state = 7 [json_name='s'];
+
+  optional string name = 8 [json_name='n'];
+
+  optional TrainingRunModel training_run_model = 9 [json_name='o'];
+
+  optional bool favorite = 10 [json_name='f'];
+
+  map<int64, bool> tags = 11 [json_name='t'];
+
+  map<int64, bool> files = 12 [json_name='u'];
+
+  optional SysMetadata sys_metadata = 13 [json_name='sm'];
+  optional google.protobuf.Struct dev_metadata = 14 [json_name='dm'];
+
+  map<string, AssignmentsRunMeta> assignments_meta = 15 [json_name='am'];
+  // Note: map<SOURCE_NAME, AssignmentsSources> - this is metadata about the source
+  map<string, AssignmentsSources> assignments_sources = 16 [json_name='as'];
+}

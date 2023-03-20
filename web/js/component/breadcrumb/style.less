@@ -1,0 +1,25 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../../styles/less/libs/common.less";
+@import "../../../styles/less/libs/constants.less";
+
+.breadcrumb-container {
+  display: flex;
+
+  .sig-breadcrumb, // Prefixed to avoid catching bootstrap `breadcrumb` class
+  .sig-breadcrumb::after {
+    display: flex;
+    align-items: center;
+    color: @sigopt-purple-xlight;
+  }
+  .sig-breadcrumb {
+    margin-right: 0.25em;
+  }
+  .sig-breadcrumb::after {
+    content: "/";
+    margin-left: 0.25em;
+  }
+}

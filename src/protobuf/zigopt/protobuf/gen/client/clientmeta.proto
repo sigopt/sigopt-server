@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+message ClientMeta {
+  optional int64 date_created = 1 [json_name='date_created'];
+  optional bool deleted = 2 [json_name='deleted'];
+  optional ClientSecurity client_security = 3 [json_name='c_sec'];
+}
+
+message ClientSecurity {
+  optional bool allow_users_to_see_experiments_by_others = 1 [default=true, json_name='c'];
+}

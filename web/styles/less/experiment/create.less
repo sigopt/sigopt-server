@@ -1,0 +1,100 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./component/editor.less";
+
+.experiment-create {
+  .page-body {
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+  label {
+    margin-bottom: 10px;
+  }
+  label,
+  table > thead > tr > th,
+  .metric-name {
+    color: @light-black;
+    font-size: 15px;
+    font-weight: @light;
+    line-height: 23px;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
+  input,
+  select {
+    background-color: @white;
+    &:focus,
+    &:active {
+      border: 2px solid @brand-blue;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+  }
+
+  .section-heading {
+    color: @light-black;
+    font-size: 19px;
+    font-weight: @semibold;
+    line-height: 26px;
+    margin-bottom: 20px;
+  }
+
+  .experiment-summary-info {
+    .form-group();
+    .make-xs-column(12);
+    .make-md-column(3);
+  }
+
+  .experiment-parameter-info {
+    .make-xs-column(12);
+    .make-md-column(9);
+    @media screen and (min-width: @screen-md-min) {
+      padding-left: 50px;
+    }
+  }
+
+  .metrics-info {
+    padding-left: 10px;
+  }
+
+  .alert {
+    .make-xs-column(12);
+  }
+
+  .submit-button-holder {
+    .make-xs-column(12);
+    .centered-holder();
+    border-top: 2px solid @divider-grey;
+    padding-top: 15px;
+    .submit-button {
+      .btn-primary();
+      font-weight: @semibold;
+    }
+  }
+
+  table {
+    &.empty {
+      margin-top: 0;
+      thead {
+        display: none;
+      }
+    }
+    @media screen and (min-width: @screen-md-min) {
+      tbody td {
+        padding-bottom: 25px;
+      }
+    }
+    thead > tr,
+    thead > tr > th {
+      border-style: none;
+    }
+    tbody > tr > td {
+      border-top: none;
+    }
+  }
+}

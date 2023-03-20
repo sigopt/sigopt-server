@@ -1,0 +1,51 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "bootstrap.less";
+@import "./constants.less";
+
+.section {
+  width: 50%;
+  padding-left: 20px;
+  padding-right: 20px;
+  // NOTE: this allows sections to grow to full width if there's room
+  flex-grow: 1;
+  .section-title {
+    font-size: 30px;
+    .toggler {
+      display: flex;
+      float: right;
+      margin-left: 5px;
+      border: none;
+      background: none;
+      .fas {
+        transition-duration: 0.2s;
+        transition-property: transform;
+        transform: rotate(180deg);
+        &.collapsed {
+          transform: rotate(0deg);
+        }
+      }
+    }
+    h2 {
+      display: flex;
+      margin-bottom: 0;
+    }
+    h2::after {
+      background-color: @divider-grey;
+      content: "";
+      flex: auto;
+      height: 2px;
+      margin: auto;
+      margin-left: 15px;
+    }
+  }
+  &.full-width {
+    width: 100%;
+  }
+  @media screen and (max-width: @screen-md-max) {
+    width: 100%;
+  }
+}

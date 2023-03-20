@@ -1,0 +1,78 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./histograms.less";
+@import "../libs/section.less";
+
+.archived {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.run-page-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  .section {
+    table {
+      tr:first-child {
+        td,
+        th {
+          border-top: none;
+        }
+      }
+      td,
+      th {
+        display: table-cell;
+        width: unset;
+      }
+    }
+    .checkpoints-chart {
+      > div {
+        height: 100%;
+        > div.chart {
+          height: 100%;
+          > div.plot-container {
+            height: 100%;
+          }
+        }
+      }
+      .svg-container {
+        margin: auto;
+      }
+    }
+  }
+  code {
+    background-color: @sigopt-greyblue-xlight;
+    color: @brand-dark-blue;
+  }
+  .table-card .copy-btn {
+    color: @brand-dark-grey;
+    &:hover {
+      color: @brand-dark-blue;
+    }
+  }
+  .complex-table {
+    .table {
+      margin-top: -20px;
+    }
+    .table-header-row {
+      display: flex;
+      flex-direction: row;
+      cursor: pointer;
+      .caret-section {
+        flex-grow: 1;
+        span {
+          float: right;
+          transition: 0.2s;
+        }
+        span.table-opened {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+}

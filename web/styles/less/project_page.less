@@ -1,0 +1,300 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./experiment/base.less";
+@import "./experiment/list.less";
+@import "./libs/code.less";
+@import "./libs/common.less";
+@import "./libs/section.less";
+@import "./training_run/histograms.less";
+
+.project-page {
+  .page-title-pre {
+    flex-wrap: wrap;
+    .glyph-label {
+      margin-right: 2em;
+    }
+    .btn-inverse {
+      @media (max-width: 380px) {
+        margin-top: 1em;
+      }
+    }
+    .archive-btn.unarchive {
+      background: white;
+      // NOTE: make the text a similar color to the surrounding background gradient
+      color: mix(@brand-purple-lighter, @brand-dark-blue, 80%);
+    }
+  }
+
+  // NOTE: makes it so that non-default tablink glyphs are proper size
+  .glyph-label > [class^="fa-"]:not(.fa-circle) {
+    font-size: @font-size-small;
+  }
+
+  .field-static {
+    width: fit-content;
+    border-bottom: 1px solid transparent;
+    .edit-button {
+      margin-left: 0.5em;
+      color: @sigopt-purple-xlight;
+      font-size: @font-size-small;
+    }
+    // To vertically align the text of the page title
+    > span {
+      vertical-align: middle;
+    }
+  }
+  .field-editor {
+    .form-control {
+      margin: 0;
+      height: auto;
+    }
+    .edit-form {
+      width: fit-content;
+      border-bottom: 1px solid @sigopt-purple-light;
+    }
+    button.editable-page-title,
+    a.editable-page-title,
+    .form-control.name-input {
+      background: none;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+    }
+    .form-control.name-input {
+      .page-title .title();
+      color: @page-title-text-color;
+    }
+    button.editable-page-title,
+    a.editable-page-title {
+      font-size: @font-size-small;
+      margin-left: 1.5em;
+      opacity: 70%;
+      &:hover {
+        opacity: 100%;
+        transform: @hover-shift;
+      }
+    }
+    button.editable-page-title {
+      color: @sigopt-purple-light;
+    }
+    a.editable-page-title {
+      color: @light-purple;
+    }
+  }
+
+  .table-magnitude {
+    overflow: hidden;
+    width: 100%;
+    min-height: 150px;
+    .dropdown.open > .dropdown-menu {
+      overflow: auto;
+      max-height: 90px;
+    }
+    .table {
+      margin-bottom: 0;
+      table-layout: fixed;
+      width: 100%;
+    }
+    td {
+      border: none;
+    }
+    .td-border-radius() {
+      td:first-of-type {
+        border-radius: 5px 0 0 5px;
+      }
+      td:last-of-type {
+        border-radius: 0 5px 5px 0;
+      }
+    }
+    .row-wrapper {
+      margin: 0.5em 1em 0 1em;
+      &:last-of-type {
+        margin-bottom: 0.5em;
+      }
+      &.experiment {
+        border: 1px solid @divider-grey;
+        border-radius: 5px;
+      }
+      &.run {
+        tr {
+          .td-border-radius();
+        }
+      }
+      &.experiment {
+        tr.collapsed {
+          .td-border-radius();
+        }
+      }
+    }
+    .header-group {
+      background-color: @divider-grey;
+      border-radius: 5px 5px 0 0;
+      padding: 0 1em;
+
+      th {
+        border-bottom: 0;
+      }
+      .dropdown {
+        margin: 0;
+        width: 100%;
+      }
+    }
+    .body-group {
+      border: 2px solid @divider-grey;
+      border-radius: 0 0 5px 5px;
+
+      @cell-height: 30px;
+      .cell-content {
+        height: @cell-height;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        a,
+        span {
+          line-height: @cell-height;
+        }
+      }
+      .metric-cell > * {
+        float: right;
+        font-family: Courier, monospace;
+      }
+    }
+    .focused {
+      background-color: @background-lighter-grey-blue;
+    }
+    .bar-cell {
+      width: 200px;
+    }
+    .metric-cell {
+      width: 180px;
+    }
+    .type-cell {
+      width: 170px;
+    }
+    .name-cell {
+      width: 50%;
+    }
+    .caret-cell {
+      width: 50px;
+      span {
+        font-size: 160%;
+      }
+    }
+    .bar-magnitude {
+      background-color: @brand-dark-blue;
+      float: right;
+      height: 100%;
+    }
+    .focused .bar-magnitude {
+      background-color: @brand-light-blue;
+    }
+    button.toggler {
+      background: none;
+      border: none;
+      &:focus {
+        outline: none;
+      }
+    }
+    .toggler span {
+      transition: 0.2s;
+    }
+    .toggler[aria-expanded="true"] span {
+      transform: rotate(180deg);
+    }
+    .order {
+      display: inline-block;
+      float: right;
+      min-width: 160px;
+      .left-joined-button {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+      }
+      .right-joined-button {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+      }
+      .btn {
+        transition: background-color 0.3s;
+      }
+      .active {
+        background-color: @brand-dark-blue;
+        color: @light-grey;
+      }
+    }
+    .view-all {
+      text-align: center;
+    }
+  }
+
+  .recent-activity {
+    @action-view-height: 40px;
+    @action-view-vertical-padding: 5px;
+    @action-indicator-width: 50px;
+    @action-indicator-inverse-width: ~"calc(100% - 50px)";
+    @action-info-horizontal-offset: 20px;
+    .action-view {
+      display: grid;
+      grid-template-columns: @action-indicator-width @action-indicator-inverse-width;
+      height: auto;
+      border-bottom: 1px solid;
+      border-color: @divider-grey;
+      color: @brand-dark-blue;
+      padding-top: @action-view-vertical-padding;
+      padding-bottom: @action-view-vertical-padding;
+      > * {
+        display: inline-block;
+      }
+      .action-type-indicator {
+        > * {
+          position: relative;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+      .action-text {
+        .action-description {
+          font-size: large;
+        }
+        .action-info {
+          font-size: small;
+          font-weight: bold;
+          padding-left: @action-info-horizontal-offset;
+        }
+        .action-description,
+        .action-info {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.project-code-modal {
+  padding: 1em;
+  &:first-child {
+    padding: 0 2em;
+  }
+  .language-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    p {
+      display: inline;
+      align-self: center;
+      margin: 0;
+    }
+  }
+}
+
+.code-holder {
+  max-height: 400px;
+}

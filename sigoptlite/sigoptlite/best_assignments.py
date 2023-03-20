@@ -1,0 +1,106 @@
+# Copyright © 2022 Intel Corporation
+#
+# SPDX-License-Identifier: Apache License 2.0
+from sigoptaux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
+from sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
+from sigoptlite.sources import BaseOptimizationSource
+
+
+class BestAssignmentsLogger(object):
+  def __init__(self, experiment):
+    self.experiment = experiment
+    self.full_task_cost = None
+    if self.experiment.is_multitask:
+      self.full_task_cost = max([task.cost for task in self.experiment.tasks])
+
+  def within_metric_threshold(self, metric_evaluation):
+    metric = next(metric for metric in self.experiment.metrics if metric_evaluation.name == metric.name)
+    if metric.threshold is None:
+      return True
+    if metric.objective == "minimize":
+      return metric_evaluation.value <= metric.threshold
+    return metric_evaluation.value >= metric.threshold
+
+  def observation_is_valid_and_full_cost(self, observation):
+    if observation.failed:
+      return False
+    if self.experiment.is_multitask and observation.task.cost != self.full_task_cost:
+      return False
+    return all(self.within_metric_threshold(metric_evaluation) for metric_evaluation in observation.values)
+
+  def filter_valid_full_cost_observations(self, observations):
+    return [o for o in observations if self.observation_is_valid_and_full_cost(o)]
+
+  def get_optimized_measurements_for_maximization(self, observation):
+    all_measurements_for_maximization = []
+    for i, metric in enumerate(self.experiment.metrics):
+      if metric.is_optimized:
+        value = observation.values[i].value
+        if metric.objective == "minimize":
+          value = -value
+        all_measurements_for_maximization.append(value)
+    return all_measurements_for_maximization
+
+  def get_default_measurement_for_maximization(self, observation):
+    default_metric = self.experiment.metrics[0] if self.experiment.is_search else self.experiment.optimized_metrics[0]
+    for i, metric in enumerate(self.experiment.metrics):
+      if observation.values[i].name == default_metric.name:
+        value = observation.values[i].value
+        if metric.objective == "minimize":
+          value = -value
+        return value
+    raise Exception(f"Cannot find value for metric `{default_metric.name}` in observation data.")
+
+  def single_metric_best_from_observations(self, observations):
+    valid_observations = self.filter_valid_full_cost_observations(observations)
+    if not valid_observations:
+      return []
+    best_observation = max(valid_observations, key=self.get_default_measurement_for_maximization)
+    return [best_observation]
+
+  def pareto_frontier_from_observations(self, observations):
+    valid_observations = self.filter_valid_full_cost_observations(observations)
+    if not valid_observations:
+      return []
+
+    optimized_values_for_maximization = [
+      self.get_optimized_measurements_for_maximization(o) for o in valid_observations
+    ]
+    pareto_frontier_observations, _ = find_pareto_frontier_observations_for_maximization(
+      optimized_values_for_maximization, valid_observations
+    )
+    return pareto_frontier_observations
+
+  def multisolutions_best_from_observations(self, observations):
+    valid_observations = self.filter_valid_full_cost_observations(observations)
+    if not valid_observations:
+      return []
+
+    valid_observations.sort(key=self.get_default_measurement_for_maximization)
+    top_observation_last_index = max(
+      round(len(valid_observations) * MULTISOLUTION_TOP_OBSERVATIONS_FRACTION),
+      self.experiment.num_solutions,
+    )
+    top_observations = valid_observations[:top_observation_last_index]
+    if len(top_observations) <= self.experiment.num_solutions:
+      return top_observations
+
+    best_indices = BaseOptimizationSource.multisolution_best_assignments(
+      experiment=self.experiment,
+      observations=top_observations,
+    )
+    best_indices.sort()
+    return [top_observations[i] for i in best_indices]
+
+  def fetch(self, observations):
+    if self.experiment.is_search:
+      best_observations = self.filter_valid_full_cost_observations(observations)
+    elif self.experiment.requires_pareto_frontier_optimization:
+      best_observations = self.pareto_frontier_from_observations(observations)
+    elif self.experiment.is_multisolution:
+      best_observations = self.multisolutions_best_from_observations(observations)
+    else:
+      best_observations = self.single_metric_best_from_observations(observations)
+
+    best_observations.sort(key=self.get_default_measurement_for_maximization, reverse=True)
+    return best_observations

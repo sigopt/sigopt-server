@@ -1,0 +1,1 @@
+scripts/launch/all_live

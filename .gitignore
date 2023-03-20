@@ -1,0 +1,57 @@
+# custom
+.DS_Store
+/failure_console_logs
+/junit-results
+junit.xml
+/scratch
+/screenshots/failure
+/src/python/zigopt/**/gen
+/node_modules
+
+**.key
+
+# artifacts like generated nginx configs
+/artifacts
+
+# virtual environments
+/.venv/
+/venv/
+
+# autoenv settings
+/.envrc
+
+# python generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Distribution / packaging
+/dist/
+/eggs/
+/sdist/
+*.egg-info/
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Vim stuff
+*.swp
+
+# VSCode stuff
+.vscode/
+
+# open files
+*~
+
+# log files
+*.log
+
+# build/dist files for sigoptlite
+sigoptlite/build/
+sigoptlite/dist/

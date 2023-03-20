@@ -1,0 +1,135 @@
+version: "3"
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  test-runner:
+    image: "sigopt/${TEST_RUNNER_NAME}:${CIRCLE_SHA1}"
+    environment:
+      - ALLOW_SLOW=1
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
+      - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
+    volumes:
+      - &rootca-volume ../artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
+      - ../junit-results:/sigopt-server/junit-results
+      - ../screenshots/failure:/sigopt-server/screenshots/failure
+      - ../failure_console_logs:/sigopt-server/failure_console_logs
+      - /dev/shm:/dev/shm
+  smtp:
+    command:
+      - python
+      - -m
+      - integration.utils.mail
+      - --send-port=6001
+      - --receive-port=6002
+    image: "sigopt/test-runner:${CIRCLE_SHA1}"
+  createdb:
+    command:
+      - python
+      - -m
+      - zigopt.utils.create_database
+      - &config-file config/circleci.json
+      - --drop-tables
+      - --fake-data
+    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+  nginx:
+    image: "sigopt/nginx:${CIRCLE_SHA1}"
+    volumes:
+      - ../artifacts/tls:/etc/ssl/sigopt:ro
+    networks:
+      default:
+        aliases:
+          - sigopt.ninja
+    ports:
+      - "9000:9000"
+  api:
+    restart: on-failure:5
+    command:
+      - /usr/local/bin/gunicorn_serve
+      - -b
+      - 0.0.0.0:5000
+      - zigopt.api.main:GUNICORN_ENTRY_POINT
+    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+    environment: &zigopt_environment
+      - sigopt_server_config_file=config/circleci.json
+      - "sigopt_server_version=git:$CIRCLE_SHA1"
+    networks:
+      default:
+        aliases:
+          - api-server.ninja
+  web-server:
+    image: "sigopt/web:${CIRCLE_SHA1}"
+    environment:
+      - sigopt_server_config_file=config/circleci.json
+      - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
+      - "sigopt_server_version=git:$CIRCLE_SHA1"
+      - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
+    volumes:
+      - ../artifacts/tls:/sigopt-server/artifacts/tls:ro
+      - server-bin:/sigopt-server/bin
+    networks:
+      default:
+        aliases:
+          - app-server.ninja
+  qworker:
+    restart: on-failure:5
+    command:
+      - python
+      - -m
+      - zigopt.queue.api
+      - optimization
+    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+    environment: *zigopt_environment
+  qworker-analytics:
+    restart: on-failure:5
+    command:
+      - python
+      - -m
+      - zigopt.queue.api
+      - analytics
+    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+    environment: *zigopt_environment
+
+  postgres:
+    image: "postgres:${POSTGRES_VERSION}"
+  redis:
+    image: "redis:${REDIS_VERSION}"
+  minio:
+    image: "quay.io/minio/minio"
+    environment:
+      - MINIO_ROOT_USER=ROOTUSER
+      - MINIO_ROOT_PASSWORD=CHANGEME123
+    volumes:
+      - minio-data:/var/lib/minio/data
+    command:
+      - "server"
+      - "/data"
+
+  test-client:
+    command:
+      - sleep
+      - infinity
+    environment:
+      - SIGOPT_API_URL=https://sigopt.ninja:4443/api
+      - SIGOPT_APP_URL=https://sigopt.ninja:4443
+      - SIGOPT_API_TOKEN=client_token
+      - *api-tls-verify-env
+      - ALLOW_SLOW=1
+    image: "sigopt/test-runner:${CIRCLE_SHA1}"
+    volumes:
+      - *rootca-volume
+      - ${HOME}/project/requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
+      - ${HOME}/project/test:/sigopt-server/test:ro
+      - ${HOME}/project/pytest.ini:/sigopt-server/pytest.ini:ro
+
+  mongodb:
+    image: "mongo:${MONGODB_VERSION}"
+    ports:
+      - "27017:27017"
+    container_name: "mongodb"
+
+volumes:
+  server-bin: {}
+  minio-data: {}

@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+import "google/protobuf/timestamp.proto";
+
+message PagingSymbol {
+  enum NullValue {
+    NULL_VALUE = 0;
+  }
+
+  oneof type {
+    double double_value = 1 [json_name='d'];
+    int64 int_value = 2 [json_name='i'];
+    NullValue null_value = 3 [json_name='n'];
+    string string_value = 4 [json_name='s'];
+    bool bool_value = 5 [json_name='b'];
+    google.protobuf.Timestamp timestamp_value = 6 [json_name='t'];
+  }
+}
+
+message PagingMarker {
+  repeated PagingSymbol symbols = 1 [json_name='s'];
+}

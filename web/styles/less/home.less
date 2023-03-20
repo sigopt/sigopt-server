@@ -1,0 +1,152 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "experiment/list.less";
+@import "../less/components/status_glyphs.less";
+@import "./libs/base.less";
+@import "../../js/project/get_started.less";
+
+.home h2 {
+  margin-top: 0;
+}
+
+.table-container {
+  overflow: auto;
+  margin-bottom: 2em;
+}
+
+.observation-budget-progress {
+  display: flex;
+  align-items: center;
+  .progress {
+    margin-left: 0.5em;
+    margin-bottom: 0;
+    height: 7px;
+    width: 100%;
+    .progress-bar {
+      background: @experiment-header-gradient;
+    }
+  }
+}
+
+.get-started,
+.welcome {
+  background-color: @white;
+  border-radius: 5px;
+  border: 2px solid @divider-grey;
+  padding: 1em;
+}
+
+.get-started {
+  .btn {
+    margin-right: 1em;
+  }
+}
+
+.inset-shadow(@fade, @color) {
+  box-shadow: inset 0 0 @fade @color;
+}
+
+.welcome {
+  @welcome-color: @gradient-teal;
+  border: 1px solid fadeout(@welcome-color, 40%);
+  .inset-shadow(6px, fadeout(@welcome-color, 10%));
+  display: grid;
+  grid-template-columns: auto 40px;
+  grid-template-areas: "a close" "b b" "c c";
+  padding: 1.5em;
+  margin: 0 0 2em 0;
+  max-width: 1400px;
+  @media (min-width: 1250px) {
+    grid-template-columns: auto 50%;
+    grid-template-rows: auto;
+    grid-template-areas: "a close" "b c" "b c";
+    column-gap: 2em;
+  }
+  h1 {
+    grid-area: a;
+    color: @welcome-color;
+    margin-top: 0;
+  }
+  .close {
+    grid-area: close;
+    justify-self: end;
+    opacity: 0.8;
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+    span.fas {
+      color: @welcome-color;
+    }
+  }
+  .col-1 {
+    grid-area: b;
+  }
+  .col-2 {
+    grid-area: c;
+    @media (max-width: 1249px) {
+      margin-top: 1.5em;
+    }
+  }
+  ul {
+    padding-left: 0;
+    li {
+      list-style: none;
+      padding-bottom: 0.5em;
+    }
+  }
+  video,
+  .col-2 {
+    max-width: 100%;
+    min-width: 0; // To prevent default property, auto, which allows overflow
+  }
+  .description {
+    max-width: 600px;
+  }
+  .example-content();
+  .code-example {
+    max-width: 650px;
+  }
+  .btn-row {
+    display: flex;
+    .btn {
+      flex-grow: 1;
+      width: auto;
+      margin-top: 1em;
+      &:not(:last-child) {
+        margin-right: 1em;
+      }
+    }
+  }
+}
+
+.learn-more,
+.welcome {
+  .fas {
+    font-size: 22px;
+    vertical-align: bottom;
+    &:before {
+      transform: scale(60%);
+    }
+  }
+}
+
+.learn-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 1em;
+  & > div {
+    min-width: 270px;
+    flex-grow: 1;
+    flex-basis: 0;
+    @media screen and (min-width: @screen-lg-min) {
+      max-width: 350px;
+    }
+  }
+  ul {
+    padding: 0 20px;
+  }
+}

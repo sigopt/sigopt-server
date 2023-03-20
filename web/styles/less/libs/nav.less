@@ -1,0 +1,255 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import (reference) "bootstrap/less/navbar.less";
+@import "bootstrap/less/component-animations.less";
+
+@import "bootstrap.less";
+@import "constants.less";
+@import "chrome.less";
+@import "forms.less"; // TODO(SN-1192): forms.less is pretty big, and we don't need all of it for the nav
+@import "glyphs.less";
+@import "grid.less";
+@import "mixins.less";
+@import "navlink.less";
+@import "webflow.less";
+
+// Use bootstrap styles.
+.navbar-toggle:extend(.navbar-toggle) {
+}
+
+.navbar-collapse:extend(.navbar-collapse all) {
+  padding-left: @nav-container-margin-left;
+  padding-right: @nav-container-margin-left;
+}
+
+div.navbar,
+div.navbar-collapse {
+  // NOTE: Clear bootstrap's clearfix. Must be very specific selector.
+  &:after,
+  &:before {
+    content: none;
+  }
+}
+
+// Both navigation styles
+.content {
+  .navbar {
+    margin-bottom: 0;
+    display: flex;
+
+    // Small Screens
+    @media (max-width: (@grid-float-breakpoint - 1)) {
+      flex-direction: column;
+      .brand-menu-bar {
+        width: 100%;
+      }
+    }
+
+    .brand-menu-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      a.brand {
+        img {
+          height: @brand-logo-height;
+          width: @brand-logo-width;
+          margin: @brand-logo-height @nav-combined-margin-left;
+        }
+      }
+    }
+
+    .fas,
+    .far {
+      font-size: 80%;
+      padding-right: 0.5rem;
+      &.fa-envelope {
+        position: relative;
+        top: 1px;
+      }
+    }
+
+    #collapsible-nav.in {
+      margin-bottom: 20px;
+    }
+
+    .close {
+      margin-top: 3px;
+    }
+    .nav-link {
+      .make-nav-link();
+      &.cta {
+        .make-nav-link-cta();
+        margin-top: 10px;
+      }
+    }
+  }
+}
+
+// Logged In -- Side Bar
+.content[data-show-sidebar="true"] {
+  .nav-section {
+    label {
+      display: block;
+      font-size: 60%;
+      font-weight: @semibold;
+      letter-spacing: 0.3px;
+      color: @brand-dark-blue;
+      margin: 0 @nav-link-margin-left;
+      text-transform: uppercase;
+    }
+  }
+
+  .nav-link {
+    margin: 0 @nav-link-margin-left;
+    font-weight: @light;
+    &.active {
+      font-weight: @semibold;
+      color: @brand-light-blue;
+    }
+    &.empty {
+      opacity: 0.6;
+    }
+  }
+
+  #accordion-header {
+    cursor: pointer;
+    font-size: @nav-font-size;
+    font-weight: normal;
+    .nav-link {
+      padding: 0.5rem 0 0 0;
+    }
+  }
+
+  .fa-chevron-down,
+  .fa-chevron-up {
+    font-size: 80%;
+    padding-left: 1em;
+  }
+
+  #accordion-links {
+    background-color: @white;
+    border-radius: 0 0 4px 4px;
+    &[data-open-accordion="false"] {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+  }
+
+  #accordion-links {
+    .nav-section {
+      &:first-child {
+        padding-top: 15px;
+      }
+      &:last-child {
+        padding-bottom: 15px;
+      }
+    }
+  }
+
+  [data-open-accordion="true"] {
+    box-shadow: @box-shadow;
+    border-radius: 4px;
+    margin-bottom: 1em;
+    #accordion-header {
+      background-color: @brand-dark-blue;
+      border-radius: 4px 4px 0 0;
+      .nav-link {
+        color: @white;
+        padding-bottom: 0.5rem;
+      }
+    }
+    hr:last-child {
+      display: none;
+    }
+  }
+
+  p.nav-link {
+    margin-bottom: 0;
+  }
+
+  hr {
+    border-top: 1px solid @light-grey-blue;
+    margin: 1.5rem @nav-link-margin-left;
+  }
+
+  // Small Screens
+  @media (max-width: (@grid-float-breakpoint - 1)) {
+    .nav-link,
+    .nav-section label {
+      margin: 2rem;
+    }
+
+    #accordion-header {
+      .nav-link {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Big Screens
+  @media (min-width: @grid-float-breakpoint) {
+    .navbar {
+      min-width: @navbar-width;
+      position: sticky;
+      top: 0;
+      flex-direction: column;
+      margin-bottom: @page-content-margin-size;
+    }
+
+    .nav-link {
+      font-size: 14px;
+      padding: 0;
+    }
+  }
+}
+
+// Logged Out -- Top Bar
+.content[data-show-sidebar="false"] {
+  .nav-background {
+    background-color: @light-grey;
+  }
+
+  .navbar {
+    .container;
+    &:after,
+    &:before {
+      content: none;
+    }
+    justify-content: space-between;
+    align-items: center;
+
+    nav {
+      align-items: center;
+      display: flex;
+
+      // Small Screens
+      @media (max-width: (@grid-float-breakpoint - 1)) {
+        flex-direction: column;
+        align-items: center;
+        .nav-link {
+          margin: 0;
+        }
+      }
+    }
+
+    .vertical-divider {
+      border-right: 1px solid @brand-light-blue;
+      display: inline-block;
+      height: 22px;
+      margin: 15px 12px;
+      width: 1px;
+    }
+
+    @media screen and (max-width: (@grid-float-breakpoint - 1)) {
+      .vertical-divider {
+        display: none;
+      }
+    }
+  }
+}

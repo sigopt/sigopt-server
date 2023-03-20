@@ -1,0 +1,155 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../libs/bootstrap.less";
+@import "../../libs/glyphs.less";
+@import "../../libs/mixins.less";
+@import "../../libs/constants.less";
+
+.history-table {
+  @margin-size: 8px;
+  @column-width: 140px;
+  th {
+    background-color: inherit;
+    font-size: 13px;
+    line-height: 18px;
+    &.active {
+      background-color: @table-border-color;
+      a::after {
+        float: right;
+        font-size: 13px;
+        line-height: 18px;
+        margin-left: 5px;
+      }
+      &.ascending a::after {
+        .render-glyph(caret-up);
+      }
+      &.descending a::after {
+        .render-glyph(caret-down);
+      }
+    }
+  }
+  .column-headers,
+  .history-table-row {
+    td {
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: @column-width;
+      div.string-value {
+        text-overflow: ellipsis;
+      }
+    }
+    th {
+      max-width: @column-width;
+    }
+    td {
+      &.created {
+        width: auto;
+        max-width: 100%;
+        white-space: nowrap;
+      }
+    }
+  }
+  .history-table-row {
+    cursor: pointer;
+    .failure-cell {
+      max-width: unset;
+    }
+    div.no-value {
+      width: 100%;
+      text-align: center;
+    }
+    div.no-value:after {
+      content: "-";
+    }
+    div.failure-value {
+      position: relative;
+      div {
+        color: @brand-bright-red;
+        display: inline-block;
+        float: unset;
+        margin: auto;
+        position: relative;
+        padding-right: 10px;
+      }
+    }
+    div.failure-value:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: 1px;
+      width: 100%;
+      background-color: mix(@brand-bright-red, @light-grey, 25%);
+    }
+  }
+  .history-table-row.failed {
+    background-color: mix(@brand-bright-red, @light-grey, 10%);
+    * {
+      background-color: inherit;
+    }
+  }
+  .history-table-row.failed:hover {
+    background-color: mix(@brand-bright-red, @light-grey, 13%);
+  }
+  .failed-value {
+    color: @brand-bright-red;
+  }
+  tr .fixed-td {
+    padding: 0;
+    .fixed-row {
+      overflow: hidden;
+      .string-value,
+      .number-value {
+        overflow: hidden;
+      }
+      .fixed-holder {
+        margin: @margin-size;
+      }
+    }
+  }
+
+  .white-space-pre {
+    white-space: pre;
+  }
+
+  .make-xs-column(12);
+  input,
+  select {
+    min-width: 50px;
+  }
+  .delete {
+    position: relative;
+    text-align: right;
+    max-width: none;
+    white-space: nowrap;
+    .btn {
+      display: inline-block;
+      margin: 0 5px;
+    }
+  }
+  th {
+    background-color: inherit;
+    font-size: 16px;
+    line-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &.active {
+      background-color: @table-border-color;
+      a::after {
+        float: right;
+        font-size: 16px;
+        line-height: 18px;
+        margin-left: 5px;
+      }
+      &.ascending a::after {
+        .render-glyph(caret-up);
+      }
+      &.descending a::after {
+        .render-glyph(caret-down);
+      }
+    }
+  }
+}

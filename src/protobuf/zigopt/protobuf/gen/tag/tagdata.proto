@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+import "zigopt/protobuf/gen/color/color.proto";
+
+message TagData {
+  required Color color = 1 [json_name='c'];
+}

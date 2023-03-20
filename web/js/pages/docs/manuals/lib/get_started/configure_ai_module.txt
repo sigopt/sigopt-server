@@ -1,0 +1,2 @@
+# configure your api token and automatic code and log tracking
+sigopt config

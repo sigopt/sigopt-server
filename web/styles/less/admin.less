@@ -1,0 +1,169 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "libs/legacy_base.less";
+@import "libs/constants.less";
+@import "libs/cta.less";
+@import "sidebar.less";
+@import "dropdown.less";
+
+@transition-length: 800ms;
+
+.admin-page {
+  .page-title {
+    .info {
+      display: inline;
+    }
+    .field-static {
+      width: fit-content;
+      border-bottom: 1px solid transparent;
+      .edit-button {
+        margin-left: 0.5em;
+        color: @sigopt-greyblue-light;
+        font-size: @font-size-small;
+      }
+      // To vertically align the text of the page title
+      > span {
+        vertical-align: middle;
+      }
+    }
+    .field-editor {
+      .form-control {
+        margin: 0;
+        height: auto;
+      }
+      .edit-form {
+        width: fit-content;
+        border-bottom: 1px solid @brand-green;
+      }
+      button.editable-info,
+      a.editable-info,
+      .form-control.name-input {
+        background: none;
+        border: none;
+        padding: 0;
+        box-shadow: none;
+      }
+      .form-control.name-input {
+        color: @page-title-text-color;
+      }
+      button.editable-info,
+      a.editable-info {
+        font-size: @font-size-small;
+        margin-left: 1.5em;
+        &:hover {
+          transform: @hover-shift;
+        }
+      }
+      button.editable-info {
+        color: @brand-green;
+      }
+      a.editable-info {
+        color: @sigopt-greyblue-light;
+      }
+    }
+  }
+
+  .page-body {
+    padding: 0;
+
+    .admin-info {
+      .make-xs-column(12);
+      .make-md-column(12);
+      min-height: 230px;
+      padding: 20px;
+      border-radius: 0 0 @page-border-radius 0;
+      .subtitle {
+        color: @light-black;
+        font-weight: @light;
+        margin-top: 0;
+        margin-bottom: 25px;
+      }
+    }
+    .invites {
+      .make-xs-column(12);
+      h2 {
+        margin-top: 0;
+      }
+      .user-inviter {
+        .invite-form {
+          .submit-button {
+            display: block;
+            margin: 0 auto;
+          }
+        }
+        padding-bottom: 10px;
+      }
+      padding: 0;
+    }
+  }
+
+  .btn-spacing {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .no-row-spacing {
+    border-spacing: 0;
+  }
+
+  .dropdown {
+    max-width: 200px;
+    width: 200px;
+  }
+
+  .btn.btn-xs.btn-remove.btn-spacing.caret-dropdown:disabled {
+    cursor: not-allowed;
+    background-color: @divider-grey;
+  }
+
+  h2 .tooltip-trigger {
+    vertical-align: middle;
+  }
+
+  table.table > tbody > tr.hiddenRow > td {
+    padding: 0px;
+    border-top: 0px;
+  }
+
+  .table {
+    background-color: transparent;
+  }
+
+  .btn-pad {
+    padding: 100px;
+  }
+
+  .caret-up {
+    -ms-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+    transition-duration: 500ms;
+  }
+
+  .caret-reversed {
+    -ms-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+    transition-duration: 500ms;
+  }
+
+  .role-options {
+    .make-row();
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    .cta-tiles(220px);
+  }
+
+  .privacy-toggle-btn {
+    display: inline;
+  }
+
+  dl.dl-horizontal dt {
+    width: 180px;
+  }
+}

@@ -1,0 +1,28 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../styles/less/libs/bootstrap.less";
+@import "../../styles/less/libs/mixins.less";
+
+ul.tablist {
+  position: relative;
+  z-index: 1; // So that the bottom border overlaps the code block
+  list-style: none;
+  margin-bottom: 5px;
+  padding: 0;
+  li {
+    .link-active();
+    display: inline;
+    margin-left: 0;
+    padding: 5px 0;
+    a {
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    &:not(:last-child) {
+      border-right: 1px solid @divider-grey;
+    }
+  }
+}

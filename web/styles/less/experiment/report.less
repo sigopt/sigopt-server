@@ -1,0 +1,117 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+
+.experiment-report-page {
+  position: relative;
+
+  .observation-input-section:extend(.model-evaluation-component all) {
+    max-width: 800px;
+    margin: auto;
+  }
+
+  .add-data-block {
+    .make-xs-column(12);
+    .make-sm-column(6);
+    .make-sm-column-offset(3);
+
+    .spinner {
+      left: 0;
+      position: relative;
+      right: 0;
+      top: 100px;
+    }
+  }
+
+  .experiment-info-content {
+    text-align: center;
+  }
+
+  .alternative-uploads-block {
+    .make-xs-column(12);
+  }
+
+  .online {
+    .make-sm-column-offset(3);
+  }
+
+  .form-control {
+    background-color: @white;
+    font-weight: @semibold;
+    &[disabled] {
+      background-color: #eeeeee;
+    }
+  }
+
+  .suggestion-table .value {
+    color: @brand-dark-blue;
+    font-weight: @semibold;
+  }
+
+  .metrics-section {
+    .metric-holder {
+      .row;
+      display: block;
+      margin-left: 0;
+      margin-right: 0;
+      label {
+        display: block;
+      }
+      .value,
+      .value_stddev {
+        .make-xs-column(6);
+      }
+    }
+  }
+
+  .assignments-section {
+    padding: 0 10px 20px 10px;
+  }
+
+  .submit-button {
+    display: block;
+    margin: 0 auto;
+    min-width: 133px;
+  }
+
+  .next-values-block {
+    .experiment-table-holder();
+    display: block;
+    .suggest-holder {
+      display: block;
+    }
+
+    &.no-data {
+      .suggest-holder {
+        display: none;
+      }
+    }
+  }
+
+  .suggest-holder .spinner {
+    display: none;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 100px;
+  }
+
+  &.loading {
+    .next-values {
+      visibility: hidden;
+    }
+    .spinner {
+      display: block;
+    }
+  }
+  .alternative-uploads {
+    color: @light-black;
+    margin: 20px 0;
+    font-size: 15px;
+    font-weight: @light;
+    line-height: 20px;
+  }
+}

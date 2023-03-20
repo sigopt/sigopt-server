@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+message MessageWithName {
+  optional string message_type = 1 [json_name='message_type'];
+  optional bytes serialized_body = 2 [json_name='message'];
+  optional int64 enqueue_time = 3 [json_name='enqueue_time'];
+}
+
+message OptimizeHyperparametersMessage {
+  optional int64 experiment_id = 1 [json_name='experiment_id'];
+  optional bool force = 2 [json_name='force'];
+}
+
+message NextPointsMessage {
+  optional int64 experiment_id = 1 [json_name='experiment_id'];
+  optional bool force = 2 [json_name='force'];
+  optional int32 count = 3 [json_name='count'];
+}
+
+message SendEmailMessage {
+  repeated string to = 1 [json_name='to'];
+  optional string from_address = 2 [json_name='from_address'];
+  optional string subject = 3 [json_name='subject'];
+  optional string body_html = 4 [json_name='body_html'];
+  optional bool bypass_list_management = 5 [json_name='b'];
+}
+
+message ImportancesMessage {
+  optional int64 experiment_id = 1 [json_name='experiment_id'];
+  optional bool force = 2 [json_name='f'];
+}

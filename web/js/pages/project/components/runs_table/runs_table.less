@@ -1,0 +1,63 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../../../../styles/less/libs/common.less";
+
+.table-controls-row {
+  display: flex;
+  width: 100%;
+  margin-bottom: 0.5em;
+  padding-left: 25px;
+
+  .search-bar {
+    display: flex;
+    width: 300px;
+    margin-right: 12px;
+    .search-glyph {
+      color: @sigopt-greyblue-dark;
+      font-size: 14px;
+      vertical-align: middle;
+      line-height: 32px;
+      margin-left: 12px;
+    }
+    .search-input {
+      width: auto;
+      flex: 1;
+      border: none;
+      padding-left: 12px;
+    }
+    .search-input:focus {
+      outline: none;
+    }
+  }
+}
+
+.parameter-source-triangle {
+  width: 25px;
+  height: 25px;
+  float: right;
+}
+
+.parameter-tooltip {
+  background-color: white;
+  border: 1px solid @sigopt-greyblue-dark;
+  overflow: hidden;
+  pointer-events: none;
+  padding: 10px;
+}
+
+.parameter-tooltip.ag-tooltip-hiding {
+  opacity: 0;
+}
+
+// This is needed due to a small bug with tooltips in current version
+// Note: if we upgrade to 23+ should be fixed
+.ag-popup .ag-tooltip-custom {
+  position: absolute !important;
+}
+
+.search-bar.search-bar:focus-within {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+}

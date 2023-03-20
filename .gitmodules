@@ -1,0 +1,3 @@
+[submodule "web/fonts/Metropolis"]
+	path = web/fonts/Metropolis
+	url = https://github.com/dw5/Metropolis

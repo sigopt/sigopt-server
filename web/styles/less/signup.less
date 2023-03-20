@@ -1,0 +1,160 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "bootstrap/less/input-groups.less";
+@import "./libs/legacy_base.less";
+@import "./libs/password_input.less";
+@import "./components/signup_page_modal.less";
+// Note: The centered class serves as the default for
+// signup pages with a single column and as a
+// fallback for the 2-column page when flex
+// is not supported.
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 600px;
+}
+
+.col-layout {
+  display: flex;
+  justify-content: center;
+  @media screen and (max-width: 850px) {
+    flex-wrap: wrap;
+  }
+}
+
+.col-1 {
+  margin-bottom: 2em;
+  margin-right: 2em;
+  & > * {
+    .centered();
+  }
+}
+
+div .page-body-content {
+  .modal-content {
+    box-shadow: 0 1px 2px 0 rgba(11, 50, 103, 0.24),
+      0 1px 3px 1px rgba(44, 75, 118, 0.11);
+  }
+  .modal-dialog {
+    max-width: none;
+  }
+}
+
+.hero-img {
+  display: block;
+  width: 100%;
+  max-width: 550px;
+  border: 1px solid @sigopt-greyblue-dark;
+  border-radius: 4px;
+  margin-top: 1em;
+}
+
+.signup-description {
+  .centered();
+  margin-bottom: 20px;
+  p {
+    margin-bottom: 0;
+  }
+  p:not(:first-of-type) {
+    margin-top: 1em;
+  }
+  ul {
+    margin-top: 0.5em;
+    li {
+      margin-bottom: 0.5em;
+      font-weight: 300;
+    }
+  }
+}
+
+#signup-page {
+  .product-info {
+    ul > li {
+      font-weight: @semibold;
+    }
+  }
+  .signup-form {
+    font-weight: @light;
+    .centered();
+
+    fieldset {
+      border: none;
+      padding: 1em;
+      background-color: @sigopt-greyblue-xxlight;
+      border-radius: @page-border-radius;
+    }
+    label {
+      color: @brand-dark-grey;
+      font-weight: @semibold;
+    }
+    .checkbox label {
+      color: inherit;
+      font-weight: inherit;
+    }
+    .event-code-description {
+      text-align: center;
+    }
+    .form-control-static {
+      margin-bottom: 10px;
+    }
+    .body-tos-message {
+      padding-top: 16px;
+      margin-bottom: 0px;
+    }
+  }
+}
+
+@media screen and (max-width: 1150px) {
+  div .page-body-content {
+    .modal-dialog {
+      max-width: 600px;
+    }
+  }
+  .body-tos-message {
+    display: none;
+  }
+  .col-layout {
+    .col-1 {
+      width: 100%;
+      margin-right: 0px;
+      margin-bottom: 0px;
+      fieldset {
+        padding: 0px;
+        .form-group {
+          margin-bottom: 10px;
+          input {
+            margin-bottom: 0px;
+          }
+        }
+      }
+    }
+  }
+  .product-info {
+    display: none;
+  }
+  .free-signup-description {
+    display: none;
+  }
+
+  .signup-form {
+    fieldset {
+      background-color: inherit;
+    }
+    .btn {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+  .password-input {
+    div .password-warning-message {
+      margin-top: 2px;
+    }
+  }
+  .btn {
+    margin-top: 0.5em;
+    float: right;
+  }
+}

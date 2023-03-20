@@ -1,0 +1,96 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../admin.less";
+@import "../libs/sortable_table_caret.less";
+
+.admin-page {
+  .page-body {
+    .usage-table {
+      margin-top: 10px;
+      width: 100%;
+      table {
+        table-layout: fixed;
+        width: 100%;
+      }
+      .experiment-usage-header {
+        text-align: center;
+        border-top: 1px solid @table-border-color;
+        border-right: 1px solid @table-border-color;
+        border-left: 1px solid @table-border-color;
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .left-border {
+        border-left: 1px solid @table-border-color;
+      }
+      .right-border {
+        border-right: 1px solid @table-border-color;
+      }
+      .fixed-lg-column {
+        width: 20%;
+      }
+      .fixed-md-column {
+        width: 10%;
+      }
+      .left-align {
+        text-align: left;
+      }
+      .right-align {
+        text-align: right;
+      }
+      tr td {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+
+    .admin-info {
+      .experiments-info {
+        .row {
+          padding: 0 40px 15px 40px;
+          .org-info {
+            .make-md-column(4);
+            text-align: center;
+            .data {
+              font-size: 30px;
+              font-weight: bold;
+              color: @brand-light-blue;
+              padding-bottom: 10px;
+            }
+          }
+          .org-info-runs {
+            .make-md-column(3);
+            text-align: center;
+            .data {
+              font-size: 30px;
+              font-weight: bold;
+              color: @brand-light-blue;
+              padding-bottom: 10px;
+            }
+          }
+          .period {
+            .make-md-column(12);
+            text-align: center;
+            .data {
+              font-size: 24px;
+              font-weight: bold;
+              color: @brand-light-blue;
+              padding: 8px 5px;
+            }
+          }
+        }
+      }
+      .client-filter {
+        margin-bottom: -5px;
+        label {
+          vertical-align: middle;
+          margin: 0;
+        }
+      }
+    }
+  }
+}

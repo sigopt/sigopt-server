@@ -1,0 +1,152 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../styles/less/libs/buttons.less";
+@import "../../styles/less/libs/constants.less";
+@import "../../styles/less/libs/input.less";
+@import "../../styles/less/libs/tables.less";
+
+@border-radius: 10px;
+@failure-color: @brand-bright-red;
+
+.table-card {
+  box-shadow: @button-shadow;
+  border-radius: @border-radius;
+  margin: 20px 0 10px 0;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  .form-control {
+    margin: 0;
+  }
+
+  table {
+    background-color: @white;
+    border-radius: @border-radius;
+    border: 0px solid @divider-grey;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0;
+    overflow: hidden;
+    table-layout: fixed;
+    th {
+      font-weight: @semibold;
+    }
+    th,
+    td {
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 50%;
+    }
+    > thead {
+      background-color: @divider-grey;
+      > tr > th {
+        border-color: @divider-grey;
+      }
+    }
+    > tbody > tr {
+      background-color: @white;
+      > th,
+      > td {
+        border-color: @divider-grey;
+      }
+    }
+    > thead.main-header {
+      background-color: @brand-light-blue;
+      border-left: 2px solid @brand-light-blue;
+      border-right: 2px solid @brand-light-blue;
+      th {
+        color: @white;
+        width: 100%;
+        border-bottom: 0px;
+      }
+    }
+    .failed-value {
+      color: @failure-color;
+    }
+  }
+
+  .hover-glyph {
+    opacity: 0;
+  }
+  &.clickable {
+    .hover-lift();
+    .hover-glyph {
+      color: @brand-dark-grey;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      @media (max-width: @screen-sm-max) {
+        opacity: 1;
+      }
+    }
+
+    cursor: pointer;
+    &:hover {
+      filter: brightness(95%);
+      @media (min-width: @screen-md-min) {
+        .hover-glyph {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .hover-glyph,
+  .copy-btn {
+    padding: 10px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+
+  &.clickable .copy-btn {
+    display: none;
+  }
+  .copy-btn {
+    @color: @white;
+    color: darken(@color, 5%);
+    font-weight: @light;
+    &:hover {
+      cursor: pointer;
+      color: darken(@color, 20%);
+      transition: background-color 0.15s linear;
+    }
+  }
+
+  &.scrollable {
+    @media (min-width: @screen-md-min) {
+      display: block;
+      thead,
+      tbody,
+      tr {
+        display: block;
+      }
+      th,
+      td {
+        display: inline-block;
+        width: 50%;
+      }
+      .main-header th {
+        width: 100%;
+      }
+      tbody {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+    }
+  }
+}
+
+.measurement-table {
+  table {
+    th,
+    td {
+      width: 33.33%;
+    }
+  }
+}

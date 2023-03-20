@@ -1,0 +1,59 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../styles/less/libs/bootstrap.less";
+@import "../../styles/less/libs/grid.less";
+@import "../../styles/less/experiment/chart.less";
+
+.model-evaluation-component:extend(.table all) {
+  .display-row {
+    .make-xs-column(12);
+    padding: 0 10px 20px 10px;
+    text-align: center;
+  }
+  .field-name {
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 10px;
+  }
+  .field-value {
+    font-size: 20px;
+  }
+  .report-section:extend(.row all) {
+    text-align: center;
+
+    .combined-report {
+      .make-xs-column(12);
+      .make-sm-column(12);
+    }
+    &.multi-report .combined-report {
+      .make-sm-column(6);
+    }
+  }
+  .suggestion-only,
+  .run-info-section {
+    .display-row {
+      float: unset;
+      margin: 10px auto;
+      max-width: 300px;
+    }
+  }
+  .training-runs-section {
+    .chart-title {
+      padding-bottom: 0;
+    }
+    min-height: 50px;
+    margin-top: 10px;
+    .training-runs-chart .chart {
+      max-width: 700px;
+      width: 700px;
+      max-height: 300px;
+      height: 300px;
+    }
+  }
+  .assignments-section:extend(.row all) {
+    padding: 10px 20px;
+  }
+}

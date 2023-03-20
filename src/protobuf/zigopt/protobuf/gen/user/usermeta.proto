@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+message Usage {
+  optional bool track = 1 [json_name='t'];
+  optional bool optimize = 2 [json_name='o'];
+}
+
+message UserMeta {
+  optional bool has_verified_email = 1 [json_name='has_verified_email'];
+  optional int64 date_created = 2 [json_name='date_created'];
+  optional bool educational_user = 3 [json_name='educational_user'];
+  optional int64 password_reset_timestamp = 4 [json_name='password_reset_timestamp'];
+  optional int64 email_verification_timestamp = 5 [json_name='email_verification_timestamp'];
+  optional bool needs_password_reset = 6 [json_name='needs_password_reset'];
+  optional bool deleted = 7 [json_name='deleted'];
+  optional string hashed_password_reset_code = 8 [json_name='hashed_password_reset_code'];
+  optional string pending_client_name = 9 [json_name='pending_client_name'];
+  optional int64 date_deleted = 10 [json_name='dd'];
+  optional string hashed_email_verification_code = 11 [json_name='v'];
+  optional string public_cert = 12 [json_name='c'];
+  optional int64 pending_client_id = 13 [json_name='p'];
+  optional Usage planned_usage = 16 [json_name='u'];
+  optional bool show_welcome = 17 [json_name='w'];
+}

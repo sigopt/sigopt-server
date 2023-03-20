@@ -1,0 +1,37 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "libs/legacy_base.less";
+
+.sidebar-nav {
+  .make-xs-column(12);
+  .make-md-column(2);
+  ul.sidebar-nav-list {
+    @media screen and (max-width: @screen-sm-max) {
+      .list-inline();
+      text-align: center;
+      li {
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+    }
+    .list-unstyled();
+    .unstyled-links();
+    margin-bottom: 0;
+    padding: 20px 15px;
+    li {
+      color: @white;
+      font-size: 16px;
+      font-weight: @light;
+      line-height: 30px;
+      a {
+        color: @white;
+      }
+      &.active {
+        font-weight: @semibold;
+      }
+    }
+  }
+}

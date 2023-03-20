@@ -1,0 +1,75 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../styles/less/libs/bootstrap.less";
+@import "../../styles/less/libs/constants.less";
+@import "../../styles/less/libs/input.less";
+
+@metric-color: @brand-blue;
+@failure-color: @brand-bright-red;
+.metrics-view {
+  padding: 10px;
+  text-align: center;
+
+  .metric-view,
+  .metric-failure {
+    margin: 10px auto;
+    width: 300px;
+  }
+  .metric-view {
+    > div {
+      display: block;
+    }
+    padding-bottom: 10px;
+    .field-name {
+      font-weight: bold;
+      max-width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .field-value {
+      color: @metric-color;
+      font-weight: bold;
+      .value_stddev {
+        font-size: 14px;
+      }
+      .threshold-warning {
+        font-weight: normal;
+        font-size: 0.8em;
+      }
+      &.threshold-unsatisfied {
+        * {
+          color: @failure-color;
+        }
+      }
+    }
+    .input-value {
+      input {
+        .make-xs-column(8);
+        text-align: center;
+      }
+      input.value {
+        .make-xs-column-offset(2);
+      }
+      .plus-minus-symbol {
+        .make-xs-column(2);
+      }
+    }
+  }
+  .metric-failure {
+    .failure-label.failed {
+      color: @failure-color;
+    }
+    .failure-input {
+      display: inline-block;
+      margin-right: 10px;
+      text-align: left;
+    }
+    h2 {
+      font-weight: bold;
+      color: @failure-color;
+    }
+  }
+}

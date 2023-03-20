@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+COMMAND=(./scripts/launch/all_live --web-only --foreground "$@")
+
+exec "${COMMAND[@]}"

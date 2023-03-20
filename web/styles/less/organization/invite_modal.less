@@ -1,0 +1,73 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+.modal-content .modal-body {
+  .owner-check input {
+    margin-left: 10px;
+  }
+
+  .table-name-header {
+    max-width: 40%;
+    width: 40%;
+  }
+
+  .table-role-header {
+    text-align: center;
+    width: 20%;
+  }
+
+  .table-buttons-header {
+    width: 40%;
+  }
+
+  .table-role-cell {
+    text-align: center;
+
+    @roles-width: 90px;
+    .dropdown {
+      margin: auto;
+      width: @roles-width;
+      .dropdown-menu {
+        min-width: 0;
+        width: @roles-width;
+      }
+    }
+  }
+
+  .table-client-cell .dropdown {
+    width: 100%;
+    max-width: 200px;
+    margin: 0;
+    .dropdown-btn-label {
+      text-overflow: wrap;
+    }
+  }
+
+  .table-buttons-cell {
+    text-align: right;
+    .accept-button {
+      background-color: #1dafbf;
+      margin-right: 10px;
+      &.confirm {
+        padding: 5px 8px;
+        width: auto;
+      }
+    }
+
+    .delete-button,
+    .cancel-button {
+      background-color: #e84557;
+    }
+
+    .spinner {
+      float: right;
+      width: 24px;
+    }
+  }
+
+  .add-team-row {
+    text-align: center;
+  }
+}

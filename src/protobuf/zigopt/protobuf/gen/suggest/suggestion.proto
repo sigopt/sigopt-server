@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+import "zigopt/protobuf/gen/experiment/experimentmeta.proto";
+
+message SuggestionMeta {
+  optional SuggestionData suggestion_data = 1 [json_name='suggestion_data'];
+  optional bool deleted = 2 [json_name='deleted'];
+}
+
+message SuggestionData {
+  map<string, double> assignments_map = 1 [json_name='assignments_map'];
+  optional Task task = 2 [json_name='t'];
+}
+
+message ProcessedSuggestionMeta {
+  optional string client_provided_data = 1 [json_name='client_provided_data'];
+}

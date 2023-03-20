@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+message Color {
+  required int32 red = 1 [default=0, json_name='r'];
+  required int32 green = 2 [default=0, json_name='g'];
+  required int32 blue = 3 [default=0, json_name='b'];
+}

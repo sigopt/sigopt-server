@@ -1,0 +1,226 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../admin.less";
+@import "invite_modal.less";
+@import "../experiment/component/typeahead.less";
+
+.admin-page .page-body .admin-info {
+  .invite-user {
+    .make-xs-column(12);
+  }
+
+  .membership-table {
+    .table-search-row {
+      .make-xs-column(12);
+      .form-inline;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0;
+      padding: 30px 0 20px 0;
+
+      h3 {
+        .make-xs-column(12);
+        .make-sm-column(6);
+        .make-md-column(3);
+        margin: auto;
+      }
+
+      .table-search-holder {
+        .make-xs-column(12);
+        .make-sm-column(6);
+        .make-md-column(9);
+        box-sizing: border-box;
+
+        .filter-row {
+          .make-xs-column(12);
+          .make-md-column(6);
+          margin: 5px 0;
+        }
+
+        .info-row {
+          .make-xs-column(12);
+          text-align: right;
+        }
+
+        .control-label {
+          .make-xs-column(12);
+          .make-sm-column(4);
+          text-align: right;
+          padding: 10px;
+        }
+
+        @media (max-width: @screen-xs-max) {
+          .info-row {
+            text-align: left;
+          }
+
+          .control-label {
+            padding-left: 0;
+            text-align: left;
+          }
+        }
+
+        input,
+        .dropdown {
+          .make-xs-column(12);
+          .make-sm-column(8);
+          max-width: 100%;
+          margin: 0;
+          height: 100%;
+        }
+
+        input {
+          background-color: white;
+          text-align: left;
+        }
+
+        .dropdown {
+          padding: 0;
+        }
+      }
+    }
+
+    .table-responsive {
+      .make-xs-column(12);
+    }
+
+    .membership.table-name-header {
+      width: 25%;
+    }
+    .membership.table-email-header {
+      width: 25%;
+    }
+    .membership.table-type-header {
+      width: 15%;
+    }
+    .membership.table-teams-header {
+      width: 25%;
+    }
+
+    .invite.table-email-header {
+      width: 30%;
+    }
+    .invite.table-type-header {
+      width: 30%;
+    }
+    .invite.table-teams-header {
+      width: 30%;
+    }
+
+    .membership.table-row {
+      td {
+        vertical-align: middle;
+      }
+    }
+
+    .table-row td {
+      // NOTE: `disabled` attribute prevents the popover from functioning
+      // so style the button as disabled
+      .btn-disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+        filter: alpha(opacity=65);
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+
+      .btn-spacing {
+        margin: 0 5px;
+      }
+      .spacer {
+        margin: 11px 16px;
+      }
+      .edit-button {
+        background-color: #1dafbf;
+      }
+      .uninvite-button {
+        background-color: #e84557;
+      }
+      .edit-button,
+      .uninvite-button {
+        color: #fff;
+      }
+    }
+
+    .paging-block {
+      .make-xs-column(12);
+    }
+  }
+
+  .permissions-section {
+    .make-xs-column(12);
+    .checkbox label {
+      font-weight: @light;
+    }
+    .dropdown {
+      margin: 0;
+    }
+    .permission-control {
+      &:not(:last-child) {
+        margin-bottom: 25px;
+      }
+      .form-control {
+        margin-bottom: 0;
+      }
+      textarea {
+        font-family: monospace;
+        height: 160px;
+        max-width: 700px;
+      }
+    }
+    .rbt-input {
+      margin-bottom: 0;
+    }
+    .signup-link-holder {
+      @btn-border-size: 1px;
+      @btn-padding: 8px;
+      @btn-font-size: 14px;
+      @height: 2 * @btn-padding + @btn-font-size + 2 * @btn-border-size;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      .rotate-button-holder {
+        flex-basis: 1;
+        .rotate-btn {
+          height: @height;
+          width: @height;
+          border-size: @btn-border-size;
+          font-size: @btn-font-size;
+          line-height: @btn-font-size;
+          padding: @btn-padding;
+        }
+      }
+      .signup-link {
+        height: @height;
+        flex-grow: 1;
+        padding-right: 20px;
+      }
+    }
+    .save-button {
+      .btn();
+      .btn-primary();
+    }
+  }
+}
+
+.disable-input {
+  background-color: @light-grey;
+}
+
+.tooltip-trigger.team-count {
+  line-height: inherit;
+  color: inherit;
+  font-size: inherit;
+  margin-left: inherit;
+}
+
+.default-cursor {
+  cursor: default;
+}
+
+li.active a {
+  cursor: default;
+}

@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+message OrganizationMeta {
+  optional bool academic = 1 [json_name='a'];
+  repeated string email_domains = 2 [json_name='d'];
+  optional bool allow_signup_from_email_domains = 3 [json_name='e'];
+  optional int64 client_for_email_signup = 4 [json_name='c'];
+}

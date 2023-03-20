@@ -1,0 +1,108 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "bootstrap/less/close.less";
+@import "bootstrap/less/component-animations.less";
+@import "bootstrap/less/modals.less";
+
+@import "bootstrap.less";
+@import "constants.less";
+@import "mixins.less";
+
+@import "alerts.less";
+@import "buttons.less";
+@import "forms.less";
+
+.modal-dialog {
+  @media screen and (min-width: @screen-sm-min) {
+    width: 100%;
+  }
+  max-width: 853px;
+
+  .modal-content {
+    @border-radius: @page-border-radius;
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+      color: @light-black;
+      font-weight: @light;
+    }
+  }
+}
+
+.modal-dialog {
+  @media screen and (min-width: @screen-sm-min) {
+    width: 100%;
+  }
+  max-width: 853px;
+  z-index: @zindex-modal; // Why do I need this?
+
+  .modal-content {
+    @border-radius: @page-border-radius;
+    .control-label {
+      color: @light-black;
+      font-weight: @light;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid @divider-grey;
+      border-top-left-radius: @border-radius;
+      border-top-right-radius: @border-radius;
+      margin-bottom: 0;
+      h4 {
+        color: @brand-dark-blue;
+        font-size: 26px;
+        line-height: 36px;
+        text-align: center;
+      }
+      .close {
+        font-size: 35px;
+        position: absolute;
+        right: 15px;
+      }
+    }
+    .modal-footer {
+      .centered-holder();
+      background-color: @divider-grey;
+      border-bottom-left-radius: @border-radius;
+      border-bottom-right-radius: @border-radius;
+      .btn {
+        margin: 0 10px;
+      }
+    }
+
+    .modal-description,
+    .modal-description-footer,
+    .form-inputs {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 534px;
+      padding: 10px 10px;
+    }
+
+    .modal-description,
+    .modal-description-footer {
+      margin-bottom: 10px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .alert {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .spinner {
+      display: block;
+    }
+
+    ul,
+    ol {
+      > li {
+        margin-bottom: 2px;
+      }
+    }
+  }
+}

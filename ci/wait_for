@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+TYPE="$1"
+shift
+RESOURCE="$1"
+shift
+
+function file {
+  [ -f "$RESOURCE" ]
+}
+
+function url {
+  curl -fL --cacert artifacts/tls/root-ca.crt "$@" "$RESOURCE"
+}
+
+TRIES=72
+WAIT_SECONDS=5
+
+for (( i=1; i<=TRIES; i++ )); do
+  if "$TYPE" "$@"; then
+    exit
+  fi
+  sleep "$WAIT_SECONDS"
+done
+
+>&2 echo "Timed out waiting for $RESOURCE"
+exit 1

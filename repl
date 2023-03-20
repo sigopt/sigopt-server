@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+
+export REPL_FILE='.pyrepl.py'
+
+if [ -d "prod/venv" ]; then
+  source prod/venv/bin/activate
+  ipython=prod/venv/bin/ipython
+else
+  set +e
+  ipython=$(command -v ipython)
+  set -e
+fi
+
+sep=
+if [ -x "$ipython" ]; then
+  python="${ipython}"
+  sep="--"
+fi
+
+./pp "${python}" -i $REPL_FILE $sep "$@"

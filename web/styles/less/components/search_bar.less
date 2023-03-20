@@ -1,0 +1,30 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../libs/constants.less";
+
+.search-bar {
+  display: flex;
+  background-color: white;
+
+  .search-glyph {
+    color: @sigopt-greyblue-dark;
+    font-size: 14px;
+    vertical-align: middle;
+    line-height: 32px;
+    margin-left: 12px;
+  }
+  .search-input {
+    height: 36px;
+    width: auto;
+    flex: 1;
+    border: none;
+    border-radius: inherit;
+    padding-left: 12px;
+  }
+  .search-input:focus {
+    outline: none;
+  }
+}

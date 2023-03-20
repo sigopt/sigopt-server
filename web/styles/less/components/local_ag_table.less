@@ -1,0 +1,193 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../libs/constants.less";
+
+// AG Grid "theme", gets us closish to design without having to make entire theme.
+[aria-rowindex="1"] .ag-header-cell {
+  background-color: #f7f7f7 !important;
+}
+
+[aria-rowindex="2"] .ag-header-cell {
+  background-color: #fafafa !important;
+}
+
+[aria-rowindex="3"] .ag-header-cell {
+  background-color: #fafafa !important;
+}
+
+.ag-header-group-cell {
+  background-color: #f1f1f1 !important;
+}
+
+.ag-header-viewport {
+  background-color: #f1f1f1;
+}
+
+.favorite-hide-header
+  .ag-cell-label-container
+  .ag-header-cell-label
+  .ag-header-cell-text {
+  display: none;
+}
+.favorite-hide-header .ag-checkbox {
+  margin-right: 0;
+}
+
+.ag-icon-checkbox-checked {
+  color: @brand-blue !important;
+}
+
+.ag-side-buttons {
+  width: 30px !important;
+}
+
+.ag-side-buttons * {
+  font-size: 18px !important;
+}
+
+.ag-side-buttons {
+  background-color: #f1f1f1 !important;
+}
+
+.ag-numeric-cell > div > span {
+  width: 100% !important;
+}
+
+// Note: This keeps the headers for numeric columns the same(menus look weird with mixed)
+.ag-numeric-header .ag-cell-label-container {
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+
+.ag-numeric-header .ag-cell-label-container .ag-header-cell-label {
+  flex-direction: row;
+}
+
+.ag-theme-material * {
+  font-family: @font-family !important;
+  font-weight: @light !important;
+}
+
+.ag-theme-material .ag-header-cell-text {
+  font-weight: @semibold !important;
+}
+
+.ag-theme-material .ag-icon {
+  font-family: "agGridMaterial" !important;
+}
+
+.ag-theme-material .fas {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: @solid !important;
+}
+
+[ref="groupTitle"] .ag-group-component-title {
+  font-weight: @semibold !important;
+}
+
+.ag-row-hover {
+  background-color: darken(@light-grey, 3%) !important;
+}
+
+.ag-column-hover {
+  background-color: darken(@light-grey, 3%);
+}
+
+.ag-row-hover > .ag-column-hover {
+  background-color: darken(@light-grey, 5%);
+}
+
+.ag-cell-range-selected {
+  background-color: darken(@sigopt-greyblue-light, 5%) !important;
+}
+
+.ag-row-selected .ag-cell-range-selected * {
+  background-color: darken(@sigopt-greyblue-base, 5%) !important;
+}
+
+.ag-row-selected .ag-cell-range-selected {
+  background-color: darken(@sigopt-greyblue-base, 5%) !important;
+}
+
+.ag-row-selected * {
+  background-color: darken(@sigopt-greyblue-light, 5%) !important;
+}
+
+.archived {
+  background-color: @light-grey;
+}
+
+.dashboard-selected-row {
+  background-color: #ffca3833;
+}
+
+.dashboard-selected-row.ag-row-hover {
+  background-color: #ffca3855;
+}
+
+.dashboard-selected-row > .ag-column-hover {
+  background-color: #ffca3833;
+}
+
+.ag-tool-panel-wrapper {
+  width: 500px;
+}
+
+.ag-header-icon .ag-icon-menu.ag-icon {
+  color: #999999 !important;
+  transition: 200ms;
+}
+
+.ag-header-icon .ag-icon-menu.ag-icon:hover {
+  color: black !important;
+}
+
+.ag-theme-material .ag-checkbox {
+  height: flex;
+  margin: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+.ag-theme-material .ag-select-all {
+  height: flex;
+  margin: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  border-bottom: 1px solid #999999;
+  input[type="checkbox"] {
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 0.15em;
+    margin-right: 0.5em;
+    margin-bottom: 5px;
+    border: 0.15em solid;
+    outline: none;
+    cursor: pointer;
+  }
+}
+
+.ag-theme-material .ag-checkbox input[type="checkbox"] {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 0.15em;
+  margin-right: 0.5em;
+  border: 0.15em solid;
+  outline: none;
+  cursor: pointer;
+}
+
+.ag-theme-material .ag-checkbox input[type="checkbox"] {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 0.15em;
+  margin-right: 0.5em;
+  border: 0.15em solid;
+  outline: none;
+  cursor: pointer;
+}

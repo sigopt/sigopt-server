@@ -1,0 +1,29 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "../libs/glyphs.less";
+@import "./libs/observation_modal.less";
+@import "./libs/history_table.less";
+
+.experiment-history-page {
+  .subtitle {
+    .make-clearfix();
+    float: left;
+  }
+  .download-button {
+    .make-clearfix();
+    float: right;
+    margin-bottom: 10px;
+  }
+  .history-table-holder {
+    .experiment-table-holder();
+    .make-row();
+    clear: both;
+    .history-table {
+      .make-xs-column(12);
+    }
+  }
+}

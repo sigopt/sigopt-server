@@ -1,0 +1,724 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.4.4
+
+commands:
+  attach:
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+  install-trivy:
+    steps:
+      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.35.0/trivy_0.35.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
+  install-submodules:
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "87:b9:24:d8:b8:2f:de:8b:44:bf:da:d4:d7:2c:e1:1a"
+      - run:
+          command: |
+            git submodule init
+            git submodule sync
+            git submodule update
+  install-python-libraries:
+    steps:
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+  update-docker-cli:
+    steps:
+      - run: sudo mkdir -p /etc/apt/keyrings
+      - run: sudo apt-get remove -yqq docker-ce-rootless-extras docker-scan-plugin
+      - run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      - run: |
+          echo \
+            "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu focal stable" \
+           | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      - run: apt-cache madison docker-ce-cli | awk '{ print $3 }'
+      - run: |
+          sudo apt-get update -yqq && sudo apt-get install -yqq \
+            docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
+            docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - run: docker version
+  compile-protobuf:
+    steps:
+      - run: sudo apt-get update -yqq && sudo apt-get install -yqq --no-install-recommends --no-install-suggests libprotobuf-dev protobuf-compiler
+      - run: ./tools/protobuf/compile.sh
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - project/src/python/zigopt/protobuf/gen
+  install-node:
+    steps:
+      - run: cp yarn.lock yarn.lock.old
+      - run: yarn install
+      - run: if ! diff yarn.lock yarn.lock.old >/dev/null; then echo 'yarn.lock has changed, make sure to `yarn install` and commit it'; exit 1; fi
+      - run: rm yarn.lock.old
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - project/node_modules
+  start-service:
+    steps:
+      - run:
+          name: << parameters.description >>
+          command: ./ci/compose up << parameters.service >>
+          background: true
+    parameters:
+      description:
+        type: string
+      service:
+        type: string
+  start-sigopt-service:
+    steps:
+      - start-service:
+          description: SigOpt << parameters.description >>
+          service: << parameters.service >>
+    parameters:
+      description:
+        type: string
+      service:
+        type: string
+  docker-test-setup:
+    steps:
+      - checkout
+      - run: pyenv global 3.10.6
+      - run: python3 -mpip install docker python-dotenv
+      - run: make submodules
+      - run: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
+      - run: docker image ls
+    parameters:
+      build_images:
+        type: string
+  integration-test-setup:
+    steps:
+      - docker-test-setup:
+          build_images: << parameters.build_images >> << parameters.test_runner_name >>
+      - run: ./ci/create_development_tls_certs
+      - run: |
+          ./ci/compose create \
+            api \
+            createdb \
+            minio \
+            nginx \
+            postgres \
+            qworker \
+            qworker-analytics \
+            redis \
+            smtp
+      - start-service:
+          description: PostgreSQL
+          service: postgres
+      - run: ./ci/compose create createdb
+      - run: ./ci/compose run createdb
+      - start-service:
+          description: Redis
+          service: redis
+      - start-service:
+          description: MinIO
+          service: minio
+      - start-service:
+          description: SMTP Test Server
+          service: smtp
+      - start-service:
+          description: SigOpt Optimization Worker
+          service: qworker
+      - start-service:
+          description: SigOpt Analytics Worker
+          service: qworker-analytics
+      - start-service:
+          description: Nginx
+          service: nginx
+      - start-sigopt-service:
+          description: API Server
+          service: api
+      - run:
+          name: Set up MinIO buckets
+          command: |
+            wget https://dl.min.io/client/mc/release/linux-amd64/mc
+            chmod +x mc
+            echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+            ./mc alias set --insecure sigopt https://sigopt.ninja:9000 ROOTUSER CHANGEME123
+            ./mc mb --insecure sigopt/sigopt-cookiejar
+            ./mc mb --insecure sigopt/sigopt-development-user-uploads
+    parameters:
+      build_images:
+        type: string
+        default: nginx zigopt
+      test_runner_name:
+        type: string
+        default: test-runner
+  run-integration-test:
+    steps:
+      - integration-test-setup:
+          build_images: << parameters.build_images >>
+      - run-parallel-integration-tests:
+          count: << parameters.count >>
+          test_path: << parameters.test_path >>
+      - store-junit-test-results
+    parameters:
+      count:
+        type: integer
+        default: 1
+      build_images:
+        type: string
+        default: nginx zigopt
+      test_path:
+        type: string
+  run-parallel-integration-tests:
+    steps:
+      - run: TEST_RUNNER_NAME=<< parameters.test_runner_name >> ./ci/compose_test "<< parameters.test_path >>" --count=<< parameters.count >> $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" | circleci tests split --split-by=timings) << parameters.extra_test_args >>
+    parameters:
+      count:
+        type: integer
+        default: 1
+      extra_test_args:
+        type: string
+        default: ""
+      test_path:
+        type: string
+      test_runner_name:
+        type: string
+        default: test-runner
+  start-web-server:
+    steps:
+      - start-sigopt-service:
+          description: Web Server
+          service: web-server
+  run-browser-test:
+    steps:
+      - integration-test-setup:
+          build_images: nginx web zigopt
+          test_runner_name: test-runner-web
+      - start-web-server
+      - run: mkdir -p screenshots/failure
+      - run: mkdir -p failure_console_logs
+      - run-parallel-integration-tests:
+          count: << parameters.count >>
+          extra_test_args: --headless
+          test_path: /browser/tests/interaction<< parameters.test_path >>
+          test_runner_name: test-runner-web
+      - store-junit-test-results
+      - store_artifacts:
+          path: screenshots/failure
+          prefix: screenshots/failure
+      - store_artifacts:
+          path: failure_console_logs
+          prefix: failure_console_logs
+    parameters:
+      test_path:
+        type: string
+      count:
+        type: integer
+        default: 1
+  run-web-test:
+    steps:
+      - integration-test-setup:
+          build_images: nginx web zigopt
+          test_runner_name: test-runner-web
+      - start-web-server
+      - run-parallel-integration-tests:
+          count: << parameters.count >>
+          test_path: /web
+          test_runner_name: test-runner-web
+      - store_test_results:
+          path: junit-results
+    parameters:
+      count:
+        type: integer
+        default: 1
+  run-zigopt-test:
+    steps:
+      - attach
+      - install-python-libraries
+      - run: ./test/unit_tests --junitxml=junit-results/unit-tests/junit.xml --count=<< parameters.count >> test/python/sigopttest
+      - store_test_results:
+          path: junit-results
+    parameters:
+      count:
+        type: integer
+        default: 1
+  run-aux-test:
+    steps:
+      - checkout
+      - install-python-libraries
+      - run: ./pp pytest -rw sigoptaux/testaux/ --durations 5 --count=<< parameters.count >> --junitxml=junit-results/aux-tests/junit.xml
+      - store_test_results:
+          path: junit-results
+    parameters:
+      count:
+        type: integer
+        default: 1
+  run-sigoptcompute-test:
+    steps:
+      - checkout
+      - install-python-libraries
+      - run:
+          command: circleci tests glob "sigoptcompute/testcompute/**/*.py" | circleci tests split --split-by=timings | xargs ./pp pytest -rw --durations 5 --count=<< parameters.count >> --junitxml=junit-results/sigoptcompute-tests/junit.xml
+          environment:
+            OMP_NUM_THREADS: "1"
+            OPENBLAS_NUM_THREADS: "1"
+            MKL_NUM_THREADS: "1"
+            VECLIB_MAXIMUM_THREADS: "1"
+            NUMEXPR_NUM_THREADS: "1"
+      - store_test_results:
+          path: junit-results
+    parameters:
+      count:
+        type: integer
+        default: 1
+  run-sigoptlite-test:
+    steps:
+      - checkout
+      - install-python-libraries
+      - run: ./pp pytest -rw sigoptlite/sigoptlitetest/ --durations 5 --junitxml=junit-results/sigoptlite-tests/junit.xml
+      - store_test_results:
+          path: junit-results
+  store-junit-test-results:
+    steps:
+      - store_test_results:
+          path: junit-results
+      - store_artifacts:
+          path: junit-results
+          prefix: junit-results
+  generate-openapi-docs:
+    steps:
+      - checkout
+      - attach
+      - install-python-libraries
+      - run:
+          name: Generate swagger file
+          command: ./pp src/python/zigopt/api/documentation.py
+          environment:
+            SIGOPT_SWAGGER_PATH: /home/circleci/project/
+            SIGOPT_SWAGGER_FILENAME: swagger.json
+            sigopt_server_config_file: ./config/circleci.json
+      - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - project
+  validate-openapi-docs:
+    steps:
+      - attach
+      - install-submodules
+      - run:
+          name: Check that swagger file exists and validate it with swagger validator
+          command: node ./ci/validate_swagger.js /home/circleci/project/swagger.json
+  notify-slack-on-fail:
+    steps:
+      - slack/notify:
+          branch_pattern: master
+          channel: sigopt-platform-ci
+          event: fail
+          custom: |
+            {
+              "blocks": [
+                {
+                  "text": {
+                    "text": "*$CIRCLE_JOB* _failed_ in *$CIRCLE_PROJECT_REPONAME* (*$CIRCLE_BRANCH*): <${CIRCLE_BUILD_URL}|View Workflow>",
+                    "type": "mrkdwn"
+                  },
+                  "type": "section"
+                }
+              ]
+            }
+
+executors:
+  sigopt-build:
+    machine:
+      image: &ubuntu-executor-image ubuntu-2004:2022.10.1
+    resource_class: large
+  basic:
+    docker:
+      - image: cimg/base:current-22.04
+  sigopt-python-only:
+    docker:
+      - image: cimg/python:3.10
+    resource_class: small
+  sigopt-node-only:
+    docker:
+      - image: cimg/node:16.18
+    resource_class: small
+  sigopt-integration:
+    machine:
+      image: *ubuntu-executor-image
+    resource_class: medium
+  sigopt-browser-integration:
+    machine:
+      image: *ubuntu-executor-image
+    resource_class: large
+  sigopt-mcafee:
+    machine:
+      image: *ubuntu-executor-image
+    resource_class: xlarge
+  sigopt-lite:
+    docker:
+      - image: cimg/base:2022.11
+    resource_class: small
+
+jobs:
+  checkout-code:
+    docker:
+      - image: alpine/git
+    resource_class: small
+    steps:
+      - checkout
+      - run: git reflog expire --expire=now --all
+      - run: git repack -ad
+      - run: git prune
+      - run: rm -rf .git/objects/*
+      - persist_to_workspace:
+          root: /root
+          paths:
+            - .ssh
+            - project
+  check-integration-test-inits:
+    executor: sigopt-lite
+    steps:
+      - checkout
+      - run:
+          name: Checking that __init__.py files are present in test/integration/
+          command: |
+            rc=0
+            for dir in $(find test/integration -type d); do
+              if ! [ -f "$dir/__init__.py" ]; then
+                echo "__init__.py file missing: $dir/__init__.py"
+                rc=1
+              fi
+            done
+            if [ $rc -ne 0 ]; then
+              echo 'Some __init__.py files are missing in test/integration/. Run `./scripts/dev/ensure_inits` and commit the changes.'
+            fi
+            exit $rc
+  trivy-scan-images:
+    executor: sigopt-build
+    resource_class: medium
+    steps:
+      - checkout
+      - run: pyenv global 3.10.6
+      - install-trivy
+      - run: python3 -mpip install docker python-dotenv
+      - run: python3 docker/image_builder.py nginx node zigopt --build-tag=scan
+      - run: ./ci/trivy_scan_images --ignore-unfixed
+      - store_artifacts:
+          path: artifacts/trivy/
+  trivy-scan-project:
+    executor: sigopt-node-only
+    resource_class: medium
+    steps:
+      - checkout
+      - install-trivy
+      - run: mkdir -p artifacts/trivy && trivy fs .
+      - store_artifacts:
+          path: artifacts/trivy/
+  test-docker-development:
+    executor: sigopt-build
+    resource_class: xlarge
+    steps:
+      - checkout
+      - update-docker-cli
+      - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
+      - run: ./ci/create_development_tls_certs
+      - run:
+          name: Add sigopt.ninja DNS entry
+          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+      - run: make build-debug-images fix-db setup-cookiejar setup-filestorage
+      - run: ./scripts/launch/start_zigopt_services || ./scripts/launch/start_zigopt_services
+      - run:
+          name: Development services
+          command: ./scripts/launch/all_live
+          background: true
+      - run: ./ci/wait_for url https://sigopt.ninja:4443/login
+      - run: "./ci/wait_for url https://sigopt.ninja:4443/api/ --user client_token:"
+      - run: |
+          curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "owner@sigopt.ninja", "password": "owner"}'
+      - run: |
+          ./test/test_dev_env \
+            test/integration/browser/tests/interaction/global/email_test.py \
+            test/integration/v1/endpoints/training_runs/files_test.py
+  compile-protobuf:
+    executor: basic
+    resource_class: small
+    steps:
+      - checkout
+      - compile-protobuf
+  setup-web:
+    executor: sigopt-node-only
+    resource_class: large
+    steps:
+      - checkout
+      - run: sudo apt-get update -yqq && sudo apt-get install nasm
+      - install-node
+  browser-integration:
+    executor: sigopt-browser-integration
+    steps:
+      - run-browser-test:
+          test_path: ""
+  js-lint:
+    executor: sigopt-node-only
+    steps:
+      - attach
+      - install-submodules
+      - run: make eslint-nofix
+  json-lint:
+    executor: sigopt-python-only
+    steps:
+      - checkout
+      - install-submodules
+      - run: ./tools/lint/json/lint.sh --check
+  prettier:
+    executor: sigopt-node-only
+    steps:
+      - attach
+      - install-submodules
+      - run: yarn prettier --check .
+  check-node-dependencies:
+    executor: sigopt-node-only
+    steps:
+      - attach
+      - install-submodules
+      - run: ./ci/check_node_deps
+  web-unit:
+    executor: sigopt-node-only
+    steps:
+      - attach
+      - install-submodules
+      - run: JEST_JUNIT_OUTPUT=junit-results/jest/junit.xml yarn test --reporters=default --reporters=jest-junit --runInBand --ci
+      - store_test_results:
+          path: junit-results
+  web-dead-code:
+    executor: sigopt-node-only
+    steps:
+      - attach
+      - install-submodules
+      - run: make web-dead-code
+  web-integration:
+    executor: sigopt-integration
+    resource_class: large
+    steps:
+      - run-web-test
+  documentation-generation:
+    executor: sigopt-python-only
+    steps:
+      - generate-openapi-docs
+  documentation-validation:
+    executor: sigopt-node-only
+    steps:
+      - validate-openapi-docs
+  v1-integration:
+    executor: sigopt-integration
+    parallelism: 2
+    steps:
+      - run-integration-test:
+          test_path: /v1
+  client-integration:
+    executor: sigopt-integration
+    steps:
+      - integration-test-setup
+      - start-service:
+          description: Mongodb
+          service: mongodb
+      - run:
+          name: Create test container
+          command: ./ci/compose create test-client
+      - run:
+          name: Client Integration Test
+          command: ./ci/compose run test-client test/run_client_integration_tests main
+  service-integration:
+    executor: sigopt-integration
+    steps:
+      - run-integration-test:
+          test_path: /service
+  worker-health:
+    executor: sigopt-integration
+    steps:
+      - docker-test-setup:
+          build_images: zigopt
+      - run: ./ci/compose create createdb postgres redis
+      - start-service:
+          description: PostgreSQL
+          service: postgres
+      - run: ./ci/compose create createdb
+      - run: ./ci/compose run createdb
+      - run: ./ci/worker_health_fail
+      - run: ./ci/compose create redis
+      - start-service:
+          description: Redis
+          service: redis
+      - run: ./ci/worker_health_pass
+  zigopt-unit:
+    executor: sigopt-python-only
+    steps:
+      - run-zigopt-test
+  aux-unit:
+    executor: sigopt-python-only
+    steps:
+      - run-aux-test
+  sigoptcompute-unit:
+    executor: sigopt-python-only
+    resource_class: small
+    parallelism: 4
+    steps:
+      - run-sigoptcompute-test
+  sigoptlite-unit:
+    executor: sigopt-python-only
+    steps:
+      - run-sigoptlite-test
+  black:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep black requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/black.sh --check .
+  bandit:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep bandit requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/bandit.sh -r .
+  python-imports:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep isort requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/isort_lint.sh
+  python-flake8:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep flake8 requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/flake8.sh
+  python-flake8-print:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep flake8 requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/flake8_print.sh
+  python-pylint:
+    executor: sigopt-python-only
+    resource_class: small
+    parallelism: 8
+    steps:
+      - checkout
+      - attach
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: circleci tests glob "**/*.py" | circleci tests split | _NO_PARSE_ARGS=x xargs ./tools/lint/python/pylint.sh
+  python-custom-lint:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep numpy requirements.txt | xargs pip install
+      - run: ./tools/lint/python/custom_lint.sh
+  python-vulture:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep vulture requirements-dev.txt | xargs pip install vulture
+      - run: make vulture
+  python-mypy:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep -E '(mypy|types)' requirements-dev.txt | xargs pip install -r requirements.txt
+      - run: make mypy
+  bash-lint:
+    docker:
+      - image: circleci/buildpack-deps:buster
+    resource_class: small
+    steps:
+      - checkout
+      - run: sudo apt-get update -yqq
+      - run: sudo apt-get -yqq install shellcheck
+      - run: mkdir -p ../bin && wget -O ../bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 && chmod +x ../bin/hadolint
+      - run: PATH="../bin:$PATH" ./pp ./tools/lint/bash/run_linters.py
+  eof-lint:
+    executor: sigopt-python-only
+    steps:
+      - checkout
+      - run: grep numpy requirements.txt | xargs pip install
+      - run: ./tools/lint/common/eof_lint.sh
+  disclaimers-lint:
+    executor: sigopt-python-only
+    steps:
+      - checkout
+      - run: ./tools/lint/common/check_copyright_and_license_disclaimers.py .
+  eval-circleci:
+    docker:
+      - image: circleci/buildpack-deps:curl
+    resource_class: small
+    steps:
+      # Fails on non-20x error code, https://superuser.com/a/1249678
+      - run: "curl -X POST --silent --show-error --fail -u ${EVAL_FRAMEWORK_BUILD_TOKEN}: https://circleci.com/api/v2/project/gh/sigopt/eval-framework/pipeline"
+
+workflows:
+  main:
+    jobs:
+      - checkout-code
+      - check-integration-test-inits
+      - trivy-scan-images
+      - trivy-scan-project
+      - test-docker-development
+      - setup-web
+      - compile-protobuf
+      - v1-integration
+      - client-integration
+      - browser-integration
+      - service-integration
+      - worker-health
+      - web-integration
+      - sigoptcompute-unit
+      - aux-unit
+      - sigoptlite-unit
+      - check-node-dependencies:
+          requires:
+            - checkout-code
+            - setup-web
+      - web-dead-code:
+          requires:
+            - checkout-code
+            - setup-web
+      - web-unit:
+          requires:
+            - checkout-code
+            - setup-web
+      - zigopt-unit:
+          requires: &zigopt-unit-requires
+            - checkout-code
+            - compile-protobuf
+      - documentation-generation:
+          requires:
+            - compile-protobuf
+      - documentation-validation:
+          requires:
+            - setup-web
+            - documentation-generation
+      - bash-lint
+      - eof-lint
+      - disclaimers-lint
+      - js-lint:
+          requires:
+            - checkout-code
+            - setup-web
+      - json-lint
+      - prettier:
+          requires:
+            - checkout-code
+            - setup-web
+      - black
+      - bandit
+      - python-imports
+      - python-flake8
+      - python-flake8-print
+      - python-pylint:
+          requires:
+            - compile-protobuf
+      - python-custom-lint
+      - python-vulture
+      - python-mypy

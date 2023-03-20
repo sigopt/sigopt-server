@@ -1,0 +1,139 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@font-family: "Metropolis", "Helvetica", "Arial", sans-serif;
+
+// Primary Palette
+@brand-blue: #245eab;
+@brand-dark-blue: #0b3267;
+@brand-dark-grey: #343740;
+@white: #ffffff;
+
+// Secondary Palette
+@brand-light-blue: #0098d1;
+@brand-pink: #a23d97;
+@brand-purple: #772a90;
+@brand-orange: #f5811f;
+@brand-yellow: #ffe739;
+@brand-dark-green: #00b253;
+@brand-green: #96ca4f;
+
+@sigopt-error-red: #a80000;
+
+// Ryan Figma Colours
+@sigopt-greyblue-dark: #abbbd4;
+@sigopt-greyblue-base: #ced8e8;
+@sigopt-greyblue-light: #eaeef5;
+@sigopt-greyblue-xlight: #f5f7fa;
+@sigopt-greyblue-xxlight: #f8fafc;
+@sigopt-green: #00b140;
+@sigopt-purple-light: #ff5cee;
+@sigopt-purple-xlight: #ded6ff;
+
+@gradient-teal: #00ad9f;
+@blue-radial-gradient: radial-gradient(
+  at top,
+  @brand-light-blue,
+  @brand-blue 75%,
+  @brand-dark-blue
+);
+@blue-linear-gradient: linear-gradient(
+  154deg,
+  @brand-dark-blue,
+  @brand-blue 75%,
+  @brand-light-blue
+);
+@blue-teal-gradient: linear-gradient(to right, @brand-blue, @gradient-teal);
+@blue-cyan-gradient: linear-gradient(to right, @brand-light-blue, @brand-blue);
+@purple-radial-gradient: radial-gradient(
+  at top,
+  @brand-purple,
+  @brand-blue 75%,
+  @brand-dark-blue
+);
+
+// Not a real brand color from KBD
+@brand-bright-red: #e7475a;
+
+// Greys and Blacks, useful for lines, etc
+@light-grey: #f9f9f9;
+@divider-grey: #e5e5e5;
+@charcoal: #31373a;
+@light-black: #00293b;
+@black: #030303;
+
+// Font weights
+@thin: 100;
+@light: 300;
+@normal: 400;
+@semibold: 600;
+@bold: 700;
+@solid: 900; // Avoid using for text, prefer semibold. Should be reserved for fontawesome glyphs
+
+// Navigation
+@navbar-width: 250px;
+@brand-logo-height: 32px;
+@brand-logo-width: 150px;
+@brand-menu-bar-height: ~"calc(3 * @{brand-logo-height})";
+@nav-container-margin-left: 20px;
+@nav-link-margin-left: 20px;
+@nav-combined-margin-left: @nav-container-margin-left + @nav-link-margin-left;
+
+// Z Indexes
+@body-z-index: -5;
+@background-z-index: -1;
+@button-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+@button-shadow-hover: 0 6px 10px darken(rgba(50, 50, 93, 0.11), 30%),
+  0 3px 6px darken(rgba(0, 0, 0, 0.08), 30%);
+@content-z-index: 0;
+@search-box-z-index: 4;
+
+// Hover
+@hover-shift: translateY(-1px);
+
+// New Styles
+@light-grey-blue: #ccd8ea;
+@background-grey-blue: #e9eef6;
+@background-lighter-grey-blue: #f4f7fb;
+
+@shadow-blue: fadeout(@brand-dark-blue, 76%);
+@shadow-grey: fadeout(#2c4b76, 89%);
+
+@brand-pink-lighter: #f465e5;
+@brand-pink-darker: #772a90;
+
+@brand-purple-lighter: #8638b4;
+@light-purple: #ccbfff;
+
+@off-white: #ececec; // Used for text that is on a dark background, less harsh contrast than pure white
+@off-white-hover: darken(
+  @off-white,
+  15%
+); // Used for hover state of light text and borders on dark background
+
+@page-border-radius: 8px;
+@experiment-header-gradient: linear-gradient(
+  165deg,
+  @brand-dark-blue -30%,
+  #322f76 20%,
+  @brand-pink-darker 180%
+);
+@project-header-gradient: linear-gradient(
+  160deg,
+  @brand-pink-darker 40%,
+  @brand-dark-blue 120%
+);
+@admin-header-gradient: linear-gradient(
+  45deg,
+  darken(@gradient-teal, 10%) 80%,
+  darken(@brand-green, 10%) 100%
+);
+@run-header-gradient: linear-gradient(
+  to right,
+  @brand-dark-blue 10%,
+  @brand-purple-lighter 90%
+);
+
+@box-shadow: 0 1px 2px 0 @shadow-blue, 0 1px 3px 1px @shadow-grey; // Intended for a box on a light blue background

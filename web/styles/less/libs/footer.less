@@ -1,0 +1,35 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "constants.less";
+@import "grid.less";
+@import "mixins.less";
+
+.footer {
+  background-color: @light-grey;
+  // Hack to make footer extend to bottom of page
+  box-shadow: 0px 1000px 0px 1000px @light-grey;
+  color: @brand-dark-grey;
+  font-size: 12px;
+  font-weight: normal;
+  padding-bottom: 20px;
+  padding-top: 20px;
+  text-align: center;
+
+  nav {
+    .container;
+  }
+
+  .nav-link {
+    color: @light-black;
+    display: inline-block;
+    font-size: 13px;
+    margin-left: 15px;
+    text-decoration: none;
+    &:hover {
+      color: @brand-dark-blue;
+    }
+  }
+}

@@ -1,0 +1,25 @@
+syntax = "proto2";
+
+message NullHyperparameters {
+}
+
+message CategoricalHyperparameterLengths {
+  optional string parameter_name = 1 [json_name='parameter_name'];
+  repeated double length_list = 2 [json_name='length_list'];
+}
+
+message CategoricalHyperparameters {
+  optional double hyperparameter_alpha = 1 [json_name='hp_a'];
+  repeated CategoricalHyperparameterLengths hyperparameter_lengths = 2 [json_name='hp_ls'];
+  optional double hyperparameter_tikhonov = 3 [json_name='hp_t'];
+  optional double task_length = 4 [json_name='k'];
+}
+
+message MultimetricHyperparameterValue {
+  optional string metric_name = 1 [json_name = 'name'];
+  optional CategoricalHyperparameters categorical_hyperparameters = 2 [json_name='cat_hp'];
+}
+
+message MultimetricHyperparameters {
+  repeated MultimetricHyperparameterValue multimetric_hyperparameter_value = 1 [json_name='mm_hp_value'];
+}

@@ -1,0 +1,40 @@
+syntax = "proto2";
+
+message Parent {
+  optional double optional_double_field = 1 [json_name='optional_double_field'];
+  optional string optional_string_field = 2 [json_name='optional_string_field'];
+  optional Child optional_composite_field = 3 [json_name='optional_composite_field'];
+  optional Parent optional_recursive_field = 4 [json_name='optional_recursive_field'];
+  repeated double repeated_double_field = 5 [json_name='repeated_double_field'];
+  repeated string repeated_string_field = 6 [json_name='repeated_string_field'];
+  repeated Child repeated_composite_field = 7 [json_name='repeated_composite_field'];
+  repeated Parent repeated_recursive_field = 8 [json_name='repeated_recursive_field'];
+
+  optional string variable_name = 9 [json_name='serialized_name'];
+  optional Parent variable_recursive_field = 10 [json_name='serialized_recursive_field'];
+
+  map<string, double> map_field = 11 [json_name='map_field'];
+  map<string, Parent> recursive_map_field = 12 [json_name='recursive_map_field'];
+
+  oneof oneof_value {
+    double oneof_double_field = 13 [json_name='oneof_double_field'];
+    string oneof_string_field = 14 [json_name='oneof_string_field'];
+    Child oneof_composite_field = 15 [json_name='oneof_composite_field'];
+  }
+}
+
+message Child {
+  optional double value = 1 [json_name='value'];
+  optional string name = 2 [json_name='name'];
+  optional Child recursive = 3 [json_name='recursive'];
+}
+
+message InvalidDuplicateName {
+  optional double v1 = 1;
+  optional double v2 = 2 [json_name='v1'];
+}
+
+message InvalidDuplicateJsonName {
+  optional double v1 = 1 [json_name='c'];
+  optional double v2 = 2 [json_name='c'];
+}

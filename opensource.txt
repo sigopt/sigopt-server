@@ -1,0 +1,71 @@
+Open Source Policy
+==================
+
+Please see below for the permitted list of open source licenses
+that are permitted for import into SigOpt code
+
+    '0BSD',
+    '3-Clause BSD License',
+    'Apache 2.0',
+    'Apache License 2.0',
+    'Apache License, Version 2.0',
+    'Apache-2',
+    'Apache-2.0',
+    'Apache2',
+    'BOOST',
+    'BSD - See ndg/httpsclient/LICENCE file for details',
+    'BSD License',
+    'BSD and Public Domain',
+    'BSD',
+    'BSD*',
+    'BSD-2-Clause',
+    'BSD-3-Clause',
+    'BSD-derived (http://www.repoze.org/LICENSE.txt)',
+    'BSD-like (http://repoze.org/license.html)',
+    'BSD-like',
+    'BSD-like',
+    'CC-BY-3.0',
+    'CC-BY-4.0',
+    'CC0-1.0',
+    'CMU',
+    'Custom: http://www.ag-grid.com',
+    'FreeBSD',
+    'LGPL',
+    'ISC',
+    'MIT license',
+    'MIT License',
+    'MIT',
+    'MIT*',
+    'MIT/X11',
+    'Mozilla Public License',
+    'MPL-2.0',
+    'NCSA',
+    'New BSD License',
+    'PSF license',
+    'PSF',
+    'PSFL',
+    'PostgreSQL License',
+    'Public Domain',
+    'Python Software Foundation License',
+    'Simplified BSD',
+    'Unicode License',
+    'Unlicense',
+    'WTFPL',
+    'ZPL 2.1',
+    'Zlib',
+    'cron',
+    'http://www.apache.org/licenses/LICENSE-2.0',
+    'libpng',
+    'new BSD License',
+    'new BSD',
+    'zlib',
+
+In addition to the above, the following licenses are permitted for software libraries
+inside of Docker containers, provided that they are "merely aggregated" instead of
+imported into our code
+
+    'GPL',
+    'sleepycat',
+
+Any changes that modify the list of open source packages (i.e. changes to requirements.txt
+or changes to pacakge.json) should be approved by OSPDT before merge

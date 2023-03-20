@@ -1,0 +1,119 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./component/editor.less";
+
+.experiment-properties-page {
+  .experiment-conditionals-table-holder,
+  .experiment-constraints-table-holder {
+    .experiment-table-holder();
+  }
+  .danger-zone {
+    padding: 10px 0;
+    .btn {
+      margin: 5px 5px 5px 0;
+    }
+  }
+  .experiment-editor {
+    input,
+    select {
+      background-color: @white;
+    }
+    .section-heading {
+      color: @light-black;
+      font-size: 24px;
+      font-weight: @light;
+      line-height: 30px;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    .tooltip-trigger {
+      display: none;
+    }
+    &.editing .tooltip-trigger {
+      display: initial;
+    }
+    .experiment-properties {
+      clear: both;
+    }
+    .experiment-summary-info {
+      .section-heading {
+        float: left;
+      }
+      .edit-buttons {
+        float: right;
+        .btn {
+          .make-btn-sm();
+          display: inline-block;
+          margin-left: 5px;
+          &.submit-button {
+            .btn-primary();
+          }
+        }
+      }
+    }
+    .experiment-edit-table-holder {
+      .experiment-table-holder();
+      .remove-row-column {
+        text-align: right;
+        .btn {
+          display: inline-block;
+        }
+      }
+      &.table-responsive {
+        border: 0;
+      }
+      table > tbody {
+        border-bottom: 0;
+      }
+    }
+
+    .button-container > td {
+      padding-left: 0;
+    }
+
+    .metrics-table {
+      padding: 0;
+      .threshold-input {
+        height: 35px;
+        overflow-x: auto;
+        > * {
+          display: inline-block;
+        }
+        input {
+          max-width: 200px;
+        }
+        .remove-threshold-button {
+          margin-left: 5px;
+        }
+        .create-threshold-button {
+          background-color: @brand-blue;
+          color: @white;
+        }
+      }
+      table {
+        margin-bottom: 0;
+      }
+      .no-threshold:after {
+        content: "-";
+      }
+    }
+  }
+  .duplicate-modal {
+    .btn {
+      margin: 10px auto 0;
+    }
+  }
+  .form-control {
+    margin-bottom: 0px;
+  }
+  .btn {
+    .far,
+    .fas {
+      color: @white;
+    }
+  }
+}

@@ -1,0 +1,36 @@
+syntax = "proto2";
+
+enum Permission {
+  NONE = 0;
+  READ = 1;
+  WRITE = 2;
+  ADMIN = 3;
+}
+
+message TokenMeta {
+  enum Scope {
+    ALL_ENDPOINTS = 0;
+
+    // Scope used for tokens in "Share Experiment" URLs.
+    // Should only have access to endpoints needed to show read-only experiment page.
+    SHARED_EXPERIMENT_SCOPE = 1;
+
+    // Anonymous token to read org information before signup.
+    // Used when generating signup links that are tied to a specific organization.
+    SIGNUP_SCOPE = 2;
+  }
+
+  optional int64 creating_user_id = 1 [json_name='creating_user_id'];
+  optional int64 guest_experiment_id = 2 [json_name='guest_experiment_id'];
+  optional int64 date_created = 3 [json_name='date_created'];
+  optional Permission guest_permissions = 4 [default=NONE, json_name='guest_permissions'];
+  optional bool lasts_forever = 5 [json_name='f'];
+
+  // A Scope can be set on a token, and then only Handlers which permit that Scope can be called.
+  // Used to create a token that can only call a subset of endpoints
+  optional Scope scope = 6 [default=ALL_ENDPOINTS, json_name='s'];
+  optional int64 ttl_seconds = 7 [json_name='t'];
+  optional int64 guest_training_run_id = 8 [json_name='gt'];
+  optional int64 date_renewed = 9 [json_name='l'];
+  optional bool can_renew = 10 [json_name='r'];
+}

@@ -1,0 +1,49 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../libs/buttons.less";
+
+.modal-body .observation-modal {
+  .button-section .btn {
+    margin: 10px;
+  }
+  @media (min-width: @screen-sm-min) {
+    .left-button-section {
+      float: left;
+    }
+    .right-button-section {
+      float: right;
+    }
+    .center-button-section {
+      width: fit-content;
+      float: unset;
+      margin: auto;
+    }
+  }
+  @media (max-width: @screen-xs-max) {
+    .button-section {
+      text-align: center;
+      > div {
+        display: inline-block;
+      }
+    }
+  }
+  .cancel-btn:extend(.btn-default all) {
+  }
+  .delete-btn:extend(.btn-danger all) {
+  }
+  .edit-btn:extend(.btn-orange all) {
+  }
+  .finish-btn:extend(.btn-primary all) {
+  }
+  .submit-btn:extend(.btn-primary all) {
+  }
+  .submit-btn:extend(.btn-lg all) {
+  }
+  .cancel-submit-btn:extend(.btn-default all) {
+  }
+  .cancel-submit-btn:extend(.btn-lg all) {
+  }
+}

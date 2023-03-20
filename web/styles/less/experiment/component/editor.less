@@ -1,0 +1,130 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../libs/bootstrap.less";
+@import "../../libs/mixins.less";
+@import "./typeahead.less";
+
+.experiment-editor {
+  position: relative;
+  min-height: 100px;
+  .experiment-edit-table-holder {
+    th {
+      position: relative;
+    }
+
+    .min-max-content {
+      .make-row();
+      .bounds-input-holder {
+        .make-xs-column(12);
+        .make-sm-column(6);
+        @media screen and (min-width: @screen-sm-min) {
+          &:not(:last-child) {
+            padding-right: 0;
+          }
+        }
+        input {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .experiment-editor-content {
+    .make-row();
+  }
+
+  .info {
+    .make-xs-column(12);
+  }
+
+  .parameter-conditions-info {
+    th {
+      padding-right: 10px;
+    }
+  }
+
+  .parameter-conditions-input {
+    .make-row();
+
+    label {
+      display: block;
+    }
+
+    .form-group {
+      margin: 0 8px;
+    }
+
+    .parameter-conditions-input-row {
+      .make-xs-column(12);
+      .make-sm-column(3);
+
+      .parameter-conditions-input-row-title {
+        margin-bottom: 20px;
+      }
+    }
+  }
+
+  &.loading {
+    .experiment-editor-content {
+      visibility: hidden;
+    }
+  }
+
+  .experiment-conditionals-input {
+    .name-label,
+    .value-label {
+      .make-xs-column(10);
+      .make-sm-column(2);
+    }
+
+    .value-label {
+      .make-sm-column-offset(1);
+    }
+
+    .remove-conditional-button-holder,
+    .remove-value-button-holder {
+      .make-xs-column(2);
+      .make-sm-column(1);
+      text-align: right;
+    }
+
+    .remove-conditional-button-holder {
+      .make-sm-column-push(9);
+    }
+
+    .remove-value-button-holder {
+      .make-sm-column-push(8);
+    }
+
+    .name-input-holder {
+      .make-sm-column(9);
+      .make-sm-column-pull(1);
+    }
+
+    .conditional-value-input-holder {
+      .make-sm-column(4);
+      .make-sm-column-pull(1);
+    }
+
+    .parameter-input-holder {
+      .make-sm-column(4);
+      .make-sm-column-pull(1);
+      &.enabled .rbt {
+        background-color: @white;
+      }
+    }
+
+    .add-value-button-holder {
+      .make-xs-column(12);
+      text-align: right;
+    }
+
+    .experiment-conditionals-input-row {
+      // Make it look like a table cell
+      padding: 8px 8px 25px;
+    }
+  }
+}

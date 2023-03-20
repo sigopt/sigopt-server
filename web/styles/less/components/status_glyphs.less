@@ -1,0 +1,20 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../libs/constants.less";
+
+.completed {
+  &::before {
+    color: @brand-green;
+  }
+}
+
+.active::before {
+  color: @brand-purple-lighter;
+}
+
+.failed::before {
+  color: @brand-bright-red;
+}

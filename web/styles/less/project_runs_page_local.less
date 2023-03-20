@@ -1,0 +1,174 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./libs/buttons.less";
+@import "project_page.less";
+
+@import "./components/local_ag_table.less";
+@import "./components/search_bar.less";
+
+.run-table {
+  height: 822px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  .star-wrapper {
+    .star {
+      border: solid;
+      border-radius: 10px;
+      border-color: transparent;
+      cursor: pointer;
+      transition: 0.4s;
+    }
+
+    .star.inactive {
+      color: lightgray;
+    }
+
+    .star.active {
+      color: @brand-orange;
+    }
+
+    .star:hover {
+      border-color: lightgray;
+    }
+  }
+
+  .group-header {
+    font-size: @font-size-large;
+    font-weight: @light;
+    display: flex;
+  }
+
+  .group-header .ag-header-group-cell-label {
+    flex-shrink: 1;
+    flex-grow: 0;
+  }
+
+  .parameters-header {
+    font-size: @font-size-large;
+    font-weight: @light;
+    border-left: 1px solid #b7b7b7;
+    border-right: 1px solid #b7b7b7;
+  }
+}
+
+.dropdown {
+  margin: 0 12px 0 0;
+}
+
+.dropdown-button + .dropdown-menu {
+  left: 80px;
+  background-color: transparent;
+  padding: 0;
+  margin-top: 5px;
+}
+
+.mpm-border {
+  border-radius: 4px;
+  border: 1px solid @sigopt-greyblue-base;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.views-dropdown {
+  width: 550px;
+  background: white;
+  .mpm-border;
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  padding: 15px;
+
+  hr {
+    margin: 0 0 15px 0;
+  }
+  .views-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid @light-grey-blue;
+    padding-left: 8px;
+
+    .title-row {
+      h3 {
+        display: flex;
+        font-size: 16px;
+        font-weight: 400;
+        margin-top: 10px;
+        margin-bottom: 5px;
+      }
+      h3::after {
+        content: "";
+        margin: auto;
+        margin-left: 8px;
+        margin-right: 8px;
+        flex-grow: 1;
+        height: 2px;
+        background-color: @light-grey-blue;
+      }
+    }
+
+    .list-item {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      cursor: pointer;
+      height: 32px;
+      line-height: 32px;
+      padding-left: -8px;
+      .view-name {
+        padding-left: 8px;
+        flex-grow: 1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .view-name:hover {
+        background-color: @brand-light-blue;
+        border-radius: 4px;
+      }
+      .close-glyph {
+        line-height: 32px;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .new-view-row {
+    display: flex;
+    justify-content: space-between;
+    .text-input {
+      flex-grow: 1;
+      margin-right: 15px;
+      padding-left: 15px;
+    }
+  }
+}
+
+.close-glyph {
+  color: red;
+  cursor: pointer;
+  display: inline;
+  vertical-align: middle;
+  font-size: 18px;
+}
+.close-glyph:active {
+  color: rgb(220, 30, 30);
+}
+
+.line-after {
+  flex: auto;
+  display: flex;
+}
+
+.line-after::after {
+  content: "";
+  background-color: lightgrey;
+  flex-grow: 1;
+  height: 2px;
+  margin: auto;
+  margin-left: 10px;
+}

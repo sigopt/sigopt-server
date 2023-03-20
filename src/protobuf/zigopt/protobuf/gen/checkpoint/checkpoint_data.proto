@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+import "zigopt/protobuf/gen/observation/observationdata.proto";
+import "google/protobuf/struct.proto";
+
+message CheckpointData {
+  repeated ObservationValue values = 1 [json_name='v'];
+  optional google.protobuf.Struct metadata = 2 [json_name='m'];
+}

@@ -1,0 +1,139 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "../../styles/less/libs/constants.less";
+
+@failed-color: @sigopt-error-red;
+@completed-color: @sigopt-greyblue-base;
+@active-color: @brand-light-blue;
+
+@outer-margin: 30px;
+@axis-border: 1px solid black;
+@scroll-border: 1px solid @brand-dark-blue;
+@hover-info-border: 1px solid black;
+@hover-bar-border: 1px solid @brand-dark-blue;
+
+.duration-chart {
+  width: auto;
+  margin: @outer-margin;
+  position: relative;
+  .axis-label {
+    position: absolute;
+    white-space: nowrap;
+    user-select: none;
+    &.vertical {
+      bottom: 40px;
+      left: -15px;
+      width: 0;
+      transform: rotate(-90deg);
+    }
+    &.horizontal {
+      bottom: -25px;
+      left: 0;
+      right: 0;
+      width: auto;
+      text-align: center;
+    }
+  }
+  .outer-chart {
+    width: auto;
+    float: none;
+    overflow: hidden;
+    position: relative;
+    border-left: @axis-border;
+    border-bottom: @axis-border;
+    .hover-info-window {
+      position: absolute;
+      pointer-events: none;
+    }
+    .hover-info {
+      position: absolute;
+      border: @hover-info-border;
+      font-size: 14px;
+      line-height: 1em;
+      padding: 5px;
+      background-color: white;
+      pointer-events: none;
+      b {
+        font-weight: 600;
+      }
+    }
+    .hover-arrow {
+      position: absolute;
+      background-color: black;
+      transform: rotate(45deg);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hover-arrow::after {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+    }
+    .hover-arrow.right::after {
+      left: 1px;
+      bottom: 1px;
+    }
+    .hover-arrow.left::after {
+      right: 1px;
+      top: 1px;
+    }
+    .run-duration-bar {
+      background-color: @completed-color;
+      position: absolute;
+      &.full {
+        bottom: 0;
+        transition: height 1s ease-out, background-color 0.1s ease-out;
+      }
+      &.active {
+        background-color: @active-color;
+      }
+      &.completed {
+        background-color: @completed-color;
+      }
+      &.failed {
+        background-color: @failed-color;
+      }
+    }
+    .duration-bar-click-target {
+      position: absolute;
+    }
+    .duration-chart-wrapper {
+      position: relative;
+    }
+    .minimap {
+      background-color: #f5f5f5;
+      position: absolute;
+      touch-action: none; // disables page scroll on touch so that the minimap window can be dragged around
+      .duration-chart-wrapper {
+        position: absolute;
+      }
+      .scroll-window {
+        position: absolute;
+        background-color: #fff;
+      }
+      .scroll-window-border {
+        position: absolute;
+        border: @scroll-border;
+      }
+    }
+    .chart {
+      position: absolute;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      .duration-bar-click-target:hover .run-duration-bar {
+        outline: @hover-bar-border;
+      }
+    }
+    .chart::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}

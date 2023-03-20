@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+message S3StorageMethod {
+  required string key = 1 [json_name='k'];
+}
+
+message FileData {
+  optional int64 content_length = 1 [json_name='l'];
+  optional bytes content_md5 = 2 [json_name='m'];
+  optional string content_type = 3 [json_name='t'];
+  oneof storage_method {
+    S3StorageMethod s3 = 4 [json_name='a'];
+  }
+}

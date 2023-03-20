@@ -1,0 +1,38 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+
+.experiment-report-file-page {
+  .example-holder {
+    padding: 10px 0;
+    .example-description {
+      font-weight: @semibold;
+    }
+  }
+  .file-upload-help {
+    margin: 20px 0;
+    p,
+    li {
+      color: @light-black;
+      font-weight: @light;
+    }
+  }
+  ul.file-format {
+    margin-bottom: 20px;
+    padding-left: 20px;
+  }
+  .input-form {
+    margin: 20px 0;
+    @media screen and (min-width: 768px) {
+      text-align: center;
+    }
+    display: block;
+    .file-input {
+      line-height: 0px;
+      margin: 0px auto;
+    }
+  }
+}

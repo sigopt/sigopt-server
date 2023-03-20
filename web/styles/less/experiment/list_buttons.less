@@ -1,0 +1,215 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+@import "./base.less";
+@import "./chart.less";
+@import "../projects.less";
+@import "../libs/constants.less";
+@import "../libs/cta.less";
+@import "./wizard.less";
+@import "./libs/quick_start_guide.less";
+
+@filter-width: 75%;
+@font-size-small: 12px;
+@font-size-medium: 16px;
+@font-size-large: 24px;
+
+@search-tools-height: 35px;
+.view-button-holder {
+  .make-clearfix();
+  display: inline-block;
+  text-align: left;
+  width: @filter-width;
+  .view-button-wrapper {
+    display: inline-block;
+    padding-right: 20px;
+  }
+  @active-color: @brand-dark-blue;
+  @inactive-color: white;
+  .btn {
+    border-radius: 4px;
+    font-size: @font-size-medium;
+    height: @search-tools-height;
+    padding: 5px 20px;
+  }
+  .active-button {
+    background-color: @active-color;
+    color: @inactive-color;
+  }
+  .inactive-button {
+    background-color: @inactive-color;
+    color: @active-color;
+  }
+  .left-joined-button {
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+  .right-joined-button {
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+}
+
+.bulk-button-wrapper {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.filter-toggle-wrapper {
+  display: inline-block;
+  padding-right: 20px;
+  white-space: nowrap;
+  .filter-toggle-label {
+    color: @brand-dark-blue;
+    display: inline-block;
+    font-size: @font-size-medium;
+    padding-right: 5px;
+  }
+  .filter-toggle-holder {
+    display: inline-block;
+    .filter-toggle {
+      @border-radius: 50px;
+      @toggle-height: 26px;
+      @pill-height-padding: 3px;
+      @pill-height: @toggle-height - (2 * @pill-height-padding);
+      @toggle-width: 80px;
+      @pill-width: 35px;
+      @pill-width-padding: 3px;
+      @pill-move: @toggle-width - (@pill-width + @pill-width-padding);
+
+      background-color: @divider-grey;
+      border-radius: @border-radius;
+      cursor: pointer;
+      height: @toggle-height;
+      margin: 0px;
+      position: relative;
+      width: @toggle-width;
+      input[type="checkbox"] {
+        visibility: hidden;
+      }
+      label {
+        background-color: @light-grey;
+        border-radius: @border-radius;
+        cursor: pointer;
+        display: block;
+        height: @pill-height;
+        left: @pill-width-padding;
+        position: absolute;
+        top: @pill-height-padding;
+        transition: all 0.2s ease;
+        width: @pill-width;
+        z-index: 1;
+      }
+      @enabled-color: @brand-dark-blue;
+      @text-offset: 10px;
+      input[type="checkbox"]:checked + label {
+        background-color: @enabled-color;
+        left: @pill-move;
+      }
+      &:after,
+      &:before {
+        font-size: @font-size-small;
+        font-weight: bold;
+        margin-top: 2px;
+        position: absolute;
+        z-index: 0;
+      }
+      &:after {
+        color: @brand-dark-grey;
+        content: "OFF";
+        right: @text-offset;
+      }
+      &:before {
+        color: @enabled-color;
+        content: "ON";
+        left: @text-offset;
+      }
+    }
+  }
+}
+
+.checkbox {
+  @outer-border-radius: 2px;
+  @box-size: 22px;
+  .opacity (@ratio) {
+    @percent: @ratio * 100;
+    filter: alpha(opacity= @percent);
+    opacity: @ratio;
+  }
+
+  background-color: @brand-light-blue;
+  border-radius: @outer-border-radius;
+  height: @box-size;
+  margin: 5px auto;
+  position: relative;
+  width: @box-size;
+  input[type="checkbox"] {
+    visibility: hidden;
+    &:checked + label:after {
+      .opacity(1);
+    }
+  }
+
+  label {
+    @edge: 1px;
+    @label-size: @box-size - (2 * @edge);
+    background-color: @white;
+    border-radius: @outer-border-radius / 2;
+    cursor: pointer;
+    height: @label-size;
+    left: @edge;
+    position: absolute;
+    top: @edge;
+    width: @label-size;
+    &:after {
+      @inner-edge: 2 * @edge;
+      .opacity(0);
+      background-color: @brand-light-blue;
+      content: "";
+      height: @label-size - (2 * @inner-edge);
+      left: @inner-edge;
+      position: absolute;
+      top: @inner-edge;
+      width: @label-size - (2 * @inner-edge);
+    }
+    &:hover::after {
+      .opacity(0.3);
+    }
+  }
+}
+
+.bulk-button-holder {
+  .make-clearfix();
+  display: inline-block;
+  padding-bottom: 6px;
+  text-align: left;
+  width: 100%;
+  .btn {
+    background-color: @brand-dark-blue;
+    color: white;
+    font-size: @font-size-medium;
+    margin-right: 5px;
+    padding: 5px 20px;
+  }
+  .bulk-button-row {
+    display: block;
+    margin-bottom: 0;
+    min-height: 29px; // don't understand this spacing
+    .input-group {
+      display: inline-block;
+      margin: 0 10px 0 10px;
+      select {
+        max-width: 200px;
+      }
+    }
+  }
+}
+.bulk-action-label {
+  display: inline-block;
+  font-size: @font-size-medium;
+  min-width: 200px;
+  padding-right: 5px;
+}

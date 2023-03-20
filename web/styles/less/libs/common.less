@@ -1,0 +1,242 @@
+/**
+ * Copyright © 2022 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache License 2.0
+ */
+// Fundamental styles used on many pages
+@import (reference) "bootstrap/less/type.less";
+
+@import "bootstrap/less/dropdowns.less";
+@import "bootstrap/less/normalize.less";
+@import "bootstrap/less/print.less";
+@import "bootstrap/less/scaffolding.less";
+
+@import "bootstrap.less";
+@import "constants.less";
+@import "grid.less";
+@import "mixins.less";
+
+p:extend(p) {
+}
+.p:extend(p) {
+}
+p,
+.p {
+  font-weight: @light;
+}
+
+h1:extend(h1) {
+}
+h2:extend(h2) {
+}
+h2 {
+  color: @light-black;
+  font-weight: @light;
+}
+
+h3:extend(h3) {
+}
+h4:extend(h4) {
+}
+h5:extend(h5) {
+}
+h6:extend(h6) {
+}
+
+.headline {
+  .make-headline();
+}
+
+.vertically-centered() {
+  display: flex;
+  align-items: center;
+}
+
+body {
+  background-color: @background-grey-blue;
+  color: @light-black;
+  font-family: @font-family;
+  font-size: 16px;
+  line-height: 22px;
+  z-index: @body-z-index;
+}
+
+a:not([href]) {
+  cursor: pointer;
+}
+
+dl {
+  color: @light-black;
+  line-height: 1.4;
+  dt {
+    font-weight: @semibold;
+    margin-bottom: 5px;
+    padding-top: 5px;
+  }
+  dd {
+    font-weight: @light;
+    margin-bottom: 5px;
+  }
+}
+
+.logged-in-page .page-body {
+  background-color: @light-grey;
+}
+
+a.btn-inverse {
+  border-radius: @page-border-radius;
+  border: 1px solid @off-white;
+  font-size: @font-size-base;
+  padding: 0.5em 1.5em;
+  text-decoration: none;
+  &:hover {
+    border: 1px solid @off-white-hover;
+    span {
+      color: @off-white-hover;
+    }
+  }
+}
+
+@page-title-text-color: @white;
+
+.page-title {
+  background-color: @brand-dark-blue; // Default background in case gradient fails
+  display: flex;
+  flex-direction: column;
+  border-radius: @page-border-radius @page-border-radius 0 0;
+  padding: 1.25em;
+  @media (max-width: @grid-float-breakpoint) {
+    padding: 1em;
+  }
+  &.regular-header-gradient {
+    background: @blue-cyan-gradient;
+  }
+  &.project-header-gradient {
+    background: @project-header-gradient;
+  }
+  &.experiment-header-gradient {
+    background: @experiment-header-gradient;
+  }
+  &.admin-header-gradient {
+    background: @admin-header-gradient;
+  }
+  &.run-header-gradient {
+    background: @run-header-gradient;
+  }
+
+  &,
+  a {
+    color: @page-title-text-color;
+    font-weight: lighter;
+  }
+
+  .title {
+    font-size: 36px;
+    font-weight: lighter;
+    line-height: 39px;
+    word-break: break-word;
+  }
+
+  .container > * {
+    line-height: 49px;
+  }
+
+  .page-title-pre {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .page-title-secondary {
+    margin: 5px;
+    > * {
+      margin-left: 5px;
+    }
+  }
+
+  .glyph-label {
+    .vertically-centered();
+    .fas,
+    .far {
+      font-size: 60%;
+      color: @off-white;
+      padding-right: 0.5em;
+    }
+
+    &.active {
+      font-weight: @semibold;
+    } // For use in tabs
+  }
+
+  .glyph-label,
+  .link-label {
+    font-size: @font-size-base;
+    text-decoration: none;
+  }
+
+  .glyph-label:hover {
+    .link-label {
+      text-decoration: underline;
+    }
+  }
+
+  .info {
+    margin-top: 12px;
+    display: inline-grid;
+    grid-template-columns: 100px 1fr;
+    dt,
+    dd {
+      font-size: @font-size-base;
+    }
+    dt {
+      font-weight: lighter;
+      color: @sigopt-purple-xlight;
+    }
+  }
+
+  .page-nav {
+    margin-top: 28px;
+    border-top: 1px solid fade(white, 40%);
+    padding-top: 12px;
+    &.borderless {
+      margin-top: 3px;
+      padding-top: 0px;
+      border: none;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      .glyph-label {
+        &:not(:first-child) {
+          padding-left: 1em;
+        }
+        padding-right: 1em;
+        @media (max-width: @grid-float-breakpoint) {
+          padding-bottom: 1em;
+        }
+      }
+    }
+  }
+}
+
+.page-body {
+  padding: 1.25em;
+  border-radius: 0 0 @page-border-radius @page-border-radius;
+}
+
+.form-control,
+p,
+textarea {
+  display: block;
+  font-size: 16px;
+  line-height: 22px;
+  margin-bottom: 20px;
+}
+
+// Prevents <img>s from stretching out of the page on mobile
+img {
+  max-width: 100%;
+}
+
+.popover {
+  font-family: @font-family;
+}
