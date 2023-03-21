@@ -21,7 +21,6 @@ class TestLocalDriver(UnitTestsBase):
 
     conn = Connection(driver=LocalDriver)
 
-    # With experiment id
     e = conn.experiments().create(**experiment_meta)
     assert e.id == FIXED_EXPERIMENT_ID
     suggestion = conn.experiments(e.id).suggestions().create()
@@ -35,7 +34,7 @@ class TestLocalDriver(UnitTestsBase):
 
     e2 = conn.experiments().create(**experiment_meta)
     fetched_e = conn.experiments(e2.id).fetch()
-    assert e2.id == fetched_e.id
+    assert e2.id == fetched_e.id == FIXED_EXPERIMENT_ID
     suggestion = conn.experiments(e2.id).suggestions().create()
     self.is_valid_connection_suggestion(suggestion, experiment_meta)
 
@@ -54,8 +53,8 @@ class TestLocalDriver(UnitTestsBase):
 
     conn = Connection(driver=LocalDriver)
     e = conn.experiments().create(**experiment_meta)
+    suggestion = conn.experiments(e.id).suggestions().create()
     for i in range(NUM_OBSERVATIONS):
-      suggestion = conn.experiments(e.id).suggestions().create()
       values = [{"name": "y1", "value": i}]
       conn.experiments(e.id).observations().create(
         assignments=suggestion.assignments,
@@ -70,7 +69,6 @@ class TestLocalDriver(UnitTestsBase):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
-    # Without experiment id
     conn.experiments().create(**experiment_meta)
     with pytest.raises(Exception):
       conn.experiments().suggestions().fetch()
@@ -80,8 +78,12 @@ class TestLocalDriver(UnitTestsBase):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
-    experiment = conn.experiments().create(**experiment_meta)
-    conn.experiments(experiment.id).suggestions().create()
+    conn.experiments().create(**experiment_meta)
+    suggestion = conn.experiments(FIXED_EXPERIMENT_ID).suggestions().create()
+    conn.experiments(int(FIXED_EXPERIMENT_ID)).suggestions().create(
+      suggestion=suggestion.id,
+      values=[{"name": "y1", "value": 3}],
+    )
     with pytest.raises(Exception):
       conn.experiments(bad_id).suggestions().create()
 
@@ -89,7 +91,6 @@ class TestLocalDriver(UnitTestsBase):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
-    # Without experiment id
     e = conn.experiments().create(**experiment_meta)
     s1 = conn.experiments(e.id).suggestions().create()
     s2 = conn.experiments(e.id).suggestions().create()
@@ -99,7 +100,6 @@ class TestLocalDriver(UnitTestsBase):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
-    # Without experiment id
     e = conn.experiments().create(**experiment_meta)
     s = conn.experiments(e.id).suggestions().create()
     with pytest.raises(Exception):
