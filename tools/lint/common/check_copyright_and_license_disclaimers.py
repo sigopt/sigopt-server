@@ -5,11 +5,18 @@
 
 import argparse
 import os
+import re
 import sys
 
 
 COPYRIGHT = "Copyright © 2022 Intel Corporation"
 LICENSE = "SPDX-License-Identifier: Apache License 2.0"
+
+DISCLAIMER_RE_LINES = [
+  re.compile(r"^[ *#]*Copyright © [0-9]{4} Intel Corporation$"),
+  re.compile(r"^[ *#]"),
+  re.compile(r"^[ *#]*SPDX-License-Identifier:.*$"),
+]
 
 SKIP_DIRECTORIES = {
   "node_modules",
@@ -68,9 +75,8 @@ def file_has_disclaimer(filename, filetype, verbose=False):
   if verbose:
     print(f"Checking: {filename}")
   with open(filename) as fp:
-    maybe_shebang = fp.readline()
-    remaining = fp.read()
-    disclaimer = DISCLAIMERS_BY_FILETYPE[filetype]
+    maybe_shebang = next(fp)
+    remaining = "".join([l for l, _ in zip(fp, range(3))])
 
     to_check = None
     if maybe_shebang.startswith("#!"):
@@ -78,7 +84,11 @@ def file_has_disclaimer(filename, filetype, verbose=False):
     else:
       to_check = maybe_shebang + remaining
 
-  return to_check[0 : len(disclaimer)] == disclaimer
+  to_check = to_check.split("\n")
+  if len(to_check) < len(DISCLAIMER_RE_LINES):
+    return False
+
+  return all(regex.match(line) for regex, line in zip(DISCLAIMER_RE_LINES, to_check))
 
 
 def check_all(directory, verbose=False):
