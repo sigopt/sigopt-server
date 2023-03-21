@@ -50,6 +50,9 @@ class Broker(object):
   def create_observation(self, assignments=None, values=None, suggestion=None, failed=False, task=None):
     assert assignments or suggestion
     if assignments is None:
+      if self.stored_suggestion is None:
+        raise ValueError("There is no stored suggestion to use. Please create another suggestion")
+
       assert suggestion == self.stored_suggestion.id
       assignments = self.stored_suggestion.assignments
       if self.stored_suggestion.task is not None:

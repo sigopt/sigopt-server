@@ -23,7 +23,6 @@ class TestLocalDriver(UnitTestsBase):
 
     conn = Connection(driver=LocalDriver)
 
-    # With experiment id
     e = conn.experiments().create(**experiment_meta)
     assert e.id == FIXED_EXPERIMENT_ID
     suggestion = conn.experiments(e.id).suggestions().create()
@@ -72,7 +71,6 @@ class TestLocalDriver(UnitTestsBase):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
-    # Without experiment id
     conn.experiments().create(**experiment_meta)
     with pytest.raises(Exception):
       conn.experiments().suggestions().fetch()
@@ -91,13 +89,12 @@ class TestLocalDriver(UnitTestsBase):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
-    # Without experiment id
     e = conn.experiments().create(**experiment_meta)
     s1 = conn.experiments(e.id).suggestions().create()
     s2 = conn.experiments(e.id).suggestions().create()
     assert s1 == s2
 
-  def test_create_suggestion_by_id(self):
+  def test_create_observation_by_id(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
@@ -111,7 +108,7 @@ class TestLocalDriver(UnitTestsBase):
     stored_observation = next(observations.iterate_pages())
     assert stored_observation.assignments == s.assignments
 
-  def test_create_suggestion_by_same_assignments(self):
+  def test_create_observation_by_same_assignments(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
@@ -126,15 +123,14 @@ class TestLocalDriver(UnitTestsBase):
     stored_observation = next(observations.iterate_pages())
     assert stored_observation.assignments == s.assignments
 
-  def test_create_suggestion_by_different_assignments(self):
+  def test_create_observation_by_different_assignments(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
 
     e = conn.experiments().create(**experiment_meta)
     s = conn.experiments(e.id).suggestions().create()
-    real_assignments = s.assignments
-    real_assignments["d1"] = 1.23456789
+    real_assignments = {"d1": 1.2345, "i1": 12, "c1": "a", "l1": 1, "g1": 0.9}
     conn.experiments(e.id).observations().create(
       assignments=real_assignments,
       values=[{"name": "y1", "value": 1}],
@@ -142,7 +138,14 @@ class TestLocalDriver(UnitTestsBase):
     observations = conn.experiments(e.id).observations().fetch()
     stored_observation = next(observations.iterate_pages())
     assert stored_observation.assignments != s.assignments
-    assert stored_observation.assignments == real_assignments
+    assert dict(stored_observation.assignments) == real_assignments
+
+  def test_new_observation_before_suggestion_created(self):
+    experiment_meta = self.get_experiment_feature("default")
+
+    conn = Connection(driver=LocalDriver)
+
+    e = conn.experiments().create(**experiment_meta)
 
   def test_old_suggestion_cleared_by_new_observation_with_different_assignments(self):
     experiment_meta = self.get_experiment_feature("default")
@@ -151,12 +154,18 @@ class TestLocalDriver(UnitTestsBase):
 
     e = conn.experiments().create(**experiment_meta)
     s = conn.experiments(e.id).suggestions().create()
-    real_assignments = s.assignments
-    real_assignments["d1"] = 1.23456789
+    real_assignments = {"d1": 1.2345, "i1": 12, "c1": "a", "l1": 1, "g1": 0.9}
     conn.experiments(e.id).observations().create(
       assignments=real_assignments,
       values=[{"name": "y1", "value": 1}],
     )
+
+    # Can't create a suggestion with id after creating an observation before
+    with pytest.raises(ValueError):
+      conn.experiments(e.id).observations().create(
+        suggestion=s.id,
+        values=[{"name": "y1", "value": 1}],
+      )
 
     s_new = conn.experiments(e.id).suggestions().create()
     assert s.assignments != s_new.assignments
@@ -181,7 +190,6 @@ class TestLocalDriver(UnitTestsBase):
     experiment_meta["type"] = "random"
 
     conn = Connection(driver=LocalDriver)
-    # Without experiment id
     e = conn.experiments().create(**experiment_meta)
     assert e.progress.observation_count == e.progress.observation_budget_consumed == 0
     for i in range(num_obs):
