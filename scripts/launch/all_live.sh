@@ -49,26 +49,26 @@ fi
 
 function setup_web {
   if "${WEB:-true}"; then
-    ./scripts/launch/compose run --rm init-web
+    ./scripts/launch/compose.sh run --rm init-web
   fi
 }
 
 function kill_services {
-  ./scripts/launch/compose kill \
+  ./scripts/launch/compose.sh kill \
     "${FOREGROUND_SERVICES[@]}" \
     "${BACKGROUND_SERVICES[@]}" &>/dev/null || true
 }
 
 function start_bg_services {
   if [ ${#BACKGROUND_SERVICES[@]} -gt 0 ]; then
-    ./scripts/launch/compose up --detach "${BACKGROUND_SERVICES[@]}"
+    ./scripts/launch/compose.sh up --detach "${BACKGROUND_SERVICES[@]}"
   fi
 }
 
 function start_fg_services {
   if [ ${#FOREGROUND_SERVICES[@]} -gt 0 ]; then
-    ./scripts/launch/compose up -d "${FOREGROUND_SERVICES[@]}"
-    ./scripts/launch/compose logs -f "${FOREGROUND_SERVICES[@]}"
+    ./scripts/launch/compose.sh up -d "${FOREGROUND_SERVICES[@]}"
+    ./scripts/launch/compose.sh logs -f "${FOREGROUND_SERVICES[@]}"
   fi
 }
 
