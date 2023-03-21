@@ -74,9 +74,9 @@ def guess_filetype(filename):
 def generate_disclaimer(filetype):
   opener, closer = COMMENT_BLOCKS[filetype]
   separator = COMMENT_LINES[filetype]
-  return "\n".join(line.rstrip(" ") for line in [
+  return "\n".join([
     f"{opener}{separator}{COPYRIGHT}",
-    separator,
+    separator.rstrip(" "),
     f"{separator}{LICENSE}",
     f"{closer}",
   ])
