@@ -279,7 +279,7 @@ class LocalExperimentBuilder(BuilderBase):
         if conditional.name in parameter_conditions:
           conditional_values.append(parameter_conditions[conditional.name])
         else:  # If that conditional is not present for a parameter, then add all values
-          conditional_values.append([x.name for x in conditional.values])  # TODO fix this to use enum_index
+          conditional_values.append([x.name for x in conditional.values])
       for selected_conditionals in itertools.product(*conditional_values):
         satisfied_parameter_configurations.add(selected_conditionals)
 
