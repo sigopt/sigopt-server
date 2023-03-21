@@ -87,7 +87,7 @@ class TestLocalDriver(UnitTestsBase):
     with pytest.raises(Exception):
       conn.experiments(bad_id).suggestions().create()
 
-  def test_suggestion_duplicates(self):
+  def test_create_suggestion_twice_is_duplicates(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
@@ -97,7 +97,7 @@ class TestLocalDriver(UnitTestsBase):
     s2 = conn.experiments(e.id).suggestions().create()
     assert s1 == s2
 
-  def test_pass_suggestion_by_id(self):
+  def test_create_suggestion_by_id(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
@@ -111,7 +111,7 @@ class TestLocalDriver(UnitTestsBase):
     stored_observation = next(observations.iterate_pages())
     assert stored_observation.assignments == s.assignments
 
-  def test_pass_suggestion_by_same_assignments(self):
+  def test_create_suggestion_by_same_assignments(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
@@ -126,7 +126,7 @@ class TestLocalDriver(UnitTestsBase):
     stored_observation = next(observations.iterate_pages())
     assert stored_observation.assignments == s.assignments
 
-  def test_pass_suggestion_by_different_assignments(self):
+  def test_create_suggestion_by_different_assignments(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
@@ -144,7 +144,7 @@ class TestLocalDriver(UnitTestsBase):
     assert stored_observation.assignments != s.assignments
     assert stored_observation.assignments == real_assignments
 
-  def test_old_suggestion_cleared_by_observation_different_assignments(self):
+  def test_old_suggestion_cleared_by_new_observation_with_different_assignments(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
@@ -162,7 +162,7 @@ class TestLocalDriver(UnitTestsBase):
     assert s.assignments != s_new.assignments
     assert int(s.id) + 1 == int(s_new.id)
 
-  def test_suggestion_wrong_id(self):
+  def test_create_suggestion_with_wrong_id_fails(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
