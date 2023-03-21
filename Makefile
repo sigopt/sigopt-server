@@ -12,8 +12,8 @@ DEVELOPMENT_IMAGES = \
 
 RUN_IMAGES = \
 	nginx \
-	node \
-	python
+	web \
+	zigopt
 
 compile: protocompile pytest lint eslint
 
@@ -23,7 +23,7 @@ dist-compile: compile
 protocompile:
 	@./tools/protobuf/compile.sh
 
-docker-protocompile: build-docker-images
+docker-protocompile: build-debug-images
 	@./scripts/dev/compile_protobuf_in_docker
 
 clean-test-pycache:
