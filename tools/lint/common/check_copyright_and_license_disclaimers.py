@@ -4,12 +4,14 @@
 # SPDX-License-Identifier: Apache License 2.0
 
 import argparse
+import datetime
 import os
 import re
 import sys
 
 
-COPYRIGHT = "Copyright © 2022 Intel Corporation"
+YEAR = datetime.datetime.now().year
+COPYRIGHT = f"Copyright © {YEAR} Intel Corporation"
 LICENSE = "SPDX-License-Identifier: Apache License 2.0"
 
 DISCLAIMER_RE_LINES = [
