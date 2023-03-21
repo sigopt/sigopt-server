@@ -476,7 +476,7 @@ jobs:
     steps:
       - attach
       - install-submodules
-      - run: ./ci/check_node_deps
+      - run: ./ci/check_node_deps.sh
   web-unit:
     executor: sigopt-node-only
     steps:
