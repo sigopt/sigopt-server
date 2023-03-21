@@ -158,8 +158,9 @@ class TestLocalDriver(UnitTestsBase):
       values=[{"name": "y1", "value": 1}],
     )
 
-    s_new = conn.experiments(e.id).suggestions.create()
+    s_new = conn.experiments(e.id).suggestions().create()
     assert s.assignments != s_new.assignments
+    assert int(s.id) + 1 == int(s_new.id)
 
   def test_suggestion_wrong_id(self):
     experiment_meta = self.get_experiment_feature("default")
