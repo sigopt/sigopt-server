@@ -6,7 +6,7 @@ networks:
 
 services:
   test-runner:
-    image: "sigopt/${TEST_RUNNER_NAME}:${CIRCLE_SHA1}"
+    image: "sigopt/${TEST_RUNNER_NAME}:${TAG}"
     environment:
       - ALLOW_SLOW=1
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
@@ -24,7 +24,7 @@ services:
       - integration.utils.mail
       - --send-port=6001
       - --receive-port=6002
-    image: "sigopt/test-runner:${CIRCLE_SHA1}"
+    image: "sigopt/test-runner:${TAG}"
   createdb:
     command:
       - python
@@ -33,9 +33,9 @@ services:
       - &config-file config/circleci.json
       - --drop-tables
       - --fake-data
-    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+    image: "sigopt/zigopt:${TAG}"
   nginx:
-    image: "sigopt/nginx:${CIRCLE_SHA1}"
+    image: "sigopt/nginx:${TAG}"
     volumes:
       - artifacts/tls:/etc/ssl/sigopt:ro
     networks:
@@ -51,20 +51,20 @@ services:
       - -b
       - 0.0.0.0:5000
       - zigopt.api.main:GUNICORN_ENTRY_POINT
-    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+    image: "sigopt/zigopt:${TAG}"
     environment: &zigopt_environment
       - sigopt_server_config_file=config/circleci.json
-      - "sigopt_server_version=git:$CIRCLE_SHA1"
+      - "sigopt_server_version=git:$TAG"
     networks:
       default:
         aliases:
           - api-server.ninja
   web-server:
-    image: "sigopt/web:${CIRCLE_SHA1}"
+    image: "sigopt/web:${TAG}"
     environment:
       - sigopt_server_config_file=config/circleci.json
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
-      - "sigopt_server_version=git:$CIRCLE_SHA1"
+      - "sigopt_server_version=git:$TAG"
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
     volumes:
       - artifacts/tls:/sigopt-server/artifacts/tls:ro
@@ -80,7 +80,7 @@ services:
       - -m
       - zigopt.queue.api
       - optimization
-    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+    image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
   qworker-analytics:
     restart: on-failure:5
@@ -89,7 +89,7 @@ services:
       - -m
       - zigopt.queue.api
       - analytics
-    image: "sigopt/zigopt:${CIRCLE_SHA1}"
+    image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
 
   postgres:
@@ -117,7 +117,7 @@ services:
       - SIGOPT_API_TOKEN=client_token
       - *api-tls-verify-env
       - ALLOW_SLOW=1
-    image: "sigopt/test-runner:${CIRCLE_SHA1}"
+    image: "sigopt/test-runner:${TAG}"
     volumes:
       - *rootca-volume
       - ${HOME}/project/requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
