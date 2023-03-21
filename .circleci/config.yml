@@ -230,7 +230,7 @@ commands:
     steps:
       - attach
       - install-python-libraries
-      - run: ./test/unit_tests --junitxml=junit-results/unit-tests/junit.xml --count=<< parameters.count >> test/python/sigopttest
+      - run: ./test/unit_tests.sh --junitxml=junit-results/unit-tests/junit.xml --count=<< parameters.count >> test/python/sigopttest
       - store_test_results:
           path: junit-results
     parameters:
@@ -386,7 +386,7 @@ jobs:
               fi
             done
             if [ $rc -ne 0 ]; then
-              echo 'Some __init__.py files are missing in test/integration/. Run `./scripts/dev/ensure_inits` and commit the changes.'
+              echo 'Some __init__.py files are missing in test/integration/. Run `./scripts/dev/ensure_inits.sh` and commit the changes.'
             fi
             exit $rc
   trivy-scan-images:
@@ -422,17 +422,17 @@ jobs:
           name: Add sigopt.ninja DNS entry
           command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: make build-debug-images fix-db setup-cookiejar setup-filestorage
-      - run: ./scripts/launch/start_zigopt_services || ./scripts/launch/start_zigopt_services
+      - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
       - run:
           name: Development services
-          command: ./scripts/launch/all_live
+          command: ./scripts/launch/all_live.sh
           background: true
       - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
       - run: "./ci/wait_for.sh url https://sigopt.ninja:4443/api/ --user client_token:"
       - run: |
           curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "owner@sigopt.ninja", "password": "owner"}'
       - run: |
-          ./test/test_dev_env \
+          ./test/test_dev_env.sh \
             test/integration/browser/tests/interaction/global/email_test.py \
             test/integration/v1/endpoints/training_runs/files_test.py
   compile-protobuf:
@@ -522,7 +522,7 @@ jobs:
           command: ./ci/compose.sh create test-client
       - run:
           name: Client Integration Test
-          command: ./ci/compose.sh run test-client test/run_client_integration_tests main
+          command: ./ci/compose.sh run test-client test/run_client_integration_tests.sh main
   service-integration:
     executor: sigopt-integration
     steps:

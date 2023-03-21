@@ -8,7 +8,7 @@ This way, we can quickly check if our critical flows such as logging in and crea
 
 Write browser tests with Playwright by using the `page` or `logged_in_page` fixture.
 See documentation for Playwright's page [here](https://playwright.dev/python/docs/api/class-page).
-Use the script `./test/playwright_codegen` to help write new tests.
+Use the script `./test/playwright_codegen.sh` to help write new tests.
 
 ## _Deprecated_ Selenium tests
 
@@ -18,7 +18,7 @@ Please use Playwright instead.
 
 ## Debugging
 
-When the test runner container starts (ie. while `test/test_dev_env` is running) a VNC session will become available at `localhost:5900`.
+When the test runner container starts (ie. while `test/test_dev_env.sh` is running) a VNC session will become available at `localhost:5900`.
 Use a VNC client like [Real VNC Viewer](https://www.realvnc.com/en/connect/download/viewer/) to view the browser as tests are running.
 Use `pdb` to place a breakpoint so that you have time to connect the VNC session and step through each line in the test code.
 

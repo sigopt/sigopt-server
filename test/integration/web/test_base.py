@@ -243,7 +243,7 @@ def load_routes():
         "Could not find route definitions."
         " The route definitions are used in web and browser tests"
         " to check that links are valid and generate test cases."
-        " They are generated from the web code by running ./scripts/compile/generate_routes"
+        " They are generated from the web code by running ./scripts/compile/generate_routes.sh"
       ) from fne
   return _routes
 

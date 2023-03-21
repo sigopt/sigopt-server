@@ -4,5 +4,5 @@ set -o pipefail
 
 export EDITOR=true
 
-./tools/tls/generate_root_ca
-./tools/tls/generate_san_cert
+./tools/tls/generate_root_ca.sh
+./tools/tls/generate_san_cert.sh

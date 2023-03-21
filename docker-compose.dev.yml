@@ -80,7 +80,7 @@ services:
     logging:
       <<: *logging
     command:
-      - ./scripts/compile/generate_routes
+      - ./scripts/compile/generate_routes.sh
       - "${sigopt_server_config_file}"
     image: sigopt/node:latest
     volumes:
