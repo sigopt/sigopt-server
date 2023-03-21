@@ -270,7 +270,14 @@ commands:
     steps:
       - checkout
       - install-python-libraries
-      - run: ./pp pytest -rw sigoptlite/sigoptlitetest/ --durations 5 --junitxml=junit-results/sigoptlite-tests/junit.xml
+      - run:
+          command: ./pp pytest -rw sigoptlite/sigoptlitetest/ --durations 5 --junitxml=junit-results/sigoptlite-tests/junit.xml
+          environment:
+            OMP_NUM_THREADS: "1"
+            OPENBLAS_NUM_THREADS: "1"
+            MKL_NUM_THREADS: "1"
+            VECLIB_MAXIMUM_THREADS: "1"
+            NUMEXPR_NUM_THREADS: "1"
       - store_test_results:
           path: junit-results
   store-junit-test-results:
