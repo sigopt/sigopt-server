@@ -57,9 +57,7 @@ class LocalAPI:
 class LocalDriver:
   def __init__(self, compute_mode=DEFAULT_COMPUTE_MODE):
     if compute_mode not in [DEFAULT_COMPUTE_MODE, SPE_COMPUTE_MODE]:
-      raise ValueError(
-        f"The argument compute_mode must be either {DEFAULT_COMPUTE_MODE}  or {SPE_COMPUTE_MODE}"
-      )
+      raise ValueError(f"The argument compute_mode must be either {DEFAULT_COMPUTE_MODE}  or {SPE_COMPUTE_MODE}")
 
     self.name = "Local"
     local_api = LocalAPI(compute_mode=compute_mode)
@@ -77,8 +75,8 @@ class LocalDriver:
     if str(experiment_id) != FIXED_EXPERIMENT_ID:
       if (isinstance(experiment_id, str) and experiment_id.isdigit()) or isinstance(experiment_id, int):
         raise Exception(
-          "The Experiment ID provided ({experiment_id}) is not associated with your local experiment.",
-          "Please use the one associated with your local experiment: {FIXED_EXPERIMENT_ID}.",
+          f"The Experiment ID provided ({experiment_id}) is not associated with your local experiment.",
+          f"Please use the one associated with your local experiment: {FIXED_EXPERIMENT_ID}.",
         )
       else:
         raise Exception("Please provide an Experiment ID.")
