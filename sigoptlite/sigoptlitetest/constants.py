@@ -66,16 +66,8 @@ DEFAULT_PARAMETER_WITH_PRIORS = [
 ]
 
 DEFAULT_SIMPLE_PARAMETERS = [
-  dict(
-    name="d1",
-    type=DOUBLE_EXPERIMENT_PARAMETER_NAME,
-    bounds=dict(min=0, max=10),
-  ),
-  dict(
-    name="d2",
-    type=DOUBLE_EXPERIMENT_PARAMETER_NAME,
-    bounds=dict(min=0, max=10),
-  ),
+  PARAMETER_DOUBLE,
+  PARAMETER_INT,
 ]
 
 DEFAULT_METRICS = [
