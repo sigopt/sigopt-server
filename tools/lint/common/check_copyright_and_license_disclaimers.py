@@ -36,16 +36,16 @@ COMMENT_BLOCKS = {
   Filetype.dockerfile: ("", ""),
   Filetype.js: ("/**\n", " */\n\n"),
   Filetype.less: ("/**\n", " */\n"),
-  Filetype.markdown: ("<!--\n", " -->\n"),
+  Filetype.markdown: ("<!--\n", "-->\n"),
   Filetype.python: ("", ""),
 }
 
 COMMENT_LINES = {
-  Filetype.dockerfile: "#",
-  Filetype.js: " *",
-  Filetype.less: " *",
+  Filetype.dockerfile: "# ",
+  Filetype.js: " * ",
+  Filetype.less: " * ",
   Filetype.markdown: "",
-  Filetype.python: "#",
+  Filetype.python: "# ",
 }
 
 
@@ -62,7 +62,7 @@ def guess_filetype(filename):
 def generate_disclaimer(filetype):
   opener, closer = COMMENT_BLOCKS[filetype]
   separator = COMMENT_LINES[filetype]
-  return f"{opener}{separator} {COPYRIGHT}\n{separator}\n{separator} {LICENSE}\n{closer}"
+  return f"{opener}{separator}{COPYRIGHT}\n{separator}\n{separator}{LICENSE}\n{closer}"
 
 
 DISCLAIMERS_BY_FILETYPE = {filetype: generate_disclaimer(filetype) for filetype in FILETYPES}
