@@ -12,10 +12,10 @@ services:
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
     volumes:
-      - &rootca-volume ../artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
-      - ../junit-results:/sigopt-server/junit-results
-      - ../screenshots/failure:/sigopt-server/screenshots/failure
-      - ../failure_console_logs:/sigopt-server/failure_console_logs
+      - &rootca-volume artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
+      - junit-results:/sigopt-server/junit-results
+      - screenshots/failure:/sigopt-server/screenshots/failure
+      - failure_console_logs:/sigopt-server/failure_console_logs
       - /dev/shm:/dev/shm
   smtp:
     command:
@@ -37,7 +37,7 @@ services:
   nginx:
     image: "sigopt/nginx:${CIRCLE_SHA1}"
     volumes:
-      - ../artifacts/tls:/etc/ssl/sigopt:ro
+      - artifacts/tls:/etc/ssl/sigopt:ro
     networks:
       default:
         aliases:
@@ -67,7 +67,7 @@ services:
       - "sigopt_server_version=git:$CIRCLE_SHA1"
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
     volumes:
-      - ../artifacts/tls:/sigopt-server/artifacts/tls:ro
+      - artifacts/tls:/sigopt-server/artifacts/tls:ro
       - server-bin:/sigopt-server/bin
     networks:
       default:
