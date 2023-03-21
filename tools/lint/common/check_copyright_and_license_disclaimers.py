@@ -10,6 +10,9 @@ import re
 import sys
 
 
+# customlint: disable=AccidentalFormatStringRule
+
+
 YEAR = datetime.datetime.now().year
 COPYRIGHT = f"Copyright © {YEAR} Intel Corporation"
 LICENSE = "SPDX-License-Identifier: Apache License 2.0"
