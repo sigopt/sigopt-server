@@ -77,16 +77,16 @@ def file_has_disclaimer(filename, filetype, verbose=False):
   if verbose:
     print(f"Checking: {filename}")
   with open(filename) as fp:
-    maybe_shebang = next(fp)
-    remaining = "".join([l for l, _ in zip(fp, range(3))])
+    to_check = []
+    line = next(fp)
+    if line.startswith("#!"):
+      line = next(fp)
+    if line == "/**\n":
+      line = next(fp)
+    to_check.append(line)
+    to_check.extend(l for l, _ in zip(fp, range(len(DISCLAIMER_RE_LINES) - 1)))
 
-    to_check = None
-    if maybe_shebang.startswith("#!"):
-      to_check = remaining
-    else:
-      to_check = maybe_shebang + remaining
-
-  to_check = to_check.split("\n")
+  to_check = "".join(to_check).split("\n")
   if len(to_check) < len(DISCLAIMER_RE_LINES):
     return False
 
