@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import itertools
+
 import numpy
 
 from sigoptaux.constant import (
@@ -11,14 +13,7 @@ from sigoptaux.constant import (
   ParameterTransformationNames,
 )
 from sigoptaux.geometry_utils import find_interior_point
-from sigoptlite.models import (
-  LocalAssignments,
-  LocalExperiment,
-  LocalObservation,
-  LocalTask,
-  MetricEvaluation,
-  dataclass_to_dict,
-)
+from sigoptlite.models import *
 
 
 def create_experiment_from_template(experiment_template, **kwargs):
@@ -27,22 +22,66 @@ def create_experiment_from_template(experiment_template, **kwargs):
   return LocalExperimentBuilder(experiment_meta)
 
 
-class LocalExperimentBuilder(object):
+class BuilderBase(object):
+  def __new__(cls, input_dict):
+    cls.validate_input_dict(input_dict)
+    local_object = cls.create_object(**input_dict)
+    cls.validate_object(local_object)
+    return local_object
+
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    raise NotImplementedError
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    raise NotImplementedError
+
+  @classmethod
+  def validate_object(cls, _):
+    pass
+
+  @classmethod
+  def set_object(cls, input_dict, field, local_class):
+    if not input_dict.get(field):
+      return
+    input_dict[field] = local_class(input_dict[field])
+
+  @classmethod
+  def set_list_of_objects(cls, input_dict, field, local_class):
+    if not input_dict.get(field):
+      return
+    input_dict[field] = [local_class(i) for i in input_dict[field]]
+
+  @staticmethod
+  def get_num_distict_elements(lst):
+    return len(set(lst))
+
+
+class LocalExperimentBuilder(BuilderBase):
   cls_name = "sigoptlite experiment"
 
-  def __new__(cls, experiment_meta):
-    cls.validate_experiment_meta(experiment_meta)
-    experiment = LocalExperiment(**experiment_meta)
-    cls.validate_experiment_object(experiment)
-    return experiment
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert isinstance(input_dict["parameters"], list)
+    assert len(input_dict["parameters"]) > 0
+    assert isinstance(input_dict["metrics"], list)
+    assert len(input_dict["metrics"]) > 0
 
   @classmethod
-  def validate_experiment_meta(cls, experiment_meta):
-    assert len(experiment_meta["parameters"]) > 0
-    assert len(experiment_meta["metrics"]) > 0
+  def create_object(cls, **input_dict):
+    cls.set_list_of_objects(input_dict, field="parameters", local_class=LocalParameterBuilder)
+    cls.set_list_of_objects(input_dict, field="metrics", local_class=LocalMetricBuilder)
+    cls.set_list_of_objects(input_dict, field="conditionals", local_class=LocalConditionalBuilder)
+    cls.set_list_of_objects(input_dict, field="tasks", local_class=LocalTaskBuilder)
+    cls.set_list_of_objects(input_dict, field="linear_constraints", local_class=LocalLinearConstraintBuilder)
+    return LocalExperiment(**input_dict)
 
   @classmethod
-  def validate_experiment_object(cls, experiment):
+  def validate_object(cls, experiment):
+    cls.validate_parameters(experiment)
+    cls.validate_metrics(experiment)
+
     if not experiment.parallel_bandwidth == 1:
       raise ValueError(f"{cls.cls_name} must have parallel_bandwidth == 1")
 
@@ -60,6 +99,10 @@ class LocalExperimentBuilder(object):
     if not (experiment.optimized_metrics or experiment.constraint_metrics):
       raise ValueError(f"{cls.cls_name} must have optimized or constraint metrics")
 
+    if experiment.optimized_metrics:
+      if not len(experiment.optimized_metrics) in [1, 2]:
+        raise ValueError(f"{cls.cls_name} must have one or two optimized metrics")
+
     # Check feature viability of multisolution experiments
     num_solutions = experiment.num_solutions
     if num_solutions and num_solutions > 1:
@@ -67,6 +110,14 @@ class LocalExperimentBuilder(object):
         raise ValueError("observation_budget needs to be larger than the number of solutions")
       if not len(experiment.optimized_metrics) == 1:
         raise ValueError(f"{cls.cls_name} with multiple solutions require exactly one optimized metric")
+
+    # Check conditional limitation
+    if experiment.is_conditional:
+      if num_solutions and num_solutions > 1:
+        raise ValueError(f"{cls.cls_name} with multiple solutions does not support conditional parameters")
+      if experiment.is_search:
+        raise ValueError(f"All-Constraint {cls.cls_name} does not support conditional parameters")
+      cls.validate_conditionals(experiment)
 
     # Check feature viability of multitask
     tasks = experiment.tasks
@@ -77,17 +128,41 @@ class LocalExperimentBuilder(object):
         raise ValueError(f"{cls.cls_name} cannot have both tasks and constraint metrics")
       if num_solutions and num_solutions > 1:
         raise ValueError(f"{cls.cls_name} with multiple solutions cannot be multitask")
-
-    # Check conditional limitation
-    if experiment.is_conditional:
-      if num_solutions and num_solutions > 1:
-        raise ValueError(f"{cls.cls_name} with multiple solutions does not support conditional parameters")
-      if experiment.is_search:
-        raise ValueError(f"All-Constraint {cls.cls_name} does not support conditional parameters")
+      cls.validate_tasks(experiment)
 
     if experiment.linear_constraints:
       cls.validate_constraints(experiment)
       cls.check_constraint_feasibility(experiment)
+
+  @classmethod
+  def validate_parameters(cls, experiment):
+    param_names = [p.name for p in experiment.parameters]
+    if not len(param_names) == cls.get_num_distict_elements(param_names):
+      raise ValueError(f"No duplicate parameters are allowed: {param_names}")
+
+  @classmethod
+  def validate_metrics(cls, experiment):
+    metric_names = [m.name for m in experiment.metrics]
+    if not len(metric_names) == cls.get_num_distict_elements(metric_names):
+      raise ValueError(f"No duplicate metrics are allowed: {metric_names}")
+
+  @classmethod
+  def validate_conditionals(cls, experiment):
+    cls.check_all_conditional_values_satisfied(experiment)
+
+  @classmethod
+  def validate_tasks(cls, experiment):
+    if len(experiment.tasks) < 2:
+      raise ValueError("For multitask experiments, at least 2 tasks must be present.")
+    costs = [t.cost for t in experiment.tasks]
+    num_distinct_task = cls.get_num_distict_elements([t.name for t in experiment.tasks])
+    num_distinct_costs = cls.get_num_distict_elements(costs)
+    if not num_distinct_task == len(experiment.tasks):
+      raise ValueError(f"For multitask {cls.cls_name}, all task names must be distinct")
+    if not num_distinct_costs == len(experiment.tasks):
+      raise ValueError(f"For multitask {cls.cls_name}, all costs names must be distinct")
+    if 1 not in costs:
+      raise ValueError(f"For multitask {cls.cls_name}, exactly one task must have cost == 1 (none present).")
 
   @classmethod
   def validate_constraints(cls, experiment):
@@ -192,6 +267,198 @@ class LocalExperimentBuilder(object):
     _, _, feasibility = find_interior_point(halfspaces)
     if not feasibility:
       raise ValueError("Infeasible constraints")
+
+  @staticmethod
+  def check_all_conditional_values_satisfied(experiment):
+    num_conditional_values = numpy.product([len(c.values) for c in experiment.conditionals])
+    satisfied_parameter_configurations = set([])
+    for parameter in experiment.parameters:
+      conditional_values = []
+      for conditional in experiment.conditionals:
+        parameter_conditions = {x.name: x.values for x in parameter.conditions}
+        if conditional.name in parameter_conditions:
+          conditional_values.append(parameter_conditions[conditional.name])
+        else:  # If that conditional is not present for a parameter, then add all values
+          conditional_values.append([x.name for x in conditional.values])  # TODO fix this to use enum_index
+      for selected_conditionals in itertools.product(*conditional_values):
+        satisfied_parameter_configurations.add(selected_conditionals)
+
+    if len(satisfied_parameter_configurations) != num_conditional_values:
+      raise ValueError("Need at least one parameter that satisfies each conditional value")
+
+
+class LocalParameterBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert isinstance(input_dict["name"], str)
+    assert isinstance(input_dict["type"], str)
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    cls.set_object(input_dict, field="bounds", local_class=LocalBoundsBuilder)
+    if input_dict.get("categorical_values"):
+      categorical_values = input_dict["categorical_values"]
+      get_name_options = {str: lambda x: x, dict: lambda x: x["name"]}
+      get_name = get_name_options[type(categorical_values[0])]
+      sorted_categorical_values = sorted(categorical_values, key=get_name)
+      input_dict["categorical_values"] = [
+        LocalCategoricalValue(name=get_name(cv), enum_index=i + 1) for i, cv in enumerate(sorted_categorical_values)
+      ]
+    if input_dict.get("conditions"):
+      input_dict["conditions"] = [LocalCondition(name=n, values=v) for n, v in input_dict["conditions"].items()]
+    cls.set_object(input_dict, field="prior", local_class=LocalParameterPriorBuilder)
+    return LocalParameter(**input_dict)
+
+  @classmethod
+  def validate_object(cls, parameter):
+    # categorical parameter
+    if parameter.is_categorical:
+      if not len(parameter.categorical_values) > 1:
+        raise ValueError(
+          f"Categorical parameter {parameter.name} must have more than one categorical value. "
+          f"Current values are {parameter.categorical_values}"
+        )
+      if parameter.grid:
+        raise ValueError("Categorical parameter does not support grid values")
+      if parameter.bounds:
+        raise ValueError(f"Categorical parameter should not have bounds: {parameter.bounds}")
+
+    # parameter with grid
+    if parameter.grid:
+      if not len(parameter.grid) > 1:
+        raise ValueError(
+          f"Grid parameter {parameter.name} must have more than one value. Current values are {parameter.grid}"
+        )
+      if parameter.bounds:
+        raise ValueError(f"Grid parameter should not have bounds: {parameter.bounds}")
+      if not cls.get_num_distict_elements(parameter.grid) == len(parameter.grid):
+        raise ValueError(f"Grid values should be unique: {parameter.grid}")
+
+    # log transformation
+    if parameter.has_transformation:
+      if not parameter.is_double:
+        raise ValueError("Transformation only applies to parameters type of double")
+      if parameter.bounds and parameter.bounds.min <= 0:
+        raise ValueError("Invalid bounds for log-transformation: bounds must be positive")
+      if parameter.grid and min(parameter.grid) <= 0:
+        raise ValueError("Invalid grid values for log-transformation: values must be positive")
+
+    # parameter priors
+    if parameter.has_prior:
+      if not parameter.is_double:
+        raise ValueError("Prior only applies to parameters type of double")
+      if parameter.prior.is_normal:
+        if not parameter.bounds.is_value_within(parameter.prior.mean):
+          raise ValueError(f"parameter.prior.mean {parameter.prior.mean} must be within bounds {parameter.bounds}")
+      if not (parameter.prior.is_normal ^ parameter.prior.is_beta):
+        raise ValueError(f"{parameter.prior} must be either normal or beta")
+
+
+class LocalMetricBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert isinstance(input_dict["name"], str)
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    return LocalMetric(**input_dict)
+
+
+class LocalConditionalBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert set(input_dict.keys()) == {"name", "values"}
+    assert isinstance(input_dict["name"], str)
+    assert isinstance(input_dict["values"], list)
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    input_dict["values"] = [LocalConditionalValue(enum_index=i + 1, name=v) for i, v in enumerate(input_dict["values"])]
+    return LocalConditional(**input_dict)
+
+
+class LocalTaskBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert set(input_dict.keys()) == {"name", "cost"}
+    assert isinstance(input_dict["name"], str)
+    assert isinstance(input_dict["cost"], (int, float))
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    return LocalTask(**input_dict)
+
+  @classmethod
+  def validate_object(cls, task):
+    if task.cost <= 0 or task.cost > 1:
+      raise ValueError(f"{task} costs must be positve and less than or equal to 1.")
+
+
+class LocalLinearConstraintBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert input_dict.keys() == {"type", "terms", "threshold"}
+    assert input_dict["type"] in ["less_than", "greater_than"]
+    assert isinstance(input_dict["threshold"], (int, float))
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    cls.set_list_of_objects(input_dict, field="terms", local_class=LocalConstraintTermBuilder)
+    return LocalLinearConstraint(**input_dict)
+
+
+class LocalBoundsBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert set(input_dict.keys()) == {"min", "max"}
+    assert isinstance(input_dict["min"], (int, float))
+    assert isinstance(input_dict["max"], (int, float))
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    return LocalBounds(**input_dict)
+
+  @classmethod
+  def validate_object(cls, bounds):
+    if bounds.min >= bounds.max:
+      raise ValueError(f"{bounds}: min must be less than max")
+
+
+class LocalParameterPriorBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert input_dict["name"] in ["beta", "normal"]
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    return LocalParameterPrior(**input_dict)
+
+  @classmethod
+  def validate_object(cls, parameter_prior):
+    if parameter_prior.is_beta:
+      if (parameter_prior.shape_a is None) or (parameter_prior.shape_b is None):
+        raise ValueError(f"{parameter_prior} must have shape_a and shape_b")
+      if parameter_prior.shape_a <= 0:
+        raise ValueError(f"{parameter_prior} shape_a must be positive")
+      if parameter_prior.shape_b <= 0:
+        raise ValueError(f"{parameter_prior} shape_b must be positive")
+    if parameter_prior.is_normal:
+      if (parameter_prior.mean is None) or (parameter_prior.scale is None):
+        raise ValueError(f"{parameter_prior} must provide mean and scale")
+      if parameter_prior.scale <= 0:
+        raise ValueError(f"{parameter_prior} scale must be positive")
+
+
+class LocalConstraintTermBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert set(input_dict.keys()) == {"name", "weight"}
+    assert isinstance(input_dict["name"], str)
+    assert isinstance(input_dict["weight"], (int, float))
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    return LocalConstraintTerm(**input_dict)
 
 
 class LocalObservationBuilder(object):
