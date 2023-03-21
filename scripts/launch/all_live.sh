@@ -73,7 +73,7 @@ function start_fg_services {
 }
 
 function main {
-  . scripts/launch/setup_env "$@"
+  . scripts/launch/setup_env.sh "$@"
   setup_web
   kill_services
   start_bg_services
