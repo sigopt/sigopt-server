@@ -73,16 +73,16 @@ class LocalDriver:
     }
 
   def check_experiment_id(self, experiment_id):
-    if experiment_id != FIXED_EXPERIMENT_ID:
-      if isinstance(experiment_id, str) and experiment_id.isdigit():
+    if str(experiment_id) != FIXED_EXPERIMENT_ID:
+      if (isinstance(experiment_id, str) and experiment_id.isdigit()) or isinstance(experiment_id, int):
         raise Exception(
           "That experiment id is not associated with your local experiment.",
           "Please use the one associated with your local experiment",
         )
       else:
         raise Exception("Please provide an experiment id.")
-    else:
-      return True
+
+    return True
 
   def check_and_remove_experiment_id(self, path, method):
     if path and path[0] == "experiments":
