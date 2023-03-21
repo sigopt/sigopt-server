@@ -54,7 +54,7 @@ class TestGPNextPoints(UnitTestsBase):
 
   def test_valid_suggestion(self, any_meta):
     experiment = LocalExperimentBuilder(any_meta)
-    observations = self.make_random_observations(experiment, 42)
+    observations = self.make_random_observations(experiment, 5)
     source = GPSource(experiment)
     suggestion = source.get_suggestion(observations)
     self.assert_valid_suggestion(suggestion, experiment)
