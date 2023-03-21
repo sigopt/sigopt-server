@@ -48,7 +48,7 @@ COMMENT_BLOCKS = {
   Filetype.dockerfile: ("", ""),
   Filetype.js: ("/**\n", " */\n\n"),
   Filetype.less: ("/**\n", " */\n"),
-  Filetype.markdown: ("<!--\n", "-->\n"),
+  Filetype.markdown: ("<!--\n", "-->\n\n"),
   Filetype.python: ("", ""),
 }
 

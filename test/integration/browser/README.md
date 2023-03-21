@@ -3,6 +3,7 @@ Copyright © 2023 Intel Corporation
 
 SPDX-License-Identifier: Apache License 2.0
 -->
+
 # Automated Browser Tests
 
 These tests are meant to automate our web flows from an end-user's perspective,

@@ -3,6 +3,7 @@ Copyright © 2023 Intel Corporation
 
 SPDX-License-Identifier: Apache License 2.0
 -->
+
 ## Code Dependencies
 
 Our scripts use the latest version of Bash.
