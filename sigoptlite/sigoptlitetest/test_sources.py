@@ -37,8 +37,9 @@ class TestGPNextPoints(UnitTestsBase):
 
     if experiment.is_multitask:
       assert hyperparameters["task_length"] is not None
+      assert hyperparameters["task_length"] > 0
 
-  @pytest.mark.parametrize("feature", ["multitask", "multimetric", "search"])
+  @pytest.mark.parametrize("feature", ["default", "multitask", "metric_constraint"])
   def test_hyperparameter_update(self, feature):
     experiment_meta = self.get_experiment_feature(feature)
     experiment = LocalExperimentBuilder(experiment_meta)
@@ -53,7 +54,7 @@ class TestGPNextPoints(UnitTestsBase):
 
   def test_valid_suggestion(self, any_meta):
     experiment = LocalExperimentBuilder(any_meta)
-    observations = self.make_random_observations(experiment, 5)
+    observations = self.make_random_observations(experiment, 42)
     source = GPSource(experiment)
     suggestion = source.get_suggestion(observations)
     self.assert_valid_suggestion(suggestion, experiment)

@@ -211,7 +211,7 @@ class TestLocalExperiment(LocalExperimentBase):
   def test_experiment_multisolution(self):
     experiment_meta = self.get_experiment_feature("multisolution")
     experiment = LocalExperimentBuilder(experiment_meta)
-    assert experiment.num_solutions == 5
+    assert experiment.num_solutions == experiment_meta["num_solutions"]
     assert experiment.is_multisolution
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 

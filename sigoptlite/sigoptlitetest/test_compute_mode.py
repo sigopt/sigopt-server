@@ -38,13 +38,11 @@ class TestComputeMode(object):
         values=[dict(name="y1", value=i)],
       )
 
-  @pytest.mark.skip(reason="Needs client update")
   def test_wrong_flag(self):
     with pytest.raises(ValueError):
       # pylint: disable=unexpected-keyword-arg
       Connection(driver=LocalDriver, compute_mode="not_valid")
 
-  @pytest.mark.skip(reason="Needs client update")
   @mock.patch.object(GpNextPointsCategorical, "view")
   def test_correct_routing_gp_optimization(self, mock_view):
     fake_point = [1.2345, 11]
@@ -57,7 +55,6 @@ class TestComputeMode(object):
     suggestion = conn.experiments(e.id).suggestions().create()
     assert list(suggestion.assignments.values()) == fake_point
 
-  @pytest.mark.skip(reason="Needs client update")
   @mock.patch.object(SPENextPoints, "view")
   def test_correct_routing_spe_optimization(self, mock_view):
     fake_point = [2.3456, 12]
@@ -70,7 +67,6 @@ class TestComputeMode(object):
     suggestion = conn.experiments(e.id).suggestions().create()
     assert list(suggestion.assignments.values()) == fake_point
 
-  @pytest.mark.skip(reason="Needs client update")
   @mock.patch.object(SearchNextPoints, "view")
   def test_correct_routing_gp_search(self, mock_view):
     fake_point = [3.4567, 13]
@@ -83,7 +79,6 @@ class TestComputeMode(object):
     suggestion = conn.experiments(e.id).suggestions().create()
     assert list(suggestion.assignments.values()) == fake_point
 
-  @pytest.mark.skip(reason="Needs client update")
   @mock.patch.object(SPESearchNextPoints, "view")
   def test_correct_routing_spe_search(self, mock_view):
     fake_point = [4.5678, 14]

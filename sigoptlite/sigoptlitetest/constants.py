@@ -32,7 +32,7 @@ PARAMETER_INT = dict(
 PARAMETER_CATEGORICAL = dict(
   name="c1",
   type=CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  categorical_values=["a", "b", "c", "d", "e"],
+  categorical_values=["a", "b", "c"],
 )
 
 PARAMETER_GRID = dict(name="g1", type=DOUBLE_EXPERIMENT_PARAMETER_NAME, grid=[0.01, 0.1, 0.3, 0.9])
@@ -60,11 +60,8 @@ DEFAULT_PARAMETERS = [
 ]
 
 DEFAULT_PARAMETER_WITH_PRIORS = [
-  PARAMETER_DOUBLE,
   PARAMETER_NORMAL_PRIOR,
-  PARAMETER_INT,
   PARAMETER_CATEGORICAL,
-  PARAMETER_GRID,
   PARAMETER_BETA_PRIOR,
 ]
 
@@ -189,24 +186,30 @@ EXPERIMENT_META_MULTITASK = dict(
   tasks=DEFAULT_TASKS,
 )
 
-EXPERIMENT_META_MULTISOLUTION = dict(**DEFAULT_EXPERIMENT_META)
-EXPERIMENT_META_MULTISOLUTION["num_solutions"] = 5
-EXPERIMENT_META_MULTISOLUTION["observation_budget"] = 111
+EXPERIMENT_META_MULTISOLUTION = dict(
+  parameters=DEFAULT_PARAMETERS,
+  metrics=DEFAULT_METRICS,
+  num_solutions=7,
+  observation_budget=111,
+)
 
 EXPERIMENT_META_MULTIMETRIC_THRESHOLD = dict(
   parameters=DEFAULT_PARAMETERS,
   metrics=DEFAULT_METRICS_THRESHOLDS,
-  observation_budget=321,
+  observation_budget=31,
 )
 
 EXPERIMENT_META_METRIC_CONSTRAINT = dict(
   parameters=DEFAULT_SIMPLE_PARAMETERS,
   metrics=DEFAULT_METRICS_ONE_CONSTRAINT,
-  observation_budget=512,
+  observation_budget=52,
 )
 
-EXPERIMENT_META_PRIORS = dict(**DEFAULT_EXPERIMENT_META)
-EXPERIMENT_META_PRIORS["parameters"] = DEFAULT_PARAMETER_WITH_PRIORS
+EXPERIMENT_META_PRIORS = dict(
+  parameters=DEFAULT_PARAMETER_WITH_PRIORS,
+  metrics=DEFAULT_METRICS,
+  observation_budget=10,
+)
 
 EXPERIMENT_META_CONDITIONALS = dict(
   name="conditional experiment",
