@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import copy
+
 import numpy
 import pytest
 from sigopt import Connection
@@ -95,7 +97,71 @@ class TestLocalDriver(UnitTestsBase):
     s2 = conn.experiments(e.id).suggestions().create()
     assert s1 == s2
 
-  def test_suggestion_id(self):
+  def test_pass_suggestion_by_id(self):
+    experiment_meta = self.get_experiment_feature("default")
+
+    conn = Connection(driver=LocalDriver)
+    e = conn.experiments().create(**experiment_meta)
+    s = conn.experiments(e.id).suggestions().create()
+    conn.experiments(e.id).observations().create(
+      suggestion=s.id,
+      values=[{"name": "y1", "value": 1}],
+    )
+    observations = conn.experiments(e.id).observations().fetch()
+    stored_observation = next(observations.iterate_pages())
+    assert stored_observation.assignments == s.assignments
+
+  def test_pass_suggestion_by_same_assignments(self):
+    experiment_meta = self.get_experiment_feature("default")
+
+    conn = Connection(driver=LocalDriver)
+
+    e = conn.experiments().create(**experiment_meta)
+    s = conn.experiments(e.id).suggestions().create()
+    conn.experiments(e.id).observations().create(
+      assignments=s.assignments,
+      values=[{"name": "y1", "value": 1}],
+    )
+    observations = conn.experiments(e.id).observations().fetch()
+    stored_observation = next(observations.iterate_pages())
+    assert stored_observation.assignments == s.assignments
+
+  def test_pass_suggestion_by_different_assignments(self):
+    experiment_meta = self.get_experiment_feature("default")
+
+    conn = Connection(driver=LocalDriver)
+
+    e = conn.experiments().create(**experiment_meta)
+    s = conn.experiments(e.id).suggestions().create()
+    real_assignments = s.assignments
+    real_assignments["d1"] = 1.23456789
+    conn.experiments(e.id).observations().create(
+      assignments=real_assignments,
+      values=[{"name": "y1", "value": 1}],
+    )
+    observations = conn.experiments(e.id).observations().fetch()
+    stored_observation = next(observations.iterate_pages())
+    assert stored_observation.assignments != s.assignments
+    assert stored_observation.assignments == real_assignments
+
+  def test_old_suggestion_cleared_by_observation_different_assignments(self):
+    experiment_meta = self.get_experiment_feature("default")
+
+    conn = Connection(driver=LocalDriver)
+
+    e = conn.experiments().create(**experiment_meta)
+    s = conn.experiments(e.id).suggestions().create()
+    real_assignments = s.assignments
+    real_assignments["d1"] = 1.23456789
+    conn.experiments(e.id).observations().create(
+      assignments=real_assignments,
+      values=[{"name": "y1", "value": 1}],
+    )
+
+    s_new = conn.experiments(e.id).suggestions.create()
+    assert s.assignments != s_new.assignments
+
+  def test_suggestion_wrong_id(self):
     experiment_meta = self.get_experiment_feature("default")
 
     conn = Connection(driver=LocalDriver)
