@@ -61,7 +61,7 @@ commands:
     steps:
       - run:
           name: << parameters.description >>
-          command: ./ci/compose up << parameters.service >>
+          command: ./ci/compose.sh up << parameters.service >>
           background: true
     parameters:
       description:
@@ -95,7 +95,7 @@ commands:
           build_images: << parameters.build_images >> << parameters.test_runner_name >>
       - run: ./ci/create_development_tls_certs
       - run: |
-          ./ci/compose create \
+          ./ci/compose.sh create \
             api \
             createdb \
             minio \
@@ -108,8 +108,8 @@ commands:
       - start-service:
           description: PostgreSQL
           service: postgres
-      - run: ./ci/compose create createdb
-      - run: ./ci/compose run createdb
+      - run: ./ci/compose.sh create createdb
+      - run: ./ci/compose.sh run createdb
       - start-service:
           description: Redis
           service: redis
@@ -519,10 +519,10 @@ jobs:
           service: mongodb
       - run:
           name: Create test container
-          command: ./ci/compose create test-client
+          command: ./ci/compose.sh create test-client
       - run:
           name: Client Integration Test
-          command: ./ci/compose run test-client test/run_client_integration_tests main
+          command: ./ci/compose.sh run test-client test/run_client_integration_tests main
   service-integration:
     executor: sigopt-integration
     steps:
@@ -533,14 +533,14 @@ jobs:
     steps:
       - docker-test-setup:
           build_images: zigopt
-      - run: ./ci/compose create createdb postgres redis
+      - run: ./ci/compose.sh create createdb postgres redis
       - start-service:
           description: PostgreSQL
           service: postgres
-      - run: ./ci/compose create createdb
-      - run: ./ci/compose run createdb
+      - run: ./ci/compose.sh create createdb
+      - run: ./ci/compose.sh run createdb
       - run: ./ci/worker_health_fail
-      - run: ./ci/compose create redis
+      - run: ./ci/compose.sh create redis
       - start-service:
           description: Redis
           service: redis
