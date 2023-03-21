@@ -20,6 +20,7 @@ class Filetype:
   dockerfile = "Dockerfile"
   js = ".js"
   less = ".less"
+  markdown = ".md"
   python = ".py"
 
 
@@ -27,6 +28,7 @@ FILETYPES = (
   Filetype.dockerfile,
   Filetype.js,
   Filetype.less,
+  Filetype.markdown,
   Filetype.python,
 )
 
@@ -34,6 +36,7 @@ COMMENT_BLOCKS = {
   Filetype.dockerfile: ("", ""),
   Filetype.js: ("/**\n", " */\n\n"),
   Filetype.less: ("/**\n", " */\n"),
+  Filetype.markdown: ("<!--\n", " -->\n"),
   Filetype.python: ("", ""),
 }
 
@@ -41,6 +44,7 @@ COMMENT_LINES = {
   Filetype.dockerfile: "#",
   Filetype.js: " *",
   Filetype.less: " *",
+  Filetype.markdown: "",
   Filetype.python: "#",
 }
 

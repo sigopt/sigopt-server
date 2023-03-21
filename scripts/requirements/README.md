@@ -1,3 +1,8 @@
+<!--
+ Copyright © 2022 Intel Corporation
+
+ SPDX-License-Identifier: Apache License 2.0
+ -->
 # Requirements scripts
 
 The scripts in this directory were created to make updating requirements easy.
