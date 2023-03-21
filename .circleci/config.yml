@@ -93,7 +93,7 @@ commands:
     steps:
       - docker-test-setup:
           build_images: << parameters.build_images >> << parameters.test_runner_name >>
-      - run: ./ci/create_development_tls_certs
+      - run: ./ci/create_development_tls_certs.sh
       - run: |
           ./ci/compose.sh create \
             api \
@@ -417,7 +417,7 @@ jobs:
       - checkout
       - update-docker-cli
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
-      - run: ./ci/create_development_tls_certs
+      - run: ./ci/create_development_tls_certs.sh
       - run:
           name: Add sigopt.ninja DNS entry
           command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
