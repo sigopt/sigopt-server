@@ -18,6 +18,7 @@ services:
       - failure_console_logs:/sigopt-server/failure_console_logs
       - /dev/shm:/dev/shm
   smtp:
+    restart: on-failure:5
     command:
       - python
       - -m
@@ -25,6 +26,21 @@ services:
       - --send-port=6001
       - --receive-port=6002
     image: "sigopt/test-runner:${TAG}"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+          pids: 16
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6002/health"]
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+      start_period: "30s"
+    security_opt:
+      - "no-new-privileges:true"
   createdb:
     command:
       - python
@@ -34,7 +50,11 @@ services:
       - --drop-tables
       - --fake-data
     image: "sigopt/zigopt:${TAG}"
+    read_only: true
+    security_opt:
+      - "no-new-privileges:true"
   nginx:
+    restart: on-failure:5
     image: "sigopt/nginx:${TAG}"
     volumes:
       - artifacts/tls:/etc/ssl/sigopt:ro
@@ -44,6 +64,20 @@ services:
           - sigopt.ninja
     ports:
       - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+          pids: 2
+    read_only: true
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/run/nginx/nginx.pid"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+    security_opt:
+      - "no-new-privileges:true"
   api:
     restart: on-failure:5
     command:
@@ -59,6 +93,27 @@ services:
       default:
         aliases:
           - api-server.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 16
+    read_only: true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import requests
+          requests.get("http://localhost:5000/health").raise_for_status()
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+      start_period: "15s"
+    security_opt:
+      - "no-new-privileges:true"
   web-server:
     image: "sigopt/web:${TAG}"
     environment:
@@ -73,6 +128,21 @@ services:
       default:
         aliases:
           - app-server.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 4G
+          pids: 64
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000"]
+      interval: "10s"
+      timeout: "10s"
+      retries: 3
+      start_period: "2m"
+    security_opt:
+      - "no-new-privileges:true"
   qworker:
     restart: on-failure:5
     command:
@@ -82,6 +152,27 @@ services:
       - optimization
     image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 32
+    read_only: true
+    healthcheck: &qworker-healthcheck
+      test:
+        - CMD
+        - bash
+        - -e
+        - -opipefail
+        - -c
+        - ps awx | grep zigopt.queue.api
+      interval: "1s"
+      timeout: "1s"
+      retries: 1
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
   qworker-analytics:
     restart: on-failure:5
     command:
@@ -91,12 +182,76 @@ services:
       - analytics
     image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 32
+    read_only: true
+    healthcheck:
+      <<: *qworker-healthcheck
+    security_opt:
+      - "no-new-privileges:true"
 
   postgres:
+    restart: on-failure:5
     image: "postgres:${POSTGRES_VERSION}"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - pg-var:/var/run/postgresql
+    tmpfs:
+      - /tmp
+    read_only: true
+    ports:
+      - target: 5432
+        host_ip: 127.0.0.1
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+          pids: 32
+    healthcheck:
+      test:
+        ["CMD", "psql", "-h", "localhost", "-U", "postgres", "-c", "SELECT 1;"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
   redis:
+    restart: on-failure:5
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+    logging:
+      <<: *logging
     image: "redis:${REDIS_VERSION}"
+    ports:
+      - target: 6379
+        host_ip: 127.0.0.1
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 128M
+          pids: 8
+    read_only: true
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
   minio:
+    restart: on-failure:5
     image: "quay.io/minio/minio"
     environment:
       - MINIO_ROOT_USER=ROOTUSER
@@ -105,7 +260,22 @@ services:
       - minio-data:/var/lib/minio/data
     command:
       - "server"
-      - "/data"
+      - "/var/lib/minio/data"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 128M
+          pids: 32
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9000"]
+      interval: "5s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
 
   test-client:
     command:
@@ -120,9 +290,9 @@ services:
     image: "sigopt/test-runner:${TAG}"
     volumes:
       - *rootca-volume
-      - ${HOME}/project/requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
-      - ${HOME}/project/test:/sigopt-server/test:ro
-      - ${HOME}/project/pytest.ini:/sigopt-server/pytest.ini:ro
+      - ./requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
+      - ./test:/sigopt-server/test:ro
+      - ./pytest.ini:/sigopt-server/pytest.ini:ro
 
   mongodb:
     image: "mongo:${MONGODB_VERSION}"
@@ -131,5 +301,7 @@ services:
     container_name: "mongodb"
 
 volumes:
-  server-bin: {}
   minio-data: {}
+  pg-var: {}
+  pg-data: {}
+  server-bin: {}
