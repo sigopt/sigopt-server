@@ -1,3 +1,9 @@
+<!--
+Copyright © 2023 Intel Corporation
+
+SPDX-License-Identifier: Apache License 2.0
+-->
+
 # Development Setup
 
 Use these steps if you want to set up to contribute to development of SigOpt. In order to install for local development, you will want to do the following steps, which we've laid out for both Mac and Ubuntu Linux. (We haven't tested on other distros, but we think that the only difference should be the package manager commands.)

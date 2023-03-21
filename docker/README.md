@@ -1,3 +1,9 @@
+<!--
+Copyright © 2023 Intel Corporation
+
+SPDX-License-Identifier: Apache License 2.0
+-->
+
 # SigOpt Docker images
 
 This directory contains the scripts for building SigOpt docker images for development.
