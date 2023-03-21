@@ -8,10 +8,12 @@ from sigoptlite.models import FIXED_EXPERIMENT_ID, dataclass_to_dict
 
 
 PRODUCT_NAME = "sigoptlite"
+DEFAULT_COMPUTE_MODE = "default"
+SPE_COMPUTE_MODE = "kde_only"
 
 
 class LocalAPI:
-  def __init__(self, compute_mode="default"):
+  def __init__(self, compute_mode):
     self.name = "Local"
     self.broker = None
     self.best_assignments_logger = None
@@ -19,7 +21,7 @@ class LocalAPI:
 
   def experiments_post(self, experiment_json):
     experiment = LocalExperimentBuilder(experiment_json)
-    self.broker = Broker(experiment, force_spe=(self.compute_mode == "kde_only"))
+    self.broker = Broker(experiment, force_spe=(self.compute_mode == SPE_COMPUTE_MODE))
     self.best_assignments_logger = BestAssignmentsLogger(experiment)
     return self.experiments_get()
 
@@ -53,11 +55,10 @@ class LocalAPI:
 
 
 class LocalDriver:
-  def __init__(self, compute_mode="default"):
-    compute_mode_options = ["default", "kde_only"]
-    if compute_mode not in compute_mode_options:
+  def __init__(self, compute_mode=DEFAULT_COMPUTE_MODE):
+    if compute_mode not in [DEFAULT_COMPUTE_MODE, SPE_COMPUTE_MODE]:
       raise ValueError(
-        f"The argument compute_mode must be either {compute_mode_options[0]} or {compute_mode_options[1]}"
+        f"The argument compute_mode must be either {DEFAULT_COMPUTE_MODE}  or {SPE_COMPUTE_MODE}"
       )
 
     self.name = "Local"
