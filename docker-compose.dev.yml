@@ -316,8 +316,9 @@ services:
     volumes:
       - "./artifacts/tls:/etc/ssl/sigopt"
       - "./nginx:/etc/nginx:ro"
-      - nginx-cache:/var/cache/nginx
-      - nginx-var:/var/run/nginx
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run/nginx
     working_dir: /sigopt-server
     networks:
       default:
@@ -664,8 +665,6 @@ services:
 volumes:
   minio-config: {}
   minio-data: {}
-  nginx-cache: {}
-  nginx-var: {}
   pg-var: {}
   pgvolume: {}
   server-bin: {}

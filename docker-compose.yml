@@ -58,6 +58,9 @@ services:
     image: "sigopt/nginx:${TAG}"
     volumes:
       - ./artifacts/tls:/etc/ssl/sigopt:ro
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run/nginx
     networks:
       default:
         aliases:
@@ -89,6 +92,8 @@ services:
     environment: &zigopt_environment
       - "sigopt_server_config_file=$SIGOPT_CONFIG_FILE"
       - "sigopt_server_version=git:$TAG"
+    tmpfs:
+      - /tmp
     networks:
       default:
         aliases:
