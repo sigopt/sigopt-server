@@ -25,6 +25,6 @@ COPY .babelrc /sigopt-server/
 COPY config /sigopt-server/config
 COPY web /sigopt-server/web
 
-COPY scripts/compile/minify_js /sigopt-server/scripts/compile/minify_js
+COPY scripts/compile/minify_js.sh /sigopt-server/scripts/compile/minify_js.sh
 
-RUN ./scripts/compile/minify_js
+RUN ./scripts/compile/minify_js.sh

@@ -9,7 +9,7 @@ set -o pipefail
 : "${CN:=sigopt.ninja}"
 
 if [ ! -f "$ROOT_CA" ] || [ ! -f "$ROOT_CA_KEY" ]; then
-  >&2 echo "Please create a root certificate authority with ./tools/tls/generate_root_ca"
+  >&2 echo "Please create a root certificate authority with ./tools/tls/generate_root_ca.sh"
   exit 1
 fi
 

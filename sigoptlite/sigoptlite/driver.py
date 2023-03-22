@@ -8,10 +8,12 @@ from sigoptlite.models import FIXED_EXPERIMENT_ID, dataclass_to_dict
 
 
 PRODUCT_NAME = "sigoptlite"
+DEFAULT_COMPUTE_MODE = "default"
+SPE_COMPUTE_MODE = "kde_only"
 
 
 class LocalAPI:
-  def __init__(self, compute_mode="default"):
+  def __init__(self, compute_mode):
     self.name = "Local"
     self.broker = None
     self.best_assignments_logger = None
@@ -19,7 +21,7 @@ class LocalAPI:
 
   def experiments_post(self, experiment_json):
     experiment = LocalExperimentBuilder(experiment_json)
-    self.broker = Broker(experiment, force_spe=(self.compute_mode == "kde_only"))
+    self.broker = Broker(experiment, force_spe=(self.compute_mode == SPE_COMPUTE_MODE))
     self.best_assignments_logger = BestAssignmentsLogger(experiment)
     return self.experiments_get()
 
@@ -53,12 +55,9 @@ class LocalAPI:
 
 
 class LocalDriver:
-  def __init__(self, compute_mode="default"):
-    compute_mode_options = ["default", "kde_only"]
-    if compute_mode not in compute_mode_options:
-      raise ValueError(
-        f"The argument compute_mode must be either {compute_mode_options[0]} or {compute_mode_options[1]}"
-      )
+  def __init__(self, compute_mode=DEFAULT_COMPUTE_MODE):
+    if compute_mode not in [DEFAULT_COMPUTE_MODE, SPE_COMPUTE_MODE]:
+      raise ValueError(f"The argument compute_mode must be either {DEFAULT_COMPUTE_MODE}  or {SPE_COMPUTE_MODE}")
 
     self.name = "Local"
     local_api = LocalAPI(compute_mode=compute_mode)
@@ -73,16 +72,16 @@ class LocalDriver:
     }
 
   def check_experiment_id(self, experiment_id):
-    if experiment_id != FIXED_EXPERIMENT_ID:
-      if isinstance(experiment_id, str) and experiment_id.isdigit():
+    if str(experiment_id) != FIXED_EXPERIMENT_ID:
+      if (isinstance(experiment_id, str) and experiment_id.isdigit()) or isinstance(experiment_id, int):
         raise Exception(
-          "That experiment id is not associated with your local experiment.",
-          "Please use the one associated with your local experiment",
+          f"The Experiment ID provided ({experiment_id}) is not associated with your local experiment.",
+          f"Please use the one associated with your local experiment: {FIXED_EXPERIMENT_ID}.",
         )
       else:
-        raise Exception("Please provide an experiment id.")
-    else:
-      return True
+        raise Exception("Please provide an Experiment ID.")
+
+    return True
 
   def check_and_remove_experiment_id(self, path, method):
     if path and path[0] == "experiments":

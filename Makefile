@@ -24,26 +24,26 @@ protocompile:
 	@./tools/protobuf/compile.sh
 
 docker-protocompile: build-docker-images
-	@./scripts/dev/compile_protobuf_in_docker
+	@./scripts/dev/compile_protobuf_in_docker.sh
 
 clean-test-pycache:
-	@./scripts/dev/clean_test_pycache
+	@./scripts/dev/clean_test_pycache.sh
 
 ensure-test-inits:
-	@./scripts/dev/ensure_inits test/integration
+	@./scripts/dev/ensure_inits.sh test/integration
 
 setup-integration-tests: clean-test-pycache ensure-test-inits protocompile
 
 clean-py:
 	@find . -name '*.pyc' -delete
-	@./scripts/dev/clean_pycache .
+	@./scripts/dev/clean_pycache.sh .
 
 clean: clean-py
 	@git clean -fdX src/python/zigopt/protobuf/gen
 	@git clean -fdX web/js/zigopt
 
 pytest: clean-test-pycache protocompile
-	@./test/unit_tests
+	@./test/unit_tests.sh
 
 test: pytest
 
@@ -87,25 +87,25 @@ eslint-nofix:
 	@./tools/lint/javascript/eslint.sh
 
 prettier:
-	@./scripts/dev/prettier --write .
+	@./scripts/dev/prettier.sh --write .
 
 setup-filestorage:
-	@./scripts/launch/compose run --rm init-minio-filestorage
+	@./scripts/launch/compose.sh run --rm init-minio-filestorage
 
 fix-db: docker-protocompile
-	@./scripts/dev/createdb_in_docker config/development.json --fake-data --drop-tables
+	@./scripts/dev/createdb_in_docker.sh config/development.json --fake-data --drop-tables
 
 setup-cookiejar:
-	@./scripts/launch/compose run --rm init-minio-cookiejar
+	@./scripts/launch/compose.sh run --rm init-minio-cookiejar
 
 setup-pre-push:
-	@ln -fs $$(pwd)/tools/git/pre-push .git/hooks/pre-push
+	@ln -fs $$(pwd)/tools/git/pre-push.sh .git/hooks/pre-push
 
 setup-pre-commit:
-	@ln -fs $$(pwd)/tools/git/pre-commit .git/hooks/pre-commit
+	@ln -fs $$(pwd)/tools/git/pre-commit.sh .git/hooks/pre-commit
 
 setup-post-checkout:
-	@ln -fs "$$(pwd)/tools/git/post-checkout" .git/hooks/post-checkout
+	@ln -fs "$$(pwd)/tools/git/post-checkout.sh" .git/hooks/post-checkout
 
 setup-hooks: setup-pre-push setup-post-checkout
 	@echo "installed pre-push and post-checkout hooks"

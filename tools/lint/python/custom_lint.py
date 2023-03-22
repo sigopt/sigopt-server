@@ -5,6 +5,7 @@
 
 import ast
 import io
+import os
 import tokenize
 
 from zigopt.common.lists import find, generator_to_safe_iterator
@@ -313,7 +314,6 @@ def prepare_all_lint_node_rules(source, filename):
   rules = [
     AccidentalFormatStringRule(),
     AddingStringsRule(),
-    AvoidDatetimeNowRule(),
     EmptySuperRule(),
     ForbidImportTestSuiteRule(),
     ForbidTestSuiteInheritanceRule(),
@@ -332,6 +332,10 @@ def prepare_all_lint_node_rules(source, filename):
         NoImportZigoptRule(),
       ]
     )
+  if os.path.split(filename)[:3] == ["src", "python", "zigopt"]:
+    rules.extend([
+      AvoidDatetimeNowRule(),
+    ])
   return rules
 
 

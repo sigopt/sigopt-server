@@ -4,12 +4,24 @@
 # SPDX-License-Identifier: Apache License 2.0
 
 import argparse
+import datetime
 import os
+import re
 import sys
 
 
-COPYRIGHT = "Copyright © 2022 Intel Corporation"
+# customlint: disable=AccidentalFormatStringRule
+
+
+YEAR = datetime.datetime.now().year
+COPYRIGHT = f"Copyright © {YEAR} Intel Corporation"
 LICENSE = "SPDX-License-Identifier: Apache License 2.0"
+
+DISCLAIMER_RE_LINES = [
+  re.compile(r"^[ *#]*Copyright © [0-9]{4} Intel Corporation$"),
+  re.compile(r"^[ *#]*$"),
+  re.compile(r"^[ *#]*SPDX-License-Identifier:.*$"),
+]
 
 SKIP_DIRECTORIES = {
   "node_modules",
@@ -20,6 +32,7 @@ class Filetype:
   dockerfile = "Dockerfile"
   js = ".js"
   less = ".less"
+  markdown = ".md"
   python = ".py"
 
 
@@ -27,6 +40,7 @@ FILETYPES = (
   Filetype.dockerfile,
   Filetype.js,
   Filetype.less,
+  Filetype.markdown,
   Filetype.python,
 )
 
@@ -34,14 +48,16 @@ COMMENT_BLOCKS = {
   Filetype.dockerfile: ("", ""),
   Filetype.js: ("/**\n", " */\n\n"),
   Filetype.less: ("/**\n", " */\n"),
+  Filetype.markdown: ("<!--\n", "-->\n\n"),
   Filetype.python: ("", ""),
 }
 
 COMMENT_LINES = {
-  Filetype.dockerfile: "#",
-  Filetype.js: " *",
-  Filetype.less: " *",
-  Filetype.python: "#",
+  Filetype.dockerfile: "# ",
+  Filetype.js: " * ",
+  Filetype.less: " * ",
+  Filetype.markdown: "",
+  Filetype.python: "# ",
 }
 
 
@@ -58,7 +74,12 @@ def guess_filetype(filename):
 def generate_disclaimer(filetype):
   opener, closer = COMMENT_BLOCKS[filetype]
   separator = COMMENT_LINES[filetype]
-  return f"{opener}{separator} {COPYRIGHT}\n{separator}\n{separator} {LICENSE}\n{closer}"
+  return "\n".join([
+    f"{opener}{separator}{COPYRIGHT}",
+    separator.rstrip(" "),
+    f"{separator}{LICENSE}",
+    f"{closer}",
+  ])
 
 
 DISCLAIMERS_BY_FILETYPE = {filetype: generate_disclaimer(filetype) for filetype in FILETYPES}
@@ -68,17 +89,20 @@ def file_has_disclaimer(filename, filetype, verbose=False):
   if verbose:
     print(f"Checking: {filename}")
   with open(filename) as fp:
-    maybe_shebang = fp.readline()
-    remaining = fp.read()
-    disclaimer = DISCLAIMERS_BY_FILETYPE[filetype]
+    to_check = []
+    line = next(fp)
+    if line.startswith("#!"):
+      line = next(fp)
+    if line in ("/**\n", "<!--\n"):
+      line = next(fp)
+    to_check.append(line)
+    to_check.extend(l for l, _ in zip(fp, range(len(DISCLAIMER_RE_LINES) - 1)))
 
-    to_check = None
-    if maybe_shebang.startswith("#!"):
-      to_check = remaining
-    else:
-      to_check = maybe_shebang + remaining
+  to_check = "".join(to_check).split("\n")
+  if len(to_check) < len(DISCLAIMER_RE_LINES):
+    return False
 
-  return to_check[0 : len(disclaimer)] == disclaimer
+  return all(regex.match(line) for regex, line in zip(DISCLAIMER_RE_LINES, to_check))
 
 
 def check_all(directory, verbose=False):

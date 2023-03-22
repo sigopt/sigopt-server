@@ -9,11 +9,11 @@ FROM sigopt/node:${BUILD_TAG} AS test-routes
 COPY web /sigopt-server/web
 COPY config/circleci.json /sigopt-server/config/circleci.json
 COPY config/development.json /sigopt-server/config/development.json
-COPY scripts/compile/generate_routes /sigopt-server/scripts/compile/generate_routes
+COPY scripts/compile/generate_routes.sh /sigopt-server/scripts/compile/generate_routes.sh
 COPY .babelrc /sigopt-server/.babelrc
 COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.js
 
-RUN ./scripts/compile/generate_routes config/circleci.json
+RUN ./scripts/compile/generate_routes.sh config/circleci.json
 
 
 FROM sigopt/test-runner:${BUILD_TAG}

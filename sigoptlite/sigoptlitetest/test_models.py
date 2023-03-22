@@ -211,7 +211,7 @@ class TestLocalExperiment(LocalExperimentBase):
   def test_experiment_multisolution(self):
     experiment_meta = self.get_experiment_feature("multisolution")
     experiment = LocalExperimentBuilder(experiment_meta)
-    assert experiment.num_solutions == 5
+    assert experiment.num_solutions == experiment_meta["num_solutions"]
     assert experiment.is_multisolution
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
@@ -502,7 +502,7 @@ class TestParameterConstraints(UnitTestsBase):
 
 class TestLocalParameters(UnitTestsBase):
   @pytest.mark.parametrize(
-    "values,expected_values",
+    "categorical_values,expected_values",
     [
       (["p1", "p0"], ["p0", "p1"]),
       (["x3", "x2", "x1"], ["x1", "x2", "x3"]),
@@ -511,11 +511,11 @@ class TestLocalParameters(UnitTestsBase):
       ([{"name": "p0"}, {"name": "p1"}, {"name": "p2"}], ["p0", "p1", "p2"]),
     ],
   )
-  def test_sorted_categorical_parameter(self, experiment_meta, values, expected_values):
+  def test_sorted_categorical_parameter(self, experiment_meta, categorical_values, expected_values):
     categorical_param_dict = dict(
       name="cat_a",
       type="categorical",
-      categorical_values=values,
+      categorical_values=categorical_values,
     )
     experiment_meta["parameters"][0] = categorical_param_dict
     experiment = LocalExperimentBuilder(experiment_meta)
