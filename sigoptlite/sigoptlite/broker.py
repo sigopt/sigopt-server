@@ -56,12 +56,13 @@ class Broker(object):
         task = dataclass_to_dict(self.stored_suggestion.task)
 
     observation = LocalObservationBuilder(
-      dict(
+      input_dict=dict(
         assignments=assignments,
         values=values,
         failed=failed,
         task=task,
-      )
+      ),
+      experiment=self.experiment,
     )
     self.observations.append(observation)
     self.stored_suggestion = None

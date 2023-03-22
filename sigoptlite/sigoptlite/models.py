@@ -226,6 +226,11 @@ class LocalObservation:
   failed: bool = False
   task: LocalTask = None
 
+  def get_metric_value(self, metric_name):
+    try:
+      return next(v for v in self.values if v.name == metric_name)
+    except StopIteration:
+      return None
 
 @dataclass(frozen=True, kw_only=True)
 class LocalSuggestion:

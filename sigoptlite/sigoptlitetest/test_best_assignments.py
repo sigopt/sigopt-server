@@ -44,6 +44,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
         dict(name="y2", value=alpha * y2),
       ]
       best_observation = self.make_observation(
+        experiment=experiment,
         assignments=best_observation_assignments,
         values=best_observation_values,
       )
@@ -72,6 +73,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     # All observations are failures
     for _ in range(10):
       observation = self.make_observation(
+        experiment=experiment,
         assignments=self.make_random_suggestions(experiment)[0].assignments,
         failed=True,
       )
@@ -89,6 +91,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_observation_assignments = self.make_random_suggestions(experiment)[0].assignments
     best_observation_values = [dict(name="y1", value=best_value)]
     best_observation = self.make_observation(
+      experiment=experiment,
       assignments=best_observation_assignments,
       values=best_observation_values,
     )
@@ -191,6 +194,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     observations = []
     for _ in range(20):
       observation_with_task = self.make_observation(
+        experiment=experiment,
         assignments=self.make_random_suggestions(experiment)[0].assignments,
         values=[dict(name="y1", value=numpy.random.rand())],
         task=numpy.random.choice(experiment_meta["tasks"]),
@@ -211,6 +215,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     observations = []
     for _ in range(num_solutions):
       observation = self.make_observation(
+        experiment=experiment,
         assignments=self.make_random_suggestions(experiment)[0].assignments,
         values=[dict(name="y1", value=numpy.random.rand())],
       )

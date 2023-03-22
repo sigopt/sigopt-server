@@ -47,10 +47,12 @@ class TestAdapter(UnitTestsBase):
   def test_observations_to_points(self, experiment):
     observations = [
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 5.5, "i1": 15, "c1": "c"},
         values=[dict(name="y1", value=1.1), dict(name="y2", value=2.2)],
       ),
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 7.5, "i1": 18, "c1": "a"}, values=[dict(name="y1", value=3.3), dict(name="y2", value=4.4)]
       ),
     ]
@@ -77,6 +79,7 @@ class TestAdapter(UnitTestsBase):
   def test_observations_to_points_with_variance(self, experiment):
     observations = [
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 5.5, "i1": 15, "c1": "c"},
         values=[
           dict(name="y1", value=1.1, value_stddev=1e-1),
@@ -84,6 +87,7 @@ class TestAdapter(UnitTestsBase):
         ],
       ),
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 7.5, "i1": 18, "c1": "a"},
         values=[
           dict(name="y1", value=3.3, value_stddev=1e-3),
@@ -104,10 +108,12 @@ class TestAdapter(UnitTestsBase):
   def test_observations_to_points_with_failures(self, experiment):
     observations = [
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 5.5, "i1": 15, "c1": "c"},
         failed=True,
       ),
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 7.5, "i1": 18, "c1": "a"},
         failed=True,
       ),
@@ -121,11 +127,13 @@ class TestAdapter(UnitTestsBase):
     experiment = LocalExperimentBuilder(experiment_meta)
     observations = [
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 5.5, "l1": 1, "i1": 15, "c1": "c", "g1": 0.3},
         values=[dict(name="y1", value=1.1)],
         task={"name": "cheap", "cost": 0.1},
       ),
       self.make_observation(
+        experiment=experiment,
         assignments={"d1": 7.5, "l1": 1, "i1": 18, "c1": "a", "g1": 0.1},
         values=[dict(name="y1", value=3.3)],
         task={"name": "expensive", "cost": 1},

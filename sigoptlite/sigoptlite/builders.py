@@ -247,10 +247,10 @@ def process_error(e):
 
 
 class BuilderBase(object):
-  def __new__(cls, input_dict):
+  def __new__(cls, input_dict, **kwargs):
     cls.validate_input_dict(input_dict)
     local_object = cls.create_object(**input_dict)
-    cls.validate_object(local_object)
+    cls.validate_object(local_object, **kwargs)
     return local_object
 
   @classmethod
@@ -614,7 +614,7 @@ class LocalTaskBuilder(BuilderBase):
 
   @classmethod
   def validate_object(cls, task):
-    if task.cost <= 0 or task.cost > 1:
+    if not (0 < task.cost <= 1):
       raise ValueError(f"{task} costs must be positve and less than or equal to 1.")
 
 
@@ -685,38 +685,71 @@ class LocalConstraintTermBuilder(BuilderBase):
     return LocalConstraintTerm(**input_dict)
 
 
-class LocalObservationBuilder(object):
+class LocalObservationBuilder(BuilderBase):
   @classmethod
-  def validate_observation_dict(cls, observation_dict):
-    assert len(observation_dict["assignments"]) > 0
-    if observation_dict.get("values") is not None:
-      assert len(observation_dict["values"]) > 0
-      failed = observation_dict.get("failed", False)
+  def validate_input_dict(cls, input_dict):
+    assert len(input_dict["assignments"]) > 0
+    if input_dict.get("values") is not None:
+      assert len(input_dict["values"]) > 0
+      failed = input_dict.get("failed", False)
       assert not failed
-    if observation_dict.get("failed") is not None:
-      assert observation_dict["failed"] in [True, False]
-      if observation_dict["failed"]:
-        values = observation_dict.get("values", [])
+    if input_dict.get("failed") is not None:
+      assert input_dict["failed"] in [True, False]
+      if input_dict["failed"]:
+        values = input_dict.get("values", [])
         assert not values
 
-  def __new__(cls, observation_dict):
-    try:
-      validate_against_schema(observation_dict, OBSERVATION_CREATE_SCHEMA)
-    except ValidationError as e:
-      process_error(e)
-    cls.validate_observation_dict(observation_dict)
-    assignments = observation_dict["assignments"]
-    values = []
-    if observation_dict.get("values") is not None:
-      values = [MetricEvaluation(**v) for v in observation_dict["values"]]
-    failed = observation_dict.get("failed", False)
-    task = []
-    if observation_dict.get("task") is not None:
-      task = LocalTask(**observation_dict["task"])
-    observation = LocalObservation(
-      assignments=LocalAssignments(assignments),
-      values=values,
-      failed=failed,
-      task=task,
-    )
-    return observation
+  @classmethod
+  def create_object(cls, **input_dict):
+    cls.set_object(input_dict, "assignments", LocalAssignments)
+    cls.set_list_of_objects(input_dict, field="values", local_class=MetricEvaluationBuilder)
+    cls.set_object(input_dict, "task", LocalTaskBuilder)
+    return LocalObservation(**input_dict)
+
+  @classmethod
+  def validate_object(cls, observation, experiment):
+    for parameter in experiment.parameters:
+      if parameter_conditions_satisfied(parameter, observation.assignments):
+        if parameter.name not in observation.assignments:
+          raise ValueError(f"Parameter {parameter.name} must be in {observation}")
+      else:
+        if parameter.name in observation.assignments:
+          raise ValueError(
+            f"Parameter {parameter.name} does not satisfy conditions. "
+            f"Observation assignments: {observation.assignments} is invalid"
+          )
+    for conditional in experiment.conditionals:
+      if conditional.name not in observation.assignments:
+        raise ValueError(f"Conditional parameter {conditional.name} must be in {observation}")
+
+    if observation.task:
+      task_name = observation.task.name
+      if task_name not in [t.name for t in experiment.tasks]:
+        raise ValueError(
+          f"Task {task_name} is not a valid task for this experiment. "
+          f"Must be one of the following: {experiment.tasks}"
+        )
+
+    if observation.failed:
+      if not len(observation.values) == 0:
+        raise ValueError(
+          f"Observation marked as failure should have an empty list of values, and not {observation.values}"
+        )
+      return
+
+    for m in experiment.metrics:
+      if observation.get_metric_value(m.name) is None:
+        raise ValueError(f"Metric {m.name} not in observation.values {observation.values}")
+
+
+class MetricEvaluationBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert isinstance(input_dict["name"], str)
+    assert isinstance(input_dict["value"], (int, float))
+    if "value_stddev" in input_dict:
+      assert isinstance(input_dict["value"], (int, float))
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    return MetricEvaluation(**input_dict)
