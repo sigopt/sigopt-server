@@ -44,7 +44,7 @@ RUN set -ex \
 
 # hadolint ignore=DL3013
 RUN set -ex \
-  ; pip install --upgrade --no-cache-dir wheel>=0.38.1 \
+  ; pip install --upgrade --no-cache-dir pip setuptools wheel \
   ; :
 
 WORKDIR /sigopt-server

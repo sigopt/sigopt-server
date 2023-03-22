@@ -52,26 +52,13 @@ RUN : \
       -exec rm -rf '{}' \; \
   ; :
 
-# NOTE: PIP_VERSION breaks pip... :(
-ENV _PIP_VERSION "22.1.2"
-ENV SETUPTOOLS_VERSION "65.6.3"
-
 RUN : \
   ; \cp -r /build/usr/local/ /usr/ \
   ; ldconfig \
-  ; /usr/local/bin/pip install --quiet --no-cache-dir --root=/build --upgrade pip=="${_PIP_VERSION}" setuptools=="${SETUPTOOLS_VERSION}" \
+  ; /usr/local/bin/pip install --quiet --no-cache-dir --root=/build --upgrade pip setuptools wheel \
   ; find /build/usr/local -depth -type d -a \
       \( -name __pycache__  -o -name test -o -name tests \) \
       -exec rm -rf '{}' \; \
-  ; :
-
-
-# hadolint ignore=DL3006
-FROM ${BASE_IMAGE} AS setuptools-version
-
-COPY requirements.txt /requirements.txt
-RUN set -ex \
-  ; grep setuptools /requirements.txt >/setuptools.txt \
   ; :
 
 
@@ -128,13 +115,6 @@ COPY --from=python-compile /build/ /
 RUN set -ex \
   ; ldconfig \
   ; python --version \
-  ; :
-
-COPY --from=setuptools-version /setuptools.txt /setuptools.txt
-
-RUN set -ex \
-  ; pip install --no-cache-dir --upgrade -r /setuptools.txt \
-  ; rm -rf /usr/local/lib/python3.10/site-packages/setuptools-63.*.dist-info/ \
   ; :
 
 WORKDIR /sigopt-server
