@@ -14,11 +14,6 @@ RUN set -ex \
   ; npm cache clean --force \
   ; :
 
-WORKDIR /usr/local/lib/node_modules/npm
-RUN set -ex \
-  ; npm update -g \
-  ; :
-
 WORKDIR /sigopt-server
 
 COPY package.json /sigopt-server/package.json
@@ -53,6 +48,10 @@ RUN set -ex \
   ; apk update \
   ; apk add --no-cache --upgrade apk-tools \
   ; apk upgrade --available \
+  ; :
+
+RUN set -ex \
+  ; npm update -g \
   ; :
 
 RUN set -ex \
