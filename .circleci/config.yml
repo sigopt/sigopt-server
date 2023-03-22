@@ -400,6 +400,7 @@ jobs:
     steps:
       - checkout
       - run: pyenv global 3.10.6
+      - install-submodules
       - install-trivy
       - run: python3 -mpip install docker python-dotenv
       - run: python3 docker/image_builder.py nginx web zigopt --build-tag=scan
