@@ -8,7 +8,7 @@ import sys
 
 APPLICATION_IMAGES = [
   "nginx",
-  "node",
+  "web",
   "zigopt",
 ]
 

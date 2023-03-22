@@ -400,7 +400,7 @@ jobs:
       - run: pyenv global 3.10.6
       - install-trivy
       - run: python3 -mpip install docker python-dotenv
-      - run: python3 docker/image_builder.py nginx node zigopt --build-tag=scan
+      - run: python3 docker/image_builder.py nginx web zigopt --build-tag=scan
       - run: ./ci/trivy_scan_images --ignore-unfixed
       - store_artifacts:
           path: artifacts/trivy/
