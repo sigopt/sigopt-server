@@ -33,11 +33,9 @@ RUN set -ex \
 
 COPY tools/node/install.sh /install_node.sh
 ARG NODE_VERSION
-ARG NPM_VERSION
-ARG YARN_VERSION
 
 RUN set -ex \
-  ; /install_node.sh "$NODE_VERSION" "$NPM_VERSION" "$YARN_VERSION" \
+  ; /install_node.sh "$NODE_VERSION" \
   ; :
 
 WORKDIR /sigopt-server

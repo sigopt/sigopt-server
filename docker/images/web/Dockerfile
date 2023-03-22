@@ -7,11 +7,10 @@ ARG NODE_VERSION
 
 FROM node:${NODE_VERSION} AS node-build
 
-ARG NPM_VERSION
-ARG YARN_VERSION
+# hadolint ignore=DL3016
 RUN set -ex \
   ; npm update -g \
-  ; npm install -g "npm@$NPM_VERSION" "yarn@$YARN_VERSION" --force \
+  ; npm install -g npm yarn --force \
   ; npm cache clean --force \
   ; :
 
