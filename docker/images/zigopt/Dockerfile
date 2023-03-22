@@ -53,7 +53,7 @@ COPY requirements.txt /sigopt-server/requirements.txt
 RUN set -ex \
   ; apk add --no-cache \
       g++~=5 \
-      linux-headers~=4 \
+      linux-headers~=5 \
       musl-dev~=1 \
   ; pip install --no-cache-dir -r requirements.txt \
   ; apk del g++ linux-headers musl-dev \
