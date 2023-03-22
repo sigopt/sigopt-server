@@ -229,8 +229,6 @@ services:
       - ""
       - --appendonly
       - "no"
-    logging:
-      <<: *logging
     image: "redis:${REDIS_VERSION}"
     ports:
       - target: 6379
