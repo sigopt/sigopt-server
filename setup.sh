@@ -5,6 +5,7 @@ set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server-deploy
 export TAG=latest
+export SIGOPT_CONFIG_FILE=config/development.json
 echo "Checking docker..."
 if docker ps -q >/dev/null; then
   echo "Docker is running."
