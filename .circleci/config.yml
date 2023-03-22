@@ -134,12 +134,8 @@ commands:
       - run:
           name: Set up MinIO buckets
           command: |
-            wget https://dl.min.io/client/mc/release/linux-amd64/mc
-            chmod +x mc
-            echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
-            ./mc alias set --insecure sigopt https://sigopt.ninja:9000 ROOTUSER CHANGEME123
-            ./mc mb --insecure sigopt/sigopt-cookiejar
-            ./mc mb --insecure sigopt/sigopt-development-user-uploads
+            ./ci/compose run --rm init-minio-cookiejar
+            ./ci/compose run --rm init-minio-filestorage
     parameters:
       build_images:
         type: string
