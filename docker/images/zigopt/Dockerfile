@@ -42,6 +42,11 @@ RUN set -ex \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
+# hadolint ignore=DL3013
+RUN set -ex \
+  ; pip install --upgrade --no-cache-dir wheel>=0.38.1 \
+  ; :
+
 WORKDIR /sigopt-server
 
 COPY requirements.txt /sigopt-server/requirements.txt
