@@ -60,7 +60,7 @@ def main():
     warnings.warn(
       (
         "Attempting to start repl outside of the repl container."
-        " Please run ./scripts/launch/repl locally, or choose the correct environment."
+        " Please run ./scripts/launch/repl.sh locally, or choose the correct environment."
       ),
       RuntimeWarning,
     )

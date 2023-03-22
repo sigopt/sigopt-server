@@ -11,5 +11,5 @@
 set -e
 set -o pipefail
 DIR=$( dirname "${BASH_SOURCE[0]}" )
-source "$DIR/scripts/set_python_path" "$DIR"
+source "$DIR/scripts/set_python_path.sh" "$DIR"
 exec -- "$@"

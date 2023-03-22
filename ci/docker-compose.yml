@@ -47,7 +47,7 @@ services:
   api:
     restart: on-failure:5
     command:
-      - /usr/local/bin/gunicorn_serve
+      - /usr/local/bin/gunicorn_serve.sh
       - -b
       - 0.0.0.0:5000
       - zigopt.api.main:GUNICORN_ENTRY_POINT
