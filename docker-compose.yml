@@ -278,6 +278,10 @@ services:
     command:
       - "server"
       - "/var/lib/minio/data"
+    networks:
+      default:
+        aliases:
+          - sigopt.ninja
     deploy:
       resources:
         limits:
