@@ -20,11 +20,21 @@ class TestExperimentBasic(UnitTestsEndpoint):
     experiment_fetched = self.conn.experiments(experiment.id).fetch()
     assert experiment == experiment_fetched
 
-  def test_no_observation_budget(self):
-    meta = self.get_experiment_feature("default")
+  @pytest.mark.parametrize("feature", ["default", "constraints", "conditionals", "priors", "multiconditional"])
+  def test_observation_budget_not_needed(self, feature):
+    meta = self.get_experiment_feature(feature)
     del meta["observation_budget"]
     experiment = self.conn.experiments().create(**meta)
     assert experiment.observation_budget is None
+
+  @pytest.mark.parametrize(
+    "feature", ["search", "multimetric", "multisolution", "multitask", "metric_constraint", "metric_threshold"]
+  )
+  def test_observation_budget_needed(self, feature):
+    meta = self.get_experiment_feature(feature)
+    del meta["observation_budget"]
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**meta)
 
   # TODO: need a much more descriptive error when user tries to do this
   def test_other_endpoint_before_experiment_create(self):
