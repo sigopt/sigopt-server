@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import itertools
-
-import numpy
 import json
 from collections.abc import Mapping
 from numbers import Integral
@@ -20,6 +18,7 @@ from sigoptaux.constant import (
 )
 from sigoptaux.geometry_utils import find_interior_point
 from sigoptlite.models import *
+
 
 EXPERIMENT_CREATE_SCHEMA = {
   "definitions": {
