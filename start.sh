@@ -16,4 +16,7 @@ docker-compose --file=docker-compose.yml up \
   nginx \
   qworker \
   qworker-analytics \
-  web-server
+  web-server \
+  --scale=api=2 \
+  --scale=qworker=2 \
+  --scale=web-server=2
