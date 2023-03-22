@@ -1,35 +1,35 @@
 {
-  "address": {
-    "api_url": "https://sigopt.ninja:4443/api",
-    "app_url": "https://sigopt.ninja:4443"
-  },
-  "queue": {
-    "message_groups": {
-      "analytics": {
-        "pull_queue_name": "analytics-messages-1"
-      },
-      "optimization": {
-        "pull_queue_name": "optimize-messages-1"
-      }
-    }
-  },
-  "queues": [
-    {
-      "name": "analytics-messages-1",
-      "provider": "redis-message"
+    "address": {
+        "api_url": "https://sigopt.ninja:4443/api",
+        "app_url": "https://sigopt.ninja:4443"
     },
-    {
-      "name": "optimize-messages-1",
-      "provider": "redis-optimize"
+    "queue": {
+        "message_groups": {
+            "analytics": {
+                "pull_queue_name": "analytics-messages-1"
+            },
+            "optimization": {
+                "pull_queue_name": "optimize-messages-1"
+            }
+        }
+    },
+    "queues": [
+        {
+            "name": "analytics-messages-1",
+            "provider": "redis-message"
+        },
+        {
+            "name": "optimize-messages-1",
+            "provider": "redis-optimize"
+        }
+    ],
+    "web": {
+        "scoped_cookie_name": "sigoptlocal-session-id",
+        "static_asset_url": "https://sigopt.ninja:4443/static/a/",
+        "static_routes": {
+            "/static/a": {
+                "dir": "artifacts/web/static"
+            }
+        }
     }
-  ],
-  "web": {
-    "scoped_cookie_name": "sigoptlocal-session-id",
-    "static_asset_url": "https://sigopt.ninja:4443/static/a/",
-    "static_routes": {
-      "/static/a": {
-        "dir": "artifacts/web/static"
-      }
-    }
-  }
 }

@@ -1,14 +1,14 @@
 {
-  "extends": "test.json",
-  "model": {
-    "random_padding_suggestions": 0
-  },
-  "web": {
-    "show_exception_trace": false,
-    "static_routes": {
-      "/static/a": {
-        "cacheAgeHours": 1
-      }
+    "extends": "test.json",
+    "model": {
+        "random_padding_suggestions": 0
+    },
+    "web": {
+        "show_exception_trace": false,
+        "static_routes": {
+            "/static/a": {
+                "cacheAgeHours": 1
+            }
+        }
     }
-  }
 }

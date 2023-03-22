@@ -1,12 +1,12 @@
 {
-  "extends": "test.json",
-  "features": {
-    "maxObservationsCreateCount": 2500
-  },
-  "ratelimit": {
-    "object_enumeration": {
-      "max_attempts": 10,
-      "window_length": 600
+    "extends": "test.json",
+    "features": {
+        "maxObservationsCreateCount": 2500
+    },
+    "ratelimit": {
+        "object_enumeration": {
+            "max_attempts": 10,
+            "window_length": 600
+        }
     }
-  }
 }
