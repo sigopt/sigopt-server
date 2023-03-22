@@ -4,7 +4,7 @@
 ARG BUILD_TAG=build
 
 
-FROM sigopt/node:${BUILD_TAG} AS test-routes
+FROM sigopt/node-development:${BUILD_TAG} AS test-routes
 
 COPY web /sigopt-server/web
 COPY config/circleci.json /sigopt-server/config/circleci.json

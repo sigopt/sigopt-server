@@ -32,7 +32,7 @@ ZIGOPT_IMAGES = [
   "zigopt",
 ]
 NODE_IMAGES = [
-  "node",
+  "node-development",
 ]
 WEB_IMAGES = [
   "test-routes",
