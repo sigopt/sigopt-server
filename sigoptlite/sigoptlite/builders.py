@@ -8,7 +8,6 @@ import numpy
 from sigoptaux.constant import (
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
-  MAX_NUM_INT_CONSTRAINT_VARIABLES,
   ConstraintType,
   ParameterTransformationNames,
 )
@@ -201,10 +200,6 @@ class LocalExperimentBuilder(BuilderBase):
         name = term.name
         if name in integer_params_names:
           constrained_integer_variables.add(name)
-        if len(constrained_integer_variables) > MAX_NUM_INT_CONSTRAINT_VARIABLES:
-          raise ValueError(
-            f"{cls.cls_name} allows no more than {MAX_NUM_INT_CONSTRAINT_VARIABLES} integer constraint variables"
-          )
         if name not in parameter_names:
           raise ValueError(f"Variable {name} is not a known parameter")
         if name not in double_params_names and name not in integer_params_names:
