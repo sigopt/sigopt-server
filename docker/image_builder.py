@@ -35,8 +35,6 @@ NODE_IMAGES = [
   "node",
 ]
 WEB_IMAGES = [
-  "compile-web-client-side",
-  "compile-web-server-side",
   "test-routes",
   "web",
 ]

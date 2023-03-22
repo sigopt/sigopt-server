@@ -5,8 +5,40 @@ ARG BUILD_TAG=build
 ARG NODE_VERSION
 
 
-FROM sigopt/compile-web-client-side:${BUILD_TAG} AS client-artifacts
-FROM sigopt/compile-web-server-side:${BUILD_TAG} AS server-artifacts
+FROM node:${NODE_VERSION} AS node-build
+
+ARG NPM_VERSION
+ARG YARN_VERSION
+RUN set -ex \
+  ; npm install -g "npm@$NPM_VERSION" "yarn@$YARN_VERSION" --force \
+  ; npm cache clean --force \
+  ; :
+
+WORKDIR /sigopt-server
+
+COPY package.json /sigopt-server/package.json
+RUN set -ex \
+  ; yarn install --production --silent \
+  ; yarn cache clean \
+  ; :
+
+COPY .babelrc /sigopt-server/
+COPY config /sigopt-server/config
+COPY web /sigopt-server/web
+
+
+FROM node-build AS client-artifacts
+
+COPY scripts/compile/minify_js /sigopt-server/scripts/compile/minify_js
+
+RUN ./scripts/compile/minify_js
+
+
+FROM node-build AS server-artifacts
+
+COPY scripts/compile/minify_js_server_bundle /sigopt-server/scripts/compile/minify_js_server_bundle
+
+RUN ./scripts/compile/minify_js_server_bundle
 
 
 FROM node:${NODE_VERSION}-alpine
