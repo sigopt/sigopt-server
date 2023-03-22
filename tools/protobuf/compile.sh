@@ -19,6 +19,8 @@ if [[ "$CLAMPED_MIN_VERSION" != "$MIN_VERSION" || "$CLAMPED_MAX_VERSION" != "$MA
   exit 1
 fi
 
+mkdir -p src/python
+
 find src/protobuf/zigopt/protobuf/gen -name '*.proto' -print0 | xargs -0 \
   protoc \
   -I=src/protobuf \

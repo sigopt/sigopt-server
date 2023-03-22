@@ -7,7 +7,17 @@ ARG PYTHON_VERSION
 
 
 # hadolint ignore=DL3006
-FROM ${BASE_IMAGE} AS protobuf
+FROM debian:buster AS protobuf
+
+RUN set -ex \
+  ; apt-get update -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      ca-certificates=* \
+      curl=7.64.* \
+      unzip=6.* \
+      >/dev/null \
+  ; rm -rf /var/lib/apt/lists/* \
+  ; :
 
 ARG PROTOBUF_VERSION
 COPY tools/protobuf/install.sh /install_protobuf.sh
@@ -19,7 +29,7 @@ WORKDIR /sigopt-server
 
 COPY src/protobuf/zigopt/ /sigopt-server/src/protobuf/zigopt/
 COPY tools/protobuf/compile.sh /compile_protobuf.sh
-RUN : \
+RUN set -ex \
   ; /compile_protobuf.sh \
   ; :
 
@@ -41,11 +51,15 @@ WORKDIR /sigopt-server
 
 COPY requirements.txt /sigopt-server/requirements.txt
 RUN set -ex \
+  ; apk add --no-cache \
+      g++~=5 \
+      linux-headers~=4 \
+      musl-dev~=1 \
   ; pip install --no-cache-dir -r requirements.txt \
   ; :
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
-COPY --from=protobuf src/python/zigopt/ /sigopt-server/src/python/zigopt/
+COPY --from=protobuf /sigopt-server/src/python/zigopt/ /sigopt-server/src/python/zigopt/
 
 COPY sigoptcompute/sigoptcompute /sigopt-server/sigoptcompute/sigoptcompute
 copy sigoptaux/sigoptaux /sigopt-server/sigoptaux/sigoptaux
