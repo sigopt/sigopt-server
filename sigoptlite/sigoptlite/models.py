@@ -4,7 +4,11 @@
 from dataclasses import asdict, dataclass, field
 from typing import List
 
-from sigoptaux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME
+from sigoptaux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  ParameterPriorNames,
+)
 
 
 FIXED_EXPERIMENT_ID = "-1"
@@ -24,7 +28,7 @@ def parameter_conditions_satisfied(parameter, assignments_map):
 
 
 def replacement_value_if_missing(p):
-  if p.type == CATEGORICAL_EXPERIMENT_PARAMETER_NAME:
+  if p.is_categorical:
     return p.categorical_values[-1].name
   elif p.grid:
     return p.grid[-1]
@@ -48,20 +52,20 @@ class LocalCondition:
   name: str
   values: List[str]
 
-  def __post_init__(self):
-    assert isinstance(self.values, list)
-
 
 @dataclass(frozen=True, kw_only=True)
 class LocalBounds:
   min: float
   max: float
 
+  def is_value_within(self, value):
+    return self.min <= value <= self.max
+
 
 @dataclass(frozen=True, kw_only=True)
 class LocalTask:
-  cost: float
   name: str
+  cost: float
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -71,6 +75,14 @@ class LocalParameterPrior:
   scale: float = None
   shape_a: float = None
   shape_b: float = None
+
+  @property
+  def is_beta(self):
+    return self.name == ParameterPriorNames.BETA
+
+  @property
+  def is_normal(self):
+    return self.name == ParameterPriorNames.NORMAL
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -84,37 +96,27 @@ class LocalParameter:
   prior: LocalParameterPrior = None
   transformation: str = None
 
-  def __post_init__(self):
-    if self.categorical_values:
-      get_name_options = {str: lambda x: x, dict: lambda x: x["name"]}
-      get_name = get_name_options[type(self.categorical_values[0])]
-      sorted_categorical_values = sorted(self.categorical_values, key=get_name)
-      object.__setattr__(
-        self,
-        "categorical_values",
-        [LocalCategoricalValue(name=get_name(cv), enum_index=i + 1) for i, cv in enumerate(sorted_categorical_values)],
-      )
-    elif self.bounds:
-      object.__setattr__(self, "bounds", LocalBounds(**self.bounds))
-    if self.conditions:
-      object.__setattr__(
-        self,
-        "conditions",
-        [LocalCondition(name=n, values=v) for n, v in self.conditions.items()],
-      )
-    if self.prior:
-      object.__setattr__(self, "prior", LocalParameterPrior(**self.prior))
+  @property
+  def is_categorical(self):
+    return self.type == CATEGORICAL_EXPERIMENT_PARAMETER_NAME
+
+  @property
+  def is_double(self):
+    return self.type == DOUBLE_EXPERIMENT_PARAMETER_NAME
+
+  @property
+  def has_prior(self):
+    return self.prior is not None
+
+  @property
+  def has_transformation(self):
+    return self.transformation is not None
 
 
 @dataclass(frozen=True, kw_only=True)
 class LocalConditional:
   name: str
   values: List[LocalConditionalValue]
-
-  def __post_init__(self):
-    object.__setattr__(
-      self, "values", [LocalConditionalValue(enum_index=i + 1, name=v) for i, v in enumerate(self.values)]
-    )
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -128,9 +130,6 @@ class LocalLinearConstraint:
   terms: List[LocalConstraintTerm]
   threshold: float
   type: str
-
-  def __post_init__(self):
-    object.__setattr__(self, "terms", [LocalConstraintTerm(**t) for t in self.terms])
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -163,28 +162,6 @@ class LocalExperiment:
   parallel_bandwidth: int = 1
   tasks: List[LocalTask] = field(default_factory=list)
   type: str = "offline"
-
-  def __post_init__(self):
-    object.__setattr__(self, "parameters", [LocalParameter(**p) for p in self.parameters])
-    object.__setattr__(self, "metrics", [LocalMetric(**m) for m in self.metrics])
-    if self.linear_constraints:
-      object.__setattr__(
-        self,
-        "linear_constraints",
-        [LocalLinearConstraint(**lc) for lc in self.linear_constraints],
-      )
-    if self.tasks:
-      object.__setattr__(
-        self,
-        "tasks",
-        [LocalTask(**t) for t in self.tasks],
-      )
-    if self.conditionals:
-      object.__setattr__(
-        self,
-        "conditionals",
-        [LocalConditional(**c) for c in self.conditionals],
-      )
 
   @property
   def dimension(self):
