@@ -45,7 +45,8 @@ EXPERIMENT_CREATE_SCHEMA = {
       "required": ["name", "cost"],
       "properties": {
         "name": {"$ref": "#/definitions/opt_name"},
-        "cost": {"type": "number"},
+        "cost": {"type": "number", 
+                 "exclusiveMinimum": 0},
       },
     },
     "constraints": {
@@ -80,7 +81,7 @@ EXPERIMENT_CREATE_SCHEMA = {
       "type": ["integer", "null"],
     },
     "metrics": {
-      "type": ["array", "null"],
+      "type": ["array"],
       "items": {
         "type": ["string", "object"],
         "properties": {
@@ -105,9 +106,13 @@ EXPERIMENT_CREATE_SCHEMA = {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name"],
+        "required": ["name", "type"],
         "properties": {
           "name": {"$ref": "#/definitions/name"},
+          "type": {
+            "type": "string",
+            "enum": ["double", "int", "categorical"],
+          },
           "conditions": {
             "type": "object",
             "additionalProperties": {
@@ -151,7 +156,8 @@ EXPERIMENT_CREATE_SCHEMA = {
       "type": ["integer", "null"],
     },
     "parallel_bandwidth": {
-      "type": ["integer", "null"],
+      "type": "integer",
+      "minimum": 1,
     },
     "runs_only": {
       "type": ["boolean", "null"],
@@ -161,7 +167,7 @@ EXPERIMENT_CREATE_SCHEMA = {
 
 OBSERVATION_CREATE_SCHEMA = {
   "properties": {
-    "suggestion": {},
+    "suggestion": {"type": "integer", "minimum": 1},
     "assignments": {},
     "values": {
       "items": {
