@@ -34,31 +34,19 @@ RUN set -ex \
   ; :
 
 
-FROM python:${PYTHON_VERSION}-alpine
-
-# hadolint ignore=DL3018
-RUN set -ex \
-  ; apk update \
-  ; apk add --no-cache --upgrade apk-tools \
-  ; apk upgrade --available \
-  ; :
+FROM python:${PYTHON_VERSION}-buster
 
 RUN set -ex \
-  ; apk add --no-cache runuser~=2 \
+  ; apt-get update -yqq >dev/null \
+  ; apt-get upgrade -yqq >/dev/null \
+  ; rm -rf /var/lib/apt/lists/* \
   ; :
 
 WORKDIR /sigopt-server
 
 COPY requirements.txt /sigopt-server/requirements.txt
 RUN set -ex \
-  ; apk add --no-cache \
-      g++~=11 \
-      gfortran~=11 \
-      linux-headers~=5 \
-      musl-dev~=1 \
-      openblas-dev~=0.3 \
   ; pip install --no-cache-dir -r requirements.txt \
-  ; apk del g++ gfortran linux-headers musl-dev openblas-dev \
   ; :
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
@@ -74,7 +62,7 @@ RUN set -ex \
   ; :
 
 RUN set -ex \
-  ; adduser -S produser \
+  ; useradd produser \
   ; :
 
 USER produser
