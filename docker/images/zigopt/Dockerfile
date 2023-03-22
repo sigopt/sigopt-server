@@ -56,8 +56,9 @@ RUN set -ex \
       gfortran~=11 \
       linux-headers~=5 \
       musl-dev~=1 \
+      openblas-dev~=0.3 \
   ; pip install --no-cache-dir -r requirements.txt \
-  ; apk del g++ linux-headers musl-dev \
+  ; apk del g++ gfortran linux-headers musl-dev openblas-dev \
   ; :
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
