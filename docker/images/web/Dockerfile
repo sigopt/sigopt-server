@@ -10,6 +10,7 @@ FROM node:${NODE_VERSION} AS node-build
 ARG NPM_VERSION
 ARG YARN_VERSION
 RUN set -ex \
+  ; npm update -g \
   ; npm install -g "npm@$NPM_VERSION" "yarn@$YARN_VERSION" --force \
   ; npm cache clean --force \
   ; :
