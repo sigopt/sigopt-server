@@ -88,8 +88,8 @@ class TestLocalDriver(UnitTestsBase):
       values=[{"name": "y1", "value": 1}],
     )
     observations = self.conn.experiments(default_experiment.id).observations().fetch()
-    stored_observation = next(observations.iterate_pages())
-    assert stored_observation.assignments == s.assignments
+    observation = next(observations.iterate_pages())
+    assert observation.assignments == s.assignments
 
   def test_create_observation_by_same_assignments(self, default_experiment):
     s = self.conn.experiments(default_experiment.id).suggestions().create()
@@ -98,8 +98,8 @@ class TestLocalDriver(UnitTestsBase):
       values=[{"name": "y1", "value": 1}],
     )
     observations = self.conn.experiments(default_experiment.id).observations().fetch()
-    stored_observation = next(observations.iterate_pages())
-    assert stored_observation.assignments == s.assignments
+    observation = next(observations.iterate_pages())
+    assert observation.assignments == s.assignments
 
   def test_create_observation_by_different_assignments(self, default_experiment):
     s = self.conn.experiments(default_experiment.id).suggestions().create()
@@ -109,9 +109,9 @@ class TestLocalDriver(UnitTestsBase):
       values=[{"name": "y1", "value": 1}],
     )
     observations = self.conn.experiments(default_experiment.id).observations().fetch()
-    stored_observation = next(observations.iterate_pages())
-    assert stored_observation.assignments != s.assignments
-    assert dict(stored_observation.assignments) == real_assignments
+    observation = next(observations.iterate_pages())
+    assert observation.assignments != s.assignments
+    assert dict(observation.assignments) == real_assignments
 
   def test_old_suggestion_cleared_by_new_observation_with_different_assignments(self, default_experiment):
     s = self.conn.experiments(default_experiment.id).suggestions().create()
