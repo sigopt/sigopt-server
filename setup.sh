@@ -4,8 +4,8 @@ set -e
 set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server-deploy
-export TAG=latest
 export SIGOPT_CONFIG_FILE=config/development.json
+export TAG=latest
 echo "Checking docker..."
 if docker ps -q >/dev/null; then
   echo "Docker is running."
@@ -18,6 +18,7 @@ if ! ./scripts/compile/build_docker_images.sh; then
   echo "Failed to build-docker-images. This is most likely because of a disk space error with your docker allocation. You can try running: docker system prune -a to clear up space."
   exit 1
 fi
+
 echo "Generating root certificate and key..."
 if ./tools/tls/generate_root_ca; then
   echo "Root certificate at artifacts/tls/root-ca.crt"
@@ -25,7 +26,6 @@ else
   echo "Failed to generate root certificate!"
   exit 1
 fi
-
 CA_PATH="$(pwd)/artifacts/tls/root-ca.crt"
 export SIGOPT_API_VERIFY_SSL_CERTS=$CA_PATH
 export NODE_EXTRA_CA_CERTS=$CA_PATH
@@ -38,6 +38,7 @@ else
   echo "Failed to generate leaf certificate!"
   exit 1
 fi
+
 echo "Starting required services..."
 if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then 
   echo "Required services have started."
