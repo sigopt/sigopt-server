@@ -711,12 +711,15 @@ class LocalObservationBuilder(BuilderBase):
     for parameter in experiment.parameters:
       if parameter_conditions_satisfied(parameter, observation.assignments):
         if parameter.name not in observation.assignments:
-          raise ValueError(f"Parameter {parameter.name} must be in {observation}")
+          raise ValueError(
+            f"Parameter {parameter.name} is required for this experiment, "
+            f"and is missing from this observation: {observation.assignments}"
+          )
       else:
         if parameter.name in observation.assignments:
           raise ValueError(
             f"Parameter {parameter.name} does not satisfy conditions. "
-            f"Observation assignments: {observation.assignments} is invalid"
+            f"Observation assignments: {observation.assignments} is invalid."
           )
     for conditional in experiment.conditionals:
       if conditional.name not in observation.assignments:
@@ -726,14 +729,14 @@ class LocalObservationBuilder(BuilderBase):
       task_name = observation.task.name
       if task_name not in [t.name for t in experiment.tasks]:
         raise ValueError(
-          f"Task {task_name} is not a valid task for this experiment. "
-          f"Must be one of the following: {experiment.tasks}"
+          f"Task {task_name} is not a valid task for this experiment. Must be one of the following: {experiment.tasks}"
         )
 
     if observation.failed:
       if not len(observation.values) == 0:
         raise ValueError(
-          f"Observation marked as failure should have an empty list of values, and not {observation.values}"
+          f"Observation marked as failure ({observation.failed}) should not have values. "
+          f"Current list of values is: {observation.values}"
         )
       return
 

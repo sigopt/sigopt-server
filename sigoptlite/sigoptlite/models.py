@@ -232,6 +232,7 @@ class LocalObservation:
     except StopIteration:
       return None
 
+
 @dataclass(frozen=True, kw_only=True)
 class LocalSuggestion:
   assignments: LocalAssignments

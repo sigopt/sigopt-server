@@ -53,7 +53,8 @@ class TestAdapter(UnitTestsBase):
       ),
       self.make_observation(
         experiment=experiment,
-        assignments={"d1": 7.5, "i1": 18, "c1": "a"}, values=[dict(name="y1", value=3.3), dict(name="y2", value=4.4)]
+        assignments={"d1": 7.5, "i1": 18, "c1": "a"},
+        values=[dict(name="y1", value=3.3), dict(name="y2", value=4.4)],
       ),
     ]
     adapter = BaseOptimizationSource(experiment)
