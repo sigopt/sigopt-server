@@ -195,7 +195,7 @@ class RedisService(Service):
   def warmup(self):
     if self.enabled:
       self.host = self.services.config_broker.get("redis.host")
-      self.port = self.services.config_broker.get("redis.port")
+      self.port = self.services.config_broker.get("redis.port", 6379)
       self.ssl = self.services.config_broker.get("redis.ssl")
 
       try:

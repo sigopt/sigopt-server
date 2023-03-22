@@ -1,0 +1,156 @@
+{
+  "extends": "defaults.json",
+  "clients": {
+    "client": {
+      "id": 1,
+      "name": "SigOpt",
+      "user": {
+        "email": "owner@sigopt.ninja",
+        "has_verified_email": true,
+        "name": "Default Owner",
+        "password": "owner"
+      }
+    },
+    "enabled": true,
+    "siblings": ["Engineering", "Platform", "Research"],
+    "sigopt": 1
+  },
+  "db": {
+    "create_host": "postgres",
+    "enabled": true,
+    "host": "postgres",
+    "password": "produser_password_for_development",
+    "path": "basedb",
+    "scheme": "postgresql+pg8000",
+    "ssl": false,
+    "user": "produser"
+  },
+  "email": {
+    "enabled": true,
+    "method": "smtp",
+    "queue": false
+  },
+  "errors": {
+    "return_trace": true
+  },
+  "features": {
+    "allowCreateOrganization": true,
+    "allowSelfSignup": true,
+    "maxObservationsCreateCount": 10,
+    "raiseSoftExceptions": true
+  },
+  "logging": {
+    "format": "compact",
+    "levels": {
+      "": 30,
+      "flake8.checker": 50,
+      "flake8.main.application": 50,
+      "flake8.plugins.manager": 50,
+      "selenium.webdriver.remote.remote_connection": 30,
+      "sigopt.apiexception": 50,
+      "sigopt.config": 30,
+      "sigopt.rawsql": 30,
+      "sigopt.requests": 30,
+      "sigopt.sql": 30,
+      "sigopt.suggestions": 20,
+      "sigopt.www": 10,
+      "sigopt.www.apiexception": 30
+    },
+    "warnings": "error"
+  },
+  "model": {
+    "random_padding_suggestions": 100
+  },
+  "queue": {
+    "enabled": true,
+    "forbid_random_fallback": true,
+    "message_groups": {
+      "analytics": {
+        "pull_queue_name": "analytics-messages-1"
+      },
+      "optimization": {
+        "pull_queue_name": "optimize-messages-1"
+      }
+    },
+    "type": "async"
+  },
+  "queues": [
+    {
+      "name": "analytics-messages-1",
+      "provider": "redis-message"
+    },
+    {
+      "name": "optimize-messages-1",
+      "provider": "redis-optimize"
+    }
+  ],
+  "ratelimit": {
+    "enabled": true,
+    "login": {
+      "max_attempts": 10,
+      "window_length": 600
+    },
+    "object_enumeration": {
+      "max_attempts": 1000,
+      "window_length": 5
+    },
+    "token_mutating": {
+      "max_attempts": 50,
+      "window_length": 1
+    },
+    "token_non_mutating": {
+      "max_attempts": 100,
+      "window_length": 1
+    }
+  },
+  "redis": {
+    "host": "redis",
+    "port": 6379,
+    "ssl": false
+  },
+  "smtp": {
+    "enabled": true,
+    "host": "smtp",
+    "port": 6001,
+    "receive_host": "smtp",
+    "receive_port": 6002
+  },
+  "test": {
+    "browser": "Chrome"
+  },
+  "user": {
+    "password_work_factor": 5
+  },
+  "user_uploads": {
+    "s3": {
+      "aws_access_key_id": "ROOTUSER",
+      "aws_secret_access_key": "CHANGEME123",
+      "bucket": "sigopt-user-uploads",
+      "enabled": true,
+      "external_url": "https://sigopt.ninja:9000",
+      "region": "us-west-2",
+      "use_default_credentials": false,
+      "verify": false
+    }
+  },
+  "web": {
+    "cookiejar_bucket": "sigopt-cookiejar",
+    "cookiejar_credentials": {
+      "accessKeyId": "ROOTUSER",
+      "secretAccessKey": "CHANGEME123"
+    },
+    "cookiejar_endpoint": "http://minio:9000",
+    "cookiejar_force_path_style": true,
+    "cookiejar_region": "us-east-1",
+    "disable_sigopt_cookies_key": "sigoptlocal-disable-cookies",
+    "enable_decrypt_cookie_endpoint": true,
+    "scoped_cookie_name": "sigoptlocal-session-id",
+    "show_exception_trace": true,
+    "static_asset_url": "https://sigopt.ninja:7800/",
+    "static_routes": {
+      "/static/a": {
+        "dir": "artifacts/web/static"
+      }
+    }
+  }
+}

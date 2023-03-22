@@ -55,7 +55,7 @@ export default function main() {
       return globalServiceBag.warmup();
     })
     .then((globalServiceBag) => {
-      const nodePort = configBroker.get("express.port");
+      const nodePort = configBroker.get("express.port", 4000);
       const app = makeApp(globalServiceBag);
       const server = app.listen(nodePort);
       server.keepAliveTimeout = 75 * 1000;

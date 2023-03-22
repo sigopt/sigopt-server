@@ -1,40 +1,13 @@
 {
-  "demo": {
-    "iterations": 2
-  },
-  "extends": "development.json",
-  "features": {
-    "maxObservationsCreateCount": 10
-  },
-  "logging": {
-    "levels": {
-      "": 30,
-      "flake8.checker": 50,
-      "flake8.main.application": 50,
-      "flake8.plugins.manager": 50,
-      "selenium.webdriver.remote.remote_connection": 30,
-      "sigopt.apiexception": 50,
-      "sigopt.requests": 30,
-      "sigopt.sql": 30,
-      "sigopt.www": 10,
-      "sigopt.www.apiexception": 30
-    }
-  },
+  "extends": "test.json",
   "model": {
     "random_padding_suggestions": 0
-  },
-  "ratelimit": {
-    "object_enumeration": {
-      "max_attempts": 1000,
-      "window_length": 5
-    }
   },
   "web": {
     "show_exception_trace": false,
     "static_routes": {
       "/static/a": {
-        "cacheAgeHours": 1,
-        "dir": "artifacts/web/static"
+        "cacheAgeHours": 1
       }
     }
   }
