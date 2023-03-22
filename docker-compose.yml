@@ -12,10 +12,10 @@ services:
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
     volumes:
-      - &rootca-volume artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
-      - junit-results:/sigopt-server/junit-results
-      - screenshots/failure:/sigopt-server/screenshots/failure
-      - failure_console_logs:/sigopt-server/failure_console_logs
+      - &rootca-volume ./artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
+      - ./junit-results:/sigopt-server/junit-results
+      - ./screenshots/failure:/sigopt-server/screenshots/failure
+      - ./failure_console_logs:/sigopt-server/failure_console_logs
       - /dev/shm:/dev/shm
   smtp:
     restart: on-failure:5
@@ -57,7 +57,7 @@ services:
     restart: on-failure:5
     image: "sigopt/nginx:${TAG}"
     volumes:
-      - artifacts/tls:/etc/ssl/sigopt:ro
+      - ./artifacts/tls:/etc/ssl/sigopt:ro
     networks:
       default:
         aliases:
@@ -122,8 +122,7 @@ services:
       - "sigopt_server_version=git:$TAG"
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
     volumes:
-      - artifacts/tls:/sigopt-server/artifacts/tls:ro
-      - server-bin:/sigopt-server/bin
+      - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
     networks:
       default:
         aliases:
@@ -248,6 +247,20 @@ services:
       start_period: "10s"
     security_opt:
       - "no-new-privileges:true"
+  init-minio-cookiejar:
+    image: "quay.io/minio/mc"
+    entrypoint: ["/bin/sh", "-e", "-c"]
+    command:
+      - |
+        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc mb --ignore-existing sigopt/sigopt-cookiejar
+  init-minio-filestorage:
+    image: "quay.io/minio/mc"
+    entrypoint: ["/bin/sh", "-e", "-c"]
+    command:
+      - |
+        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc mb --ignore-existing sigopt/sigopt-development-user-uploads
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
@@ -302,4 +315,3 @@ volumes:
   minio-data: {}
   pg-var: {}
   pg-data: {}
-  server-bin: {}

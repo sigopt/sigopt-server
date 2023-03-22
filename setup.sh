@@ -3,57 +3,67 @@
 set -e
 set -o pipefail
 
-export COMPOSE_PROJECT_NAME=sigopt-server
+export COMPOSE_PROJECT_NAME=sigopt-server-deploy
+export TAG=latest
+echo "Checking docker..."
+if docker ps -q >/dev/null; then
+  echo "Docker is running."
+else
+  echo "Could not connect to Docker! It might not be running or you might not have permission to access the Docker socket."
+  exit 1
+fi
 echo "build-docker-images"
 if ! ./scripts/compile/build_docker_images.sh; then
   echo "Failed to build-docker-images. This is most likely because of a disk space error with your docker allocation. You can try running: docker system prune -a to clear up space."
   exit 1
 fi
-echo "protocompile"
-if ! ./scripts/dev/compile_protobuf_in_docker; then
-  echo "Failed to protocompile"
-  exit 1
-fi
-echo "start zigopt_services"
-if ! ./scripts/launch/start_zigopt_services; then 
-  echo "Failed to start zigopt services"
-  exit 1
-fi
-echo "Initializing database..."
-if ./scripts/dev/createdb_in_docker config/development.json --fake-data --drop-tables; then 
-  echo "Database ready."
+echo "Generating root certificate and key..."
+if ./tools/tls/generate_root_ca; then
+  echo "Root certificate at artifacts/tls/root-ca.crt"
 else
-  echo "Failed to initialize database!"
-  exit 1
-fi
-echo "Initializing file storage..."
-if ./scripts/launch/compose run --rm init-minio-filestorage; then
-  echo "File storage ready."
-else
-  echo "Failed to initialize file storage!"
-  exit 1
-fi
-echo "Initializing session storage..."
-if ./scripts/launch/compose run --rm init-minio-cookiejar; then
-  echo "Session storage ready."
-else
-  echo "Failed to initialize session storage!"
-  exit 1
-fi
-echo "make root cert"
-if ! ./tools/tls/generate_root_ca; then
-  echo "Failed to generate root cert"
+  echo "Failed to generate root certificate!"
   exit 1
 fi
 
 CA_PATH="$(pwd)/artifacts/tls/root-ca.crt"
 export SIGOPT_API_VERIFY_SSL_CERTS=$CA_PATH
 export NODE_EXTRA_CA_CERTS=$CA_PATH
-echo "make leaf cert"
+echo "Generating leaf certificate and key..."
 if ./tools/tls/generate_san_cert; then 
-  echo "Secure root cert"
+  echo "Leaf certificate and key at artifacts/tls/tls.*"
   shred -u ./artifacts/tls/root-ca.key  
+  rm -f artifacts/tls/root-ca.srl
 else
-  echo "Failed to generate leaf cert"
+  echo "Failed to generate leaf certificate!"
   exit 1
 fi
+echo "Starting required services..."
+if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then 
+  echo "Required services have started."
+else
+  echo "Failed to start required services!"
+  exit 1
+fi
+echo "Initializing database..."
+if docker-compose --file=docker-compose.yml run --rm createdb; then 
+  echo "Database ready."
+else
+  echo "Failed to initialize database!"
+  exit 1
+fi
+echo "Initializing file storage..."
+if docker-compose --file=docker-compose.yml run --rm init-minio-filestorage; then
+  echo "File storage ready."
+else
+  echo "Failed to initialize file storage!"
+  exit 1
+fi
+echo "Initializing session storage..."
+if docker-compose --file=docker-compose.yml run --rm init-minio-cookiejar; then
+  echo "Session storage ready."
+else
+  echo "Failed to initialize session storage!"
+  exit 1
+fi
+
+echo "Setup complete. You are now ready to start SigOpt Server with ./start.sh"
