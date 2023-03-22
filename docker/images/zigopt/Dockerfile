@@ -52,7 +52,7 @@ WORKDIR /sigopt-server
 COPY requirements.txt /sigopt-server/requirements.txt
 RUN set -ex \
   ; apk add --no-cache \
-      g++~=5 \
+      g++~=11 \
       linux-headers~=5 \
       musl-dev~=1 \
   ; pip install --no-cache-dir -r requirements.txt \
