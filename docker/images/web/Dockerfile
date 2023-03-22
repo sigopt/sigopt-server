@@ -14,6 +14,12 @@ RUN set -ex \
   ; npm cache clean --force \
   ; :
 
+WORKDIR /usr/local/lib/node_modules/npm
+RUN set -ex \
+  ; npm update -g \
+  ; npm cache clean --force \
+  ; :
+
 WORKDIR /sigopt-server
 
 COPY package.json /sigopt-server/package.json
