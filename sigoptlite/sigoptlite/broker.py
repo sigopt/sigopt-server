@@ -51,7 +51,7 @@ class Broker(object):
     assert assignments or suggestion
     if assignments is None:
       if self.stored_suggestion is None:
-        raise ValueError("There is no stored suggestion to use. Please create another suggestion")
+        raise ValueError("There is no stored suggestion to use. Please create a suggestion")
 
       assert suggestion == self.stored_suggestion.id
       assignments = self.stored_suggestion.assignments
