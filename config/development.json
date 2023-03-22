@@ -129,7 +129,7 @@
     "s3": {
       "aws_access_key_id": "ROOTUSER",
       "aws_secret_access_key": "CHANGEME123",
-      "bucket": "sigopt-development-user-uploads",
+      "bucket": "sigopt-user-uploads",
       "enabled": true,
       "external_url": "https://sigopt.ninja:9000",
       "region": "us-west-2",

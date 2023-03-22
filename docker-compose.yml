@@ -266,7 +266,7 @@ services:
     command:
       - |
         mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
-        mc mb --ignore-existing sigopt/sigopt-development-user-uploads
+        mc mb --ignore-existing sigopt/sigopt-user-uploads
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
@@ -278,10 +278,6 @@ services:
     command:
       - "server"
       - "/var/lib/minio/data"
-    networks:
-      default:
-        aliases:
-          - sigopt.ninja
     deploy:
       resources:
         limits:
