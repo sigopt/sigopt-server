@@ -67,7 +67,7 @@ class BaseOptimizationSource(object):
     unconditioned_parameter_list = []
     for parameter in experiment.parameters:
       parameter_dict = dataclass_to_dict(parameter)
-      parameter_dict["conditions"] = []
+      parameter_dict["conditions"] = {}
       unconditioned_parameter_list.append(parameter_dict)
     unconditioned_parameter_list.extend(conditionals_as_cat_parameter_list)
     return create_experiment_from_template(
