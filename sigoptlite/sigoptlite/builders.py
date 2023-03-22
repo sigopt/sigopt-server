@@ -248,6 +248,7 @@ def process_error(e):
   else:
     raise NotImplementedError(f"Unrecognized error {e.validator} parsing json: {json.dumps(e.instance)}")
 
+
 class BuilderBase(object):
   def __new__(cls, input_dict):
     cls.validate_input_dict(input_dict)
@@ -306,7 +307,6 @@ class LocalExperimentBuilder(BuilderBase):
     cls.set_list_of_objects(input_dict, field="tasks", local_class=LocalTaskBuilder)
     cls.set_list_of_objects(input_dict, field="linear_constraints", local_class=LocalLinearConstraintBuilder)
     return LocalExperiment(**input_dict)
- 
 
   @classmethod
   def validate_object(cls, experiment):
