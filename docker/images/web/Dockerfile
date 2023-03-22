@@ -17,7 +17,6 @@ RUN set -ex \
 WORKDIR /usr/local/lib/node_modules/npm
 RUN set -ex \
   ; npm update -g \
-  ; npm cache clean --force \
   ; :
 
 WORKDIR /sigopt-server
