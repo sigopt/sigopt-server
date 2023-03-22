@@ -21,31 +21,6 @@ TARGET_CLEAN = "clean"
 TARGET_ENSURE_IMAGE = "ensure_image"
 TARGET_PULL = "pull"
 
-AUX_IMAGES = [
-  "nginx",
-]
-PYTHON_IMAGES = [
-  "python-development",
-]
-ZIGOPT_IMAGES = [
-  "test-runner",
-  "zigopt",
-]
-NODE_IMAGES = [
-  "node-development",
-]
-WEB_IMAGES = [
-  "test-routes",
-  "web",
-]
-RUNTIME_IMAGES = [
-  *AUX_IMAGES,
-  *PYTHON_IMAGES,
-  *ZIGOPT_IMAGES,
-  *NODE_IMAGES,
-  *WEB_IMAGES,
-]
-
 OUTPUT_ERROR_ONLY = "error_only"
 OUTPUT_SYNC = "sync"
 OUTPUT_ASYNC = "async"
@@ -55,11 +30,6 @@ DEFAULT_LOG_DIR = "artifacts/docker/logs"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("images", nargs="*", help="images to build, defaults to all runtime images")
-parser.add_argument("--aux-images", action="store_true", help=f"build aux images: {', '.join(AUX_IMAGES)}")
-parser.add_argument("--node-images", action="store_true", help=f"build node images: {', '.join(NODE_IMAGES)}")
-parser.add_argument("--python-images", action="store_true", help=f"build python images: {', '.join(PYTHON_IMAGES)}")
-parser.add_argument("--web-images", action="store_true", help=f"build web images: {', '.join(WEB_IMAGES)}")
-parser.add_argument("--zigopt-images", action="store_true", help=f"build zigopt images: {', '.join(ZIGOPT_IMAGES)}")
 parser.add_argument("--pull-image", default=[], action="append", help="pull these images instead of building")
 parser.add_argument("--build-tag", default="latest", help="tag for built images")
 parser.add_argument("--registry", default="docker.io", help="registry for images")
@@ -349,18 +319,6 @@ if __name__ == "__main__":
     dot_env=dot_env,
   )
   images = list(args.images or [])
-  if args.aux_images:
-    images.extend(AUX_IMAGES)
-  if args.python_images:
-    images.extend(PYTHON_IMAGES)
-  if args.zigopt_images:
-    images.extend(ZIGOPT_IMAGES)
-  if args.node_images:
-    images.extend(NODE_IMAGES)
-  if args.web_images:
-    images.extend(WEB_IMAGES)
-  if not images:
-    images.extend(RUNTIME_IMAGES)
   build_graph = create_build_graph(
     images=images,
     pull_images=args.pull_image,
