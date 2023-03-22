@@ -2,13 +2,15 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 
+import copy
+
 import pytest
 from sigopt import Connection
-import copy
+
 from sigoptlite.driver import LocalDriver
 from sigoptlite.models import FIXED_EXPERIMENT_ID
+from sigoptlitetest.constants import PARAMETER_BETA_PRIOR, PARAMETER_CATEGORICAL, PARAMETER_INT, PARAMETER_NORMAL_PRIOR
 from sigoptlitetest.endpoints.base_test import UnitTestsEndpoint
-from sigoptlitetest.constants import PARAMETER_INT, PARAMETER_CATEGORICAL, PARAMETER_BETA_PRIOR, PARAMETER_NORMAL_PRIOR
 
 
 class TestExperimentBasic(UnitTestsEndpoint):
@@ -158,6 +160,12 @@ class TestExperimentParameters(UnitTestsEndpoint):
     parameter_wrong = copy.deepcopy(parameter)
     parameter_wrong["transformation"] = "log"
     meta["parameters"] = [parameter_wrong]
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**meta)
+
+  def test_log_transform_on_constrained_parameter(self):
+    meta = self.get_experiment_feature("constraints")
+    meta["parameters"][0]["transformation"] = "log"
     with pytest.raises(ValueError):
       self.conn.experiments().create(**meta)
 
@@ -330,7 +338,7 @@ class TestExperimentMetrics(UnitTestsEndpoint):
       [dict(name="metric1"), dict(name="metric2", objective="invalid objective")],
     ],
   )
-  def test_invalid_metrics(self, metrics):
+  def test_invalid_metric_dict(self, metrics):
     meta = self.get_experiment_feature("default")
     meta["metrics"] = metrics
     with pytest.raises(ValueError):
