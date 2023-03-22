@@ -84,7 +84,9 @@ commands:
       - run: pyenv global 3.10.6
       - run: python3 -mpip install docker python-dotenv
       - run: make submodules
-      - run: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
+      - run:
+          command: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
+          no_output_timeout: 30m
       - run: docker image ls
     parameters:
       build_images:
