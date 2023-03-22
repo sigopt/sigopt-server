@@ -56,6 +56,7 @@ RUN set -ex \
       linux-headers~=4 \
       musl-dev~=1 \
   ; pip install --no-cache-dir -r requirements.txt \
+  ; apk del g++ linux-headers musl-dev \
   ; :
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
