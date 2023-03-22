@@ -94,14 +94,14 @@ class TestExperimentParameters(UnitTestsEndpoint):
     experiment_meta = self.get_experiment_feature("priors")
     e = self.conn.experiments().create(**experiment_meta)
     parameter_normal = e.parameters[1]
-    assert hasattr(parameter_normal, "prior")
+    assert parameter_normal.prior is not None
     assert parameter_normal.prior.mean == 5.0
     assert parameter_normal.prior.scale == 2.0
     assert parameter_normal.prior.shape_a is None
     assert parameter_normal.prior.shape_b is None
 
     parameter_beta = e.parameters[5]
-    assert hasattr(parameter_beta, "prior")
+    assert parameter_beta.prior is not None
     assert parameter_beta.prior.shape_a == 1
     assert parameter_beta.prior.shape_b == 10
     assert parameter_beta.prior.mean is None
@@ -138,6 +138,30 @@ class TestExperimentParameters(UnitTestsEndpoint):
       )
 
 
+class TestExperimentConditionals(UnitTestsEndpoint):
+  def test_create_with_conditionals(self):
+    experiment_meta = self.get_experiment_feature("conditionals")
+    e = self.conn.experiments().create(**experiment_meta)
+    assert e.conditionals is not None
+
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  def test_create_parameters_with_conditions_but_no_conditionals(self):
+    experiment_meta = self.get_experiment_feature("conditionals")
+    for parameter in experiment_meta["parameters"]:
+      parameter.pop("conditions", None)
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  def test_create_conditionals_but_no_parameters_with_conditions(self):
+    experiment_meta = self.get_experiment_feature("conditionals")
+    experiment_meta.pop("conditionals", None)
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+class TestExperimentMultitask(UnitTestsEndpoint):
+
+  
 class TestExperimentMetrics(UnitTestsEndpoint):
   @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
   def test_no_metrics(self):
