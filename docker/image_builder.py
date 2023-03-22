@@ -25,7 +25,7 @@ AUX_IMAGES = [
   "nginx",
 ]
 PYTHON_IMAGES = [
-  "python",
+  "python-development",
 ]
 ZIGOPT_IMAGES = [
   "test-runner",

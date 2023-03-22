@@ -10,7 +10,7 @@ python3 docker/image_builder.py --build-tag freeze-reqs python
 # need to filter it out and replace with qmcpy==1.2
 docker run -i --rm \
   --volume="$(pwd):/sigopt-server" \
-  sigopt/python:freeze-reqs \
+  sigopt/python-development:freeze-reqs \
   bash -eo pipefail \
   <<EOF
 apt-get update -yqq

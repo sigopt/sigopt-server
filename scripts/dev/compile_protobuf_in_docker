@@ -12,5 +12,5 @@ docker run -i --rm \
   "$(m test)" \
   "$(m tools)" \
   --workdir=/sigopt-server \
-  sigopt/python:latest \
+  sigopt/python-development:latest \
   ./tools/protobuf/compile.sh

@@ -19,7 +19,7 @@ services:
       - SIGOPT_APP_URL=https://sigopt.ninja:4443
       - SIGOPT_API_TOKEN=client_token
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt/root-ca.crt
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     volumes:
       - &rootca-volume ./artifacts/tls:/etc/ssl/certs/sigopt:ro
       - ./test:/sigopt-server/test:ro
@@ -104,7 +104,7 @@ services:
       <<: *logging
     environment:
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
@@ -155,7 +155,7 @@ services:
       - &config sigopt_server_config_file
       - &git_hash sigopt_server_version
       - MESSAGE_GROUP=optimization
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes: &zigopt_volumes
@@ -200,7 +200,7 @@ services:
       - *git_hash
       - "sigopt.queue.pull_queue_name=dev-analytics-messages"
       - MESSAGE_GROUP=analytics
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes: *zigopt_volumes
@@ -230,7 +230,7 @@ services:
       - sigopt_server_config_file
       - sigopt_server_version
       - SIGOPT_CONTAINER_ENV=x
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     ports:
       - target: 5000
         host_ip: 127.0.0.1
@@ -287,7 +287,7 @@ services:
       - SIGOPT_CONTAINER_ENV=x
       - SIGOPT_SWAGGER_PATH=/sigopt-server/artifacts/
       - SIGOPT_SWAGGER_FILENAME=swagger.json
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
@@ -344,7 +344,7 @@ services:
       <<: *logging
     command:
       - protowatch
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     volumes:
       - "./src/protobuf:/sigopt-server/src/protobuf:ro"
       - "./src/python:/sigopt-server/src/python"
@@ -380,7 +380,7 @@ services:
       - --
       - "--config=${sigopt_server_config_file}"
     environment: *sigopt-server-env
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
@@ -503,7 +503,7 @@ services:
         done
     environment:
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server/sigoptaux:/sigopt-server
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     volumes:
       - ./config:/sigopt-server/config:ro
       - ./scratch:/sigopt-server/scratch:ro

@@ -7,7 +7,7 @@ DIRS = scratch web/static/js
 DEVELOPMENT_IMAGES = \
 	nginx \
 	node \
-	python \
+	python-development \
 	test-runner-web
 
 RUN_IMAGES = \

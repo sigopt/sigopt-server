@@ -4,7 +4,7 @@
 ARG BUILD_TAG=build
 
 
-FROM sigopt/python:${BUILD_TAG}
+FROM sigopt/python-development:${BUILD_TAG}
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
