@@ -293,9 +293,9 @@ class LocalExperimentBuilder(BuilderBase):
       validate_against_schema(input_dict, EXPERIMENT_CREATE_SCHEMA)
     except ValidationError as e:
       process_error(e)
-    if not len(experiment_meta["parameters"]) > 0:
+    if not len(input_dict["parameters"]) > 0:
       raise ValueError("Must have at least one parameter in every experiment.")
-    if not len(experiment_meta["metrics"]) > 0:
+    if not len(input_dict["metrics"]) > 0:
       raise ValueError("Must have at least one metric in every experiment.")
 
   @classmethod
