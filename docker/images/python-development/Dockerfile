@@ -190,7 +190,7 @@ RUN set -ex \
   ; python -c 'import lxml' \
   ; :
 
-COPY docker/images/python/bin /usr/local/bin
+COPY docker/images/python-development/bin /usr/local/bin
 
 ENV OMP_NUM_THREADS 1
 ENV OPENBLAS_NUM_THREADS 1
