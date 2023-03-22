@@ -137,7 +137,10 @@ class TestLocalExperiment(LocalExperimentBase):
     experiment_meta["parallel_bandwidth"] = parallel_bandwidth
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment must have parallel_bandwidth == 1"
+    if parallel_bandwidth > 1:
+      msg = "sigoptlite experiment must have parallel_bandwidth == 1"
+    else:
+      msg = ".parallel_bandwidth must be greater than or equal to 1"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_with_constraints(self):

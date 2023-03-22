@@ -45,8 +45,7 @@ EXPERIMENT_CREATE_SCHEMA = {
       "required": ["name", "cost"],
       "properties": {
         "name": {"$ref": "#/definitions/opt_name"},
-        "cost": {"type": "number", 
-                 "exclusiveMinimum": 0},
+        "cost": {"type": "number", "exclusiveMinimum": 0},
       },
     },
     "constraints": {
@@ -72,12 +71,9 @@ EXPERIMENT_CREATE_SCHEMA = {
     },
     "type": {
       "type": ["string", "null"],
-      "enum": [None, "grid", "offline", "random"],
+      "enum": [None, "offline", "random"],
     },
     "observation_budget": {
-      "type": ["integer", "null"],
-    },
-    "budget": {
       "type": ["integer", "null"],
     },
     "metrics": {
@@ -159,9 +155,6 @@ EXPERIMENT_CREATE_SCHEMA = {
       "type": "integer",
       "minimum": 1,
     },
-    "runs_only": {
-      "type": ["boolean", "null"],
-    },
   },
 }
 
@@ -188,7 +181,6 @@ OBSERVATION_CREATE_SCHEMA = {
     "failed": {
       "type": ["boolean", "null"],
     },
-    "no_optimize": {},
     "metadata": {
       "type": ["object", "null"],
     },
