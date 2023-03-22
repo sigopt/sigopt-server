@@ -2,8 +2,15 @@
 set -e
 set -o pipefail
 
+export COMPOSE_PROJECT_NAME=sigopt-server-deploy
 export SIGOPT_CONFIG_FILE=config/development.json
 export TAG=latest
+docker-compose --file=docker-compose.yml up --detach \
+  minio \
+  postgres \
+  redis
+docker-compose --file=docker-compose.yml up --detach \
+  nginx
 docker-compose --file=docker-compose.yml up \
   api \
   nginx \
