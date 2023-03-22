@@ -56,10 +56,10 @@ RUN set -ex \
 
 WORKDIR /sigopt-server
 
-COPY config /sigopt-server/config
-
 COPY --from=client-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
 COPY --from=server-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
+
+COPY config /sigopt-server/config
 
 RUN set -ex \
   ; adduser -S produser \
