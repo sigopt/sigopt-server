@@ -57,8 +57,6 @@ RUN set -ex \
 WORKDIR /sigopt-server
 
 COPY config /sigopt-server/config
-COPY web/js /sigopt-server/web/js
-COPY web/scripts /sigopt-server/web/scripts
 
 COPY --from=client-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
 COPY --from=server-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
