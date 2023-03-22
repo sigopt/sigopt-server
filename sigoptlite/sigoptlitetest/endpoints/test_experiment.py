@@ -3,12 +3,11 @@
 # SPDX-License-Identifier: Apache License 2.0
 
 import pytest
-
 from sigopt import Connection
 
 from sigoptlite.driver import LocalDriver
-from sigoptlitetest.endpoints.base_test import UnitTestsEndpoint
 from sigoptlite.models import FIXED_EXPERIMENT_ID
+from sigoptlitetest.endpoints.base_test import UnitTestsEndpoint
 
 
 class TestExperimentBasic(UnitTestsEndpoint):
@@ -63,10 +62,19 @@ class TestExperimentParameters(UnitTestsEndpoint):
       self.conn.experiments().create(**experiment_meta)
 
   @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  def test_duplicate_parameters(self):
+    parameter = dict(name="c", type="categorical", categorical_values=["d", "e"])
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(
+        parameters=[parameter] * 2,
+        metrics=[dict(name="y1", objective="maximize", strategy="optimize")],
+      )
+
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
   def test_experiment_create_extra_parameters(self):
     experiment_meta = self.get_experiment_feature("default")
     with pytest.raises(ValueError):
-      self.conn.experiments().create(extra_param=True, **experiment_meta)
+      self.conn.experiments().create(not_real_experiment_meta_parameter=3.1415, **experiment_meta)
 
   @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
   def test_experiment_create_wrong_parameter_types(self, any_meta):
@@ -137,10 +145,19 @@ class TestExperimentParameters(UnitTestsEndpoint):
         metrics=[dict(name="y1", objective="maximize", strategy="optimize")],
       )
 
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  @pytest.mark.parametrize("bounds", [dict(min=-20, max=-10), dict(min=-10, max=1), dict(min=0, max=10)])
+  def test_log_transform_on_negative_bounds(self, bounds):
+    experiment_meta = self.get_experiment_feature("default")
+    experiment_meta["parameters"] = [dict(name="d", type="double", bounds=bounds, transformation="log")]
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
 
 class TestExperimentConditionals(UnitTestsEndpoint):
-  def test_create_with_conditionals(self):
-    experiment_meta = self.get_experiment_feature("conditionals")
+  @pytest.mark.parametrize("feature", ["conditionals", "multiconditional"])
+  def test_create_with_conditionals(self, feature):
+    experiment_meta = self.get_experiment_feature(feature)
     e = self.conn.experiments().create(**experiment_meta)
     assert e.conditionals is not None
 
@@ -159,9 +176,54 @@ class TestExperimentConditionals(UnitTestsEndpoint):
     with pytest.raises(ValueError):
       self.conn.experiments().create(**experiment_meta)
 
-class TestExperimentMultitask(UnitTestsEndpoint):
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  def test_create_conditionals_parameter_condition_cannot_be_met(self):
+    experiment_meta = self.get_experiment_feature("multiconditional")
+    del experiment_meta["conditionals"][0]
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
 
-  
+    experiment_meta = self.get_experiment_feature("multiconditional")
+    experiment_meta["parameters"][3]["conditions"] = dict(z=["not_a_real_condition_in_meta"])
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+  def test_no_conditionals_with_multisolution(self):
+    experiment_meta = self.get_experiment_feature("conditionals")
+    experiment_meta["num_solutions"] = 2
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+  def test_no_conditionals_with_search(self):
+    experiment_meta = self.get_experiment_feature("search")
+    experiment_meta["num_solutions"] = 2
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+
+class TestExperimentMultitask(UnitTestsEndpoint):
+  def test_create_with_multitask(self):
+    experiment_meta = self.get_experiment_feature("multitask")
+    e = self.conn.experiments().create(**experiment_meta)
+    assert e.tasks is not None
+
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  @pytest.mark.parametrize(
+    "tasks",
+    [
+      [dict(name="one_task", cost=0.1)],
+      [dict(name="zero_task", cost=0.0), dict(name="normal_task", cost=1.0)],
+      [dict(name="negative_task", cost=-0.2), dict(name="normal_task", cost=1.0)],
+      [dict(name="normal_task", cost=1.0), dict(name="too_expensive_task", cost=2.0)],
+    ],
+  )
+  def test_create_with_bad_tasks(self, tasks):
+    experiment_meta = self.get_experiment_feature("multitask")
+    experiment_meta["tasks"] = tasks
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+
 class TestExperimentMetrics(UnitTestsEndpoint):
   @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
   def test_no_metrics(self):
@@ -174,6 +236,13 @@ class TestExperimentMetrics(UnitTestsEndpoint):
   def test_empty_metrics(self):
     experiment_meta = self.get_experiment_feature("default")
     experiment_meta["metrics"] = []
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  def test_duplicate_metrics(self):
+    experiment_meta = self.get_experiment_feature("default")
+    experiment_meta["metrics"] = [dict(name="duplicated_metric", objective="maximize", strategy="optimize")] * 2
     with pytest.raises(ValueError):
       self.conn.experiments().create(**experiment_meta)
 
@@ -219,7 +288,7 @@ class TestExperimentMetrics(UnitTestsEndpoint):
     assert e.metrics[0].strategy == "constraint"
     assert e.metrics[0].threshold == 0.5
 
-  def test_multi_metric_constraint(self):
+  def test_search(self):
     experiment_meta = self.get_experiment_feature("default")
     experiment_meta["metrics"] = [
       dict(name="y1", objective="maximize", strategy="constraint", threshold=0.5),
@@ -292,8 +361,8 @@ class TestExperimentMetrics(UnitTestsEndpoint):
   def test_multimetric_thresholds_specified(self, threshold_1, threshold_2):
     experiment_meta = self.get_experiment_feature("default")
     experiment_meta["metrics"] = [
-      dict(name="metric_1", threshold=threshold_1),
-      dict(name="metric_2", threshold=threshold_2),
+      dict(name="metric_1", objective="maximize", strategy="optimize", threshold=threshold_1),
+      dict(name="metric_2", objective="maximize", strategy="optimize", threshold=threshold_2),
     ]
     e = self.conn.experiments().create(**experiment_meta)
     assert e.metrics[0].name == "metric_1"
