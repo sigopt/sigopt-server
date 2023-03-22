@@ -8,7 +8,7 @@ from sigopt import Connection
 from sigoptlite.driver import LocalDriver
 from sigoptlite.models import FIXED_EXPERIMENT_ID
 from sigoptlitetest.endpoints.base_test import UnitTestsEndpoint
-
+from sigoptlitetest.constants import PARAMETER_INT, PARAMETER_CATEGORICAL, PARAMETER_BETA_PRIOR
 
 class TestExperimentBasic(UnitTestsEndpoint):
   def test_create_and_fetch(self, any_meta):
@@ -150,6 +150,15 @@ class TestExperimentParameters(UnitTestsEndpoint):
   def test_log_transform_on_negative_bounds(self, bounds):
     experiment_meta = self.get_experiment_feature("default")
     experiment_meta["parameters"] = [dict(name="d", type="double", bounds=bounds, transformation="log")]
+    with pytest.raises(ValueError):
+      self.conn.experiments().create(**experiment_meta)
+
+  @pytest.mark.xfail  # Not being handled, should be dealt with validation refactor
+  @pytest.mark.parametrize("parameter", [PARAMETER_CATEGORICAL, PARAMETER_INT, PARAMETER_INT])
+  def test_log_transform_on_incorrect_parameter_type(self, parameter):
+    experiment_meta = self.get_experiment_feature("default")
+    parameter["transformation"] = "log"
+    experiment_meta["parameters"] = [parameter]
     with pytest.raises(ValueError):
       self.conn.experiments().create(**experiment_meta)
 
