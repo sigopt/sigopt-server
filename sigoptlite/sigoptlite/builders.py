@@ -45,7 +45,7 @@ EXPERIMENT_CREATE_SCHEMA = {
       "required": ["name", "cost"],
       "properties": {
         "name": {"$ref": "#/definitions/opt_name"},
-        "cost": {"type": "number", "exclusiveMinimum": 0},
+        "cost": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
       },
     },
     "constraints": {
