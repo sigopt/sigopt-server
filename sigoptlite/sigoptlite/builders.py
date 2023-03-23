@@ -727,8 +727,8 @@ class LocalObservationBuilder(BuilderBase):
         if observation.get_metric_value(m.name) is None:
           raise ValueError(f"Metric {m.name} not in observation.values {observation.values}")
 
-  @classmethod
-  def observation_must_have_parameter(clf, observation, parameter):
+  @staticmethod
+  def observation_must_have_parameter(observation, parameter):
     if parameter.name not in observation.assignments:
       raise ValueError(
         f"Parameter {parameter.name} is required for this experiment, "
@@ -748,16 +748,16 @@ class LocalObservationBuilder(BuilderBase):
         f"{parameter.grid} instead of {parameter_value}"
       )
 
-  @classmethod
-  def observation_does_not_have_parameter(cls, observation, parameter):
+  @staticmethod
+  def observation_does_not_have_parameter(observation, parameter):
     if parameter.name in observation.assignments:
       raise ValueError(
         f"Parameter {parameter.name} does not satisfy conditions. "
         f"Observation assignments: {observation.assignments} is invalid."
       )
 
-  @classmethod
-  def validate_observation_conditionals(cls, observation, conditionals):
+  @staticmethod
+  def validate_observation_conditionals(observation, conditionals):
     for conditional in conditionals:
       if conditional.name not in observation.assignments:
         raise ValueError(f"Conditional parameter {conditional.name} must be in {observation}")
@@ -769,10 +769,10 @@ class LocalObservationBuilder(BuilderBase):
           f"{expected_conditional_options} instead of {conditional_value}"
         )
 
-  @classmethod
-  def validate_observation_tasks(cls, observation, tasks):
+  @staticmethod
+  def validate_observation_tasks(observation, tasks):
     if not observation.task:
-      raise ValueError(f"Observation must have a task field for this experiment")
+      raise ValueError("Observation must have a task field for this experiment")
     obs_task_name = observation.task.name
     if obs_task_name not in [t.name for t in tasks]:
       raise ValueError(
