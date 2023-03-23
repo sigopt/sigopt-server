@@ -46,6 +46,23 @@ class TestParameterConstraints(UnitTestsBase):
       observation_budget=10,
     )
 
+  def test_invalid_constraints_json(self, base_meta):
+    invalid_type_meta = base_meta
+    invalid_type_meta["linear_constraints"] = [
+      dict(
+        type="strictly_less_than",
+        terms=[
+          dict(name="x0", weight=1),
+          dict(name="x1", weight=1),
+        ],
+        threshold=1,
+      ),
+    ]
+    with pytest.raises(ValueError) as exception_info:
+      self.conn.experiments().create(**invalid_type_meta)
+    msg = "strictly_less_than is not one of the allowed values: greater_than, less_than"
+    assert exception_info.value.args[0] == msg
+
   def test_invalid_constraints(self, base_meta):
     invalid_name_meta = base_meta
     invalid_name_meta["linear_constraints"] = [
