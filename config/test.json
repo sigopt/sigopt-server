@@ -15,12 +15,9 @@
       "Engineering",
       "Platform",
       "Research"
-    ],
-    "sigopt": 1
+    ]
   },
   "db": {
-    "create_host": "postgres",
-    "enabled": true,
     "host": "postgres",
     "password": "produser_password_for_development",
     "path": "basedb",
@@ -131,10 +128,7 @@
       "aws_secret_access_key": "CHANGEME123",
       "bucket": "sigopt-user-uploads",
       "enabled": true,
-      "external_url": "https://sigopt.ninja:9000",
-      "region": "us-west-2",
-      "use_default_credentials": false,
-      "verify": false
+      "external_url": "https://sigopt.ninja:9000"
     }
   },
   "web": {
@@ -144,11 +138,7 @@
       "secretAccessKey": "CHANGEME123"
     },
     "cookiejar_endpoint": "http://minio:9000",
-    "cookiejar_force_path_style": true,
-    "cookiejar_region": "us-east-1",
-    "disable_sigopt_cookies_key": "sigoptlocal-disable-cookies",
     "enable_decrypt_cookie_endpoint": true,
-    "scoped_cookie_name": "sigoptlocal-session-id",
     "show_exception_trace": true,
     "static_asset_url": "https://sigopt.ninja:7800/",
     "static_routes": {

@@ -88,20 +88,15 @@ const removeCookieFromCookiejar = (s3, cookiejarBucket, cookieId) => {
   return deleteFromS3(s3, cookiejarBucket, cookieId);
 };
 
-const sigoptCookiesDisabled = (cookies, disableCookiesKey) =>
-  Boolean(disableCookiesKey && cookies[disableCookiesKey]);
-
 export const readRequestCookies = function (
   s3,
   cookiejarBucket,
   scopedCookieName,
-  disableCookiesKey,
 ) {
   return (req, res, next) => {
-    const disabled = sigoptCookiesDisabled(req.cookies, disableCookiesKey);
     let cookieId = req.cookies[scopedCookieName];
     let cookieJarP = Promise.resolve([{}, null]);
-    if (!disabled && isValidCookieId(cookieId)) {
+    if (isValidCookieId(cookieId)) {
       cookieJarP = readCookieFromCookiejar(s3, cookiejarBucket, cookieId).then(
         (cookieState) => [cookieState || {}, cookieState ? cookieId : null],
       );
@@ -130,9 +125,6 @@ export const setResponseCookies = function (
   scopedCookieSpec,
 ) {
   return (req, res, next) => {
-    if (sigoptCookiesDisabled(req.cookies, disableCookiesKey)) {
-      return next();
-    }
     const cookieState = {
       loginState: req.loginState?.toJson?.(),
       preferences: req.preferences?.json,
@@ -172,10 +164,6 @@ export default function makeCookieHandlers(configBroker) {
     "web.scoped_cookie_name",
     "sigopt-session-id",
   );
-  const disableCookiesKey = configBroker.get(
-    "web.disable_sigopt_cookies_key",
-    null,
-  );
   const s3Options = {};
   const cookiejarRegion = configBroker.get("web.cookiejar_region", null);
   if (cookiejarRegion) {
@@ -214,14 +202,12 @@ export default function makeCookieHandlers(configBroker) {
       s3,
       cookiejarBucket,
       scopedCookieName,
-      disableCookiesKey,
     );
   const cookieWriter = () =>
     setResponseCookies(
       s3,
       cookiejarBucket,
       scopedCookieName,
-      disableCookiesKey,
       scopedCookieSpec,
     );
   return {cookieReader, cookieWriter};
