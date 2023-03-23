@@ -55,7 +55,8 @@
       "sigopt.sql": 30,
       "sigopt.suggestions": 20,
       "sigopt.www": 10,
-      "sigopt.www.apiexception": 30
+      "sigopt.www.apiexception": 30,
+      "sigoptcompute.timing": 20
     },
     "warnings": "error"
   },
