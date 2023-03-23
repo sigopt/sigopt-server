@@ -173,7 +173,7 @@ class RedisService(Service):
   def make_redis(cls, config, **kwargs):
     config = extend_dict({}, config, kwargs)
     host = config.get("host")
-    port = config.get("port")
+    port = config.get("port", 6379)
     password = config.get("password", None)
     ssl = config.get("ssl", True)
     ssl_ca_certs = config.get("ssl_ca_certs", None)

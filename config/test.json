@@ -106,7 +106,6 @@
   },
   "redis": {
     "host": "redis",
-    "port": 6379,
     "ssl": false
   },
   "smtp": {
