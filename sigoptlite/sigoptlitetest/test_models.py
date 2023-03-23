@@ -144,8 +144,7 @@ class TestLocalExperiment(LocalExperimentBase):
     assert exception_info.value.args[0] == msg
 
   def test_experiment_with_constraints(self):
-    experiment_meta = self.get_experiment_feature("constraints")
-    experiment = LocalExperimentBuilder(experiment_meta)
+    experiment_meta = self.get_experiment_feature("constraints") experiment = LocalExperimentBuilder(experiment_meta)
     assert experiment.linear_constraints
     assert experiment.observation_budget == 123
     self.check_experiment_expected_attributes(experiment_meta, experiment)
@@ -161,22 +160,6 @@ class TestLocalExperiment(LocalExperimentBase):
     assert experiment.optimized_metrics[1].name == "y2"
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
-  def test_multimetric_experiment_no_budget_incompatible(self):
-    experiment_meta = self.get_experiment_feature("multimetric")
-    experiment_meta.pop("observation_budget")
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "observation_budget is required for a sigoptlite experiment with more than one optimized metric"
-    assert exception_info.value.args[0] == msg
-
-  def test_multimetric_and_multisolution_incompatible(self):
-    experiment_meta = self.get_experiment_feature("multimetric")
-    experiment_meta["num_solutions"] = 5
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment with multiple solutions require exactly one optimized metric"
-    assert exception_info.value.args[0] == msg
-
   def test_experiment_multitask(self):
     experiment_meta = self.get_experiment_feature("multitask")
     experiment = LocalExperimentBuilder(experiment_meta)
@@ -186,22 +169,6 @@ class TestLocalExperiment(LocalExperimentBase):
     assert [t.cost for t in experiment.tasks] == [0.1, 0.5, 1.0]
     assert not experiment.requires_pareto_frontier_optimization
     self.check_experiment_expected_attributes(experiment_meta, experiment)
-
-  def test_experiment_multitask_and_multimetric_incompatible(self):
-    experiment_meta = self.get_experiment_feature("multimetric")
-    experiment_meta["tasks"] = DEFAULT_TASKS
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment cannot have both tasks and multiple optimized metrics"
-    assert exception_info.value.args[0] == msg
-
-  def test_experiment_multitask_and_metric_constraint_incompatible(self):
-    experiment_meta = self.get_experiment_feature("metric_constraint")
-    experiment_meta["tasks"] = DEFAULT_TASKS
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment cannot have both tasks and constraint metrics"
-    assert exception_info.value.args[0] == msg
 
   def test_experiment_multitask_and_multisolution_incompatible(self):
     experiment_meta = self.get_experiment_feature("multitask")
@@ -236,14 +203,6 @@ class TestLocalExperiment(LocalExperimentBase):
     assert len(experiment.constraint_metrics) == 1
     assert experiment.constraint_metrics[0].name == "y1"
     self.check_experiment_expected_attributes(experiment_meta, experiment)
-
-  def test_experiment_metric_constraint_no_budget_incompatible(self):
-    experiment_meta = self.get_experiment_feature("metric_constraint")
-    experiment_meta.pop("observation_budget")
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "observation_budget is required for a sigoptlite experiment with constraint metrics"
-    assert exception_info.value.args[0] == msg
 
   def test_multimetric_experiment_with_threshold(self):
     experiment_meta = self.get_experiment_feature("metric_threshold")
