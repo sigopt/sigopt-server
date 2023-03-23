@@ -198,17 +198,8 @@ export default function makeCookieHandlers(configBroker) {
   };
   const cookiejarBucket = configBroker.get("web.cookiejar_bucket");
   const cookieReader = () =>
-    readRequestCookies(
-      s3,
-      cookiejarBucket,
-      scopedCookieName,
-    );
+    readRequestCookies(s3, cookiejarBucket, scopedCookieName);
   const cookieWriter = () =>
-    setResponseCookies(
-      s3,
-      cookiejarBucket,
-      scopedCookieName,
-      scopedCookieSpec,
-    );
+    setResponseCookies(s3, cookiejarBucket, scopedCookieName, scopedCookieSpec);
   return {cookieReader, cookieWriter};
 }
