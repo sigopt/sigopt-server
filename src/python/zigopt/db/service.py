@@ -80,7 +80,7 @@ class DatabaseConnection(object):
     total_ms = total * 1000
     query_logger = self._read_logger if statement.startswith("SELECT ") else self._write_logger
     query_logger.info("%s", statement, extra={"query_time": total_ms})
-    self._timing_logger.info("%s ms", total_ms)
+    self._timing_logger.debug("%s ms", total_ms)
 
   def sanitized_params(self, params):
     def _sanitized_params(params_to_log):

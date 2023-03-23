@@ -149,6 +149,7 @@ def configure_loggers(config_broker):
       "sigopt.config": logging.INFO,
       "sigopt.queue.workers": logging.INFO,
       "sigopt.rawsql": logging.INFO,
+      "sigopt.rawsql.timing": logging.INFO,
       "sigopt.requests": logging.INFO,
       "sigopt.sql": logging.INFO,
       "sigopt.timing": logging.INFO,
