@@ -490,6 +490,8 @@ services:
       start_period: "2m"
     security_opt:
       - "no-new-privileges:true"
+    depends_on:
+      - minio
   smtp:
     restart: on-failure:5
     logging:
