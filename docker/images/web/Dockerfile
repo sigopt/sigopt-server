@@ -23,7 +23,6 @@ RUN set -ex \
   ; :
 
 COPY .babelrc /sigopt-server/
-COPY config /sigopt-server/config
 COPY web /sigopt-server/web
 
 
@@ -62,8 +61,6 @@ WORKDIR /sigopt-server
 
 COPY --from=client-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
 COPY --from=server-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
-
-COPY config /sigopt-server/config
 
 RUN set -ex \
   ; adduser -S produser \

@@ -72,5 +72,4 @@ RUN set -ex \
 
 USER produser
 
-COPY config /sigopt-server/config
 COPY docker/images/zigopt/bin/ /usr/local/bin/

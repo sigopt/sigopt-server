@@ -13,6 +13,7 @@ services:
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
     volumes:
       - &rootca-volume ./artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
+      - &sigopt-config-volume ./config:/sigopt-server/config
       - ./junit-results:/sigopt-server/junit-results
       - ./screenshots/failure:/sigopt-server/screenshots/failure
       - ./failure_console_logs:/sigopt-server/failure_console_logs
@@ -53,6 +54,8 @@ services:
     read_only: true
     security_opt:
       - "no-new-privileges:true"
+    volumes:
+      - *sigopt-config-volume
   nginx:
     restart: on-failure:5
     image: "sigopt/nginx:${TAG}"
@@ -93,6 +96,8 @@ services:
     environment: &zigopt_environment
       - "sigopt_server_config_file=$sigopt_server_config_file"
       - "sigopt_server_version=git:$TAG"
+    volumes:
+      - *sigopt-config-volume
     tmpfs:
       - /tmp
     networks:
@@ -129,6 +134,7 @@ services:
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
     volumes:
       - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
+      - *sigopt-config-volume
     networks:
       default:
         aliases:
@@ -157,6 +163,8 @@ services:
       - optimization
     image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
+    volumes:
+      - *sigopt-config-volume
     deploy:
       resources:
         limits:
@@ -187,6 +195,8 @@ services:
       - analytics
     image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
+    volumes:
+      - *sigopt-config-volume
     deploy:
       resources:
         limits:
@@ -307,6 +317,7 @@ services:
     image: "sigopt/test-runner:${TAG}"
     volumes:
       - *rootca-volume
+      - *sigopt-config-volume
       - ./requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
       - ./test:/sigopt-server/test:ro
       - ./pytest.ini:/sigopt-server/pytest.ini:ro
