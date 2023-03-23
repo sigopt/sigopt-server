@@ -107,7 +107,7 @@ class TestParameterConstraints(UnitTestsBase):
     ]
     with pytest.raises(ValueError) as exception_info:
       self.conn.experiments().create(**invalid_term_count_meta)
-    msg = "Duplicate variable name: x0"
+    msg = "Duplicate constrained variable name: x0"
     assert exception_info.value.args[0] == msg
 
   def test_invalid_mixed_integer_constraints(self, base_meta):
