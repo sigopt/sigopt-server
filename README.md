@@ -36,7 +36,6 @@ Add the repo for the Debian release we base our docker images on. Then you need 
 ./scripts/compile/install_docker_debian.sh
 sudo groupadd docker
 sudo usermod -aG docker "$(id -u -n)"
-
 ```
 
 You will need to log out or exit your current session for these changes to take effect.
@@ -84,12 +83,6 @@ Make sure there really is nothing running with `docker ps`.
 If there is indeed nothing running, try reducing the number of CPUs allocated to Docker.
 This will require a restart of Docker.
 
-##### Memory
-
-The Mac system activity monitor will report that Docker is using twice the memory that it is actually using.
-Docker also claims a large amount of memory up front because of how virtualisation works in MacOS Hypervisor.framework.
-See the description of this [issue](https://github.com/docker/for-mac/issues/3232).
-
 </details>
 
 ## Install Pip
@@ -129,7 +122,7 @@ From the terminal in the `sigopt-server` directory you created in the git clone 
 ./setup.sh
 ```
 
-On AWS clean installs, you might need to run this as `sudo ./setup.sh`, because of limits on the default user.
+On AWS clean installs, you might need to restart the instance after adding yourself to the `docker` group.
 
 This should set-up everything you need to just run SigOpt. You will need to add the file `root-ca.crt` generated in the `artifacts/tls` directory into your keychain if you are using the self-signed certificates, and then run
 
@@ -139,17 +132,15 @@ echo "127.0.0.1 sigopt.ninja" | sudo tee -a /etc/hosts
 
 This will make sure that the self-signed certificates match the URL you are using. In order to protect you as much as possible with this self-signed cert, we have deleted the original key file associated with that certificate after we created a child certificate, so no attacker could cause mischief on your machine with it. If you are using other certificates you can just delete the `root-ca.crt` file and replace the `tls.crt` and `tls.key` files with your own certificates and you should be good to go.
 
-Note that the creation script for both certs will pause in `vi` to let you edit who owns the certs, if you wish to change the defaults you can. You can change your editor by setting the `EDITOR` environment variable, ex. `export EDITOR=nano`. If you are stuck in `vi` and/or just want to accept the defaults you can press `<escape>:wq` and it will advance. You should need to do this twice.
+Note that the creation script for both certs will pause in `vi` to let you edit who owns the certs, if you wish to change the defaults you can. You can change your editor by setting the `EDITOR` environment variable, ex. `export EDITOR=nano`. If you are stuck in `vi` and/or just want to accept the defaults you can press `<escape>:wq` and it will advance. You should need to do this twice, the first time for the root certificate and the second time for the leaf certificate.
 
 Once successfully configured, you can run the SigOpt system- allowing you to run experiments and view their results on a local website, by calling
 
 ```bash
-./deploy_sigopt_dev.sh
+./start.sh
 ```
 
 from the same sigopt-server directory you ran the configuration script from. Ctrl-c will allow you to quit.
-
-On AWS clean installs, you might need to run this as `sudo ./deploy_sigopt_dev.sh`, because of limits on the default user.
 
 ## Everything is running
 
@@ -173,7 +164,7 @@ With an [API Token](https://sigopt.ninja:4443/tokens/info) for your account you 
 If you reboot your machine, you should make sure that Docker is running (either Docker desktop or the daemon), then retype
 
 ```bash
-./deploy_sigopt_dev.sh
+./start.sh
 ```
 
 From the sigopt-server directory and it will launch again. To stop running, a single `ctrl-c` from within the terminal window running the Sigopt Server will end it.

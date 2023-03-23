@@ -16,6 +16,8 @@ fi
 CONFIG="$(mktemp)"
 
 cat >"$CONFIG" <<EOF
+# SigOpt leaf certificate settings
+
 [ req ]
 default_bits = 2048
 prompt = no
