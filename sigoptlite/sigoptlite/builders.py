@@ -793,7 +793,8 @@ class MetricEvaluationBuilder(BuilderBase):
     assert isinstance(input_dict["name"], str)
     assert isinstance(input_dict["value"], (int, float))
     if "value_stddev" in input_dict:
-      assert isinstance(input_dict["value"], (int, float))
+      assert isinstance(input_dict["value_stddev"], (int, float))
+      assert input_dict["value_stddev"] > 0
 
   @classmethod
   def create_object(cls, **input_dict):
