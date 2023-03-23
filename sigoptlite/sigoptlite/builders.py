@@ -706,7 +706,7 @@ class LocalObservationBuilder(BuilderBase):
       if parameter_conditions_satisfied(parameter, observation.assignments):
         cls.observation_must_have_parameter(observation, parameter)
       else:
-        cls.observation_do_not_have_parameter(observation, parameter)
+        cls.observation_does_not_have_parameter(observation, parameter)
 
     cls.validate_observation_conditionals(observation, experiment.conditionals)
 
@@ -749,7 +749,7 @@ class LocalObservationBuilder(BuilderBase):
       )
 
   @classmethod
-  def observation_do_not_have_parameter(cls, observation, parameter):
+  def observation_does_not_have_parameter(cls, observation, parameter):
     if parameter.name in observation.assignments:
       raise ValueError(
         f"Parameter {parameter.name} does not satisfy conditions. "
