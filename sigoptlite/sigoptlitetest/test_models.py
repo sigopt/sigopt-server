@@ -144,7 +144,8 @@ class TestLocalExperiment(LocalExperimentBase):
     assert exception_info.value.args[0] == msg
 
   def test_experiment_with_constraints(self):
-    experiment_meta = self.get_experiment_feature("constraints") experiment = LocalExperimentBuilder(experiment_meta)
+    experiment_meta = self.get_experiment_feature("constraints")
+    experiment = LocalExperimentBuilder(experiment_meta)
     assert experiment.linear_constraints
     assert experiment.observation_budget == 123
     self.check_experiment_expected_attributes(experiment_meta, experiment)
