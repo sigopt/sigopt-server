@@ -78,7 +78,7 @@ EXPERIMENT_CREATE_SCHEMA = {
     },
     "metrics": {
       "type": ["array"],
-      "minItems": 1,      
+      "minItems": 1,
       "items": {
         "type": ["string", "object"],
         "properties": {
@@ -243,7 +243,7 @@ def process_error(e, class_name):
     raise ValueError(f"{e.instance} does not match the regular expression /{e.validator_value}/")
   elif e.validator in ["oneOf", "anyOf"]:
     if len(e.context) > 0:
-      process_error(e.context[0])
+      process_error(e.context[0], class_name)
     raise NotImplementedError("Error has no context but it is oneOf or anyOf related.")
   else:
     raise NotImplementedError(f"Unrecognized error {e.validator} parsing json {class_name}: {json.dumps(e.instance)}")

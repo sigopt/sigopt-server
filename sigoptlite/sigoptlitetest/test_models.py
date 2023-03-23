@@ -325,7 +325,7 @@ class TestLocalExperiment(LocalExperimentBase):
     del experiment_meta["parameters"]
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
-    msg = f'Missing required json key "parameters" in sigoptlite experiment:'
+    msg = 'Missing required json key "parameters" in sigoptlite experiment:'
     assert exception_info.value.args[0].startswith(msg)
 
   def test_experiment_parameters_empty_list(self):
