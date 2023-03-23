@@ -128,9 +128,9 @@ class DatabaseConnectionService(Service):
         "postgresql+pg8000",
         username=config.get("user"),
         password=config.get("password"),
-        host=config["host"],
-        port=config["port"],
-        database=config["path"],
+        host=config.get("host"),
+        port=config.get("port"),
+        database=config.get("path"),
       ),
       connect_args=connect_args,
       execution_options={
