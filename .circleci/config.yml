@@ -427,7 +427,9 @@ jobs:
           name: Add sigopt.ninja DNS entry
           command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: EDITOR=true ./setup.sh
-      - run: ./start.sh
+      - run:
+          command: ./start.sh
+          background: true
       - run: ./ci/wait_for url https://sigopt.ninja:4443/login
       - run: "./ci/wait_for url https://sigopt.ninja:4443/api/ --user client_token:"
       - run: |
