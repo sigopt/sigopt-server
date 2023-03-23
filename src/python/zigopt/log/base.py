@@ -146,7 +146,7 @@ def configure_loggers(config_broker):
       "requests.packages.urllib3": logging.INFO,
       "sigopt": logging.INFO,
       "sigopt.apiexception": logging.INFO,
-      "sigopt.config": logging.INFO,
+      "sigopt.config": logging.DEBUG,
       "sigopt.queue.workers": logging.DEBUG,
       "sigopt.rawsql": logging.INFO,
       "sigopt.requests": logging.INFO,

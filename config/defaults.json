@@ -6,11 +6,6 @@
   "db": {
     "path": "basedb"
   },
-  "logging": {
-    "levels": {
-      "sigopt.config": 10
-    }
-  },
   "queue": {
     "message_groups": {
       "analytics": {
