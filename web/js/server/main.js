@@ -44,9 +44,6 @@ export default function main() {
     process.env.sigopt_server_config_file,
   );
   return new Promise((s, e) => configBroker.initialize(s, e))
-    .then(() =>
-      console.log(JSON.stringify(configBroker.allConfigsForLogging())),
-    )
     .then(() => {
       const globalServiceBag = new GlobalServiceBag(
         configBroker,
