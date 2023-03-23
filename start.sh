@@ -7,10 +7,9 @@ export sigopt_server_config_file="${sigopt_server_config_file:-config/sigopt.yml
 export TAG=latest
 docker-compose --file=docker-compose.yml up --detach \
   minio \
+  nginx \
   postgres \
   redis
-docker-compose --file=docker-compose.yml up --detach \
-  nginx
 docker-compose --file=docker-compose.yml up \
   api \
   nginx \

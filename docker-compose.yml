@@ -253,7 +253,7 @@ services:
         limits:
           cpus: "1"
           memory: 128M
-          pids: 8
+          pids: 16
     read_only: true
     healthcheck:
       test: ["CMD", "redis-cli", "PING"]
