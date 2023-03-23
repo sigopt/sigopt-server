@@ -7,13 +7,12 @@ ARG BUILD_TAG=build
 FROM sigopt/node-development:${BUILD_TAG} AS test-routes
 
 COPY web /sigopt-server/web
-COPY config/circleci.json /sigopt-server/config/circleci.json
-COPY config/development.json /sigopt-server/config/development.json
+COPY config/defaults.json /sigopt-server/config/defaults.json
 COPY scripts/compile/generate_routes /sigopt-server/scripts/compile/generate_routes
 COPY .babelrc /sigopt-server/.babelrc
 COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.js
 
-RUN ./scripts/compile/generate_routes config/circleci.json
+RUN ./scripts/compile/generate_routes config/defaults.json
 
 
 FROM sigopt/test-runner:${BUILD_TAG}
