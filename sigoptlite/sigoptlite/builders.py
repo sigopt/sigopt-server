@@ -688,16 +688,10 @@ class LocalConstraintTermBuilder(BuilderBase):
 class LocalObservationBuilder(BuilderBase):
   @classmethod
   def validate_input_dict(cls, input_dict):
-    assert len(input_dict["assignments"]) > 0
-    if input_dict.get("values") is not None:
-      assert len(input_dict["values"]) > 0
-      failed = input_dict.get("failed", False)
-      assert not failed
-    if input_dict.get("failed") is not None:
-      assert input_dict["failed"] in [True, False]
-      if input_dict["failed"]:
-        values = input_dict.get("values", [])
-        assert not values
+    try:
+      validate_against_schema(input_dict, OBSERVATION_CREATE_SCHEMA)
+    except ValidationError as e:
+      process_error(e)
 
   @classmethod
   def create_object(cls, **input_dict):
