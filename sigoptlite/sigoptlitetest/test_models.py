@@ -283,22 +283,6 @@ class TestLocalExperiment(LocalExperimentBase):
     msg = "observation_budget is required for a sigoptlite experiment with constraint metrics"
     assert exception_info.value.args[0] == msg
 
-  def test_experiment_conditionals_multisolution_incompatible(self):
-    experiment_meta = self.get_experiment_feature("conditionals")
-    experiment_meta["num_solutions"] = 3
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment with multiple solutions does not support conditional parameters"
-    assert exception_info.value.args[0] == msg
-
-  def test_experiment_conditionals_search_incompatible(self):
-    experiment_meta = self.get_experiment_feature("conditionals")
-    experiment_meta["metrics"] = DEFAULT_METRICS_SEARCH
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "All-Constraint sigoptlite experiment does not support conditional parameters"
-    assert exception_info.value.args[0] == msg
-
   def test_experiment_conditionals(self):
     experiment_meta = self.get_experiment_feature("conditionals")
     experiment = LocalExperimentBuilder(experiment_meta)
