@@ -6,7 +6,7 @@ import pytest
 from sigoptlite.builders import LocalExperimentBuilder
 from sigoptlite.models import LocalSuggestion
 from sigoptlitetest.base_test import UnitTestsBase
-from sigoptlitetest.constants import DEFAULT_METRICS_SEARCH, DEFAULT_TASKS
+from sigoptlitetest.constants import DEFAULT_METRICS_SEARCH
 
 
 class LocalExperimentBase(UnitTestsBase):
