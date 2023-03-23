@@ -147,13 +147,13 @@ class LocalExperimentBuilder(BuilderBase):
 
   @classmethod
   def validate_conditionals(cls, experiment):
-    conditional_names = [c.name for c in experiment.conditionals]
-    if not len(conditional_names) == cls.get_num_distict_elements(conditional_names):
-      raise ValueError(f"No duplicate conditionals are allowed: {conditional_names}")
-
     parameters_have_conditions = any(parameter.conditions for parameter in experiment.parameters)
     if not parameters_have_conditions and not experiment.is_conditional:
       return
+
+    conditional_names = [c.name for c in experiment.conditionals]
+    if not len(conditional_names) == cls.get_num_distict_elements(conditional_names):
+      raise ValueError(f"No duplicate conditionals are allowed: {conditional_names}")
 
     conditional_names_from_parameter_conditions = []
     for parameter in experiment.parameters:
