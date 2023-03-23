@@ -20,7 +20,7 @@ if ! ./scripts/compile/build_docker_images.sh; then
 fi
 
 echo "Generating root certificate and key..."
-if ./tools/tls/generate_root_ca; then
+if ./tools/tls/generate_root_ca.sh; then
   echo "Root certificate at artifacts/tls/root-ca.crt"
 else
   echo "Failed to generate root certificate!"
@@ -30,7 +30,7 @@ CA_PATH="$(pwd)/artifacts/tls/root-ca.crt"
 export SIGOPT_API_VERIFY_SSL_CERTS=$CA_PATH
 export NODE_EXTRA_CA_CERTS=$CA_PATH
 echo "Generating leaf certificate and key..."
-if ./tools/tls/generate_san_cert; then 
+if ./tools/tls/generate_san_cert.sh; then 
   echo "Leaf certificate and key at artifacts/tls/tls.*"
   shred -u ./artifacts/tls/root-ca.key  
   rm -f artifacts/tls/root-ca.srl

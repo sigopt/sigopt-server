@@ -1,4 +1,4 @@
-# auto-generated from scripts/requirements/freeze_requirements
+# auto-generated from scripts/requirements/freeze_requirements.sh
 attrs==22.2.0
 backoff==1.10.0
 bcrypt==3.2.0
