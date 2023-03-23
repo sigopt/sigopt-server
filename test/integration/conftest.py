@@ -11,7 +11,7 @@ import requests
 import werkzeug
 
 from zigopt.common import *
-from zigopt.config.broker import ConfigBroker, DictConfigBrokerSource
+from zigopt.config.broker import ConfigBroker
 from zigopt.profile.profile import NullProfiler, Profiler
 from zigopt.queue.message_groups import MessageGroup
 from zigopt.services.api import ApiRequestLocalServiceBag, ApiServiceBag
