@@ -28,16 +28,16 @@ COPY web /sigopt-server/web
 
 FROM node-build AS client-artifacts
 
-COPY scripts/compile/minify_js /sigopt-server/scripts/compile/minify_js
+COPY scripts/compile/minify_js.sh /sigopt-server/scripts/compile/minify_js.sh
 
-RUN ./scripts/compile/minify_js
+RUN ./scripts/compile/minify_js.sh
 
 
 FROM node-build AS server-artifacts
 
-COPY scripts/compile/minify_js_server_bundle /sigopt-server/scripts/compile/minify_js_server_bundle
+COPY scripts/compile/minify_js_server_bundle.sh /sigopt-server/scripts/compile/minify_js_server_bundle.sh
 
-RUN ./scripts/compile/minify_js_server_bundle
+RUN ./scripts/compile/minify_js_server_bundle.sh
 
 
 FROM node:${NODE_VERSION}-alpine
