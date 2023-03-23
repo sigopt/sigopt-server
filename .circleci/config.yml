@@ -133,6 +133,7 @@ commands:
       - start-sigopt-service:
           description: API Server
           service: api
+      - run: "./ci/wait_for.sh url https://sigopt.ninja:4443/api/ --user client_token:"
       - run:
           name: Set up MinIO buckets
           command: |
@@ -182,6 +183,7 @@ commands:
       - start-sigopt-service:
           description: Web Server
           service: web-server
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
   run-browser-test:
     steps:
       - integration-test-setup:
