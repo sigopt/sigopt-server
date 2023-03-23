@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
-
 from sigopt import Connection
+
 from sigoptlite.driver import LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
 from sigoptlitetest.constants import DEFAULT_TASKS
@@ -17,9 +17,7 @@ class TestMultimetricExperiment(UnitTestsBase):
     return self.get_experiment_feature("multimetric")
 
   def test_more_than_two_optimized_metrics_forbidden(self, experiment_meta):
-    experiment_meta["metrics"].append(
-      {"name": "f3", "strategy": "optimize", "objective": "minimize"}
-    )
+    experiment_meta["metrics"].append({"name": "f3", "strategy": "optimize", "objective": "minimize"})
     with pytest.raises(ValueError) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     msg = "sigoptlite experiment must have one or two optimized metrics"
