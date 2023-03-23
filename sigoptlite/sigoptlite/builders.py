@@ -247,10 +247,10 @@ def process_error(e):
 
 
 class BuilderBase(object):
-  def __new__(cls, input_dict):
+  def __new__(cls, input_dict, **kwargs):
     cls.validate_input_dict(input_dict)
     local_object = cls.create_object(**input_dict)
-    cls.validate_object(local_object)
+    cls.validate_object(local_object, **kwargs)
     return local_object
 
   @classmethod
@@ -381,7 +381,7 @@ class LocalExperimentBuilder(BuilderBase):
   @classmethod
   def validate_tasks(cls, experiment):
     if len(experiment.tasks) < 2:
-      raise ValueError("For multitask experiments, at least 2 tasks must be present.")
+      raise ValueError(f"For multitask {cls.cls_name}, at least 2 tasks must be present.")
     costs = [t.cost for t in experiment.tasks]
     num_distinct_task = cls.get_num_distict_elements([t.name for t in experiment.tasks])
     num_distinct_costs = cls.get_num_distict_elements(costs)
@@ -614,7 +614,7 @@ class LocalTaskBuilder(BuilderBase):
 
   @classmethod
   def validate_object(cls, task):
-    if task.cost <= 0 or task.cost > 1:
+    if not (0 < task.cost <= 1):
       raise ValueError(f"{task} costs must be positve and less than or equal to 1.")
 
 
@@ -685,38 +685,117 @@ class LocalConstraintTermBuilder(BuilderBase):
     return LocalConstraintTerm(**input_dict)
 
 
-class LocalObservationBuilder(object):
+class LocalObservationBuilder(BuilderBase):
   @classmethod
-  def validate_observation_dict(cls, observation_dict):
-    assert len(observation_dict["assignments"]) > 0
-    if observation_dict.get("values") is not None:
-      assert len(observation_dict["values"]) > 0
-      failed = observation_dict.get("failed", False)
-      assert not failed
-    if observation_dict.get("failed") is not None:
-      assert observation_dict["failed"] in [True, False]
-      if observation_dict["failed"]:
-        values = observation_dict.get("values", [])
-        assert not values
-
-  def __new__(cls, observation_dict):
+  def validate_input_dict(cls, input_dict):
     try:
-      validate_against_schema(observation_dict, OBSERVATION_CREATE_SCHEMA)
+      validate_against_schema(input_dict, OBSERVATION_CREATE_SCHEMA)
     except ValidationError as e:
       process_error(e)
-    cls.validate_observation_dict(observation_dict)
-    assignments = observation_dict["assignments"]
-    values = []
-    if observation_dict.get("values") is not None:
-      values = [MetricEvaluation(**v) for v in observation_dict["values"]]
-    failed = observation_dict.get("failed", False)
-    task = []
-    if observation_dict.get("task") is not None:
-      task = LocalTask(**observation_dict["task"])
-    observation = LocalObservation(
-      assignments=LocalAssignments(assignments),
-      values=values,
-      failed=failed,
-      task=task,
-    )
-    return observation
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    cls.set_object(input_dict, "assignments", LocalAssignments)
+    cls.set_list_of_objects(input_dict, field="values", local_class=MetricEvaluationBuilder)
+    cls.set_object(input_dict, "task", LocalTaskBuilder)
+    return LocalObservation(**input_dict)
+
+  @classmethod
+  def validate_object(cls, observation, experiment):
+    for parameter in experiment.parameters:
+      if parameter_conditions_satisfied(parameter, observation.assignments):
+        cls.observation_must_have_parameter(observation, parameter)
+      else:
+        cls.observation_does_not_have_parameter(observation, parameter)
+
+    cls.validate_observation_conditionals(observation, experiment.conditionals)
+
+    if experiment.is_multitask:
+      cls.validate_observation_tasks(observation, experiment.tasks)
+
+    if not experiment.is_multitask and observation.task:
+      raise ValueError("Observation with task is not expected for this experiment")
+
+    if observation.failed and observation.values:
+      raise ValueError(
+        f"Observation marked as failure ({observation.failed}) should not have values. "
+        f"Current list of values is: {observation.values}"
+      )
+
+    if not observation.failed:
+      for m in experiment.metrics:
+        if observation.get_metric_value(m.name) is None:
+          raise ValueError(f"Metric {m.name} not in observation.values {observation.values}")
+
+  @staticmethod
+  def observation_must_have_parameter(observation, parameter):
+    if parameter.name not in observation.assignments:
+      raise ValueError(
+        f"Parameter {parameter.name} is required for this experiment, "
+        f"and is missing from this observation: {observation.assignments}"
+      )
+    parameter_value = observation.assignments[parameter.name]
+    if parameter.is_categorical:
+      expected_categories = [cv.name for cv in parameter.categorical_values]
+      if parameter_value not in expected_categories:
+        raise ValueError(
+          f"Categorical parameter {parameter.name} must have one of following categories: "
+          f"{expected_categories} instead of {parameter_value}"
+        )
+    if parameter.grid and parameter_value not in parameter.grid:
+      raise ValueError(
+        f"Grid parameter {parameter.name} must have one of following grid values: "
+        f"{parameter.grid} instead of {parameter_value}"
+      )
+
+  @staticmethod
+  def observation_does_not_have_parameter(observation, parameter):
+    if parameter.name in observation.assignments:
+      raise ValueError(
+        f"Parameter {parameter.name} does not satisfy conditions. "
+        f"Observation assignments: {observation.assignments} is invalid."
+      )
+
+  @staticmethod
+  def validate_observation_conditionals(observation, conditionals):
+    for conditional in conditionals:
+      if conditional.name not in observation.assignments:
+        raise ValueError(f"Conditional parameter {conditional.name} must be in {observation}")
+      conditional_value = observation.assignments[conditional.name]
+      expected_conditional_options = [cv.name for cv in conditional.values]
+      if conditional_value not in expected_conditional_options:
+        raise ValueError(
+          f"Conditional parameter {conditional.name} must have one of following options: "
+          f"{expected_conditional_options} instead of {conditional_value}"
+        )
+
+  @staticmethod
+  def validate_observation_tasks(observation, tasks):
+    if not observation.task:
+      raise ValueError("Observation must have a task field for this experiment")
+    obs_task_name = observation.task.name
+    if obs_task_name not in [t.name for t in tasks]:
+      raise ValueError(
+        f"Task {obs_task_name} is not a valid task for this experiment. Must be one of the following: {tasks}"
+      )
+    obs_task_costs = observation.task.cost
+    expected_task_costs = [t.cost for t in tasks]
+    if obs_task_costs not in expected_task_costs:
+      raise ValueError(
+        f"Task cost {obs_task_costs} is not a valid cost for this experiment. Must be one of the following:"
+        f" {expected_task_costs}"
+      )
+
+
+class MetricEvaluationBuilder(BuilderBase):
+  @classmethod
+  def validate_input_dict(cls, input_dict):
+    assert isinstance(input_dict["name"], str)
+    assert isinstance(input_dict["value"], (int, float))
+    if "value_stddev" in input_dict:
+      assert isinstance(input_dict["value_stddev"], (int, float))
+      assert input_dict["value_stddev"] >= 0
+
+  @classmethod
+  def create_object(cls, **input_dict):
+    return MetricEvaluation(**input_dict)
