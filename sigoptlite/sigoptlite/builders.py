@@ -111,12 +111,12 @@ class LocalExperimentBuilder(BuilderBase):
         raise ValueError(f"{cls.cls_name} with multiple solutions require exactly one optimized metric")
 
     # Check conditional limitation
+    cls.validate_conditionals(experiment)
     if experiment.is_conditional:
       if num_solutions and num_solutions > 1:
         raise ValueError(f"{cls.cls_name} with multiple solutions does not support conditional parameters")
       if experiment.is_search:
         raise ValueError(f"All-Constraint {cls.cls_name} does not support conditional parameters")
-      cls.validate_conditionals(experiment)
 
     # Check feature viability of multitask
     tasks = experiment.tasks
@@ -147,6 +147,25 @@ class LocalExperimentBuilder(BuilderBase):
 
   @classmethod
   def validate_conditionals(cls, experiment):
+    conditional_names = [c.name for c in experiment.conditionals]
+    if not len(conditional_names) == cls.get_num_distict_elements(conditional_names):
+      raise ValueError(f"No duplicate conditionals are allowed: {conditional_names}")
+
+    parameters_have_conditions = any(parameter.conditions for parameter in experiment.parameters)
+    if not parameters_have_conditions and not experiment.is_conditional:
+      return
+
+    conditional_names_from_parameter_conditions = []
+    for parameter in experiment.parameters:
+      conditional_names_from_parameter_conditions += [condition.name for condition in parameter.conditions]
+    if set(conditional_names_from_parameter_conditions) != set(conditional_names):
+      raise ValueError("Parameter conditions and experiment conditionals do not match")
+
+    if parameters_have_conditions ^ experiment.is_conditional:
+      raise ValueError(
+        "For conditional experiments, need both conditions defined in parameters and conditionals variables"
+        " defined in experiment"
+      )
     cls.check_all_conditional_values_satisfied(experiment)
 
   @classmethod
