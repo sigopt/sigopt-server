@@ -416,6 +416,22 @@ jobs:
       - run: mkdir -p artifacts/trivy && trivy fs .
       - store_artifacts:
           path: artifacts/trivy/
+  test-docker-deployment:
+    executor: sigopt-build
+    resource_class: xlarge
+    steps:
+      - checkout
+      - update-docker-cli
+      - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
+      - run:
+          name: Add sigopt.ninja DNS entry
+          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+      - run: EDITOR=true ./setup.sh
+      - run: ./start.sh
+      - run: ./ci/wait_for url https://sigopt.ninja:4443/login
+      - run: "./ci/wait_for url https://sigopt.ninja:4443/api/ --user client_token:"
+      - run: |
+          curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "owner@sigopt.ninja", "password": "owner"}'
   test-docker-development:
     executor: sigopt-build
     resource_class: xlarge
@@ -670,6 +686,7 @@ workflows:
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
+      - test-docker-deployment
       - test-docker-development
       - setup-web
       - compile-protobuf
