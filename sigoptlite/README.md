@@ -1,3 +1,9 @@
+<!--
+Copyright © 2023 Intel Corporation
+SPDX-License-Identifier: Apache License 2.0
+-->
+
+
 # SigOpt-Lite
 
 SigOpt-Lite is an open source tool for locally running a lightweight version of [SigOpt](www.sigopt.com). Sigopt-Lite contains all the computation elements of SigOpt-Server, but bypasses the need to set up servers and Docker.  SigOpt-Lite gives access to the SigOpt Core Module functionality; to learn more about that, visit the [SigOpt documentation](https://docs.sigopt.com/intro/sigopt-api-modules).  To learn about how to host your own SigOpt server, visit our [SigOpt-Server documentation](../#README.md).
