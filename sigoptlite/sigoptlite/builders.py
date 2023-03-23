@@ -330,6 +330,11 @@ class LocalExperimentBuilder(BuilderBase):
     if experiment.optimized_metrics:
       if not len(experiment.optimized_metrics) in [1, 2]:
         raise ValueError(f"{cls.cls_name} must have one or two optimized metrics")
+      if len(experiment.optimized) == 1 and experiment.optimized_metrics[0].threshold is not None:
+        rasie ValueError(
+          "Thresholds are only supported for experiments with more than one optimized metric."
+          " Try an All-Constraint experiment instead by setting `strategy` to `constraint`."
+        )
 
     # Check feature viability of multisolution experiments
     num_solutions = experiment.num_solutions
@@ -586,6 +591,11 @@ class LocalMetricBuilder(BuilderBase):
   @classmethod
   def create_object(cls, **input_dict):
     return LocalMetric(**input_dict)
+
+  @classmethod
+  def validate_object(cls, metric):
+    if metric.is_constraint and metric.threshold is None:
+      raise ValueError("Constraint metrics must have the threshold field defined")
 
 
 class LocalConditionalBuilder(BuilderBase):
