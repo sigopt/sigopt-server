@@ -39,6 +39,11 @@ commands:
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: docker version
+  sigopt-ninja-dns:
+    steps:
+      - run:
+          name: Add sigopt.ninja DNS entry
+          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
   compile-protobuf:
     steps:
       - run: sudo apt-get update -yqq && sudo apt-get install -yqq --no-install-recommends --no-install-suggests libprotobuf-dev protobuf-compiler
@@ -87,7 +92,7 @@ commands:
       - run:
           command: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
           no_output_timeout: 30m
-      - run: docker image ls
+      - sigopt-ninja-dns
     parameters:
       build_images:
         type: string
@@ -425,9 +430,7 @@ jobs:
       - checkout
       - update-docker-cli
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
-      - run:
-          name: Add sigopt.ninja DNS entry
-          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+      - sigopt-ninja-dns
       - run: EDITOR=true ./setup.sh
       - run:
           command: ./start.sh
@@ -444,9 +447,7 @@ jobs:
       - update-docker-cli
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - run: ./ci/create_development_tls_certs.sh
-      - run:
-          name: Add sigopt.ninja DNS entry
-          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+      - sigopt-ninja-dns
       - run: make build-debug-images fix-db setup-cookiejar setup-filestorage
       - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
       - run:
