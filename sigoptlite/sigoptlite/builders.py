@@ -227,7 +227,7 @@ def process_error(e, class_name):
       missing_key = missing_keys[0] if len(missing_keys) > 0 else None
     else:
       missing_key = e.validator_value[0]
-    raise ValueError(f'Missing required json key "{missing_key}" in {class_name}: {json.dumps(e.instance)}')
+    raise ValueError(f"Missing required json key `{missing_key}` in {class_name}: {json.dumps(e.instance)}")
   elif e.validator in ["minimum", "maximum"]:
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator == "minimum" else "less than"

@@ -325,7 +325,7 @@ class TestLocalExperiment(LocalExperimentBase):
     del experiment_meta["parameters"]
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
-    msg = 'Missing required json key "parameters" in sigoptlite experiment:'
+    msg = "Missing required json key `parameters` in sigoptlite experiment:"
     assert exception_info.value.args[0].startswith(msg)
 
   def test_experiment_parameters_empty_list(self):
@@ -333,7 +333,7 @@ class TestLocalExperiment(LocalExperimentBase):
     experiment_meta["parameters"] = []
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
-    msg = 'The length of .parameters must be greater than or equal to 1'
+    msg = "The length of .parameters must be greater than or equal to 1"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_missing_metrics(self):
@@ -341,7 +341,7 @@ class TestLocalExperiment(LocalExperimentBase):
     del experiment_meta["metrics"]
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
-    msg = 'Missing required json key "metrics" in sigoptlite experiment:'
+    msg = "Missing required json key `metrics` in sigoptlite experiment:"
     assert exception_info.value.args[0].startswith(msg)
 
   def test_experiment_metrics_empty_list(self):
