@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server-deploy
-export SIGOPT_CONFIG_FILE=config/sigopt.yml
+export sigopt_server_config_file="${sigopt_server_config_file:-config/sigopt.yml}"
 export TAG=latest
 echo "Checking docker..."
 if docker ps -q >/dev/null; then

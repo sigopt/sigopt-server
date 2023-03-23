@@ -46,7 +46,7 @@ services:
       - python
       - -m
       - zigopt.utils.create_database
-      - &config-file "$SIGOPT_CONFIG_FILE"
+      - &config-file "$sigopt_server_config_file"
       - --drop-tables
       - --fake-data
     image: "sigopt/zigopt:${TAG}"
@@ -91,7 +91,7 @@ services:
       - zigopt.api.main:GUNICORN_ENTRY_POINT
     image: "sigopt/zigopt:${TAG}"
     environment: &zigopt_environment
-      - "sigopt_server_config_file=$SIGOPT_CONFIG_FILE"
+      - "sigopt_server_config_file=$sigopt_server_config_file"
       - "sigopt_server_version=git:$TAG"
     tmpfs:
       - /tmp
@@ -123,7 +123,7 @@ services:
   web-server:
     image: "sigopt/web:${TAG}"
     environment:
-      - "sigopt_server_config_file=$SIGOPT_CONFIG_FILE"
+      - "sigopt_server_config_file=$sigopt_server_config_file"
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
       - "sigopt_server_version=git:$TAG"
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
