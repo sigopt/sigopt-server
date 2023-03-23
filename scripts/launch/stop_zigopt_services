@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -e
-set -o pipefail
-. scripts/launch/setup_env
-./scripts/launch/compose stop "${PERSISTENT_SERVICES[@]}"

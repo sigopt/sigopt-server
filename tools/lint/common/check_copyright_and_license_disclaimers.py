@@ -19,7 +19,7 @@ LICENSE = "SPDX-License-Identifier: Apache License 2.0"
 
 DISCLAIMER_RE_LINES = [
   re.compile(r"^[ *#]*Copyright © [0-9]{4} Intel Corporation$"),
-  re.compile(r"^[ *#]"),
+  re.compile(r"^[ *#]*$"),
   re.compile(r"^[ *#]*SPDX-License-Identifier:.*$"),
 ]
 
@@ -32,6 +32,7 @@ class Filetype:
   dockerfile = "Dockerfile"
   js = ".js"
   less = ".less"
+  markdown = ".md"
   python = ".py"
 
 
@@ -39,6 +40,7 @@ FILETYPES = (
   Filetype.dockerfile,
   Filetype.js,
   Filetype.less,
+  Filetype.markdown,
   Filetype.python,
 )
 
@@ -46,14 +48,16 @@ COMMENT_BLOCKS = {
   Filetype.dockerfile: ("", ""),
   Filetype.js: ("/**\n", " */\n\n"),
   Filetype.less: ("/**\n", " */\n"),
+  Filetype.markdown: ("<!--\n", "-->\n\n"),
   Filetype.python: ("", ""),
 }
 
 COMMENT_LINES = {
-  Filetype.dockerfile: "#",
-  Filetype.js: " *",
-  Filetype.less: " *",
-  Filetype.python: "#",
+  Filetype.dockerfile: "# ",
+  Filetype.js: " * ",
+  Filetype.less: " * ",
+  Filetype.markdown: "",
+  Filetype.python: "# ",
 }
 
 
@@ -70,7 +74,12 @@ def guess_filetype(filename):
 def generate_disclaimer(filetype):
   opener, closer = COMMENT_BLOCKS[filetype]
   separator = COMMENT_LINES[filetype]
-  return f"{opener}{separator} {COPYRIGHT}\n{separator}\n{separator} {LICENSE}\n{closer}"
+  return "\n".join([
+    f"{opener}{separator}{COPYRIGHT}",
+    separator.rstrip(" "),
+    f"{separator}{LICENSE}",
+    f"{closer}",
+  ])
 
 
 DISCLAIMERS_BY_FILETYPE = {filetype: generate_disclaimer(filetype) for filetype in FILETYPES}
@@ -84,7 +93,7 @@ def file_has_disclaimer(filename, filetype, verbose=False):
     line = next(fp)
     if line.startswith("#!"):
       line = next(fp)
-    if line == "/**\n":
+    if line in ("/**\n", "<!--\n"):
       line = next(fp)
     to_check.append(line)
     to_check.extend(l for l, _ in zip(fp, range(len(DISCLAIMER_RE_LINES) - 1)))

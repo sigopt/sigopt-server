@@ -1,3 +1,9 @@
+<!--
+Copyright © 2023 Intel Corporation
+
+SPDX-License-Identifier: Apache License 2.0
+-->
+
 # Development Setup
 
 Use these steps if you want to set up to contribute to development of SigOpt. In order to install for local development, you will want to do the following steps, which we've laid out for both Mac and Ubuntu Linux. (We haven't tested on other distros, but we think that the only difference should be the package manager commands.)
@@ -148,7 +154,7 @@ make build-debug-images
 
 To setup SigOpt services, you must have Docker installed.
 
-To setup and start services required by SigOpt in Docker, run `./scripts/launch/start_zigopt_services`.
+To setup and start services required by SigOpt in Docker, run `./scripts/launch/start_zigopt_services.sh`.
 Then run `make fix-db` to setup the postgres database in the postgres container.
 `docker ps` should show the running services including `postgres` and `redis`.
 
@@ -157,8 +163,8 @@ _Tips_
 - You can access Postgresql with `docker exec -ti sigopt-server-postgres-1 psql -U postgres` and Redis with `docker exec -ti sigopt-server-redis-1 redis-cli`.
 - View all docker containers with `docker ps -a`.
 - Services will automatically start on boot.
-- Stop services with `./scripts/launch/stop_zigopt_services`.
-- Remove a service with `docker rm -f [container_name]` ex. `docker rm -f sigopt-server-postgres-1` and recreate it with `./scripts/launch/start_zigopt_services`.
+- Stop services with `./scripts/launch/stop_zigopt_services.sh`.
+- Remove a service with `docker rm -f [container_name]` ex. `docker rm -f sigopt-server-postgres-1` and recreate it with `./scripts/launch/start_zigopt_services.sh`.
 
 ## Setting up local TLS certs
 
@@ -167,8 +173,8 @@ In order to provide secure connections you will create new, locally generated TL
 From the terminal in the `sigopt-server` directory you created in the git clone command above, type:
 
 ```bash
-./tools/tls/generate_root_ca
-./tools/tls/generate_san_cert
+./tools/tls/generate_root_ca.sh
+./tools/tls/generate_san_cert.sh
 shred -u ./artifacts/tls/root-ca.key
 ```
 
@@ -223,7 +229,7 @@ Note that the creation script for both certs will pause in your default editor, 
 ## How to run everything locally
 
 ```bash
-./scripts/launch/all_live [optional_config_file]
+./scripts/launch/all_live.sh [optional_config_file]
 ```
 
 This will start Web, API and message processors (qworkers) in development mode,
@@ -252,7 +258,7 @@ The website should also be [running](https://sigopt.ninja:4443/)! You may need t
 ## How to run the repl
 
 ```bash
-./scripts/launch/repl
+./scripts/launch/repl.sh
 ```
 
 This will start the REPL environment. To quit, type `exit`.
@@ -313,35 +319,35 @@ yarn test
 To run python unit tests:
 
 ```bash
-./test/unit_tests
+./test/unit_tests.sh
 ```
 
 To run a specific unit test in python:
 
 ```bash
-./test/unit_tests "./path-to-unit-test-file::TestClass::test_method_name"
+./test/unit_tests.sh "./path-to-unit-test-file::TestClass::test_method_name"
 ```
 
 ## Integration tests
 
 ```bash
 # All integration tests
-./test/test_dev_env test/integration
+./test/test_dev_env.sh test/integration
 
 # services
-./test/test_dev_env test/integration/service
+./test/test_dev_env.sh test/integration/service
 
 # api
-./test/test_dev_env test/integration/v1
+./test/test_dev_env.sh test/integration/v1
 
 # browser
-./test/test_dev_env test/integration/browser
+./test/test_dev_env.sh test/integration/browser
 
 # single integration test
-./test/test_dev_env "path-to-file.py::TestClassName::test_method_name"
+./test/test_dev_env.sh "path-to-file.py::TestClassName::test_method_name"
 
 # local client integration test
-./scripts/launch/compose run test-client test/run_client_integration_tests [sigopt-python-git-reference]
+./scripts/launch/compose.sh run test-client test/run_client_integration_tests.sh [sigopt-python-git-reference]
 
 ```
 
@@ -353,7 +359,7 @@ We use [Flassger](https://github.com/flasgger/flasgger) to allow us to store RES
 
 If you want to run it locally to check if you have written correct yaml, run
 
-`./scripts/launch/all_live --documentation`
+`./scripts/launch/all_live.sh --documentation`
 
 This will leave a copy of the new doc file at `artifacts/swagger.json`. Then to validate, run
 

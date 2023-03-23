@@ -47,7 +47,7 @@ class TestAdapter(UnitTestsBase):
   def test_observations_to_points(self, experiment):
     observations = [
       self.make_observation(
-        assignments={"d1": 5.5, "i1": 15, "c1": "e"},
+        assignments={"d1": 5.5, "i1": 15, "c1": "c"},
         values=[dict(name="y1", value=1.1), dict(name="y2", value=2.2)],
       ),
       self.make_observation(
@@ -58,7 +58,7 @@ class TestAdapter(UnitTestsBase):
     points_container = adapter.make_points_sampled(experiment, observations)
     expected_points = numpy.array(
       [
-        [5.5, 15, 5],
+        [5.5, 15, 3],
         [7.5, 18, 1],
       ]
     )
@@ -77,7 +77,7 @@ class TestAdapter(UnitTestsBase):
   def test_observations_to_points_with_variance(self, experiment):
     observations = [
       self.make_observation(
-        assignments={"d1": 5.5, "i1": 15, "c1": "e"},
+        assignments={"d1": 5.5, "i1": 15, "c1": "c"},
         values=[
           dict(name="y1", value=1.1, value_stddev=1e-1),
           dict(name="y2", value=2.2, value_stddev=1e-2),
@@ -104,7 +104,7 @@ class TestAdapter(UnitTestsBase):
   def test_observations_to_points_with_failures(self, experiment):
     observations = [
       self.make_observation(
-        assignments={"d1": 5.5, "i1": 15, "c1": "e"},
+        assignments={"d1": 5.5, "i1": 15, "c1": "c"},
         failed=True,
       ),
       self.make_observation(
@@ -121,7 +121,7 @@ class TestAdapter(UnitTestsBase):
     experiment = LocalExperimentBuilder(experiment_meta)
     observations = [
       self.make_observation(
-        assignments={"d1": 5.5, "l1": 1, "i1": 15, "c1": "e", "g1": 0.3},
+        assignments={"d1": 5.5, "l1": 1, "i1": 15, "c1": "c", "g1": 0.3},
         values=[dict(name="y1", value=1.1)],
         task={"name": "cheap", "cost": 0.1},
       ),
@@ -153,7 +153,7 @@ class TestGenerateDomainInfo(UnitTestsBase):
         {"var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME, "elements": [0, 10]},
         {"var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME, "elements": [-5, 0]},
         {"var_type": INT_EXPERIMENT_PARAMETER_NAME, "elements": [10, 20]},
-        {"var_type": CATEGORICAL_EXPERIMENT_PARAMETER_NAME, "elements": [1, 2, 3, 4, 5]},
+        {"var_type": CATEGORICAL_EXPERIMENT_PARAMETER_NAME, "elements": [1, 2, 3]},
         {"var_type": QUANTIZED_EXPERIMENT_PARAMETER_NAME, "elements": [0.01, 0.1, 0.3, 0.9]},
       ],
       force_hitandrun_sampling=False,
@@ -225,7 +225,7 @@ class TestFormMetricsInfo(UnitTestsBase):
     adapter = BaseOptimizationSource(local_experiment)
     metrics_info = adapter.form_metrics_info(local_experiment)
     assert not metrics_info.requires_pareto_frontier_optimization
-    assert metrics_info.observation_budget == 100
+    assert metrics_info.observation_budget == experiment_meta["observation_budget"]
     assert metrics_info.user_specified_thresholds == [None]
     assert not metrics_info.has_optimized_metric_thresholds
     assert not metrics_info.has_constraint_metrics
@@ -240,7 +240,7 @@ class TestFormMetricsInfo(UnitTestsBase):
     adapter = BaseOptimizationSource(local_experiment)
     metrics_info = adapter.form_metrics_info(local_experiment)
     assert metrics_info.requires_pareto_frontier_optimization
-    assert metrics_info.observation_budget == 32
+    assert metrics_info.observation_budget == experiment_meta["observation_budget"]
     assert metrics_info.user_specified_thresholds == [None, None]
     assert not metrics_info.has_optimized_metric_thresholds
     assert not metrics_info.has_constraint_metrics
@@ -255,7 +255,7 @@ class TestFormMetricsInfo(UnitTestsBase):
     adapter = BaseOptimizationSource(local_experiment)
     metrics_info = adapter.form_metrics_info(local_experiment)
     assert metrics_info.requires_pareto_frontier_optimization
-    assert metrics_info.observation_budget == 321
+    assert metrics_info.observation_budget == experiment_meta["observation_budget"]
     assert metrics_info.user_specified_thresholds == [0.5, None]
     assert metrics_info.has_optimized_metric_thresholds
     assert not metrics_info.has_constraint_metrics
@@ -270,7 +270,7 @@ class TestFormMetricsInfo(UnitTestsBase):
     adapter = BaseOptimizationSource(local_experiment)
     metrics_info = adapter.form_metrics_info(local_experiment)
     assert not metrics_info.requires_pareto_frontier_optimization
-    assert metrics_info.observation_budget == 512
+    assert metrics_info.observation_budget == experiment_meta["observation_budget"]
     assert metrics_info.user_specified_thresholds == [0.5, None]
     assert not metrics_info.has_optimized_metric_thresholds
     assert metrics_info.has_constraint_metrics
@@ -285,7 +285,7 @@ class TestFormMetricsInfo(UnitTestsBase):
     adapter = BaseOptimizationSource(local_experiment)
     metrics_info = adapter.form_metrics_info(local_experiment)
     assert not metrics_info.requires_pareto_frontier_optimization
-    assert metrics_info.observation_budget == 97
+    assert metrics_info.observation_budget == experiment_meta["observation_budget"]
     assert metrics_info.user_specified_thresholds == [0.25, 0.75]
     assert not metrics_info.has_optimized_metric_thresholds
     assert metrics_info.has_constraint_metrics
@@ -310,7 +310,7 @@ class TestFormMetricsInfo(UnitTestsBase):
     )
     adapter = BaseOptimizationSource(local_experiment)
     metrics_info = adapter.form_metrics_info(local_experiment, points_sampled)
-    assert metrics_info.observation_budget == 111
+    assert metrics_info.observation_budget == experiment_meta["observation_budget"]
     assert metrics_info.user_specified_thresholds == [expected_threshold]
     assert metrics_info.optimized_metrics_index == []
     assert metrics_info.objectives == [objective]
@@ -324,7 +324,7 @@ class TestConditionals(UnitTestsBase):
     assert len(original_list) == len(condional_list)
     for org_param, cond_param in zip(original_list, condional_list):
       orginal_dict, condional_dict = dataclass_to_dict(org_param), dataclass_to_dict(cond_param)
-      orginal_dict["conditions"] = []
+      orginal_dict["conditions"] = {}
       assert orginal_dict == condional_dict
 
   def test_create_unconditioned_experiment_from_conditionals(self):

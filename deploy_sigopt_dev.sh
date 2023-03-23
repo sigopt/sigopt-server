@@ -1,1 +1,1 @@
-scripts/launch/all_live
+scripts/launch/all_live.sh

@@ -80,7 +80,7 @@ services:
     logging:
       <<: *logging
     command:
-      - ./scripts/compile/generate_routes
+      - ./scripts/compile/generate_routes.sh
       - "${sigopt_server_config_file}"
     image: sigopt/node:latest
     volumes:
@@ -149,7 +149,7 @@ services:
     logging:
       <<: *logging
     command: &qworker_command
-      - qworkerwatch
+      - qworkerwatch.sh
     environment:
       - &pythonpath PYTHONPATH=/sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
       - &config sigopt_server_config_file
@@ -342,7 +342,7 @@ services:
     logging:
       <<: *logging
     command:
-      - protowatch
+      - protowatch.sh
     image: sigopt/python:latest
     volumes:
       - "./src/protobuf:/sigopt-server/src/protobuf:ro"

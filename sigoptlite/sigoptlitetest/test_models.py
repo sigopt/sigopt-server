@@ -137,7 +137,10 @@ class TestLocalExperiment(LocalExperimentBase):
     experiment_meta["parallel_bandwidth"] = parallel_bandwidth
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment must have parallel_bandwidth == 1"
+    if parallel_bandwidth > 1:
+      msg = "sigoptlite experiment must have parallel_bandwidth == 1"
+    else:
+      msg = ".parallel_bandwidth must be greater than or equal to 1"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_with_constraints(self):
@@ -211,7 +214,7 @@ class TestLocalExperiment(LocalExperimentBase):
   def test_experiment_multisolution(self):
     experiment_meta = self.get_experiment_feature("multisolution")
     experiment = LocalExperimentBuilder(experiment_meta)
-    assert experiment.num_solutions == 5
+    assert experiment.num_solutions == experiment_meta["num_solutions"]
     assert experiment.is_multisolution
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
@@ -316,6 +319,13 @@ class TestLocalExperiment(LocalExperimentBase):
     assert [v.name for v in experiment.conditionals[1].values] == ["y1", "y2", "y3"]
     assert [v.name for v in experiment.conditionals[2].values] == ["on", "off"]
     self.check_experiment_expected_attributes(experiment_meta, experiment)
+
+  def test_experiment_bad_structure(self):
+    experiment_meta = {"name": 12}
+    with pytest.raises(ValueError) as exception_info:
+      LocalExperimentBuilder(experiment_meta)
+    msg = "Invalid type for .name, expected type string"
+    assert exception_info.value.args[0] == msg
 
 
 class TestParameterConstraints(UnitTestsBase):
@@ -502,7 +512,7 @@ class TestParameterConstraints(UnitTestsBase):
 
 class TestLocalParameters(UnitTestsBase):
   @pytest.mark.parametrize(
-    "values,expected_values",
+    "categorical_values,expected_values",
     [
       (["p1", "p0"], ["p0", "p1"]),
       (["x3", "x2", "x1"], ["x1", "x2", "x3"]),
@@ -511,11 +521,11 @@ class TestLocalParameters(UnitTestsBase):
       ([{"name": "p0"}, {"name": "p1"}, {"name": "p2"}], ["p0", "p1", "p2"]),
     ],
   )
-  def test_sorted_categorical_parameter(self, experiment_meta, values, expected_values):
+  def test_sorted_categorical_parameter(self, experiment_meta, categorical_values, expected_values):
     categorical_param_dict = dict(
       name="cat_a",
       type="categorical",
-      categorical_values=values,
+      categorical_values=categorical_values,
     )
     experiment_meta["parameters"][0] = categorical_param_dict
     experiment = LocalExperimentBuilder(experiment_meta)
@@ -547,21 +557,21 @@ class TestLocalSuggestions(UnitTestsBase):
     meta = dict(
       name="conditionals",
       conditionals=[
-        dict(name="x", values=[1, 2, 3]),
-        dict(name="y", values=[1, 2]),
+        dict(name="x", values=["1", "2", "3"]),
+        dict(name="y", values=["1", "2"]),
       ],
       parameters=[
         dict(
           name="a",
           type="int",
           bounds=dict(min=0, max=1),
-          conditions=dict(x=[1]),
+          conditions=dict(x=["1"]),
         ),
         dict(
           name="b",
           type="int",
           bounds=dict(min=0, max=1),
-          conditions=dict(x=[1, 2], y=[2]),
+          conditions=dict(x=["1", "2"], y=["2"]),
         ),
         dict(
           name="c",
@@ -578,12 +588,12 @@ class TestLocalSuggestions(UnitTestsBase):
   @pytest.mark.parametrize(
     "test,expected",
     [
-      (dict(x=1, y=1, a=0, b=0, c=0), dict(x=1, y=1, a=0, c=0)),
-      (dict(x=1, y=2, a=0, b=0, c=0), dict(x=1, y=2, a=0, b=0, c=0)),
-      (dict(x=2, y=1, a=0, b=0, c=0), dict(x=2, y=1, c=0)),
-      (dict(x=2, y=2, a=0, b=0, c=0), dict(x=2, y=2, b=0, c=0)),
-      (dict(x=3, y=1, a=0, b=0, c=0), dict(x=3, y=1, c=0)),
-      (dict(x=3, y=2, a=0, b=0, c=0), dict(x=3, y=2, c=0)),
+      (dict(x="1", y="1", a=0, b=0, c=0), dict(x="1", y="1", a=0, c=0)),
+      (dict(x="1", y="2", a=0, b=0, c=0), dict(x="1", y="2", a=0, b=0, c=0)),
+      (dict(x="2", y="1", a=0, b=0, c=0), dict(x="2", y="1", c=0)),
+      (dict(x="2", y="2", a=0, b=0, c=0), dict(x="2", y="2", b=0, c=0)),
+      (dict(x="3", y="1", a=0, b=0, c=0), dict(x="3", y="1", c=0)),
+      (dict(x="3", y="2", a=0, b=0, c=0), dict(x="3", y="2", c=0)),
     ],
   )
   def test_get_assignments_with_conditionals(self, test, expected, exp_conditionals):

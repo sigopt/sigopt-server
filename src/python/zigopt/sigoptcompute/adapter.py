@@ -61,15 +61,11 @@ from sigoptaux.constant import (
 MAXIMUM_NUMBER_OF_SUGGESTIONS_CL_MAX = 10
 
 
-class SCAdapterException(Exception):
-  pass
-
-
 class SCAdapter(Service):
   def call_sigoptcompute(self, cls, view_input):
     try:
       return cls(view_input, logging_service=self.services.logging_service).call()
-    except (ValueError, IndexError, numpy.linalg.LinAlgError, SCAdapterException) as e:
+    except (ValueError, IndexError, numpy.linalg.LinAlgError) as e:
       points_sampled = view_input.get("points_sampled", None)
       num_points_sampled = 0 if points_sampled is None else len(points_sampled.points)
       logging_view_input = omit(view_input, "points_sampled")
