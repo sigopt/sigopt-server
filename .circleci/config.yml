@@ -430,8 +430,8 @@ jobs:
       - run:
           command: ./start.sh
           background: true
-      - run: ./ci/wait_for url https://sigopt.ninja:4443/login
-      - run: "./ci/wait_for url https://sigopt.ninja:4443/api/ --user client_token:"
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
+      - run: "./ci/wait_for.sh url https://sigopt.ninja:4443/api/ --user client_token:"
       - run: |
           curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "owner@sigopt.ninja", "password": "owner"}'
   test-docker-development:
