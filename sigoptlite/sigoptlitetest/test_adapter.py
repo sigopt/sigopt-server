@@ -324,7 +324,7 @@ class TestConditionals(UnitTestsBase):
     assert len(original_list) == len(condional_list)
     for org_param, cond_param in zip(original_list, condional_list):
       orginal_dict, condional_dict = dataclass_to_dict(org_param), dataclass_to_dict(cond_param)
-      orginal_dict["conditions"] = []
+      orginal_dict["conditions"] = {}
       assert orginal_dict == condional_dict
 
   def test_create_unconditioned_experiment_from_conditionals(self):
