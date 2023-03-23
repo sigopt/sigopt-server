@@ -331,7 +331,7 @@ class LocalExperimentBuilder(BuilderBase):
       if not len(experiment.optimized_metrics) in [1, 2]:
         raise ValueError(f"{cls.cls_name} must have one or two optimized metrics")
       if len(experiment.optimized) == 1 and experiment.optimized_metrics[0].threshold is not None:
-        rasie ValueError(
+        raise ValueError(
           "Thresholds are only supported for experiments with more than one optimized metric."
           " Try an All-Constraint experiment instead by setting `strategy` to `constraint`."
         )
