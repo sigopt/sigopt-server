@@ -2,8 +2,13 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import itertools
+import json
+from collections.abc import Mapping
+from numbers import Integral
 
 import numpy
+from jsonschema import validate as validate_against_schema
+from jsonschema.exceptions import ValidationError
 
 from sigoptaux.constant import (
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
@@ -15,10 +20,230 @@ from sigoptaux.geometry_utils import find_interior_point
 from sigoptlite.models import *
 
 
+EXPERIMENT_CREATE_SCHEMA = {
+  "definitions": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+    },
+    "opt_name": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 100,
+    },
+    "term": {
+      "type": "object",
+      "required": ["name", "weight"],
+      "properties": {
+        "name": {"$ref": "#/definitions/opt_name"},
+        "weight": {"type": "number"},
+      },
+    },
+    "task": {
+      "type": "object",
+      "required": ["name", "cost"],
+      "properties": {
+        "name": {"$ref": "#/definitions/opt_name"},
+        "cost": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+      },
+    },
+    "constraints": {
+      "linear_ineq": {
+        "type": "object",
+        "required": ["type", "terms", "threshold"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["greater_than", "less_than"],
+          },
+          "terms": {"type": "array", "items": {"$ref": "#/definitions/term"}},
+          "threshold": {"type": "number"},
+        },
+      }
+    },
+  },
+  "type": "object",
+  "properties": {
+    "name": {"$ref": "#/definitions/name"},
+    "project": {
+      "type": "string",
+    },
+    "type": {
+      "type": ["string", "null"],
+      "enum": [None, "offline", "random"],
+    },
+    "observation_budget": {
+      "type": ["integer", "null"],
+    },
+    "metrics": {
+      "type": ["array"],
+      "items": {
+        "type": ["string", "object"],
+        "properties": {
+          "name": {"$ref": "#/definitions/opt_name"},
+          "objective": {
+            "type": ["string", "null"],
+            "enum": [None, "maximize", "minimize"],
+          },
+          "strategy": {
+            "type": ["string", "null"],
+            "enum": [None, "optimize", "store", "constraint"],
+          },
+          "threshold": {"type": ["number", "null"]},
+          "object": {
+            "type": ["string"],
+            "enum": ["metric"],
+          },
+        },
+      },
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": {"$ref": "#/definitions/name"},
+          "type": {
+            "type": "string",
+            "enum": ["double", "int", "categorical"],
+          },
+          "conditions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": ["array", "string"],
+              "items": {"type": "string"},
+            },
+          },
+        },
+      },
+    },
+    "conditionals": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "required": ["name", "values"],
+        "properties": {
+          "name": {"$ref": "#/definitions/name"},
+          "values": {
+            "type": "array",
+            "items": {"type": "string"},
+          },
+        },
+      },
+    },
+    "linear_constraints": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "oneOf": [{"$ref": "#/definitions/constraints/linear_ineq"}],
+      },
+    },
+    "tasks": {
+      "type": ["array", "null"],
+      "items": {"type": "object", "required": ["name", "cost"], "oneOf": [{"$ref": "#/definitions/task"}]},
+    },
+    "metadata": {
+      "type": ["object", "null"],
+    },
+    "num_solutions": {
+      "type": ["integer", "null"],
+    },
+    "parallel_bandwidth": {
+      "type": "integer",
+      "minimum": 1,
+    },
+  },
+}
+
+OBSERVATION_CREATE_SCHEMA = {
+  "properties": {
+    "suggestion": {"type": "integer", "minimum": 1},
+    "assignments": {},
+    "values": {
+      "items": {
+        "type": ["array", "null", "object"],
+        "required": ["value"],
+        "properties": {
+          "name": {"type": ["string", "null"]},
+          "value": {
+            "type": ["number"],
+          },
+          "value_stddev": {
+            "type": ["number", "null"],
+            "minimum": 0.0,
+          },
+        },
+      }
+    },
+    "failed": {
+      "type": ["boolean", "null"],
+    },
+    "metadata": {
+      "type": ["object", "null"],
+    },
+    "task": {
+      "type": ["object", "string", "null"],
+    },
+  },
+}
+
+
 def create_experiment_from_template(experiment_template, **kwargs):
   experiment_meta = dataclass_to_dict(experiment_template)
   experiment_meta.update(kwargs)
   return LocalExperimentBuilder(experiment_meta)
+
+
+def get_path_string(path):
+  strings = (f"[{part}]" if is_integer(part) else f".{part}" for part in path)
+  return "".join(strings)
+
+
+def is_integer(num):
+  if isinstance(num, bool):
+    return False
+  elif isinstance(num, Integral):
+    return True
+  else:
+    return False
+
+
+def process_error(e):
+  if e.validator == "type":
+    expected_type = str(e.schema["type"])
+    raise ValueError(f"Invalid type for {get_path_string(e.path)}, expected type {expected_type}")
+  elif e.validator in ["maxProperties", "minProperties"]:
+    least_most = "at least" if e.validator == "minProperties" else "at most"
+    raise ValueError(f"Expected {least_most} {e.validator_value} keys in {json.dumps(e.instance)}")
+  elif e.validator == "required":
+    if isinstance(e.instance, Mapping):
+      missing_keys = [key for key in e.validator_value if key not in e.instance]
+      missing_key = missing_keys[0] if len(missing_keys) > 0 else None
+    else:
+      missing_key = e.validator_value[0]
+    raise ValueError(f'Missing required json key "{missing_key}" in: {json.dumps(e.instance)}')
+  elif e.validator in ["minimum", "maximum"]:
+    key = get_path_string(e.path)
+    greater_less = "greater than" if e.validator == "minimum" else "less than"
+    raise ValueError(f"{key} must be {greater_less} or equal to {e.validator_value}")
+  elif e.validator in ["minLength", "maxLength", "minItems", "maxItems"]:
+    key = get_path_string(e.path)
+    greater_less = "greater than" if e.validator in ["minLength", "minItems"] else "less than"
+    raise ValueError(f"The length of {key} must be {greater_less} or equal to {e.validator_value}")
+  elif e.validator == "enum":
+    allowed_values = ", ".join([str(s) for s in e.validator_value if s is not None])
+    raise ValueError(f"{e.instance} is not one of the allowed values: {allowed_values}")
+  elif e.validator == "pattern":
+    raise ValueError(f"{e.instance} does not match the regular expression /{e.validator_value}/")
+  elif e.validator in ["oneOf", "anyOf"]:
+    if len(e.context) > 0:
+      process_error(e.context[0])
+    raise NotImplementedError("Error has no context but it is oneOf or anyOf related.")
+  else:
+    raise NotImplementedError(f"Unrecognized error {e.validator} parsing json: {json.dumps(e.instance)}")
 
 
 class BuilderBase(object):
@@ -62,10 +287,14 @@ class LocalExperimentBuilder(BuilderBase):
 
   @classmethod
   def validate_input_dict(cls, input_dict):
-    assert isinstance(input_dict["parameters"], list)
-    assert len(input_dict["parameters"]) > 0
-    assert isinstance(input_dict["metrics"], list)
-    assert len(input_dict["metrics"]) > 0
+    try:
+      validate_against_schema(input_dict, EXPERIMENT_CREATE_SCHEMA)
+    except ValidationError as e:
+      process_error(e)
+    if not len(input_dict["parameters"]) > 0:
+      raise ValueError("Must have at least one parameter in every experiment.")
+    if not len(input_dict["metrics"]) > 0:
+      raise ValueError("Must have at least one metric in every experiment.")
 
   @classmethod
   def create_object(cls, **input_dict):
@@ -490,6 +719,10 @@ class LocalObservationBuilder(object):
         assert not values
 
   def __new__(cls, observation_dict):
+    try:
+      validate_against_schema(observation_dict, OBSERVATION_CREATE_SCHEMA)
+    except ValidationError as e:
+      process_error(e)
     cls.validate_observation_dict(observation_dict)
     assignments = observation_dict["assignments"]
     values = []

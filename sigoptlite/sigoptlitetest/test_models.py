@@ -137,7 +137,10 @@ class TestLocalExperiment(LocalExperimentBase):
     experiment_meta["parallel_bandwidth"] = parallel_bandwidth
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment must have parallel_bandwidth == 1"
+    if parallel_bandwidth > 1:
+      msg = "sigoptlite experiment must have parallel_bandwidth == 1"
+    else:
+      msg = ".parallel_bandwidth must be greater than or equal to 1"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_with_constraints(self):
@@ -316,6 +319,13 @@ class TestLocalExperiment(LocalExperimentBase):
     assert [v.name for v in experiment.conditionals[1].values] == ["y1", "y2", "y3"]
     assert [v.name for v in experiment.conditionals[2].values] == ["on", "off"]
     self.check_experiment_expected_attributes(experiment_meta, experiment)
+
+  def test_experiment_bad_structure(self):
+    experiment_meta = {"name": 12}
+    with pytest.raises(ValueError) as exception_info:
+      LocalExperimentBuilder(experiment_meta)
+    msg = "Invalid type for .name, expected type string"
+    assert exception_info.value.args[0] == msg
 
 
 class TestParameterConstraints(UnitTestsBase):
@@ -547,21 +557,21 @@ class TestLocalSuggestions(UnitTestsBase):
     meta = dict(
       name="conditionals",
       conditionals=[
-        dict(name="x", values=[1, 2, 3]),
-        dict(name="y", values=[1, 2]),
+        dict(name="x", values=["1", "2", "3"]),
+        dict(name="y", values=["1", "2"]),
       ],
       parameters=[
         dict(
           name="a",
           type="int",
           bounds=dict(min=0, max=1),
-          conditions=dict(x=[1]),
+          conditions=dict(x=["1"]),
         ),
         dict(
           name="b",
           type="int",
           bounds=dict(min=0, max=1),
-          conditions=dict(x=[1, 2], y=[2]),
+          conditions=dict(x=["1", "2"], y=["2"]),
         ),
         dict(
           name="c",
@@ -578,12 +588,12 @@ class TestLocalSuggestions(UnitTestsBase):
   @pytest.mark.parametrize(
     "test,expected",
     [
-      (dict(x=1, y=1, a=0, b=0, c=0), dict(x=1, y=1, a=0, c=0)),
-      (dict(x=1, y=2, a=0, b=0, c=0), dict(x=1, y=2, a=0, b=0, c=0)),
-      (dict(x=2, y=1, a=0, b=0, c=0), dict(x=2, y=1, c=0)),
-      (dict(x=2, y=2, a=0, b=0, c=0), dict(x=2, y=2, b=0, c=0)),
-      (dict(x=3, y=1, a=0, b=0, c=0), dict(x=3, y=1, c=0)),
-      (dict(x=3, y=2, a=0, b=0, c=0), dict(x=3, y=2, c=0)),
+      (dict(x="1", y="1", a=0, b=0, c=0), dict(x="1", y="1", a=0, c=0)),
+      (dict(x="1", y="2", a=0, b=0, c=0), dict(x="1", y="2", a=0, b=0, c=0)),
+      (dict(x="2", y="1", a=0, b=0, c=0), dict(x="2", y="1", c=0)),
+      (dict(x="2", y="2", a=0, b=0, c=0), dict(x="2", y="2", b=0, c=0)),
+      (dict(x="3", y="1", a=0, b=0, c=0), dict(x="3", y="1", c=0)),
+      (dict(x="3", y="2", a=0, b=0, c=0), dict(x="3", y="2", c=0)),
     ],
   )
   def test_get_assignments_with_conditionals(self, test, expected, exp_conditionals):
