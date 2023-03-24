@@ -89,17 +89,10 @@ commands:
       - run: pyenv global 3.10.6
       - run: python3 -mpip install docker python-dotenv
       - run: make submodules
-      - run:
-          command: ./ci/compose.sh build --progress-plain << parameters.services >>
-          no_output_timeout: 30m
       - sigopt-ninja-dns
-    parameters:
-      build_images:
-        type: string
   integration-test-setup:
     steps:
-      - docker-test-setup:
-          build_images: << parameters.build_images >> test-runner
+      - docker-test-setup
       - run: ./ci/create_development_tls_certs.sh
       - run: |
           ./ci/compose.sh create \
@@ -145,14 +138,9 @@ commands:
           command: |
             ./ci/compose.sh run --rm init-minio-cookiejar
             ./ci/compose.sh run --rm init-minio-filestorage
-    parameters:
-      build_images:
-        type: string
-        default: nginx zigopt
   run-integration-test:
     steps:
-      - integration-test-setup:
-          build_images: << parameters.build_images >>
+      - integration-test-setup
       - run-parallel-integration-tests:
           count: << parameters.count >>
           test_path: << parameters.test_path >>
@@ -161,9 +149,6 @@ commands:
       count:
         type: integer
         default: 1
-      build_images:
-        type: string
-        default: nginx zigopt
       test_path:
         type: string
   run-parallel-integration-tests:
@@ -186,8 +171,7 @@ commands:
       - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
   run-browser-test:
     steps:
-      - integration-test-setup:
-          build_images: nginx web zigopt
+      - integration-test-setup
       - start-web-server
       - run: mkdir -p screenshots/failure
       - run: mkdir -p failure_console_logs
@@ -210,8 +194,7 @@ commands:
         default: 1
   run-web-test:
     steps:
-      - integration-test-setup:
-          build_images: nginx web zigopt
+      - integration-test-setup
       - start-web-server
       - run-parallel-integration-tests:
           count: << parameters.count >>
@@ -547,8 +530,7 @@ jobs:
   worker-health:
     executor: sigopt-integration
     steps:
-      - docker-test-setup:
-          build_images: zigopt
+      - docker-test-setup
       - run: ./ci/compose.sh create createdb postgres redis
       - start-service:
           description: PostgreSQL
