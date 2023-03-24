@@ -351,9 +351,6 @@ class LocalExperimentBuilder(BuilderBase):
         f"For conditional {cls.cls_name}, need both conditions defined in parameters and conditionals variables"
         " defined in experiment"
       )
-    for conditional in experiment.conditionals:
-      if not len(conditional.values) > 1:
-        raise ValueError(f"Conditional {conditional.name} must have at least two values")
     if experiment.is_conditional:
       if num_solutions and num_solutions > 1:
         raise ValueError(f"{cls.cls_name} with multiple solutions does not support conditional parameters")
@@ -625,6 +622,8 @@ class LocalConditionalBuilder(BuilderBase):
     assert set(input_dict.keys()) == {"name", "values"}
     assert isinstance(input_dict["name"], str)
     assert isinstance(input_dict["values"], list)
+    if not len(input_dict["values"]) > 1:
+      raise ValueError(f"Conditional {input_dict['name']} must have at least two values")
 
   @classmethod
   def create_object(cls, **input_dict):
