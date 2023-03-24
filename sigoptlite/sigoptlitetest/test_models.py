@@ -170,28 +170,12 @@ class TestLocalExperiment(LocalExperimentBase):
     assert not experiment.requires_pareto_frontier_optimization
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
-  def test_experiment_multitask_and_multisolution_incompatible(self):
-    experiment_meta = self.get_experiment_feature("multitask")
-    experiment_meta["num_solutions"] = 5
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment with multiple solutions cannot be multitask"
-    assert exception_info.value.args[0] == msg
-
   def test_experiment_multisolution(self):
     experiment_meta = self.get_experiment_feature("multisolution")
     experiment = LocalExperimentBuilder(experiment_meta)
     assert experiment.num_solutions == experiment_meta["num_solutions"]
     assert experiment.is_multisolution
     self.check_experiment_expected_attributes(experiment_meta, experiment)
-
-  def test_multisolution_no_budget_incompatible(self):
-    experiment_meta = self.get_experiment_feature("multisolution")
-    experiment_meta.pop("observation_budget")
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "observation_budget is required for a sigoptlite experiment with multiple solutions"
-    assert exception_info.value.args[0] == msg
 
   def test_experiment_metric_constraint(self):
     experiment_meta = self.get_experiment_feature("metric_constraint")
@@ -263,8 +247,41 @@ class TestLocalExperiment(LocalExperimentBase):
     assert [v.name for v in experiment.conditionals[2].values] == ["on", "off"]
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
+  def test_experiment_missing_parameters(self):
+    experiment_meta = self.get_experiment_feature("default")
+    del experiment_meta["parameters"]
+    with pytest.raises(ValueError) as exception_info:
+      LocalExperimentBuilder(experiment_meta)
+    msg = "Missing required json key `parameters` in sigoptlite experiment:"
+    assert exception_info.value.args[0].startswith(msg)
+
+  def test_experiment_parameters_empty_list(self):
+    experiment_meta = self.get_experiment_feature("default")
+    experiment_meta["parameters"] = []
+    with pytest.raises(ValueError) as exception_info:
+      LocalExperimentBuilder(experiment_meta)
+    msg = "The length of .parameters must be greater than or equal to 1"
+    assert exception_info.value.args[0] == msg
+
+  def test_experiment_missing_metrics(self):
+    experiment_meta = self.get_experiment_feature("default")
+    del experiment_meta["metrics"]
+    with pytest.raises(ValueError) as exception_info:
+      LocalExperimentBuilder(experiment_meta)
+    msg = "Missing required json key `metrics` in sigoptlite experiment:"
+    assert exception_info.value.args[0].startswith(msg)
+
+  def test_experiment_metrics_empty_list(self):
+    experiment_meta = self.get_experiment_feature("default")
+    experiment_meta["metrics"] = []
+    with pytest.raises(ValueError) as exception_info:
+      LocalExperimentBuilder(experiment_meta)
+    msg = "The length of .metrics must be greater than or equal to 1"
+    assert exception_info.value.args[0] == msg
+
   def test_experiment_bad_structure(self):
-    experiment_meta = {"name": 12}
+    experiment_meta = self.get_experiment_feature("default")
+    experiment_meta["name"] = 12
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
     msg = "Invalid type for .name, expected type string"

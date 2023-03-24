@@ -114,8 +114,8 @@ class BaseOptimizationSource(object):
     for i, observation in enumerate(observations):
       points[i, :] = cls.get_point_from_assignments(experiment, observation.assignments)
       if not observation.failed:
-        for j, metric_evaluation in enumerate(observation.values):
-          assert metric_evaluation.name == experiment.metrics[j].name
+        for j, metric in enumerate(experiment.metrics):
+          metric_evaluation = observation.get_metric_evaluation_by_name(metric.name)
           values[i, j] = metric_evaluation.value
           if metric_evaluation.value_stddev:
             value_vars[i, j] = metric_evaluation.value_stddev

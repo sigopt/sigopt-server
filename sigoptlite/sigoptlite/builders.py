@@ -78,6 +78,7 @@ EXPERIMENT_CREATE_SCHEMA = {
     },
     "metrics": {
       "type": ["array"],
+      "minItems": 1,
       "items": {
         "type": ["string", "object"],
         "properties": {
@@ -100,6 +101,7 @@ EXPERIMENT_CREATE_SCHEMA = {
     },
     "parameters": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": ["name", "type"],
@@ -150,12 +152,14 @@ EXPERIMENT_CREATE_SCHEMA = {
     },
     "num_solutions": {
       "type": ["integer", "null"],
+      "minimum": 1,
     },
     "parallel_bandwidth": {
       "type": "integer",
       "minimum": 1,
     },
   },
+  "required": ["parameters", "metrics"],
 }
 
 OBSERVATION_CREATE_SCHEMA = {
@@ -211,20 +215,20 @@ def is_integer(num):
     return False
 
 
-def process_error(e):
+def process_error(e, class_name):
   if e.validator == "type":
     expected_type = str(e.schema["type"])
     raise ValueError(f"Invalid type for {get_path_string(e.path)}, expected type {expected_type}")
   elif e.validator in ["maxProperties", "minProperties"]:
     least_most = "at least" if e.validator == "minProperties" else "at most"
-    raise ValueError(f"Expected {least_most} {e.validator_value} keys in {json.dumps(e.instance)}")
+    raise ValueError(f"Expected {least_most} {e.validator_value} keys in {class_name}: {json.dumps(e.instance)}")
   elif e.validator == "required":
     if isinstance(e.instance, Mapping):
       missing_keys = [key for key in e.validator_value if key not in e.instance]
       missing_key = missing_keys[0] if len(missing_keys) > 0 else None
     else:
       missing_key = e.validator_value[0]
-    raise ValueError(f'Missing required json key "{missing_key}" in: {json.dumps(e.instance)}')
+    raise ValueError(f"Missing required json key `{missing_key}` in {class_name}: {json.dumps(e.instance)}")
   elif e.validator in ["minimum", "maximum"]:
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator == "minimum" else "less than"
@@ -240,10 +244,10 @@ def process_error(e):
     raise ValueError(f"{e.instance} does not match the regular expression /{e.validator_value}/")
   elif e.validator in ["oneOf", "anyOf"]:
     if len(e.context) > 0:
-      process_error(e.context[0])
+      process_error(e.context[0], class_name)
     raise NotImplementedError("Error has no context but it is oneOf or anyOf related.")
   else:
-    raise NotImplementedError(f"Unrecognized error {e.validator} parsing json: {json.dumps(e.instance)}")
+    raise NotImplementedError(f"Unrecognized error {e.validator} parsing json {class_name}: {json.dumps(e.instance)}")
 
 
 class BuilderBase(object):
@@ -290,11 +294,7 @@ class LocalExperimentBuilder(BuilderBase):
     try:
       validate_against_schema(input_dict, EXPERIMENT_CREATE_SCHEMA)
     except ValidationError as e:
-      process_error(e)
-    if not len(input_dict["parameters"]) > 0:
-      raise ValueError("Must have at least one parameter in every experiment.")
-    if not len(input_dict["metrics"]) > 0:
-      raise ValueError("Must have at least one metric in every experiment.")
+      process_error(e, cls.cls_name)
 
   @classmethod
   def create_object(cls, **input_dict):
@@ -727,6 +727,10 @@ class LocalObservationBuilder(BuilderBase):
   def create_object(cls, **input_dict):
     cls.set_object(input_dict, "assignments", LocalAssignments)
     cls.set_list_of_objects(input_dict, field="values", local_class=MetricEvaluationBuilder)
+    values = input_dict.get("values")
+    if values:
+      input_dict["metric_evaluations"] = {me.name: me for me in values}
+      del input_dict["values"]
     cls.set_object(input_dict, "task", LocalTaskBuilder)
     return LocalObservation(**input_dict)
 
@@ -746,16 +750,16 @@ class LocalObservationBuilder(BuilderBase):
     if not experiment.is_multitask and observation.task:
       raise ValueError("Observation with task is not expected for this experiment")
 
-    if observation.failed and observation.values:
+    if observation.failed and observation.metric_evaluations:
       raise ValueError(
         f"Observation marked as failure ({observation.failed}) should not have values. "
-        f"Current list of values is: {observation.values}"
+        f"Observation metrics are: {observation.metric_evaluations}."
       )
 
     if not observation.failed:
       for m in experiment.metrics:
-        if observation.get_metric_value(m.name) is None:
-          raise ValueError(f"Metric {m.name} not in observation.values {observation.values}")
+        if observation.get_metric_evaluation_by_name(m.name) is None:
+          raise ValueError(f"Metric {m.name} not in observation metrics: {observation.metric_evaluations}.")
 
   @staticmethod
   def observation_must_have_parameter(observation, parameter):

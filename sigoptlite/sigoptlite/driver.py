@@ -36,17 +36,17 @@ class LocalAPI:
 
   def observations_post(self, observation_json):
     observation = self.broker.create_observation(**observation_json)
-    return dataclass_to_dict(observation)
+    return observation
 
   def observations_get(self, _):
-    return self.paginate(self.broker.observations)
+    return self.paginate(self.broker.get_observations())
 
   def best_assignments_get(self, _):
     return self.paginate(self.best_assignments_logger.fetch(self.broker.observations))
 
   def paginate(self, items):
     return {
-      "data": [dataclass_to_dict(item) for item in items],
+      "data": list(items),
       "object": "pagination",
       "count": len(items),
       "before": None,
