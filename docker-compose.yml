@@ -94,6 +94,7 @@ services:
       - zigopt.api.main:GUNICORN_ENTRY_POINT
     image: "sigopt/zigopt:${TAG}"
     environment: &zigopt_environment
+      - "sigopt.user_uploads.s3.aws_secret_access_key=$MINIO_ROOT_PASSWORD"
       - "sigopt_server_config_file=$sigopt_server_config_file"
       - "sigopt_server_version=git:$TAG"
     volumes:
@@ -128,6 +129,7 @@ services:
   web-server:
     image: "sigopt/web:${TAG}"
     environment:
+      - "sigopt.web.cookiejar_credentials.secretAccessKey=$MINIO_ROOT_PASSWORD"
       - "sigopt_server_config_file=$sigopt_server_config_file"
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
       - "sigopt_server_version=git:$TAG"
@@ -268,21 +270,21 @@ services:
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc alias set sigopt http://minio:9000 ROOTUSER "$MINIO_ROOT_PASSWORD"
         mc mb --ignore-existing sigopt/sigopt-cookiejar
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc alias set sigopt http://minio:9000 ROOTUSER "$MINIO_ROOT_PASSWORD"
         mc mb --ignore-existing sigopt/sigopt-user-uploads
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
     environment:
       - MINIO_ROOT_USER=ROOTUSER
-      - MINIO_ROOT_PASSWORD=CHANGEME123
+      - MINIO_ROOT_PASSWORD
     volumes:
       - minio-data:/var/lib/minio/data
     command:

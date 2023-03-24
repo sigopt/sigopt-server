@@ -21,7 +21,6 @@ redis:
 user_uploads:
   s3:
     aws_access_key_id: ROOTUSER
-    aws_secret_access_key: CHANGEME123
     bucket: sigopt-user-uploads
     enabled: true
     external_url: https://sigopt.ninja:9000
@@ -30,5 +29,4 @@ web:
   cookiejar_bucket: sigopt-cookiejar
   cookiejar_credentials:
     accessKeyId: ROOTUSER
-    secretAccessKey: CHANGEME123
   cookiejar_endpoint: http://minio:9000
