@@ -46,7 +46,7 @@ class LocalAPI:
 
   def paginate(self, items):
     return {
-      "data": [item for item in items],
+      "data": list(items),
       "object": "pagination",
       "count": len(items),
       "before": None,
