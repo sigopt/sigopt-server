@@ -40,3 +40,11 @@ class TestMultitask(UnitTestsBase):
 
     with pytest.raises(ValueError):
       conn.experiments().create(**experiment_meta)
+
+  def test_multitask_no_observation_budget_forbidden(self, conn):
+    experiment_meta = self.get_experiment_feature("multitask")
+    experiment_meta.pop("observation_budget")
+    with pytest.raises(ValueError) as exception_info:
+      conn.experiments().create(**experiment_meta)
+    msg = "observation_budget is required for a sigoptlite experiment with tasks (multitask)"
+    assert exception_info.value.args[0] == msg
