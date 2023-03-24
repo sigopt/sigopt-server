@@ -5,7 +5,7 @@ ARG PYTHON_VERSION
 
 
 # hadolint ignore=DL3006
-FROM python:${PYTHON_VESION}-buster
+FROM python:${PYTHON_VERSION}-buster
 
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
