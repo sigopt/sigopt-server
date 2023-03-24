@@ -398,7 +398,8 @@ class LocalExperimentBuilder(BuilderBase):
       if parameter.conditions and any(c.name not in conditional_names for c in parameter.conditions):
         unsatisfied_condition_names = [c.name for c in parameter.conditions if c.name not in conditional_names]
         raise ValueError(
-          f"The parameter {parameter.name} has conditions {unsatisfied_condition_names} that cannot be satisfied"
+          f"The parameter {parameter.name} has conditions {unsatisfied_condition_names} that are not part of"
+          " the conditionals"
         )
 
     cls.check_all_conditional_values_satisfied(experiment)

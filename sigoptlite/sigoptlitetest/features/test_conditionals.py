@@ -69,7 +69,7 @@ class TestExperimentConditionals(UnitTestsBase):
     del meta["conditionals"][0]
     with pytest.raises(ValueError) as exception_info:
       self.conn.experiments().create(**meta)
-    msg = f"The parameter c has conditions {[missing_conditional_name]} that cannot be satisfied"
+    msg = f"The parameter c has conditions {[missing_conditional_name]} that are not part of the conditionals"
     assert exception_info.value.args[0] == msg
 
   def test_create_conditionals_parameter_condition_cannot_be_met(self):
