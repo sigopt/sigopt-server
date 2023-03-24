@@ -2,12 +2,9 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-import pytest
 from sigopt import Connection
 
-from sigoptlite.builders import LocalExperimentBuilder
 from sigoptlite.driver import LocalDriver
-from sigoptlite.models import FIXED_EXPERIMENT_ID
 from sigoptlitetest.base_test import UnitTestsBase
 
 
