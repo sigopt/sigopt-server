@@ -57,9 +57,7 @@ from zigopt.utils.create_produser import execute_query, make_produser
 DB_NAME_ALLOW_LIST = ["testdb", "basedb"]
 USERNAME_ALLOW_LIST = ["testuser", "sigoptrds", "produser"]
 
-logging.basicConfig(level=logging.DEBUG)
-logging.getLogger("sigopt.rawsql").setLevel(logging.WARNING)
-logging.getLogger("sigopt.sql").setLevel(logging.WARNING)
+logging.basicConfig(level=logging.WARNING)
 
 
 def create_user(services, user_def):
