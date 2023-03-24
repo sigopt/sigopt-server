@@ -1,12 +1,11 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG BASE_IMAGE=debian:buster-slim
-ARG BUILD_TAG=build
+ARG NODE_VERSION
 
 
 # hadolint ignore=DL3006
-FROM ${BASE_IMAGE}
+FROM node:${NODE_VERSION}-buster
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
@@ -14,6 +13,12 @@ RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get upgrade -yqq >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
+  ; :
+
+# hadolint ignore=DL3016
+RUN set -ex \
+  ; npm install -g npm yarn --force \
+  ; npm cache clean --force \
   ; :
 
 RUN set -ex \
@@ -29,13 +34,6 @@ RUN set -ex \
       xz-utils=5.* \
       > /dev/null \
   ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
-COPY tools/node/install.sh /install_node.sh
-ARG NODE_VERSION
-
-RUN set -ex \
-  ; /install_node.sh "$NODE_VERSION" \
   ; :
 
 WORKDIR /sigopt-server

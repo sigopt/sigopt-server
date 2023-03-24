@@ -1,7 +1,6 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG BASE_IMAGE
 ARG BUILD_TAG=build
 ARG PYTHON_VERSION
 
