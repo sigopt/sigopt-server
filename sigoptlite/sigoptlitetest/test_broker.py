@@ -5,7 +5,6 @@ import pytest
 
 from sigoptlite.broker import Broker
 from sigoptlite.builders import LocalExperimentBuilder
-from sigoptlite.driver import dataclass_to_dict
 from sigoptlitetest.base_test import UnitTestsBase
 
 
