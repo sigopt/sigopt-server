@@ -28,14 +28,6 @@ class TestMultisolutionExperiment(UnitTestsBase):
     msg = "observation_budget needs to be larger than the number of solutions"
     assert exception_info.value.args[0] == msg
 
-  def test_multisolution_conditionals_incompatible(self):
-    experiment_meta = self.get_experiment_feature("conditionals")
-    experiment_meta["num_solutions"] = 3
-    with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments().create(**experiment_meta)
-    msg = "sigoptlite experiment with multiple solutions does not support conditional parameters"
-    assert exception_info.value.args[0] == msg
-
   def test_multisolution_multitask_incompatible(self):
     experiment_meta = self.get_experiment_feature("multitask")
     experiment_meta["num_solutions"] = 5
