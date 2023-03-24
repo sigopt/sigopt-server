@@ -99,7 +99,7 @@ commands:
   integration-test-setup:
     steps:
       - docker-test-setup:
-          build_images: << parameters.build_images >> << parameters.test_runner_name >>
+          build_images: << parameters.build_images >> test-runner
       - run: ./ci/create_development_tls_certs.sh
       - run: |
           ./ci/compose.sh create \
@@ -148,9 +148,6 @@ commands:
       build_images:
         type: string
         default: nginx zigopt
-      test_runner_name:
-        type: string
-        default: test-runner
   run-integration-test:
     steps:
       - integration-test-setup:
@@ -180,9 +177,6 @@ commands:
         default: ""
       test_path:
         type: string
-      test_runner_name:
-        type: string
-        default: test-runner
   start-web-server:
     steps:
       - start-sigopt-service:
