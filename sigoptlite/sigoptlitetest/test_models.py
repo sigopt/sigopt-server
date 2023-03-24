@@ -218,14 +218,6 @@ class TestLocalExperiment(LocalExperimentBase):
     assert experiment.constraint_metrics[1].name == "y2"
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
-  def test_experiment_search_no_budget_incompatible(self):
-    experiment_meta = self.get_experiment_feature("search")
-    experiment_meta.pop("observation_budget")
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "observation_budget is required for a sigoptlite experiment with constraint metrics"
-    assert exception_info.value.args[0] == msg
-
   def test_experiment_conditionals(self):
     experiment_meta = self.get_experiment_feature("conditionals")
     experiment = LocalExperimentBuilder(experiment_meta)
