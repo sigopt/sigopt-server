@@ -351,6 +351,9 @@ class LocalExperimentBuilder(BuilderBase):
         f"For conditional {cls.cls_name}, need both conditions defined in parameters and conditionals variables"
         " defined in experiment"
       )
+    for conditional in experiment.conditionals:
+      if not len(conditional.values) > 1:
+        raise ValueError(f"Conditional {conditional.name} must have at least two values")
     if experiment.is_conditional:
       if num_solutions and num_solutions > 1:
         raise ValueError(f"{cls.cls_name} with multiple solutions does not support conditional parameters")

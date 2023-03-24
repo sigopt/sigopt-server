@@ -38,6 +38,19 @@ class TestExperimentConditionals(UnitTestsBase):
     msg = f"No duplicate conditionals are allowed: {duplicate_conditionals}"
     assert exception_info.value.args[0] == msg
 
+  def test_conditional_with_single_value(self):
+    conditional_name = "conditional_with_single_value"
+    meta = dict(
+      metrics=[dict(name="metric")],
+      observation_budget=30,
+      parameters=[dict(name="d", type="double", bounds=dict(min=0, max=1), conditions=dict(conditional_name=["1"]))],
+      conditionals=[dict(name=conditional_name, values=["1"])],
+    )
+    with pytest.raises(ValueError) as exception_info:
+      self.conn.experiments().create(**meta)
+    msg = f"Conditional {conditional_name} must have at least two values"
+    assert exception_info.value.args[0] == msg
+
   def test_create_conditionals_but_no_parameters_with_conditions(self):
     meta = self.get_experiment_feature("conditionals")
     for parameter in meta["parameters"]:
