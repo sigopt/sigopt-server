@@ -372,6 +372,7 @@ services:
     volumes:
       - "./src/protobuf:/sigopt-server/src/protobuf:ro"
       - "./src/python:/sigopt-server/src/python"
+      - "./tools:/sigopt-server/tools:ro"
       - "./web/js:/sigopt-server/web/js"
     deploy:
       resources:
