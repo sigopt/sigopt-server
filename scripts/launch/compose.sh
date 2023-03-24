@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-export COMPOSE_PROJECT_NAME=sigopt-server
+export COMPOSE_PROJECT_NAME=sigopt-server-development
 
 export STATIC_DEV_SERVER_PORT=7800
 
