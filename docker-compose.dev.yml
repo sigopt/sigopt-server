@@ -44,7 +44,7 @@ services:
       - HOST_PWD
       - REQUESTS_CA_BUNDLE=/sigopt-server/artifacts/tls/root-ca.crt
       - *api-tls-verify-env
-    image: sigopt/test-runner-web:latest
+    image: sigopt/test-runner:latest
     volumes:
       - /dev/shm:/dev/shm
       - &babelrc ./.babelrc:/sigopt-server/.babelrc:ro

@@ -6,7 +6,7 @@ networks:
 
 services:
   test-runner:
-    image: "sigopt/${TEST_RUNNER_NAME}:${TAG}"
+    image: "sigopt/test-runner:${TAG}"
     environment:
       - ALLOW_SLOW=1
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt

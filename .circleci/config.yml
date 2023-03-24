@@ -170,7 +170,7 @@ commands:
         type: string
   run-parallel-integration-tests:
     steps:
-      - run: TEST_RUNNER_NAME=<< parameters.test_runner_name >> ./ci/compose_test.sh "<< parameters.test_path >>" --count=<< parameters.count >> $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" | circleci tests split --split-by=timings) << parameters.extra_test_args >>
+      - run: ./ci/compose_test.sh "<< parameters.test_path >>" --count=<< parameters.count >> $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" | circleci tests split --split-by=timings) << parameters.extra_test_args >>
     parameters:
       count:
         type: integer
@@ -193,7 +193,6 @@ commands:
     steps:
       - integration-test-setup:
           build_images: nginx web zigopt
-          test_runner_name: test-runner-web
       - start-web-server
       - run: mkdir -p screenshots/failure
       - run: mkdir -p failure_console_logs
@@ -201,7 +200,6 @@ commands:
           count: << parameters.count >>
           extra_test_args: --headless
           test_path: /browser/tests/interaction<< parameters.test_path >>
-          test_runner_name: test-runner-web
       - store-junit-test-results
       - store_artifacts:
           path: screenshots/failure
@@ -219,12 +217,10 @@ commands:
     steps:
       - integration-test-setup:
           build_images: nginx web zigopt
-          test_runner_name: test-runner-web
       - start-web-server
       - run-parallel-integration-tests:
           count: << parameters.count >>
           test_path: /web
-          test_runner_name: test-runner-web
       - store_test_results:
           path: junit-results
     parameters:
