@@ -21,7 +21,7 @@ After that is installed, a SigOpt connection object can be created in Python wit
 
 ```python
 from sigopt import Connection
-conn = Connection(driver="local")
+conn = Connection(driver="lite")
 ```
 
 From this point, SigOpt Core module functionality can be accessed through `conn`, following the same patterns as detailed in the [SigOpt documentation](https://docs.sigopt.com/core-module-api-references/quick-start).
@@ -32,7 +32,7 @@ Here is an example of using SigOpt-Lite.
 
 ```python
 from sigopt import Connection
-conn = Connection(driver="local")
+conn = Connection(driver="lite")
 experiment_meta = dict(
   parameters=[
     dict(name="x0", type="double", bounds=dict(min=0, max=1)),
@@ -62,7 +62,7 @@ SigOpt-Lite supports an alternative computation mode that can generate suggestio
 
 ```python
 from sigopt import Connection
-conn = Connection(driver="local", compute_mode="kde_only")
+conn = Connection(driver="lite", compute_mode="kde_only")
 ```
 
 ## Comparing SigOpt-Lite to Calling api.sigopt.com
