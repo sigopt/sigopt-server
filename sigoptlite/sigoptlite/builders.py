@@ -88,7 +88,7 @@ EXPERIMENT_CREATE_SCHEMA = {
           },
           "strategy": {
             "type": ["string", "null"],
-            "enum": [None, "optimize", "store", "constraint"],
+            "enum": [None, "optimize", "constraint"],
           },
           "threshold": {"type": ["number", "null"]},
           "object": {
