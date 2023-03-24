@@ -126,7 +126,7 @@ class DatabaseConnectionService(Service):
     return create_engine(
       URL(
         "postgresql+pg8000",
-        username=config.get("user"),
+        username=config.get("user", "postgres"),
         password=config.get("password"),
         host=config.get("host"),
         port=config.get("port"),

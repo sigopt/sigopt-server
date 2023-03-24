@@ -39,6 +39,8 @@ else
   exit 1
 fi
 
+MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
+export MINIO_ROOT_PASSWORD
 echo "Starting required services..."
 if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then 
   echo "Required services have started."
