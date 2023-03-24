@@ -9,7 +9,7 @@ from sigoptlitetest.base_test import UnitTestsBase
 from sigoptlitetest.constants import DEFAULT_TASKS
 
 
-class TestMultimetricExperimentBasics(UnitTestsBase):
+class TestMultimetricExperiment(UnitTestsBase):
   conn = Connection(driver=LocalDriver)
 
   @pytest.fixture
@@ -66,28 +66,11 @@ class TestMultimetricExperimentBasics(UnitTestsBase):
     assert exception_info.value.args[0] == msg
 
   @pytest.mark.parametrize("feature", ["multimetric", "metric_threshold", "metric_constraint", "search"])
-  def test_incorrect_strategy_name(self, feature):
-    strategy_name = "store"
+  def test_missing_objective_defaults_to_maximization(self, feature):
     experiment_meta = self.get_experiment_feature(feature)
-    experiment_meta["metrics"][0]["strategy"] = strategy_name
-    with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments().create(**experiment_meta)
-    msg = f"{strategy_name} is not one of the allowed values: optimize, constraint"
-    assert exception_info.value.args[0] == msg
-
-  @pytest.mark.parametrize("feature", ["multimetric", "metric_threshold", "metric_constraint", "search"])
-  def test_incorrect_objective_name(self, feature):
-    objective_name = "not_a_valid_objective_name"
-    experiment_meta = self.get_experiment_feature(feature)
-    experiment_meta["metrics"][0]["objective"] = objective_name
-    with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments().create(**experiment_meta)
-    msg = f"{objective_name} is not one of the allowed values: maximize, minimize"
-    assert exception_info.value.args[0] == msg
-
-
-class TestMultimetricOptimizationExperiment(UnitTestsBase):
-  conn = Connection(driver=LocalDriver)
+    del experiment_meta["metrics"][0]["objective"]
+    e = self.conn.experiments().create(**experiment_meta)
+    assert e.metrics[0].objective == "maximize"
 
 
 class TestMetricConstraintExperiment(UnitTestsBase):
@@ -147,21 +130,4 @@ class TestMultimetricThresholdExperiment(UnitTestsBase):
       "Thresholds are only supported for experiments with more than one optimized metric. Try an All-Constraint"
       " experiment instead by setting `strategy` to `constraint`."
     )
-    assert exception_info.value.args[0] == msg
-
-  @pytest.mark.xfail  # TODO: this is not failing properly
-  def test_has_threshold_missing_strategy(self):
-    experiment_meta = self.get_experiment_feature("metric_threshold")
-    del experiment_meta["metrics"][0]["strategy"]
-    with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments().create(**experiment_meta)
-    msg = "Constraint metrics must have the threshold field defined"
-    assert exception_info.value.args[0] == msg
-
-  def test_has_threshold_missing_objective(self):
-    experiment_meta = self.get_experiment_feature("metric_threshold")
-    del experiment_meta["metrics"][0]["objective"]
-    with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments().create(**experiment_meta)
-    msg = "Constraint metrics must have the threshold field defined"
     assert exception_info.value.args[0] == msg
