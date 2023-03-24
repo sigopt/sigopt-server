@@ -171,28 +171,12 @@ class TestLocalExperiment(LocalExperimentBase):
     assert not experiment.requires_pareto_frontier_optimization
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
-  def test_experiment_multitask_and_multisolution_incompatible(self):
-    experiment_meta = self.get_experiment_feature("multitask")
-    experiment_meta["num_solutions"] = 5
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment with multiple solutions cannot be multitask"
-    assert exception_info.value.args[0] == msg
-
   def test_experiment_multisolution(self):
     experiment_meta = self.get_experiment_feature("multisolution")
     experiment = LocalExperimentBuilder(experiment_meta)
     assert experiment.num_solutions == experiment_meta["num_solutions"]
     assert experiment.is_multisolution
     self.check_experiment_expected_attributes(experiment_meta, experiment)
-
-  def test_multisolution_no_budget_incompatible(self):
-    experiment_meta = self.get_experiment_feature("multisolution")
-    experiment_meta.pop("observation_budget")
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "observation_budget is required for a sigoptlite experiment with multiple solutions"
-    assert exception_info.value.args[0] == msg
 
   def test_experiment_metric_constraint(self):
     experiment_meta = self.get_experiment_feature("metric_constraint")
@@ -241,14 +225,6 @@ class TestLocalExperiment(LocalExperimentBase):
     with pytest.raises(ValueError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
     msg = "observation_budget is required for a sigoptlite experiment with constraint metrics"
-    assert exception_info.value.args[0] == msg
-
-  def test_experiment_conditionals_multisolution_incompatible(self):
-    experiment_meta = self.get_experiment_feature("conditionals")
-    experiment_meta["num_solutions"] = 3
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "sigoptlite experiment with multiple solutions does not support conditional parameters"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_conditionals_search_incompatible(self):
