@@ -282,7 +282,7 @@ class BuilderBase(object):
     input_dict[field] = [local_class(i) for i in input_dict[field]]
 
   @staticmethod
-  def get_num_distict_elements(lst):
+  def get_num_distinct_elements(lst):
     return len(set(lst))
 
 
@@ -345,6 +345,12 @@ class LocalExperimentBuilder(BuilderBase):
         raise ValueError(f"{cls.cls_name} with multiple solutions require exactly one optimized metric")
 
     # Check conditional limitation
+    parameters_have_conditions = any(parameter.conditions for parameter in experiment.parameters)
+    if parameters_have_conditions ^ experiment.is_conditional:
+      raise ValueError(
+        f"For conditional {cls.cls_name}, need both conditions defined in parameters and conditionals variables"
+        " defined in experiment"
+      )
     if experiment.is_conditional:
       if num_solutions and num_solutions > 1:
         raise ValueError(f"{cls.cls_name} with multiple solutions does not support conditional parameters")
@@ -370,17 +376,29 @@ class LocalExperimentBuilder(BuilderBase):
   @classmethod
   def validate_parameters(cls, experiment):
     param_names = [p.name for p in experiment.parameters]
-    if not len(param_names) == cls.get_num_distict_elements(param_names):
+    if not len(param_names) == cls.get_num_distinct_elements(param_names):
       raise ValueError(f"No duplicate parameters are allowed: {param_names}")
 
   @classmethod
   def validate_metrics(cls, experiment):
     metric_names = [m.name for m in experiment.metrics]
-    if not len(metric_names) == cls.get_num_distict_elements(metric_names):
+    if not len(metric_names) == cls.get_num_distinct_elements(metric_names):
       raise ValueError(f"No duplicate metrics are allowed: {metric_names}")
 
   @classmethod
   def validate_conditionals(cls, experiment):
+    conditional_names = [c.name for c in experiment.conditionals]
+    if not len(conditional_names) == cls.get_num_distinct_elements(conditional_names):
+      raise ValueError(f"No duplicate conditionals are allowed: {conditional_names}")
+
+    for parameter in experiment.parameters:
+      if parameter.conditions and any(c.name not in conditional_names for c in parameter.conditions):
+        unsatisfied_condition_names = [c.name for c in parameter.conditions if c.name not in conditional_names]
+        raise ValueError(
+          f"The parameter {parameter.name} has conditions {unsatisfied_condition_names} that are not part of"
+          " the conditionals"
+        )
+
     cls.check_all_conditional_values_satisfied(experiment)
 
   @classmethod
@@ -388,8 +406,8 @@ class LocalExperimentBuilder(BuilderBase):
     if len(experiment.tasks) < 2:
       raise ValueError(f"For multitask {cls.cls_name}, at least 2 tasks must be present.")
     costs = [t.cost for t in experiment.tasks]
-    num_distinct_task = cls.get_num_distict_elements([t.name for t in experiment.tasks])
-    num_distinct_costs = cls.get_num_distict_elements(costs)
+    num_distinct_task = cls.get_num_distinct_elements([t.name for t in experiment.tasks])
+    num_distinct_costs = cls.get_num_distinct_elements(costs)
     if not num_distinct_task == len(experiment.tasks):
       raise ValueError(f"For multitask {cls.cls_name}, all task names must be distinct")
     if not num_distinct_costs == len(experiment.tasks):
@@ -560,7 +578,7 @@ class LocalParameterBuilder(BuilderBase):
         )
       if parameter.bounds:
         raise ValueError(f"Grid parameter should not have bounds: {parameter.bounds}")
-      if not cls.get_num_distict_elements(parameter.grid) == len(parameter.grid):
+      if not cls.get_num_distinct_elements(parameter.grid) == len(parameter.grid):
         raise ValueError(f"Grid values should be unique: {parameter.grid}")
 
     # log transformation
@@ -604,6 +622,8 @@ class LocalConditionalBuilder(BuilderBase):
     assert set(input_dict.keys()) == {"name", "values"}
     assert isinstance(input_dict["name"], str)
     assert isinstance(input_dict["values"], list)
+    if not len(input_dict["values"]) > 1:
+      raise ValueError(f"Conditional {input_dict['name']} must have at least two values")
 
   @classmethod
   def create_object(cls, **input_dict):
