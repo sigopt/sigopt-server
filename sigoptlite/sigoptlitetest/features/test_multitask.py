@@ -7,6 +7,7 @@ from sigopt import Connection
 from sigoptlite.driver import LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
 
+
 class TestMultitask(UnitTestsBase):
   @pytest.fixture
   def conn(self):
