@@ -4,7 +4,7 @@
 ARG NODE_VERSION
 
 
-FROM node:${NODE_VERSION}-buster AS test-routes
+FROM node:${NODE_VERSION} AS test-routes
 
 # hadolint ignore=DL3016
 RUN set -ex \
