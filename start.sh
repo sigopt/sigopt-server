@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-export COMPOSE_PROJECT_NAME=sigopt-server-deploy
+export COMPOSE_PROJECT_NAME=sigopt-server
 export sigopt_server_config_file="${sigopt_server_config_file:-config/sigopt.yml}"
 export TAG=latest
 MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
