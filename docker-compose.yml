@@ -112,7 +112,7 @@ services:
     environment: &zigopt_environment
       - "sigopt.user_uploads.s3.aws_secret_access_key=$MINIO_ROOT_PASSWORD"
       - "sigopt_server_config_file=$sigopt_server_config_file"
-      - "sigopt_server_version=$TAG"
+      - sigopt_server_version
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
@@ -152,7 +152,7 @@ services:
       - "sigopt.web.cookiejar_credentials.secretAccessKey=$MINIO_ROOT_PASSWORD"
       - "sigopt_server_config_file=$sigopt_server_config_file"
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
-      - "sigopt_server_version=$TAG"
+      - sigopt_server_version
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
     volumes:
       - ./artifacts/tls:/sigopt-server/artifacts/tls:ro

@@ -5,7 +5,10 @@ set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server
 export sigopt_server_config_file="${sigopt_server_config_file:-config/sigopt.yml}"
-export TAG=latest
+MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
+export MINIO_ROOT_PASSWORD
+sigopt_server_version="git:$(git rev-parse HEAD)"
+export sigopt_server_version
 echo "Checking docker..."
 if docker ps -q >/dev/null; then
   echo "Docker is running."
@@ -41,8 +44,6 @@ else
   exit 1
 fi
 
-MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
-export MINIO_ROOT_PASSWORD
 echo "Starting required services..."
 if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then 
   echo "Required services have started."
