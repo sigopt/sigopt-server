@@ -449,7 +449,7 @@ class LocalExperimentBuilder(BuilderBase):
         if name in grid_param_names:
           raise ValueError(f"Constraint cannot be defined on a grid parameter {name}")
         if name in constraint_var_set:
-          raise ValueError(f"Duplicate variable name: {name}")
+          raise ValueError(f"Duplicate constrained variable name: {name}")
         else:
           constraint_var_set.add(name)
 
