@@ -152,6 +152,7 @@ EXPERIMENT_CREATE_SCHEMA = {
     },
     "num_solutions": {
       "type": ["integer", "null"],
+      "minimum": 1,
     },
     "parallel_bandwidth": {
       "type": "integer",
