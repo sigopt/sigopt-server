@@ -17,7 +17,7 @@ RUN set -ex \
 
 # hadolint ignore=DL3016
 RUN set -ex \
-  ; npm install -g npm yarn \
+  ; npm install -g npm yarn --force \
   ; npm cache clean --force \
   ; :
 
