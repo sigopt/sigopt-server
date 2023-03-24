@@ -69,7 +69,10 @@ class Broker(object):
     )
     self.observations.append(observation)
     self.stored_suggestion = None
-    return observation
+    return observation.get_client_observation(self.experiment)
+
+  def get_observations(self):
+    return [o.get_client_observation(self.experiment) for o in self.observations]
 
   def create_suggestion(self):
     if self.stored_suggestion is not None:
