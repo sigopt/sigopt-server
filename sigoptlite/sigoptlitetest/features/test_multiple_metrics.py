@@ -73,6 +73,24 @@ class TestMultimetricExperiment(UnitTestsBase):
     assert e.metrics[0].objective == "maximize"
 
 
+class TestMultimetricThresholdExperiment(UnitTestsBase):
+  conn = Connection(driver=LocalDriver)
+
+  def test_single_metric_threshold_for_optimization_not_allowed(self, experiment_meta):
+    experiment_meta["metrics"] = [dict(name="y1", objective="maximize", threshold=0.5, strategy="optimize")]
+    with pytest.raises(ValueError) as exception_info:
+      self.conn.experiments().create(**experiment_meta)
+    msg = (
+      "Thresholds are only supported for experiments with more than one optimized metric. Try an All-Constraint"
+      " experiment instead by setting `strategy` to `constraint`."
+    )
+    assert exception_info.value.args[0] == msg
+
+  def test_single_metric_threshold_for_constraint_is_allowed(self, experiment_meta):
+    experiment_meta["metrics"] = [dict(name="y1", objective="maximize", threshold=0.5, strategy="constraint")]
+    self.conn.experiments().create(**experiment_meta)
+
+
 class TestMetricConstraintExperiment(UnitTestsBase):
   conn = Connection(driver=LocalDriver)
 
@@ -110,24 +128,4 @@ class TestMetricConstraintExperiment(UnitTestsBase):
     with pytest.raises(ValueError) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     msg = "Constraint metrics must have the threshold field defined"
-    assert exception_info.value.args[0] == msg
-
-
-class TestMultimetricThresholdExperiment(UnitTestsBase):
-  conn = Connection(driver=LocalDriver)
-
-  def test_single_metric_threshold_not_allowed(self, experiment_meta):
-    experiment_meta["metrics"] = [
-      dict(
-        name="y1",
-        objective="maximize",
-        threshold=0.5,
-      ),
-    ]
-    with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments().create(**experiment_meta)
-    msg = (
-      "Thresholds are only supported for experiments with more than one optimized metric. Try an All-Constraint"
-      " experiment instead by setting `strategy` to `constraint`."
-    )
     assert exception_info.value.args[0] == msg
