@@ -270,14 +270,14 @@ services:
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER "$MINIO_ROOT_PASSWORD"
+        mc alias set sigopt http://minio:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-cookiejar
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER "$MINIO_ROOT_PASSWORD"
+        mc alias set sigopt http://minio:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-user-uploads
   minio:
     restart: on-failure:5
