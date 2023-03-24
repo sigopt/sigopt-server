@@ -707,6 +707,10 @@ class LocalObservationBuilder(BuilderBase):
   def create_object(cls, **input_dict):
     cls.set_object(input_dict, "assignments", LocalAssignments)
     cls.set_list_of_objects(input_dict, field="values", local_class=MetricEvaluationBuilder)
+    values = input_dict.get("values")
+    if values:
+      input_dict["metric_evaluations"] = {me.name: me for me in values}
+      del input_dict["values"]
     cls.set_object(input_dict, "task", LocalTaskBuilder)
     return LocalObservation(**input_dict)
 
@@ -726,16 +730,16 @@ class LocalObservationBuilder(BuilderBase):
     if not experiment.is_multitask and observation.task:
       raise ValueError("Observation with task is not expected for this experiment")
 
-    if observation.failed and observation.values:
+    if observation.failed and observation.metric_evaluations:
       raise ValueError(
         f"Observation marked as failure ({observation.failed}) should not have values. "
-        f"Current list of values is: {observation.values}"
+        f"Observation metrics are: {observation.metric_evaluations}."
       )
 
     if not observation.failed:
       for m in experiment.metrics:
-        if observation.get_metric_value(m.name) is None:
-          raise ValueError(f"Metric {m.name} not in observation.values {observation.values}")
+        if observation.get_metric_evaluation_by_name(m.name) is None:
+          raise ValueError(f"Metric {m.name} not in observation metrics: {observation.metric_evaluations}.")
 
   @staticmethod
   def observation_must_have_parameter(observation, parameter):
