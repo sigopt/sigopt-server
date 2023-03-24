@@ -233,6 +233,9 @@ def process_error(e, class_name):
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator == "minimum" else "less than"
     raise ValueError(f"{key} must be {greater_less} or equal to {e.validator_value}")
+  elif e.validator == "exclusiveMinimum":
+    key = get_path_string(e.path)
+    raise ValueError(f"{key} must be greather than {e.validator_value}")
   elif e.validator in ["minLength", "maxLength", "minItems", "maxItems"]:
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator in ["minLength", "minItems"] else "less than"
