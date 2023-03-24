@@ -8,7 +8,7 @@ Flask==2.1.1
 PyYAML==5.4.1
 backoff==1.10.0
 bcrypt==3.2.0
-boto3==1.24.65
+boto3==1.26.98
 botocore==1.27.65
 # NOTE: our patch of black breaks with new versions of click
 click==8.0.4
