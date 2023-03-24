@@ -2,8 +2,8 @@
 attrs==22.2.0
 backoff==1.10.0
 bcrypt==3.2.0
-boto3==1.24.65
-botocore==1.27.65
+boto3==1.26.99
+botocore==1.29.99
 cffi==1.15.1
 click==8.0.4
 Flask==2.1.1
@@ -39,4 +39,4 @@ threadpoolctl==3.1.0
 urllib3==1.26.15
 Werkzeug==2.2.3
 zope.event==4.6
-zope.interface==5.5.2
+zope.interface==6.0
