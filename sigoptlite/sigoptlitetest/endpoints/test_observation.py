@@ -296,8 +296,8 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
         suggestion_id=suggestion.id,
         use_suggestion_id=i % 2,
       )
-      for p in assignments.keys():
-        assert observation.assignments[p] == assignments[p]
+      for param, param_value in assignments.items():
+        assert observation.assignments[param] == param_value
       assert len(observation.values) == 1
       assert observation.values[0].name == metric_name
       assert observation.values[0].value == i
@@ -421,8 +421,8 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
         suggestion_id=suggestion.id,
         use_suggestion_id=i % 2,
       )
-      for p in assignments.keys():
-        assert observation.assignments[p] == assignments[p]
+      for param, param_value in assignments.items():
+        assert observation.assignments[param] == param_value
       assert len(observation.values) == 2
       assert observation.values[0].name == "y1"
       assert observation.values[0].value == i
