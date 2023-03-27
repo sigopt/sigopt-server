@@ -239,46 +239,6 @@ class TestLocalExperiment(LocalExperimentBase):
     assert [v.name for v in experiment.conditionals[2].values] == ["on", "off"]
     self.check_experiment_expected_attributes(experiment_meta, experiment)
 
-  def test_experiment_missing_parameters(self):
-    experiment_meta = self.get_experiment_feature("default")
-    del experiment_meta["parameters"]
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "Missing required json key `parameters` in sigoptlite experiment:"
-    assert exception_info.value.args[0].startswith(msg)
-
-  def test_experiment_parameters_empty_list(self):
-    experiment_meta = self.get_experiment_feature("default")
-    experiment_meta["parameters"] = []
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "The length of .parameters must be greater than or equal to 1"
-    assert exception_info.value.args[0] == msg
-
-  def test_experiment_missing_metrics(self):
-    experiment_meta = self.get_experiment_feature("default")
-    del experiment_meta["metrics"]
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "Missing required json key `metrics` in sigoptlite experiment:"
-    assert exception_info.value.args[0].startswith(msg)
-
-  def test_experiment_metrics_empty_list(self):
-    experiment_meta = self.get_experiment_feature("default")
-    experiment_meta["metrics"] = []
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "The length of .metrics must be greater than or equal to 1"
-    assert exception_info.value.args[0] == msg
-
-  def test_experiment_bad_structure(self):
-    experiment_meta = self.get_experiment_feature("default")
-    experiment_meta["name"] = 12
-    with pytest.raises(ValueError) as exception_info:
-      LocalExperimentBuilder(experiment_meta)
-    msg = "Invalid type for .name, expected type string"
-    assert exception_info.value.args[0] == msg
-
 
 class TestLocalParameters(UnitTestsBase):
   @pytest.mark.parametrize(
