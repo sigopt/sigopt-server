@@ -62,11 +62,15 @@ def make_produser(host, port, database, produser, produser_password, superuser=N
 
 
 def execute_create_user_query(conn, cursor, user, password, roles=""):
-  psql_password = password.replace("'", "''")
+  if password is None:
+    query_string = f"CREATE ROLE {user} {roles}"
+  else:
+    psql_password = password.replace("'", "''")
+    query_string = f"CREATE ROLE {user} WITH LOGIN PASSWORD '{psql_password}' {roles}"
   return execute_query(
     conn=conn,
     cursor=cursor,
-    query_string=f"CREATE ROLE {user} WITH LOGIN PASSWORD '{psql_password}' {roles}",
+    query_string=query_string,
     error_allow_list=[
       dict(error_str="already exists", warning=f'role: "{user}" already exists. Existing role will be used.')
     ],
