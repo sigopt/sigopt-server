@@ -18,12 +18,7 @@
     ]
   },
   "db": {
-    "host": "postgres",
-    "password": "produser_password_for_development",
-    "path": "basedb",
-    "scheme": "postgresql+pg8000",
-    "ssl": false,
-    "user": "produser"
+    "password": "produser_password_for_development"
   },
   "email": {
     "enabled": true,

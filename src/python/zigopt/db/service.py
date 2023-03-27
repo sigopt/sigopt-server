@@ -131,6 +131,7 @@ class DatabaseConnectionService(Service):
         host=config.get("host"),
         port=config.get("port"),
         database=config.get("path"),
+        query=config.get("query"),
       ),
       connect_args=connect_args,
       execution_options={
