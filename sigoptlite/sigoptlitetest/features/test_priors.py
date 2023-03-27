@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from sigopt import Connection
+from sigopt.exception import SigOptException
 
 from sigoptlite.driver import LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
@@ -32,7 +33,7 @@ class TestExperimentPriors(UnitTestsBase):
       ],
       metrics=DEFAULT_METRICS,
     )
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**meta)
     msg = "Prior only applies to parameters type of double"
     assert exception_info.value.args[0] == msg
@@ -45,7 +46,7 @@ class TestExperimentPriors(UnitTestsBase):
         prior=dict(name="beta", shape_a=1, shape_b=2),
       )
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**meta)
     assert exception_info.value.args[0] == msg
 
@@ -61,7 +62,7 @@ class TestExperimentPriors(UnitTestsBase):
       ],
       metrics=DEFAULT_METRICS,
     )
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**meta)
     msg = "Grid parameters cannot have priors"
     assert exception_info.value.args[0] == msg
@@ -79,7 +80,7 @@ class TestExperimentPriors(UnitTestsBase):
       ],
       metrics=DEFAULT_METRICS,
     )
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**meta)
     msg = "Parameters with log transformation cannot have priors"
     assert exception_info.value.args[0] == msg
