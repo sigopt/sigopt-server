@@ -230,19 +230,12 @@ class LocalObservation:
   failed: bool = False
   task: LocalTask = None
 
-  def get_client_observation(self, experiment):
-    if not self.failed:
-      return dict(
-        assignments=dict(self.assignments),
-        values=[dataclass_to_dict(me) for me in self.get_metric_evaluations(experiment)],
-        task=dataclass_to_dict(self.task) if self.task else None,
-        failed=False,
-      )
+  def get_client_observation(self, experiment):    
     return dict(
       assignments=dict(self.assignments),
-      values=None,
+      values=None if self.failed else [dataclass_to_dict(me) for me in self.get_metric_evaluations(experiment)],
       task=dataclass_to_dict(self.task) if self.task else None,
-      failed=True,
+      failed=self.failed,
     )
 
   def get_metric_evaluations(self, experiment):
