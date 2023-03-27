@@ -28,10 +28,6 @@ if __name__ == "__main__":
   configure_loggers(config_broker)
   if config_broker.get("smtp.test_launch", True):
     config_broker["smtp.host"] = None
-  config_broker["db.host"] = config_broker.get("db.test_host", config_broker.get("db.host"))
-  config_broker["db.port"] = config_broker.get("db.test_port", config_broker.get("db.port"))
-  config_broker["redis.host"] = config_broker.get("redis.test_host", config_broker.get("redis.host"))
-  config_broker["redis.port"] = config_broker.get("redis.test_port", config_broker.get("redis.port"))
   if args.test_target_name:
     config_broker["test_target_name"] = args.test_target_name
 

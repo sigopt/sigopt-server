@@ -44,9 +44,6 @@ export default function main() {
     process.env.sigopt_server_config_file,
   );
   return new Promise((s, e) => configBroker.initialize(s, e))
-    .then(() =>
-      console.log(JSON.stringify(configBroker.allConfigsForLogging())),
-    )
     .then(() => {
       const globalServiceBag = new GlobalServiceBag(
         configBroker,
@@ -55,7 +52,7 @@ export default function main() {
       return globalServiceBag.warmup();
     })
     .then((globalServiceBag) => {
-      const nodePort = configBroker.get("express.port");
+      const nodePort = configBroker.get("express.port", 4000);
       const app = makeApp(globalServiceBag);
       const server = app.listen(nodePort);
       server.keepAliveTimeout = 75 * 1000;

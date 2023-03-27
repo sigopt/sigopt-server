@@ -26,7 +26,7 @@ class TestNextSuggestion(object):
     services = Mock()
     services.config_broker = StrictAccessConfigBroker.from_configs(
       {
-        "features": {"errorNotifications": True, "raiseSoftExceptions": False},
+        "features": {"raiseSoftExceptions": False},
         "model": {"force_spe": False},
         "optimize": {"rejection_sampling_trials": 0},
         "queue": {"forbid_random_fallback": False},

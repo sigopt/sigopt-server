@@ -2,29 +2,59 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 ARG BUILD_TAG=build
+ARG PYTHON_VERSION
 
 
-FROM sigopt/python:${BUILD_TAG}
-
-SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
-
-WORKDIR /sigopt-server
+# hadolint ignore=DL3006
+FROM debian:buster AS protobuf
 
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends libgomp1=8.3.* >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      ca-certificates=* \
+      curl=7.64.* \
+      unzip=6.* \
+      >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
-COPY src/protobuf/zigopt/ /sigopt-server/src/protobuf/zigopt/
-COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
+ARG PROTOBUF_VERSION
+COPY tools/protobuf/install.sh /install_protobuf.sh
+RUN set -ex \
+  ; /install_protobuf.sh "$PROTOBUF_VERSION" \
+  ; :
 
 WORKDIR /sigopt-server
 
+COPY src/protobuf/zigopt/ /sigopt-server/src/protobuf/zigopt/
 COPY tools/protobuf/compile.sh /compile_protobuf.sh
-RUN : \
+RUN set -ex \
   ; /compile_protobuf.sh \
   ; :
+
+
+FROM python:${PYTHON_VERSION}-buster
+
+RUN set -ex \
+  ; apt-get update -yqq >dev/null \
+  ; apt-get upgrade -yqq >/dev/null \
+  ; rm -rf /var/lib/apt/lists/* \
+  ; :
+
+# hadolint ignore=DL3013
+RUN set -ex \
+  ; pip install --upgrade --no-cache-dir pip setuptools wheel \
+  ; :
+
+WORKDIR /sigopt-server
+
+COPY requirements.txt /sigopt-server/requirements.txt
+RUN set -ex \
+  ; pip install --no-cache-dir -r requirements.txt \
+  ; :
+
+COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
+COPY --from=protobuf /sigopt-server/src/python/zigopt/ /sigopt-server/src/python/zigopt/
 
 COPY sigoptcompute/sigoptcompute /sigopt-server/sigoptcompute/sigoptcompute
 copy sigoptaux/sigoptaux /sigopt-server/sigoptaux/sigoptaux
@@ -41,5 +71,4 @@ RUN set -ex \
 
 USER produser
 
-COPY config /sigopt-server/config
 COPY docker/images/zigopt/bin/ /usr/local/bin/

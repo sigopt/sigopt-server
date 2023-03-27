@@ -70,7 +70,7 @@ class BaseSessionHandler(Handler):
 
     client = client or self.get_client_for_user(user)
     if not client:
-      if not self.services.config_broker.get("features.allowCreateOrganization", True):
+      if not self.services.config_broker.get("features.allowCreateOrganization", False):
         raise ForbiddenError("You must be invited to an organization")
       name = pending_client_name or user.name
       (_, client) = self.services.organization_service.set_up_new_organization(

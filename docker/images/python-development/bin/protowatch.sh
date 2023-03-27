@@ -12,5 +12,5 @@ if [ -n "$_COMPILE" ]; then
     echo "compile protobuf failed!"
   fi
 else
-  _COMPILE=x run_command_on_change.py --dir=/sigopt-server/src/protobuf --initial-run protowatch
+  _COMPILE=x run_command_on_change.py --dir=/sigopt-server/src/protobuf --initial-run "$0"
 fi

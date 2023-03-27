@@ -69,7 +69,11 @@ def run_app():
 
   try:
     app.debug = args.debug
-    app.run(host=app.config_broker["flask.host"], port=app.config_broker["flask.port"], threaded=args.threaded)
+    app.run(
+      host=app.config_broker.get("flask.host", "0.0.0.0"),
+      port=app.config_broker.get("flask.port", 5000),
+      threaded=args.threaded,
+    )
   finally:
     profiler.print_stats()
 

@@ -12,7 +12,7 @@ from integration.service.test_base import ServiceBase
 class TestOrganizationMerge(ServiceBase):
   @pytest.mark.slow
   def test_merge_organizations(self, services, config_broker):
-    if not config_broker.get("features.allowCreateOrganization"):
+    if not config_broker.get("features.allowCreateOrganization", False):
       pytest.skip()
     dest_org = self.make_organization(services, "Destination Organization")
     org1 = self.make_organization(services, "Test Merge Organization 1")

@@ -6,12 +6,18 @@
 
 import _ from "underscore";
 import fs from "fs";
+import jsonMergePatch from "json-merge-patch";
 import path from "path";
 import {parse as parseYAML} from "yaml";
 
 import EnvironmentSource from "./env";
 import ObjectSource from "./object";
-import {coalesce, isDefinedAndNotNull, isJsObject} from "../utils";
+import {
+  coalesce,
+  isDefinedAndNotNull,
+  isJsObject,
+  isUndefinedOrNull,
+} from "../utils";
 
 class ConfigBroker {
   constructor(sources) {
@@ -56,7 +62,7 @@ class ConfigBroker {
       coalesce(
         _.reduce(
           this._sources,
-          (memo, source) => (memo === undefined ? source.get(key) : memo),
+          (memo, source) => (isUndefinedOrNull(memo) ? source.get(key) : memo),
           undefined,
         ),
         defaultValue,
@@ -79,8 +85,11 @@ class ConfigBroker {
       _.map(this._sources, (source) => source.get(key)),
       undefined,
     );
+    if (_.isEmpty(values)) {
+      return defaultValue;
+    }
     values.reverse();
-    return _.isEmpty(values) ? defaultValue : _.extend({}, ...values);
+    return _.reduce(values, jsonMergePatch.apply, {});
   }
 
   allConfigsForLogging() {

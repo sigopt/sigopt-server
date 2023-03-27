@@ -1,0 +1,336 @@
+version: "3"
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  test-runner:
+    image: "sigopt/${TEST_RUNNER_NAME}:${TAG}"
+    environment:
+      - ALLOW_SLOW=1
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
+      - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
+    volumes:
+      - &rootca-volume ./artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
+      - &sigopt-config-volume ./config:/sigopt-server/config
+      - ./junit-results:/sigopt-server/junit-results
+      - ./screenshots/failure:/sigopt-server/screenshots/failure
+      - ./failure_console_logs:/sigopt-server/failure_console_logs
+      - /dev/shm:/dev/shm
+  smtp:
+    restart: on-failure:5
+    command:
+      - python
+      - -m
+      - integration.utils.mail
+      - --send-port=6001
+      - --receive-port=6002
+    image: "sigopt/test-runner:${TAG}"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+          pids: 16
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6002/health"]
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+      start_period: "30s"
+    security_opt:
+      - "no-new-privileges:true"
+  createdb:
+    command:
+      - python
+      - -m
+      - zigopt.utils.create_database
+      - &config-file "$sigopt_server_config_file"
+      - --drop-tables
+      - --fake-data
+    image: "sigopt/zigopt:${TAG}"
+    read_only: true
+    security_opt:
+      - "no-new-privileges:true"
+    volumes:
+      - *sigopt-config-volume
+  nginx:
+    restart: on-failure:5
+    image: "sigopt/nginx:${TAG}"
+    volumes:
+      - ./artifacts/tls:/etc/ssl/sigopt:ro
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run/nginx
+    networks:
+      default:
+        aliases:
+          - sigopt.ninja
+    ports:
+      - "127.0.0.1:4443:4443" # web app (and api via /api)
+      - "127.0.0.1:9000:9000" # minio
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 64M
+          pids: 2
+    read_only: true
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/run/nginx/nginx.pid"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+    security_opt:
+      - "no-new-privileges:true"
+  api:
+    restart: on-failure:5
+    command:
+      - /usr/local/bin/gunicorn_serve.sh
+      - -b
+      - 0.0.0.0:5000
+      - zigopt.api.main:GUNICORN_ENTRY_POINT
+    image: "sigopt/zigopt:${TAG}"
+    environment: &zigopt_environment
+      - "sigopt.user_uploads.s3.aws_secret_access_key=$MINIO_ROOT_PASSWORD"
+      - "sigopt_server_config_file=$sigopt_server_config_file"
+      - "sigopt_server_version=git:$TAG"
+    volumes:
+      - *sigopt-config-volume
+    tmpfs:
+      - /tmp
+    networks:
+      default:
+        aliases:
+          - api-server.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 64
+    read_only: true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import requests
+          requests.get("http://localhost:5000/health").raise_for_status()
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+      start_period: "15s"
+    security_opt:
+      - "no-new-privileges:true"
+  web-server:
+    image: "sigopt/web:${TAG}"
+    environment:
+      - "sigopt.web.cookiejar_credentials.secretAccessKey=$MINIO_ROOT_PASSWORD"
+      - "sigopt_server_config_file=$sigopt_server_config_file"
+      - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
+      - "sigopt_server_version=git:$TAG"
+      - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
+    volumes:
+      - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
+      - *sigopt-config-volume
+    networks:
+      default:
+        aliases:
+          - app-server.ninja
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 4G
+          pids: 64
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000"]
+      interval: "10s"
+      timeout: "10s"
+      retries: 3
+      start_period: "2m"
+    security_opt:
+      - "no-new-privileges:true"
+  qworker:
+    restart: on-failure:5
+    command:
+      - python
+      - -m
+      - zigopt.queue.api
+      - optimization
+    image: "sigopt/zigopt:${TAG}"
+    environment: *zigopt_environment
+    volumes:
+      - *sigopt-config-volume
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 32
+    read_only: true
+    healthcheck: &qworker-healthcheck
+      test:
+        - CMD
+        - bash
+        - -e
+        - -opipefail
+        - -c
+        - ps awx | grep zigopt.queue.api
+      interval: "1s"
+      timeout: "1s"
+      retries: 1
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+  qworker-analytics:
+    restart: on-failure:5
+    command:
+      - python
+      - -m
+      - zigopt.queue.api
+      - analytics
+    image: "sigopt/zigopt:${TAG}"
+    environment: *zigopt_environment
+    volumes:
+      - *sigopt-config-volume
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+          pids: 32
+    read_only: true
+    healthcheck:
+      <<: *qworker-healthcheck
+    security_opt:
+      - "no-new-privileges:true"
+
+  postgres:
+    restart: on-failure:5
+    image: "postgres:${POSTGRES_VERSION}"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - pg-var:/var/run/postgresql
+    tmpfs:
+      - /tmp
+    read_only: true
+    ports:
+      - target: 5432
+        host_ip: 127.0.0.1
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+          pids: 32
+    healthcheck:
+      test:
+        ["CMD", "psql", "-h", "localhost", "-U", "postgres", "-c", "SELECT 1;"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+  redis:
+    restart: on-failure:5
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+    image: "redis:${REDIS_VERSION}"
+    ports:
+      - target: 6379
+        host_ip: 127.0.0.1
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 128M
+          pids: 16
+    read_only: true
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: "1s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+  init-minio-cookiejar:
+    image: "quay.io/minio/mc"
+    entrypoint: ["/bin/sh", "-e", "-c"]
+    command:
+      - |
+        mc alias set sigopt http://minio:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
+        mc mb --ignore-existing sigopt/sigopt-cookiejar
+  init-minio-filestorage:
+    image: "quay.io/minio/mc"
+    entrypoint: ["/bin/sh", "-e", "-c"]
+    command:
+      - |
+        mc alias set sigopt http://minio:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
+        mc mb --ignore-existing sigopt/sigopt-user-uploads
+  minio:
+    restart: on-failure:5
+    image: "quay.io/minio/minio"
+    environment:
+      - MINIO_ROOT_USER=ROOTUSER
+      - MINIO_ROOT_PASSWORD
+    volumes:
+      - minio-data:/var/lib/minio/data
+    command:
+      - "server"
+      - "/var/lib/minio/data"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+          pids: 64
+    read_only: true
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9000"]
+      interval: "5s"
+      timeout: "1s"
+      retries: 0
+      start_period: "10s"
+    security_opt:
+      - "no-new-privileges:true"
+
+  test-client:
+    command:
+      - sleep
+      - infinity
+    environment:
+      - SIGOPT_API_URL=https://sigopt.ninja:4443/api
+      - SIGOPT_APP_URL=https://sigopt.ninja:4443
+      - SIGOPT_API_TOKEN=client_token
+      - *api-tls-verify-env
+      - ALLOW_SLOW=1
+    image: "sigopt/test-runner:${TAG}"
+    volumes:
+      - *rootca-volume
+      - *sigopt-config-volume
+      - ./requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
+      - ./test:/sigopt-server/test:ro
+      - ./pytest.ini:/sigopt-server/pytest.ini:ro
+
+  mongodb:
+    image: "mongo:${MONGODB_VERSION}"
+    ports:
+      - "27017:27017"
+    container_name: "mongodb"
+
+volumes:
+  minio-data: {}
+  pg-var: {}
+  pg-data: {}

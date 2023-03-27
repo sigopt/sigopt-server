@@ -15,8 +15,13 @@ function check {
       EXIT=1
     fi
 
-    if ! diff <(python -mjson.tool "$FILE") <(python -mjson.tool --sort-keys "$FILE"); then
+    if ! diff <(python -mjson.tool --indent=2 "$FILE") <(python -mjson.tool --indent=2 --sort-keys "$FILE"); then
       >&2 echo "JSON keys not sorted in $FILE"
+      EXIT=1
+    fi
+
+    if ! diff "$FILE" <(python -mjson.tool --indent=2 --sort-keys "$FILE"); then
+      >&2 echo "Incorrect JSON whitespace in $FILE"
       EXIT=1
     fi
   done
@@ -27,7 +32,7 @@ function fix {
   EXIT=0
   for FILE in "$@"; do
     SORTED_OUT="$(mktemp)"
-    if python -mjson.tool --sort-keys "$FILE" >"$SORTED_OUT"; then
+    if python -mjson.tool --indent=2 --sort-keys "$FILE" >"$SORTED_OUT"; then
       cat "$SORTED_OUT" >"$FILE"
     else
       EXIT=1
