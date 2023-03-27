@@ -15,7 +15,7 @@ DELETE_ALLOW_LIST = ["tokens", "invites", "roles", "experiment_optimization_aux"
 
 
 @contextmanager
-def make_db_connection(host, port, database, user, password):
+def make_db_connection(host, port, database, query, user, password):
   conn = pg8000.connect(
     **remove_nones(
       {
@@ -24,6 +24,7 @@ def make_db_connection(host, port, database, user, password):
         "database": database,
         "user": user or "postgres",
         "password": password,
+        **(query or {}),
       }
     )
   )
@@ -34,11 +35,11 @@ def make_db_connection(host, port, database, user, password):
     conn.close()
 
 
-def make_produser(host, port, database, produser, produser_password, superuser=None, superuser_password=None):
+def make_produser(host, port, database, query, produser, produser_password, superuser=None, superuser_password=None):
   if not produser.isalnum():
     raise Exception(f"Invalid username: {produser}")
 
-  with make_db_connection(host, port, database, user=superuser, password=superuser_password) as conn:
+  with make_db_connection(host, port, database, query=query, user=superuser, password=superuser_password) as conn:
     with conn.cursor() as cursor:
       execute_create_user_query(
         conn=conn,

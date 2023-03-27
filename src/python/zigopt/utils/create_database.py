@@ -257,12 +257,14 @@ def create_db(
   database = config_broker.get("db.path")
   username = config_broker.get("db.user")
   password = config_broker.get("db.password")
+  query = config_broker.get_object("db.query")
   if allow_list:
     assert username in USERNAME_ALLOW_LIST
   make_produser(
     host=host,
     port=port,
     database=database,
+    query=query,
     produser=username,
     produser_password=password,
     superuser=superuser,
