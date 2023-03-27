@@ -49,8 +49,9 @@ class Broker(object):
     )
 
   def create_observation(self, assignments=None, values=None, suggestion=None, failed=False, task=None):
-    if not assignments and not suggestion:
+    if not (bool(not assignments) ^ bool(not suggestion)):
       raise ValueError("Need to pass in an assignments dictionary or a suggestion id to create an observation")
+
     if assignments is None:
       if self.stored_suggestion is None:
         raise ValueError("There is no stored suggestion to use. Please create a suggestion")

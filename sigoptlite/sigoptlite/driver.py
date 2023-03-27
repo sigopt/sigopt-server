@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from sigoptlite.best_assignments import BestAssignmentsLogger
 from sigoptlite.broker import Broker
-from sigoptlite.builders import LocalExperimentBuilder
+from sigoptlite.builders import LocalExperimentBuilder, LocalObservationBuilder
 from sigoptlite.models import FIXED_EXPERIMENT_ID, dataclass_to_dict
 
 
@@ -41,6 +41,8 @@ class LocalAPI:
   def observations_post(self, observation_json):
     if self.broker is None:
       raise ValueError("Need to create an experiment first before creating an observation")
+    if any(k not in ["assignments", "values", "suggestion", "failed", "task"] for k in observation_json.keys()):
+      raise ValueError("Unexpected keyword argument for Observation create endpoint")
     observation = self.broker.create_observation(**observation_json)
     return observation
 
