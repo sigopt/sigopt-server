@@ -8,6 +8,7 @@
     "query": {
       "unix_sock": "/var/run/postgresql/.s.PGSQL.5432"
     },
+    "ssl": false,
     "user": "produser"
   },
   "queue": {
