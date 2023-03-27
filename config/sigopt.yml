@@ -12,6 +12,8 @@ db:
   host: postgres
   password: produser_password_for_development
   path: basedb
+  query:
+    unix_sock: /var/run/postgresql/.s.PGSQL.5432
   ssl: false
   user: produser
 extends: defaults.json
