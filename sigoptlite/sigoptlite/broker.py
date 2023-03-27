@@ -56,8 +56,7 @@ class Broker(object):
 
       if suggestion != self.stored_suggestion.id:
         raise ValueError(
-          f"The suggestion you provided: {suggestion} does not match the suggestion we stored:"
-          f" {self.stored_suggestion.id}"
+          f"The suggestion you provided: {suggestion} does not match the suggestion stored: {self.stored_suggestion.id}"
         )
 
       assignments = self.stored_suggestion.assignments

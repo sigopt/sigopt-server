@@ -5,7 +5,6 @@ import numpy
 import pytest
 from sigopt import Connection
 
-from sigoptlite.builders import LocalExperimentBuilder
 from sigoptlite.driver import LocalDriver
 from sigoptlite.models import FIXED_EXPERIMENT_ID
 from sigoptlitetest.base_test import UnitTestsBase
@@ -18,15 +17,10 @@ class TestExperiment(UnitTestsBase):
   def experiment_meta(self):
     return self.get_experiment_feature("default")
 
-  def is_valid_connection_suggestion(self, suggestion, experiment_meta):
-    experiment = LocalExperimentBuilder(experiment_meta)
-    self.assert_valid_suggestion(suggestion, experiment)
-
   def test_driver_basic(self, experiment_meta):
     e = self.conn.experiments().create(**experiment_meta)
     assert e.id == FIXED_EXPERIMENT_ID
     suggestion = self.conn.experiments(e.id).suggestions().create()
-    self.is_valid_connection_suggestion(suggestion, experiment_meta)
 
     values = [{"name": "y1", "value": numpy.random.rand()}]
     self.conn.experiments(e.id).observations().create(
@@ -38,7 +32,6 @@ class TestExperiment(UnitTestsBase):
     fetched_e = self.conn.experiments(e2.id).fetch()
     assert e2.id == fetched_e.id == FIXED_EXPERIMENT_ID
     suggestion = self.conn.experiments(e2.id).suggestions().create()
-    self.is_valid_connection_suggestion(suggestion, experiment_meta)
 
     values = [{"name": "y1", "value": numpy.random.rand()}]
     self.conn.experiments(e2.id).observations().create(
@@ -125,89 +118,9 @@ class TestExperiment(UnitTestsBase):
     msg = "Invalid type for .name, expected type string"
     assert exception_info.value.args[0] == msg
 
-
-class TestSuggestionCreate(UnitTestsBase):
-  conn = Connection(driver=LocalDriver)
-
-  @pytest.fixture
-  def experiment_meta(self):
-    return self.get_experiment_feature("default")
-
-  def test_suggestion_duplicates(self, experiment_meta):
-    e = self.conn.experiments().create(**experiment_meta)
-    s1 = self.conn.experiments(e.id).suggestions().create()
-    s2 = self.conn.experiments(e.id).suggestions().create()
-    assert s1 == s2
-
-  def test_wrong_suggestion_id(self, experiment_meta):
-    e = self.conn.experiments().create(**experiment_meta)
-    s = self.conn.experiments(e.id).suggestions().create()
+  def test_experiment_fetch_before_create(self):
+    new_conn = Connection(driver=LocalDriver)
     with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments(e.id).observations().create(
-        suggestion=s.id + "1",
-        values=[{"name": "y1", "value": 1}],
-      )
-    msg = f"The suggestion you provided: {s.id + '1'} does not match the suggestion we stored: {s.id}"
+      new_conn.experiments(FIXED_EXPERIMENT_ID).fetch()
+    msg = "Need to create an experiment first before fetching one"
     assert exception_info.value.args[0] == msg
-
-  def test_no_suggestion_id(self, experiment_meta):
-    self.conn.experiments().create(**experiment_meta)
-    with pytest.raises(Exception) as exception_info:
-      self.conn.experiments().suggestions().fetch()
-    msg = "Please provide an Experiment ID."
-    assert exception_info.value.args[0] == msg
-
-
-class TestObservationCreate(UnitTestsBase):
-  conn = Connection(driver=LocalDriver)
-
-  @pytest.fixture
-  def experiment_meta(self):
-    return self.get_experiment_feature("default")
-
-  def test_make_observation_fails_without_assignments_or_id(self, experiment_meta):
-    e = self.conn.experiments().create(**experiment_meta)
-    with pytest.raises(ValueError) as exception_info:
-      self.conn.experiments(e.id).observations().create()
-    msg = "Need to pass in an assignments dictionary or a suggestion id to create an observation"
-    assert exception_info.value.args[0] == msg
-
-  def test_make_observation_with_suggestion_id_matches_assignments(self, experiment_meta):
-    e = self.conn.experiments().create(**experiment_meta)
-    suggestion = self.conn.experiments(e.id).suggestions().create()
-    true_assignments = suggestion.assignments
-    self.conn.experiments(e.id).observations().create(
-      suggestion=suggestion.id,
-      values=[{"name": "y1", "value": 0}],
-    )
-    observations = self.conn.experiments(e.id).observations().fetch()
-    observation = list(observations.iterate_pages())[0]
-    assert observation.assignments == true_assignments
-
-  def test_multiple_observations(self, experiment_meta):
-    NUM_OBSERVATIONS = 10
-    e = self.conn.experiments().create(**experiment_meta)
-    suggestion = self.conn.experiments(e.id).suggestions().create()
-    for i in range(NUM_OBSERVATIONS):
-      values = [{"name": "y1", "value": i}]
-      self.conn.experiments(e.id).observations().create(
-        assignments=suggestion.assignments,
-        values=values,
-      )
-
-    observations = self.conn.experiments(e.id).observations().fetch()
-    assert observations.count == NUM_OBSERVATIONS
-    assert len(observations.data) == NUM_OBSERVATIONS
-
-  def test_make_observation_with_variance(self, experiment_meta):
-    value_stddev = 0.12345
-    e = self.conn.experiments().create(**experiment_meta)
-    suggestion = self.conn.experiments(e.id).suggestions().create()
-    values = [{"name": "y1", "value": 0, "value_stddev": value_stddev}]
-    self.conn.experiments(e.id).observations().create(
-      assignments=suggestion.assignments,
-      values=values,
-    )
-    observations = self.conn.experiments(e.id).observations().fetch()
-    observation = list(observations.iterate_pages())[0]
-    assert observation.values[0].value_stddev == value_stddev

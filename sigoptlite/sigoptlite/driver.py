@@ -26,22 +26,32 @@ class LocalAPI:
     return self.experiments_get()
 
   def experiments_get(self, _=None):
+    if self.broker is None:
+      raise ValueError("Need to create an experiment first before fetching one")
     experiment_dict = dataclass_to_dict(self.broker.experiment)
     experiment_dict["progress"] = self.broker.experiment_progress_dict
     return experiment_dict
 
   def suggestions_post(self, _):
+    if self.broker is None:
+      raise ValueError("Need to create an experiment first before creating a suggestion")
     suggestion = self.broker.create_suggestion()
     return dataclass_to_dict(suggestion)
 
   def observations_post(self, observation_json):
+    if self.broker is None:
+      raise ValueError("Need to create an experiment first before creating an observation")
     observation = self.broker.create_observation(**observation_json)
     return observation
 
   def observations_get(self, _):
+    if self.broker is None:
+      raise ValueError("Need to create an experiment first before fetching observations")
     return self.paginate(self.broker.get_observations())
 
   def best_assignments_get(self, _):
+    if self.broker is None:
+      raise ValueError("Need to create an experiment first before fetching best assignments")
     return self.paginate(self.best_assignments_logger.fetch(self.broker.observations))
 
   def paginate(self, items):
