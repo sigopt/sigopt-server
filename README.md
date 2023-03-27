@@ -146,18 +146,7 @@ from the same sigopt-server directory you ran the configuration script from. Ctr
 
 ## Everything is running
 
-The website is now [running](https://sigopt.ninja:4443/) (Note: you may need to wait a few minutes for the code to compile)! Try out signing in with either one of our default accounts:
-
-**Organization Owner**
-
-- Email: owner@sigopt.ninja
-- Password: owner
-
-**Regular User**
-
-- Email: user@sigopt.ninja
-- Password: password
-- API Token: `client_token`
+The website is now [running](https://sigopt.ninja:4443/)! Sign in with the credentials from the `./setup.sh` step.
 
 With an [API Token](https://sigopt.ninja:4443/tokens/info) for your account you can use the [client](https://github.com/sigopt/sigopt-python) and conduct experiments with the SigOpt system and view the results on the [website](https://sigopt.ninja:4443/).
 
