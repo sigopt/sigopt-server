@@ -1,9 +1,11 @@
+# Copyright © 2022 Intel Corporation
+#
+# SPDX-License-Identifier: Apache License 2.0
 import pytest
 from sigopt import Connection
 
-from sigoptlite.driver import LocalDriver
+from sigoptlite.driver import FIXED_EXPERIMENT_ID, LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
-from sigoptlite.driver import FIXED_EXPERIMENT_ID
 
 
 class TestObservationCreate(UnitTestsBase):

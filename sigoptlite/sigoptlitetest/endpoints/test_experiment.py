@@ -124,3 +124,21 @@ class TestExperiment(UnitTestsBase):
       new_conn.experiments(FIXED_EXPERIMENT_ID).fetch()
     msg = "Need to create an experiment first before fetching one"
     assert exception_info.value.args[0] == msg
+
+  def test_experiment_no_budget(self):
+    experiment_meta = self.get_experiment_feature("default")
+    experiment_meta.pop("observation_budget")
+    experiment = self.conn.experiments().create(**experiment_meta)
+    assert experiment.observation_budget is None
+
+  @pytest.mark.parametrize("parallel_bandwidth", [-1, 0, 2, 29])
+  def test_experiment_parallel_bandwidth_incompatible(self, parallel_bandwidth):
+    experiment_meta = self.get_experiment_feature("default")
+    experiment_meta["parallel_bandwidth"] = parallel_bandwidth
+    with pytest.raises(ValueError) as exception_info:
+      self.conn.experiments().create(**experiment_meta)
+    if parallel_bandwidth > 1:
+      msg = "sigoptlite experiment must have parallel_bandwidth == 1"
+    else:
+      msg = ".parallel_bandwidth must be greater than or equal to 1"
+    assert exception_info.value.args[0] == msg
