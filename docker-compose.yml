@@ -222,7 +222,6 @@ services:
     volumes:
       - *pg-sock-volume
       - pg-data:/var/lib/postgresql/data
-      - pg-var:/var/run/postgresql
     tmpfs:
       - /tmp
     network_mode: none
@@ -338,4 +337,3 @@ volumes:
   minio-data: {}
   pg-data: {}
   pg-sock: {}
-  pg-var: {}
