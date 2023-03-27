@@ -19,11 +19,12 @@ class Broker(object):
   @property
   def is_initialization_phase(self):
     minimum_num_initial_observations = max(2 * self.experiment.dimension, 4)
-    return len(self.observations) <= minimum_num_initial_observations
+    num_valid_observations = sum(1 for o in self.observations if not o.failed)
+    return num_valid_observations <= minimum_num_initial_observations
 
   @property
   def use_random(self):
-    return self.is_initialization_phase or self.experiment.is_random
+    return self.experiment.is_random or self.is_initialization_phase
 
   @property
   def use_spe(self):
