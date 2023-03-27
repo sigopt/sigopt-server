@@ -27,7 +27,7 @@ echo "setuptools==65.6.3" >>requirements.txt
 # sort the lines and add a comment
 _tmp="$(mktemp)"
 sort --ignore-case requirements.txt | grep -v site-packages >>"$_tmp"
-echo '# auto-generated from scripts/requirements/freeze_requirements' >requirements.txt
+echo '# auto-generated from scripts/requirements/freeze_requirements.sh' >requirements.txt
 cat "$_tmp" >>requirements.txt
 rm "$_tmp"
 
