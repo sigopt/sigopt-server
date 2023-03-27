@@ -115,6 +115,7 @@ commands:
       - start-service:
           description: PostgreSQL
           service: postgres
+      - run: sleep 5
       - run: ./ci/compose.sh create createdb
       - run: ./ci/compose.sh run createdb
       - start-service:
@@ -564,6 +565,7 @@ jobs:
       - start-service:
           description: PostgreSQL
           service: postgres
+      - run: sleep 5
       - run: ./ci/compose.sh create createdb
       - run: ./ci/compose.sh run createdb
       - run: ./ci/worker_health_fail.sh
