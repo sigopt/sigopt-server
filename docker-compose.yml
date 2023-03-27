@@ -52,7 +52,7 @@ services:
       - --fake-data
     image: "sigopt/zigopt:${TAG}"
     environment:
-      - "clients.client.user.password=$OWNER_PASSWORD"
+      - "sigopt.clients.client.user.password=$OWNER_PASSWORD"
     read_only: true
     security_opt:
       - "no-new-privileges:true"
