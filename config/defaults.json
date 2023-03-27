@@ -4,7 +4,12 @@
     "app_url": "https://sigopt.ninja:4443"
   },
   "db": {
-    "path": "basedb"
+    "path": "basedb",
+    "query": {
+      "unix_sock": "/var/run/postgresql/.s.PGSQL.5432"
+    },
+    "ssl": false,
+    "user": "produser"
   },
   "queue": {
     "message_groups": {
