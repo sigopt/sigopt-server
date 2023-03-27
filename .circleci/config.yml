@@ -423,7 +423,8 @@ jobs:
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - sigopt-ninja-dns
       - run: mkdir -p scratch
-      - run: set -o pipefail
+      - run: |
+          set -o pipefail
           EDITOR=true ./setup.sh | tee scratch/setup_output.log
       - run:
           command: ./start.sh
