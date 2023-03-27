@@ -122,6 +122,8 @@ From the terminal in the `sigopt-server` directory you created in the git clone 
 ./setup.sh
 ```
 
+When the command has finished, make a note of the default log in information. You will need this to sign in later.
+
 On AWS clean installs, you might need to restart the instance after adding yourself to the `docker` group.
 
 This should set-up everything you need to just run SigOpt. You will need to add the file `root-ca.crt` generated in the `artifacts/tls` directory into your keychain if you are using the self-signed certificates, and then run
