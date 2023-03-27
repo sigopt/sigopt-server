@@ -98,6 +98,7 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
         "password": superuser_password,
         "host": config_broker.get("db.host"),
         "port": config_broker.get("db.port"),
+        **(config_broker.get("db.query") or {}),
       }
     )
   )
