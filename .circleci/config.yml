@@ -94,6 +94,7 @@ commands:
     steps:
       - docker-test-setup
       - run: ./ci/create_development_tls_certs.sh
+      - run: ./ci/compose.sh create test-runner
         # - run: |
         #     ./ci/compose.sh create \
         #       api \
