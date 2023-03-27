@@ -46,6 +46,7 @@ services:
       - *api-tls-verify-env
     image: sigopt/test-runner-web:latest
     volumes:
+      - &pg-sock-volume pg-sock:/var/run/postgresql
       - /dev/shm:/dev/shm
       - &babelrc ./.babelrc:/sigopt-server/.babelrc:ro
       - *rootca-volume
@@ -62,7 +63,6 @@ services:
       - ./test:/sigopt-server/test:delegated
       - ./web:/sigopt-server/web:ro,cached
       - ./webpack.config.script.babel.js:/sigopt-server/webpack.config.script.babel.js
-      - /var/run/docker.sock:/var/run/docker.sock
       - &test-routes-volume test-routes:/sigopt-server/artifacts/web/routes
     working_dir: /sigopt-server
     depends_on:
@@ -108,6 +108,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
+      - *pg-sock-volume
       - ./config:/sigopt-server/config:ro
       - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
       - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
@@ -159,6 +160,7 @@ services:
     stdin_open: true
     tty: true
     volumes: &zigopt_volumes
+      - *pg-sock-volume
       - ./config:/sigopt-server/config:ro
       - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
       - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
@@ -237,6 +239,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
+      - *pg-sock-volume
       - "./artifacts/tls:/etc/ssl/sigopt:ro"
       - "./config:/sigopt-server/config:ro"
       - "./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro"
@@ -384,6 +387,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
+      - *pg-sock-volume
       - ./artifacts/tls:/etc/ssl/sigopt:ro
       - .pyrepl.py:/sigopt-server/.pyrepl.py:ro
       - ./config:/sigopt-server/config:ro
@@ -535,8 +539,8 @@ services:
       <<: *logging
     image: "postgres:${POSTGRES_VERSION}"
     volumes:
-      - pgvolume:/var/lib/postgresql/data
-      - pg-var:/var/run/postgresql
+      - *pg-sock-volume
+      - pg-data:/var/lib/postgresql/data
     tmpfs:
       - /tmp
     read_only: true
@@ -667,8 +671,8 @@ services:
 volumes:
   minio-config: {}
   minio-data: {}
-  pg-var: {}
-  pgvolume: {}
+  pg-data: {}
+  pg-sock: {}
   server-bin: {}
   static-artifacts: {}
   test-routes: {}

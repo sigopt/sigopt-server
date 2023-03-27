@@ -1,9 +1,4 @@
 {
-  "db": {
-    "query": {
-      "unix_sock": "/var/run/postgresql/.s.PGSQL.5432"
-    }
-  },
   "extends": "test.json",
   "model": {
     "random_padding_suggestions": 0

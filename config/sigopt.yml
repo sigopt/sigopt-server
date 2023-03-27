@@ -8,12 +8,6 @@ clients:
       name: Default Owner
       password: owner
   enabled: true
-db:
-  host: postgres
-  query:
-    unix_sock: /var/run/postgresql/.s.PGSQL.5432
-  ssl: false
-  user: produser
 extends: defaults.json
 redis:
   host: redis
