@@ -259,7 +259,7 @@ class ExpectedParallelImprovement(AcquisitionFunction):
       return multivariate_normal.cdf(
         x=upper,
         mean=None,
-        cov=cov_matrix
+        cov=cov_matrix,
         maxpts=20000 * upper.size,
         releps=1.0e-9,
         abseps=1.0e-9,
