@@ -15,10 +15,10 @@ class TestExperimentPriors(UnitTestsBase):
   def test_priors_basic(self):
     meta = self.get_experiment_feature("priors")
     e = self.conn.experiments().create(**meta)
-    e.parameters[0].prior is not None
-    e.parameters[0].prior.name == meta["parameters"][0]["prior"]["name"]
-    e.parameters[2].prior is not None
-    e.parameters[2].prior.name == meta["parameters"][2]["prior"]["name"]
+    assert e.parameters[0].prior is not None
+    assert e.parameters[0].prior.name == meta["parameters"][0]["prior"]["name"]
+    assert e.parameters[2].prior is not None
+    assert e.parameters[2].prior.name == meta["parameters"][2]["prior"]["name"]
 
   def test_priors_non_double_forbidden(self):
     meta = dict(
