@@ -27,13 +27,16 @@ class TestMultitask(UnitTestsBase):
       observation_budget=10,
     )
 
-  @pytest.mark.parametrize("tasks", [
-    [0.1, 1],
-    [dict(name="cheap"), dict(name="expensive")],
-    [dict(name="cheap", cost=1)],
-    [dict(name="cheap", cost=-0.1), dict(name="expensive", cost=1)],
-    [dict(name="cheap", cost=1), dict(name="expensive", cost=2)],
-  ])
+  @pytest.mark.parametrize(
+    "tasks",
+    [
+      [0.1, 1],
+      [dict(name="cheap"), dict(name="expensive")],
+      [dict(name="cheap", cost=1)],
+      [dict(name="cheap", cost=-0.1), dict(name="expensive", cost=1)],
+      [dict(name="cheap", cost=1), dict(name="expensive", cost=2)],
+    ],
+  )
   def test_improper_tasks(self, conn, base_meta, tasks):
     experiment_meta = base_meta
     experiment_meta["tasks"] = tasks
