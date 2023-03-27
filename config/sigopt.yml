@@ -6,7 +6,6 @@ clients:
       email: owner@sigopt.ninja
       has_verified_email: true
       name: Default Owner
-      password: owner
   enabled: true
 db:
   host: postgres

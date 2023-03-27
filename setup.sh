@@ -48,6 +48,8 @@ else
   echo "Failed to start required services!"
   exit 1
 fi
+OWNER_PASSWORD="$(./tools/secure/generate_random_string.sh 16)"
+export OWNER_PASSWORD
 echo "Initializing database..."
 if docker-compose --file=docker-compose.yml run --rm createdb; then 
   echo "Database ready."
@@ -71,3 +73,6 @@ else
 fi
 
 echo "Setup complete. You are now ready to start SigOpt Server with ./start.sh"
+echo "First time log in credentials:"
+echo "  email: owner@sigopt.ninja"
+echo "  password: $OWNER_PASSWORD"
