@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import sys
 import pytest
+import random
 from sigopt import Connection
 
 from sigoptlite.driver import FIXED_EXPERIMENT_ID, LocalDriver
@@ -407,6 +408,8 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
       suggestion = connection.experiments(e.id).suggestions().create()
       assignments = dict(suggestion.assignments)
       values = [{"name": "y1", "value": i}, {"name": "y2", "value": 200 + i}]
+      random.shuffle(values)
+
       observation = self.create_observation_endpoint(
         connection=connection,
         experiment=e,
@@ -428,13 +431,13 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     observations = connection.experiments(e.id).observations().fetch()
     assert observations.count == num_observations
     assert len(observations.data) == num_observations
-    for obs, params, vals in zip(observations.data, assignments_list, values_list):
+    for i, (obs, params) in enumerate(zip(observations.data, assignments_list)):
       for p in params.keys():
         assert obs.assignments[p] == params[p]
-      assert obs.values[0].name == vals[0]["name"]
-      assert obs.values[0].value == vals[0]["value"]
-      assert obs.values[1].name == vals[1]["name"]
-      assert obs.values[1].value == vals[1]["value"]
+      assert obs.values[0].name == "y1"
+      assert obs.values[0].value == i
+      assert obs.values[1].name == "y2"
+      assert obs.values[1].value == 200 + i
 
   def test_create_observation_with_too_few_values(self, connection):
     experiment_meta = self.get_experiment_feature("multimetric")
