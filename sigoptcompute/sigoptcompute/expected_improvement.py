@@ -256,7 +256,14 @@ class ExpectedParallelImprovement(AcquisitionFunction):
       if upper.size == 1:
         return norm.cdf(upper[0], 0, numpy.sqrt(cov_matrix[0, 0]))
 
-      return multivariate_normal.cdf(x=upper, mean=None, cov=cov_matrix)
+      return multivariate_normal.cdf(
+        x=upper,
+        mean=None,
+        cov=cov_matrix
+        maxpts=20000 * upper.size,
+        releps=1.0e-9,
+        abseps=1.0e-9,
+      )
 
     # Calculation of outer sum (from Proposition 2, equation 3)
     # Although the paper describes a minimization, we can achieve a maximization by inverting m_k and b_k, and then the
