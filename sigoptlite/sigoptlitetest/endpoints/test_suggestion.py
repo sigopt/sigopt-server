@@ -4,6 +4,7 @@
 import numpy
 import pytest
 from sigopt import Connection
+from sigopt.exception import SigOptException
 
 from sigoptlite.driver import LocalDriver
 from sigoptlite.models import FIXED_EXPERIMENT_ID
@@ -38,7 +39,7 @@ class TestSuggestionCreate(UnitTestsBase):
   def test_wrong_suggestion_id(self, experiment_meta):
     e = self.conn.experiments().create(**experiment_meta)
     s = self.conn.experiments(e.id).suggestions().create()
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments(e.id).observations().create(
         suggestion=s.id + "1",
         values=[{"name": "y1", "value": 1}],
@@ -48,7 +49,7 @@ class TestSuggestionCreate(UnitTestsBase):
 
   def test_suggestion_create_before_experiment_create(self):
     new_conn = Connection(driver=LocalDriver)
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       new_conn.experiments(FIXED_EXPERIMENT_ID).suggestions().create()
     msg = "Need to create an experiment first before creating a suggestion"
     assert exception_info.value.args[0] == msg
