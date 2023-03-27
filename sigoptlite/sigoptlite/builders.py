@@ -597,6 +597,10 @@ class LocalParameterBuilder(BuilderBase):
     if parameter.has_prior:
       if not parameter.is_double:
         raise ValueError("Prior only applies to parameters type of double")
+      if parameter.grid:
+        raise ValueError("Grid parameters cannot have priors")
+      if parameter.has_transformation:
+        raise ValueError("Parameters with log transformation cannot have priors")
       if parameter.prior.is_normal:
         if not parameter.bounds.is_value_within(parameter.prior.mean):
           raise ValueError(f"parameter.prior.mean {parameter.prior.mean} must be within bounds {parameter.bounds}")
