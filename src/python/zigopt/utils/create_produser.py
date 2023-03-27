@@ -64,7 +64,7 @@ def make_produser(host, port, database, query, produser, produser_password, supe
 
 def execute_create_user_query(conn, cursor, user, password, roles=""):
   if password is None:
-    query_string = f"CREATE ROLE {user} {roles}"
+    query_string = f"CREATE ROLE {user} WITH LOGIN {roles}"
   else:
     psql_password = password.replace("'", "''")
     query_string = f"CREATE ROLE {user} WITH LOGIN PASSWORD '{psql_password}' {roles}"
