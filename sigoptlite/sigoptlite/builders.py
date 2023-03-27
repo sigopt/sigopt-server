@@ -730,7 +730,7 @@ class LocalObservationBuilder(BuilderBase):
     values = input_dict.get("values")
     if values:
       input_dict["metric_evaluations"] = {me.name: me for me in values}
-      del input_dict["values"]
+    input_dict.pop("values", None)
     cls.set_object(input_dict, "task", LocalTaskBuilder)
     return LocalObservation(**input_dict)
 
