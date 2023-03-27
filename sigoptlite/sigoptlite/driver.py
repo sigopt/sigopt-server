@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from sigoptlite.best_assignments import BestAssignmentsLogger
 from sigoptlite.broker import Broker
-from sigoptlite.builders import LocalExperimentBuilder, LocalObservationBuilder
+from sigoptlite.builders import LocalExperimentBuilder
 from sigoptlite.models import FIXED_EXPERIMENT_ID, dataclass_to_dict
 
 

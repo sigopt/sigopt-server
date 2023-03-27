@@ -255,7 +255,7 @@ class BuilderBase(object):
     try:
       cls.validate_input_dict(input_dict)
     except AssertionError as e:
-      raise ValueError(f"Invalid input for {cls.__name__} {e}")
+      raise ValueError(f'Invalid input for {cls.__name__} {e}') from e
 
     local_object = cls.create_object(**input_dict)
     cls.validate_object(local_object, **kwargs)

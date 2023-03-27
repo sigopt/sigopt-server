@@ -1,13 +1,15 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-import sys
-import pytest
 import random
+import sys
+
+import pytest
 from sigopt import Connection
 
 from sigoptlite.driver import FIXED_EXPERIMENT_ID, LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
+
 
 DEFAULT_MULTIPLE_OBSERVATION_VALUES = [
   {"name": "y1", "value": 1.1, "value_stddev": 0.1},
