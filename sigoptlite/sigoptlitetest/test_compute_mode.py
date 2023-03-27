@@ -5,7 +5,6 @@ import mock
 import numpy.random
 import pytest
 from sigopt import Connection
-from sigopt.exception import SigOptException
 
 from sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
 from sigoptcompute.views.rest.search_next_points import SearchNextPoints
@@ -40,7 +39,7 @@ class TestComputeMode(object):
       )
 
   def test_wrong_flag(self):
-    with pytest.raises(SigOptException):
+    with pytest.raises(ValueError):
       # pylint: disable=unexpected-keyword-arg
       Connection(driver=LocalDriver, compute_mode="not_valid")
 
