@@ -18,6 +18,7 @@ services:
       - ./screenshots/failure:/sigopt-server/screenshots/failure
       - ./failure_console_logs:/sigopt-server/failure_console_logs
       - /dev/shm:/dev/shm
+      - &pg-sock-volume pg-sock:/var/run/postgresql
   smtp:
     restart: on-failure:5
     command:
@@ -56,6 +57,7 @@ services:
       - "no-new-privileges:true"
     volumes:
       - *sigopt-config-volume
+      - *pg-sock-volume
   nginx:
     restart: on-failure:5
     image: "sigopt/nginx:${TAG}"
@@ -99,6 +101,7 @@ services:
       - "sigopt_server_version=git:$TAG"
     volumes:
       - *sigopt-config-volume
+      - *pg-sock-volume
     tmpfs:
       - /tmp
     networks:
@@ -167,6 +170,7 @@ services:
     environment: *zigopt_environment
     volumes:
       - *sigopt-config-volume
+      - *pg-sock-volume
     deploy:
       resources:
         limits:
@@ -199,6 +203,7 @@ services:
     environment: *zigopt_environment
     volumes:
       - *sigopt-config-volume
+      - *pg-sock-volume
     deploy:
       resources:
         limits:
@@ -215,14 +220,13 @@ services:
     restart: on-failure:5
     image: "postgres:${POSTGRES_VERSION}"
     volumes:
+      - *pg-sock-volume
       - pg-data:/var/lib/postgresql/data
       - pg-var:/var/run/postgresql
     tmpfs:
       - /tmp
+    network_mode: none
     read_only: true
-    ports:
-      - target: 5432
-        host_ip: 127.0.0.1
     deploy:
       resources:
         limits:
@@ -332,5 +336,6 @@ services:
 
 volumes:
   minio-data: {}
-  pg-var: {}
   pg-data: {}
+  pg-sock: {}
+  pg-var: {}
