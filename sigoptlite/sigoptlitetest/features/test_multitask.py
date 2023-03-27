@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from sigopt import Connection
+from sigopt.exception import SigOptException
 
 from sigoptlite.driver import LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
@@ -43,14 +44,14 @@ class TestMultitask(UnitTestsBase):
     experiment_meta = base_meta
     experiment_meta["tasks"] = tasks
 
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       conn.experiments().create(**experiment_meta)
 
   def test_improper_task_costs(self, conn, base_meta):
     experiment_meta = base_meta
     experiment_meta["tasks"] = [dict(name="cheap", cost=-0.1), dict(name="expensive", cost=1)]
 
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       conn.experiments().create(**experiment_meta)
     msg = ".cost must be greather than 0"
     assert exception_info.value.args[0] == msg
@@ -58,7 +59,7 @@ class TestMultitask(UnitTestsBase):
   def test_single_task_forbidden(self, conn, base_meta):
     experiment_meta = base_meta
     experiment_meta["tasks"] = [dict(name="cheap", cost=1)]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       conn.experiments().create(**experiment_meta)
     msg = "For multitask sigoptlite experiment, at least 2 tasks must be present"
     assert exception_info.value.args[0] == msg
@@ -66,7 +67,7 @@ class TestMultitask(UnitTestsBase):
   def test_multitask_no_observation_budget_forbidden(self, conn):
     experiment_meta = self.get_experiment_feature("multitask")
     experiment_meta.pop("observation_budget")
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       conn.experiments().create(**experiment_meta)
     msg = "observation_budget is required for a sigoptlite experiment with tasks (multitask)"
     assert exception_info.value.args[0] == msg
