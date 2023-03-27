@@ -543,10 +543,8 @@ services:
       - pg-data:/var/lib/postgresql/data
     tmpfs:
       - /tmp
+    network_mode: none
     read_only: true
-    ports:
-      - target: 5432
-        host_ip: 127.0.0.1
     deploy:
       resources:
         limits:
