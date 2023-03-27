@@ -8,7 +8,7 @@ DEVELOPMENT_IMAGES = \
 	nginx \
 	node-development \
 	python-development \
-	test-runner-web
+	test-runner
 
 RUN_IMAGES = \
 	nginx \
