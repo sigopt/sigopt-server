@@ -116,7 +116,7 @@ commands:
           description: PostgreSQL
           service: postgres
       - run: ./ci/compose.sh create createdb
-      - run: ./ci/compose.sh run createdb
+      - run: ./ci/compose.sh run --rm createdb -- --fake-data
       - start-service:
           description: Redis
           service: redis
