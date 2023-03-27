@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from sigopt import Connection
+from sigopt.exception import SigOptException
 
 from sigoptlite.driver import FIXED_EXPERIMENT_ID, LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
@@ -17,7 +18,7 @@ class TestObservationCreate(UnitTestsBase):
 
   def test_make_observation_fails_without_assignments_or_id(self, experiment_meta):
     e = self.conn.experiments().create(**experiment_meta)
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments(e.id).observations().create()
     msg = "Need to pass in an assignments dictionary or a suggestion id to create an observation"
     assert exception_info.value.args[0] == msg
@@ -64,14 +65,14 @@ class TestObservationCreate(UnitTestsBase):
 
   def test_observation_create_before_experiment_create(self):
     new_conn = Connection(driver=LocalDriver)
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       new_conn.experiments(FIXED_EXPERIMENT_ID).observations().create()
     msg = "Need to create an experiment first before creating an observation"
     assert exception_info.value.args[0] == msg
 
   def test_observation_fetch_before_experiment_create(self):
     new_conn = Connection(driver=LocalDriver)
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       new_conn.experiments(FIXED_EXPERIMENT_ID).observations().fetch()
     msg = "Need to create an experiment first before fetching observations"
     assert exception_info.value.args[0] == msg
