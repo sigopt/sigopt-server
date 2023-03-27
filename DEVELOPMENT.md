@@ -147,7 +147,6 @@ Next, run:
 
 ```bash
 make update
-make build-debug-images
 ```
 
 ## Setting up services

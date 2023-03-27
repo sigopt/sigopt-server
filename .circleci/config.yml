@@ -90,7 +90,7 @@ commands:
       - run: python3 -mpip install docker python-dotenv
       - run: make submodules
       - run:
-          command: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
+          command: ./ci/compose.sh build --progress-plain << parameters.services >>
           no_output_timeout: 30m
       - sigopt-ninja-dns
     parameters:
@@ -400,8 +400,6 @@ jobs:
       - run: pyenv global 3.10.6
       - install-submodules
       - install-trivy
-      - run: python3 -mpip install docker python-dotenv
-      - run: python3 docker/image_builder.py nginx web zigopt --build-tag=scan
       - run: ./ci/trivy_scan_images.sh --ignore-unfixed
       - store_artifacts:
           path: artifacts/trivy/
@@ -439,7 +437,7 @@ jobs:
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - run: ./ci/create_development_tls_certs.sh
       - sigopt-ninja-dns
-      - run: make build-debug-images fix-db setup-cookiejar setup-filestorage
+      - run: make fix-db setup-cookiejar setup-filestorage
       - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
       - run:
           name: Development services

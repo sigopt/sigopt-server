@@ -13,9 +13,11 @@ else
   echo "Could not connect to Docker! It might not be running or you might not have permission to access the Docker socket."
   exit 1
 fi
-echo "build-docker-images"
-if ! ./scripts/compile/build_docker_images.sh; then
-  echo "Failed to build-docker-images. This is most likely because of a disk space error with your docker allocation. You can try running: docker system prune -a to clear up space."
+echo "Building docker images..."
+if docker-compose --file=docker-compose.yml build --progress=quiet api createdb nginx qworker qworker-analytics web-server; then
+  echo "Finished building docker images."
+else
+  echo "Failed to build docker images. This is most likely because of a disk space error with your docker allocation. You can try running: docker system prune -a to clear up space."
   exit 1
 fi
 
