@@ -43,11 +43,12 @@ services:
     security_opt:
       - "no-new-privileges:true"
   createdb:
-    command:
+    entrypoint:
       - python
       - -m
       - zigopt.utils.create_database
       - &config-file "$sigopt_server_config_file"
+    command:
       - --drop-tables
     image: "sigopt/zigopt:${TAG}"
     environment:
