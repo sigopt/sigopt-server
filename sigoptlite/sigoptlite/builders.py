@@ -233,6 +233,9 @@ def process_error(e, class_name):
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator == "minimum" else "less than"
     raise ValueError(f"{key} must be {greater_less} or equal to {e.validator_value}")
+  elif e.validator == "exclusiveMinimum":
+    key = get_path_string(e.path)
+    raise ValueError(f"{key} must be greather than {e.validator_value}")
   elif e.validator in ["minLength", "maxLength", "minItems", "maxItems"]:
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator in ["minLength", "minItems"] else "less than"
@@ -408,14 +411,14 @@ class LocalExperimentBuilder(BuilderBase):
   @classmethod
   def validate_tasks(cls, experiment):
     if len(experiment.tasks) < 2:
-      raise ValueError(f"For multitask {cls.cls_name}, at least 2 tasks must be present.")
+      raise ValueError(f"For multitask {cls.cls_name}, at least 2 tasks must be present")
     costs = [t.cost for t in experiment.tasks]
     num_distinct_task = cls.get_num_distinct_elements([t.name for t in experiment.tasks])
     num_distinct_costs = cls.get_num_distinct_elements(costs)
     if not num_distinct_task == len(experiment.tasks):
       raise ValueError(f"For multitask {cls.cls_name}, all task names must be distinct")
     if not num_distinct_costs == len(experiment.tasks):
-      raise ValueError(f"For multitask {cls.cls_name}, all costs names must be distinct")
+      raise ValueError(f"For multitask {cls.cls_name}, all task costs must be distinct")
     if 1 not in costs:
       raise ValueError(f"For multitask {cls.cls_name}, exactly one task must have cost == 1 (none present).")
 

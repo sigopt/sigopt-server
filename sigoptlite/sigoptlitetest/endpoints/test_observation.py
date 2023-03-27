@@ -6,6 +6,7 @@ import sys
 
 import pytest
 from sigopt import Connection
+from sigopt.exception import SigOptException
 
 from sigoptlite.driver import FIXED_EXPERIMENT_ID, LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
@@ -57,7 +58,7 @@ class ObservationEndpointTest(UnitTestsBase):
 
 class TestObservationCreate(ObservationEndpointTest):
   def test_make_observation_fails_without_assignments_or_id(self, connection, experiment):
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       connection.experiments(experiment.id).observations().create()
     msg = "Need to pass in an assignments dictionary or a suggestion id to create an observation"
     assert exception_info.value.args[0] == msg
@@ -84,13 +85,13 @@ class TestObservationCreate(ObservationEndpointTest):
     assert observation.values[0].value_stddev == value_stddev
 
   def test_observation_create_before_experiment_create(self, connection):
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       connection.experiments(FIXED_EXPERIMENT_ID).observations().create()
     msg = "Need to create an experiment first before creating an observation"
     assert exception_info.value.args[0] == msg
 
   def test_observation_fetch_before_experiment_create(self, connection):
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       connection.experiments(FIXED_EXPERIMENT_ID).observations().fetch()
     msg = "Need to create an experiment first before fetching observations"
     assert exception_info.value.args[0] == msg
@@ -136,7 +137,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     ],
   )
   def test_create_invalid_suggestion(self, connection, experiment, observation_meta):
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(experiment.id).observations().create(**observation_meta)
     assert connection.experiments(experiment.id).observations().fetch().count == 0
 
@@ -165,11 +166,11 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     ],
   )
   def test_create_observation_invalid_assignments(self, connection, experiment, observation_meta):
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(experiment.id).observations().create(**observation_meta)
 
   def test_create_observation_with_suggestion_and_assignments(self, connection, experiment, suggestion):
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(experiment.id).observations().create(
         suggestion=suggestion.id,
         assignments=suggestion.assignments,
@@ -177,7 +178,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
       )
 
   def test_create_observation_unknown_keys(self, connection, experiment, suggestion):
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(experiment.id).observations().create(
         suggestion=suggestion.id,
         values=[{"name": "y1", "value": 2.6}],
@@ -185,7 +186,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
       )
 
   def test_create_observation_nested_unknown_keys(self, connection, experiment, suggestion):
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(experiment.id).observations().create(
         suggestion=suggestion.id,
         values=[{"name": "y1", "value": 2.6, "foo": "bar"}],
@@ -205,7 +206,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     assert observation.failed is True
 
   def test_create_observation_with_failure_with_value(self, connection, experiment, suggestion):
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(experiment.id).observations().create(
         values=[{"name": "y1", "value": 123}],
         suggestion=suggestion.id,
@@ -230,7 +231,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
   def test_create_observation_without_failure_or_values(
     self, connection, experiment, suggestion, failed_params, values_params
   ):
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(experiment.id).observations().create(
         suggestion=suggestion.id,
         **failed_params,
@@ -319,7 +320,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     ]
     e = connection.experiments().create(**experiment_meta)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         assignments=dict(x1=-1),
         values=[{"name": "y1", "value": 1.23}],
@@ -353,7 +354,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     experiment_meta = self.get_experiment_feature("default")
     e = connection.experiments().create(**experiment_meta)
     assignments = {"d1": -100, "i1": 100, "c1": "e", "l1": 1e-05, "g1": 0.1}
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         assignments=assignments,
         values=[{"name": "y1", "value": 0}],
@@ -363,7 +364,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     experiment_meta = self.get_experiment_feature("default")
     e = connection.experiments().create(**experiment_meta)
     assignments = {"d1": -100, "i1": 100, "c1": "a", "l1": 1e-05, "g1": -0.1}
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         assignments=assignments,
         values=[{"name": "y1", "value": 0}],
@@ -380,7 +381,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     )
 
     bad_assignments = {"a": 11, "b": -18, "x": "21"}
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         assignments=bad_assignments,
         values=[{"name": "metric", "value": 0}],
@@ -445,7 +446,7 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     experiment_meta = self.get_experiment_feature("multimetric")
     e = connection.experiments().create(**experiment_meta)
     suggestion = connection.experiments(e.id).suggestions().create()
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         values=[{"name": "y1", "value": 6}],
         suggestion=suggestion.id,
@@ -455,7 +456,7 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     experiment_meta = self.get_experiment_feature("multimetric")
     e = connection.experiments().create(**experiment_meta)
     suggestion = connection.experiments(e.id).suggestions().create()
-    with pytest.raises(ValueError) as msg:
+    with pytest.raises(SigOptException) as msg:
       connection.experiments(e.id).observations().create(
         values=[1, 2],
         suggestion=suggestion.id,
@@ -478,7 +479,7 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     experiment_meta = self.get_experiment_feature("multimetric")
     e = connection.experiments().create(**experiment_meta)
     suggestion = connection.experiments(e.id).suggestions().create()
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         suggestion=suggestion.id, values=[{"name": "y1", "value": 1.1}, {"name": "y1", "value": 1.1}]
       )
@@ -487,7 +488,7 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     experiment_meta = self.get_experiment_feature("multimetric")
     e = connection.experiments().create(**experiment_meta)
     suggestion = connection.experiments(e.id).suggestions().create()
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         suggestion=suggestion.id,
         values=[{"name": "y1", "value": 1.0}, {"name": "y2", "value": 1.0}, {"name": "y3", "value": 1.0}],
@@ -497,7 +498,7 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     experiment_meta = self.get_experiment_feature("multimetric")
     e = connection.experiments().create(**experiment_meta)
     suggestion = connection.experiments(e.id).suggestions().create()
-    with pytest.raises(ValueError):
+    with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
         suggestion=suggestion.id, values=[{"name": "value2", "value": 1.0}, {"name": "value3", "value": 1.0}]
       )

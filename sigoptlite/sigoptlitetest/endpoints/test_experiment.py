@@ -4,6 +4,7 @@
 import numpy
 import pytest
 from sigopt import Connection
+from sigopt.exception import SigOptException
 
 from sigoptlite.driver import LocalDriver
 from sigoptlite.models import FIXED_EXPERIMENT_ID
@@ -85,42 +86,42 @@ class TestExperiment(UnitTestsBase):
 
   def test_experiment_missing_parameters(self, experiment_meta):
     del experiment_meta["parameters"]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     msg = "Missing required json key `parameters` in sigoptlite experiment:"
     assert exception_info.value.args[0].startswith(msg)
 
   def test_experiment_parameters_empty_list(self, experiment_meta):
     experiment_meta["parameters"] = []
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     msg = "The length of .parameters must be greater than or equal to 1"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_missing_metrics(self, experiment_meta):
     del experiment_meta["metrics"]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     msg = "Missing required json key `metrics` in sigoptlite experiment:"
     assert exception_info.value.args[0].startswith(msg)
 
   def test_experiment_metrics_empty_list(self, experiment_meta):
     experiment_meta["metrics"] = []
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     msg = "The length of .metrics must be greater than or equal to 1"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_bad_experiment_name_type(self, experiment_meta):
     experiment_meta["name"] = 12
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     msg = "Invalid type for .name, expected type string"
     assert exception_info.value.args[0] == msg
 
   def test_experiment_fetch_before_create(self):
     new_conn = Connection(driver=LocalDriver)
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       new_conn.experiments(FIXED_EXPERIMENT_ID).fetch()
     msg = "Need to create an experiment first before fetching one"
     assert exception_info.value.args[0] == msg
@@ -135,7 +136,7 @@ class TestExperiment(UnitTestsBase):
   def test_experiment_parallel_bandwidth_incompatible(self, parallel_bandwidth):
     experiment_meta = self.get_experiment_feature("default")
     experiment_meta["parallel_bandwidth"] = parallel_bandwidth
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**experiment_meta)
     if parallel_bandwidth > 1:
       msg = "sigoptlite experiment must have parallel_bandwidth == 1"
