@@ -521,13 +521,13 @@ jobs:
     executor: sigopt-integration
     steps:
       - docker-test-setup
-        # - run: ./ci/compose.sh create createdb postgres redis
       - start-service:
           description: PostgreSQL
           service: postgres
       - run: sleep 5
       - run: ./ci/compose.sh create createdb
       - run: ./ci/compose.sh run createdb
+      - run: ./ci/compose.sh create qworker qworker-analytics
       - run: ./ci/worker_health_fail.sh
       - run: ./ci/compose.sh create redis
       - start-service:
