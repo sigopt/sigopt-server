@@ -21,7 +21,7 @@ mako==1.2.2
 numpy==1.22.4
 pg8000==1.15.2
 protobuf==3.20.2
-pytz==2022.1
+pytz==2023.2
 qmcpy==1.2
 redis==3.3.8
 scikit-learn==1.1.1
