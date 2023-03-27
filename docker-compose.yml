@@ -49,7 +49,6 @@ services:
       - zigopt.utils.create_database
       - &config-file "$sigopt_server_config_file"
       - --drop-tables
-      - --fake-data
     image: "sigopt/zigopt:${TAG}"
     environment:
       - "sigopt.clients.client.user.password=$OWNER_PASSWORD"
