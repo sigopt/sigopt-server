@@ -539,7 +539,6 @@ jobs:
       - run: ./ci/compose.sh create createdb
       - run: ./ci/compose.sh run createdb
       - run: ./ci/worker_health_fail.sh
-      - run: ./ci/compose.sh create redis
       - start-service:
           description: Redis
           service: redis
