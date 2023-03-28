@@ -521,5 +521,5 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
       connection.experiments(e.id).observations().create(
         suggestion=suggestion.id, values=[{"name": "value2", "value": 1.0}, {"name": "value3", "value": 1.0}]
       )
-    msg = "values must have metric names defined in experiment:"
+    msg = "Values must have metric names defined in experiment:"
     assert msg in exception_info.value.args[0]
