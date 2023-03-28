@@ -72,12 +72,12 @@ To support easy use of SigOpt-Lite, the calling sequences involving the `Connect
 
 Sigopt-Lite functionality matches the core module of our hosted SigOpt platform, but only certain [API endpoints](https://docs.sigopt.com/core-module-api-references/api-endpoints) are available.
 
-| Objects          | Endpoints      |
-| ---------------- | -------------- |
+| Objects          | Endpoints                                                                                                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Experiment       | [Create](https://docs.sigopt.com/core-module-api-references/api-endpoints/experiment-create), [Detail](https://docs.sigopt.com/core-module-api-references/api-endpoints/experiment-detail) |
-| Suggestion       | [Create](https://docs.sigopt.com/core-module-api-references/api-endpoints/suggestion-create)         |
+| Suggestion       | [Create](https://docs.sigopt.com/core-module-api-references/api-endpoints/suggestion-create)                                                                                               |
 | Observation      | [Create](https://docs.sigopt.com/core-module-api-references/api-endpoints/observation-create), [List](https://docs.sigopt.com/core-module-api-references/api-endpoints/observation-list)   |
-| Best Assignments | [Detail](https://docs.sigopt.com/core-module-api-references/api-endpoints/experiment-best-assignments)         |
+| Best Assignments | [Detail](https://docs.sigopt.com/core-module-api-references/api-endpoints/experiment-best-assignments)                                                                                     |
 
 ## SigOpt-Lite Behavior Limitations
 
@@ -88,7 +88,6 @@ The following behavior limitations are strictly enforced in SigOpt-Lite.
 - SigOpt-Lite can only run one Experiment at a time: the Experiment ID for the sole experiment is `"-1"`.
 - SigOpt-Lite supports no [parallelism](https://docs.sigopt.com/advanced_experimentation/parallelism): an observation must be reported for the open suggestion before creating another unique suggestion. Parallel suggestions can be accessed through an account at [sigopt.com](https://app.sigopt.com/signup) or through the open source SigOpt-Server.
 - SigOpt-Lite does not support [Grid Searh](https://docs.sigopt.com/intro/main-concepts/random_search#grid-search).
-
 
 ### Recommended Limitations
 
