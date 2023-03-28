@@ -316,13 +316,9 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
         values=[{"name": "y1", "value": 1.23}],
       )
 
-    observation = (
-      connection.experiments(e.id)
-      .observations()
-      .create(
-        assignments=dict(x1=0.5),
-        values=[{"name": "y1", "value": 1.23}],
-      )
+    observation = connection.experiments(e.id).observations().create(
+      assignments=dict(x1=0.5),
+      values=[{"name": "y1", "value": 1.23}],
     )
     assert observation is not None
 
