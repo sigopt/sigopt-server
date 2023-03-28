@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from flaky import flaky
-from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
+from libsigopt.aux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 from zigopt.common.lists import *
 from zigopt.experiment.model import Experiment

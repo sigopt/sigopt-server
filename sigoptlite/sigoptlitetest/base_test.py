@@ -5,7 +5,7 @@ import copy
 
 import numpy
 import pytest
-from libsigopt.sigoptaux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME, INT_EXPERIMENT_PARAMETER_NAME
+from libsigopt.aux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME, INT_EXPERIMENT_PARAMETER_NAME
 
 from sigoptlite.builders import LocalObservationBuilder
 from sigoptlite.models import LocalSuggestion

@@ -4,7 +4,7 @@
 import random
 
 import pytest
-from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
+from libsigopt.aux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp

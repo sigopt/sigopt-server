@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 """Constants for ``sigopt-server`` experiment components."""
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,

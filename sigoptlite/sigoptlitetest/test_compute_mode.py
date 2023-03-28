@@ -4,10 +4,10 @@
 import mock
 import numpy.random
 import pytest
-from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from libsigopt.sigoptcompute.views.rest.search_next_points import SearchNextPoints
-from libsigopt.sigoptcompute.views.rest.spe_next_points import SPENextPoints
-from libsigopt.sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
+from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
+from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
+from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 from sigopt import Connection
 
 from sigoptlite.driver import LocalDriver

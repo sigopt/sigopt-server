@@ -4,7 +4,7 @@
 import random
 
 import pytest
-from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS
+from libsigopt.aux.constant import DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS
 from mock import Mock, patch
 
 from zigopt.observation.model import Observation, ObservationDataProxy

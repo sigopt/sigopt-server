@@ -3,18 +3,18 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.sigoptaux.adapter_info_containers import MetricsInfo
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import MetricsInfo
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   PARALLEL_CONSTANT_LIAR,
   PARALLEL_QEI,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptcompute.misc.constant import CONSTANT_LIAR_MIN, NONZERO_MEAN_CONSTANT_MEAN_TYPE
-from libsigopt.sigoptcompute.misc.data_containers import MultiMetricMidpointInfo, SingleMetricMidpointInfo
-from libsigopt.sigoptcompute.views.view import (
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.misc.constant import CONSTANT_LIAR_MIN, NONZERO_MEAN_CONSTANT_MEAN_TYPE
+from libsigopt.compute.misc.data_containers import MultiMetricMidpointInfo, SingleMetricMidpointInfo
+from libsigopt.compute.views.view import (
   _UNSET,
   GPView,
   View,

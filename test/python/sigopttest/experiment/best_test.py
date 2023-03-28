@@ -4,7 +4,7 @@
 import random
 
 import pytest
-from libsigopt.sigoptaux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
+from libsigopt.aux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
 from mock import Mock
 
 from zigopt.experiment.best import ExperimentBestObservationService

@@ -4,7 +4,7 @@
 """Test the Python implementation of Knowledge Gradient."""
 
 import numpy
-from libsigopt.sigoptcompute.probabilistic_failures import (
+from libsigopt.compute.probabilistic_failures import (
   POSITIVE_EXPONENT_CAP,
   ProbabilisticFailures,
   ProbabilisticFailuresCDF,

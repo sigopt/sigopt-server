@@ -6,15 +6,15 @@ import copy
 import numpy
 import pytest
 from flaky import flaky
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain, ContinuousDomain, FixedIndicesOnContinuousDomain
-from libsigopt.sigoptaux.geometry_utils import find_interior_point
+from libsigopt.aux.domain import CategoricalDomain, ContinuousDomain, FixedIndicesOnContinuousDomain
+from libsigopt.aux.geometry_utils import find_interior_point
 from scipy.stats import beta, kstest, truncnorm
 
 from testaux.utils import form_random_constrained_categorical_domain, form_random_unconstrained_categorical_domain

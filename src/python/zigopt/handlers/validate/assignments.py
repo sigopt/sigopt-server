@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any
 
-from libsigopt.sigoptaux.constant import ConstraintType  # type: ignore
+from libsigopt.aux.constant import ConstraintType  # type: ignore
 
 from zigopt.experiment.constraints import human_readable_constraint  # type: ignore
 from zigopt.experiment.model import Experiment, ExperimentParameterProxy  # type: ignore

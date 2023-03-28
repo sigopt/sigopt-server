@@ -299,7 +299,7 @@ class SetComparisonRule(LintNodeRule):
 
 class NoImportZigoptRule(LintNodeRule):
   def check_node(self, node):
-    error_msg = "sigoptcompute files should not import zigopt; consider moving the shared piece to sigoptaux"
+    error_msg = "compute files should not import zigopt; consider moving the shared piece to aux"
     if isinstance(node, ast.Import):
       for name in node.names:
         if name.name == "zigopt":
@@ -326,16 +326,18 @@ def prepare_all_lint_node_rules(source, filename):
     SetComparisonRule(),
     TrailingCommaRule(),
   ]
-  if filename.startswith("sigoptcompute/"):
+  if filename.startswith("compute/"):
     rules.extend(
       [
         NoImportZigoptRule(),
       ]
     )
   if os.path.split(filename)[:3] == ["src", "python", "zigopt"]:
-    rules.extend([
-      AvoidDatetimeNowRule(),
-    ])
+    rules.extend(
+      [
+        AvoidDatetimeNowRule(),
+      ]
+    )
   return rules
 
 

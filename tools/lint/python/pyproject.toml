@@ -1,5 +1,5 @@
 [tool.black]
 line-length = 120
 
-include = '/(src/python/zigopt|test|sigoptaux|sigoptlite)/.*\.py$'
-force-exclude = '/sigoptcompute/'
+include = '/(src/python/zigopt|test|aux|sigoptlite)/.*\.py$'
+force-exclude = '/compute/'

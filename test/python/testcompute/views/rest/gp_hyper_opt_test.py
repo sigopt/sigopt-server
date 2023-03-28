@@ -5,15 +5,15 @@ from copy import deepcopy
 
 import numpy
 import pytest
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE, QUANTIZED_LENGTH_SCALE_LOWER_FACTOR
-from libsigopt.sigoptcompute.views.rest.gp_hyper_opt_multimetric import (
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE, QUANTIZED_LENGTH_SCALE_LOWER_FACTOR
+from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import (
   DEFAULT_HYPER_OPT_OPTIMIZER_INFO,
   GpHyperOptMultimetricView,
   form_one_hot_hyperparameter_domain,

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import datetime
 
-from libsigopt.sigoptaux.samplers import generate_uniform_random_points_rejection_sampling
+from libsigopt.aux.samplers import generate_uniform_random_points_rejection_sampling
 from sqlalchemy import func
 
 from zigopt.common import *

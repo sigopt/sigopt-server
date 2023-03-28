@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 
 from zigopt.common import *
 from zigopt.assignments.model import extract_array_for_computation_from_assignments

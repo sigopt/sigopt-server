@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 from scipy.spatial.distance import cdist
 
 from testaux.numerical_test_case import NumericalTestCase

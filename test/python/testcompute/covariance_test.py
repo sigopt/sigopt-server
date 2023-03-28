@@ -13,10 +13,10 @@ import itertools
 import numpy
 import pytest
 from flaky import flaky
-from libsigopt.sigoptcompute import covariance
-from libsigopt.sigoptcompute.covariance_base import DifferentiableCovariance, HyperparameterInvalidError
-from libsigopt.sigoptcompute.misc.constant import COVARIANCE_TYPES, TASK_LENGTH_LOWER_BOUND
-from libsigopt.sigoptcompute.multitask_covariance import MultitaskTensorCovariance
+from libsigopt.compute import covariance
+from libsigopt.compute.covariance_base import DifferentiableCovariance, HyperparameterInvalidError
+from libsigopt.compute.misc.constant import COVARIANCE_TYPES, TASK_LENGTH_LOWER_BOUND
+from libsigopt.compute.multitask_covariance import MultitaskTensorCovariance
 
 from testaux.numerical_test_case import NumericalTestCase
 

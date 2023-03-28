@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   DEFAULT_HYPERPARAMETER_ALPHA,
   DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE,
   DEFAULT_HYPERPARAMETER_TIKHONOV,

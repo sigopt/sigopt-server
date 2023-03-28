@@ -5,14 +5,14 @@ from unittest.mock import patch
 
 import numpy
 import pytest
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
-from libsigopt.sigoptcompute.misc.multimetric import *
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
+from libsigopt.compute.misc.multimetric import *
 
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import form_points_sampled
@@ -591,10 +591,10 @@ class TestMultimetricFiltering(NumericalTestCase):
   @pytest.mark.parametrize(
     "params",
     [
-      (CONVEX_COMBINATION, "libsigopt.sigoptcompute.misc.multimetric.filter_convex_combination_sum_of_gps", 123),
-      (EPSILON_CONSTRAINT, "libsigopt.sigoptcompute.misc.multimetric.filter_probabilistic_failure", 321),
-      (OPTIMIZING_ONE_METRIC, "libsigopt.sigoptcompute.misc.multimetric.filter_optimizing_one_metric", 222),
-      (NOT_MULTIMETRIC, "libsigopt.sigoptcompute.misc.multimetric.filter_not_multimetric", 333),
+      (CONVEX_COMBINATION, "libsigopt.compute.misc.multimetric.filter_convex_combination_sum_of_gps", 123),
+      (EPSILON_CONSTRAINT, "libsigopt.compute.misc.multimetric.filter_probabilistic_failure", 321),
+      (OPTIMIZING_ONE_METRIC, "libsigopt.compute.misc.multimetric.filter_optimizing_one_metric", 222),
+      (NOT_MULTIMETRIC, "libsigopt.compute.misc.multimetric.filter_not_multimetric", 333),
     ],
   )
   def test_filter_multimetric_points_sampled(self, params):

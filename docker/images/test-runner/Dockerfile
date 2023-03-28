@@ -127,7 +127,7 @@ RUN : \
 
 COPY libsigopt /sigopt-server/libsigopt
 
-ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server
+ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/compute:/sigopt-server
 
 RUN set -ex \
   ; python -c 'import zigopt.api.prod' \
@@ -140,7 +140,7 @@ COPY scripts /sigopt-server/scripts
 COPY test /sigopt-server/test
 COPY web /sigopt-server/web
 
-ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server/sigoptcompute:/sigopt-server
+ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server/compute:/sigopt-server
 
 RUN set -ex \
   ; mkdir -p \

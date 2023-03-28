@@ -4,7 +4,7 @@
 import copy
 from typing import Any, Optional
 
-from libsigopt.sigoptaux.constant import ConstraintType  # type: ignore
+from libsigopt.aux.constant import ConstraintType  # type: ignore
 
 from zigopt.experiment.constant import (  # type: ignore
   ALL_METRIC_OBJECTIVE_NAMES,

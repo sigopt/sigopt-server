@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Optional
 
-from libsigopt.sigoptaux.constant import ParameterPriorNames  # type: ignore
+from libsigopt.aux.constant import ParameterPriorNames  # type: ignore
 
 from zigopt.common import *
 from zigopt.experiment.constant import (  # type: ignore

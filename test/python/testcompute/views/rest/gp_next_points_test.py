@@ -4,7 +4,7 @@
 import numpy
 import pytest
 from flaky import flaky
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
@@ -12,11 +12,11 @@ from libsigopt.sigoptaux.constant import (
   PARALLEL_QEI,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
-from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
-from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import (
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
+from libsigopt.compute.misc.data_containers import HistoricalData
+from libsigopt.compute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.compute.views.rest.gp_next_points_categorical import (
   GpNextPointsCategorical,
   convert_from_one_hot,
   find_best_one_hot_neighbor_by_af,

@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.sigoptaux.adapter_info_containers import DomainInfo
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import DomainInfo
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,

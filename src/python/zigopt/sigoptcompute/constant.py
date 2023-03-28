@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-"""Constants for calling sigoptcompute; e.g., tolerances, variance, etc."""
+"""Constants for calling compute; e.g., tolerances, variance, etc."""
 
 # This quantity will be used in circumstances where there is insufficient data for reranking
 # This quantity is functionally irrelevant, so long as it is >sqrt(MINIMUM_VALUE_VAR) to prevent exclusion
@@ -9,9 +9,9 @@ DEFAULT_EI_WHEN_UNCOMPUTABLE = 1.0
 MINIMUM_SUCCESSES_TO_COMPUTE_EI = 3
 
 # Minimum length-scale for integers. We want to select a value where
-# sampling 1 and 2 would make values in (1, 2) uninteresting to sigoptcompute without
+# sampling 1 and 2 would make values in (1, 2) uninteresting to compute without
 # unduly influencing say further away points like 3, 4, 5, ...
-# Scale = 0.01 means behavior returns to the prior quickly and sigoptcompute will want to
+# Scale = 0.01 means behavior returns to the prior quickly and compute will want to
 # try useless points like 1.5. Scale = 10.0 would mean sampling 1 strongly
 # influences 2, eliminating the possibility of a (nearly) independent integer parameter.
 MINIMUM_INTEGER_LENGTH_SCALE = 0.5

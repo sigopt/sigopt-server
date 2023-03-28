@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.sigoptaux.samplers import *
+from libsigopt.aux.samplers import *
 
 
 class TestGridSampler(object):

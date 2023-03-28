@@ -4,15 +4,15 @@
 
 import numpy
 import pytest
-from libsigopt.sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from libsigopt.sigoptaux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
-from libsigopt.sigoptcompute.covariance import C2RadialMatern, SquareExponential
-from libsigopt.sigoptcompute.expected_improvement import AugmentedExpectedImprovement, ExpectedImprovement
-from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
-from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
-from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from libsigopt.sigoptcompute.multitask_covariance import MultitaskTensorCovariance
-from libsigopt.sigoptcompute.vectorized_optimizers import AdamOptimizer, DEOptimizer
+from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
+from libsigopt.aux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
+from libsigopt.compute.covariance import C2RadialMatern, SquareExponential
+from libsigopt.compute.expected_improvement import AugmentedExpectedImprovement, ExpectedImprovement
+from libsigopt.compute.gaussian_process import GaussianProcess
+from libsigopt.compute.misc.data_containers import HistoricalData
+from libsigopt.compute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.compute.multitask_covariance import MultitaskTensorCovariance
+from libsigopt.compute.vectorized_optimizers import AdamOptimizer, DEOptimizer
 
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.vectorized_optimizers_test import QuadraticFunction

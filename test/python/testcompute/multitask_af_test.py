@@ -5,19 +5,19 @@
 import numpy
 import pytest
 from flaky import flaky
-from libsigopt.sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptcompute.covariance import SquareExponential
-from libsigopt.sigoptcompute.expected_improvement import (
+from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.covariance import SquareExponential
+from libsigopt.compute.expected_improvement import (
   AugmentedExpectedImprovement,
   ExpectedImprovement,
   ExpectedImprovementWithFailures,
   ExpectedParallelImprovement,
 )
-from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
-from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
-from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from libsigopt.sigoptcompute.probabilistic_failures import ProbabilisticFailuresCDF
+from libsigopt.compute.gaussian_process import GaussianProcess
+from libsigopt.compute.misc.data_containers import HistoricalData
+from libsigopt.compute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.compute.probabilistic_failures import ProbabilisticFailuresCDF
 
 from testaux.numerical_test_case import NumericalTestCase
 

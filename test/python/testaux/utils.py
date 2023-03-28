@@ -2,13 +2,13 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.aux.domain import CategoricalDomain
 
 
 def form_random_unconstrained_categorical_domain(dim, categoricals_allowed=True, quantized_allowed=True):

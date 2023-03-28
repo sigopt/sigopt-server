@@ -5,7 +5,7 @@ import copy
 from http import HTTPStatus
 
 import pytest
-from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS, MAX_NUM_INT_CONSTRAINT_VARIABLES
+from libsigopt.aux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS, MAX_NUM_INT_CONSTRAINT_VARIABLES
 
 from zigopt.best_practices.constants import MAX_DIMENSION_WITH_CONSTRAINTS, MAX_OBSERVATIONS_WITH_CONSTRAINTS
 

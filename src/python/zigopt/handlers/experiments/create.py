@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from libsigopt.sigoptaux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
+from libsigopt.aux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
 
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication, client_token_authentication

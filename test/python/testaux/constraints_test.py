@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.sigoptaux.domain import DEFAULT_NUM_RANDOM_NEIGHBORS, MAX_GRID_DIM, CategoricalDomain
-from libsigopt.sigoptaux.geometry_utils import find_interior_point
+from libsigopt.aux.domain import DEFAULT_NUM_RANDOM_NEIGHBORS, MAX_GRID_DIM, CategoricalDomain
+from libsigopt.aux.geometry_utils import find_interior_point
 
 from testaux.numerical_test_case import NumericalTestCase
 

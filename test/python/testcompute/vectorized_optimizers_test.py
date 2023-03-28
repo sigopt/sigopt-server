@@ -5,15 +5,15 @@ from collections import namedtuple
 
 import numpy
 import pytest
-from libsigopt.sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptcompute.acquisition_function import AcquisitionFunction
-from libsigopt.sigoptcompute.covariance import SquareExponential
-from libsigopt.sigoptcompute.expected_improvement import ExpectedParallelImprovement
-from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
-from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
-from libsigopt.sigoptcompute.vectorized_optimizers import AdamOptimizer, DEOptimizer
-from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import form_augmented_domain
+from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.acquisition_function import AcquisitionFunction
+from libsigopt.compute.covariance import SquareExponential
+from libsigopt.compute.expected_improvement import ExpectedParallelImprovement
+from libsigopt.compute.gaussian_process import GaussianProcess
+from libsigopt.compute.misc.data_containers import HistoricalData
+from libsigopt.compute.vectorized_optimizers import AdamOptimizer, DEOptimizer
+from libsigopt.compute.views.rest.gp_next_points_categorical import form_augmented_domain
 
 from testaux.numerical_test_case import NumericalTestCase
 

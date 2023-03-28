@@ -3,15 +3,15 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
-from libsigopt.sigoptcompute.probabilistic_failures import ProbabilisticFailuresCDF
-from libsigopt.sigoptcompute.search import (
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.compute.probabilistic_failures import ProbabilisticFailuresCDF
+from libsigopt.compute.search import (
   ProbabilityOfImprovementSearch,
   convert_one_hot_to_search_hypercube_points,
   map_non_categorical_points_from_unit_hypercube,

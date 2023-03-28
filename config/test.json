@@ -39,6 +39,7 @@
     "format": "compact",
     "levels": {
       "": 30,
+      "compute.timing": 20,
       "flake8.checker": 50,
       "flake8.main.application": 50,
       "flake8.plugins.manager": 50,
@@ -50,8 +51,7 @@
       "sigopt.sql": 30,
       "sigopt.suggestions": 20,
       "sigopt.www": 10,
-      "sigopt.www.apiexception": 30,
-      "sigoptcompute.timing": 20
+      "sigopt.www.apiexception": 30
     },
     "warnings": "error"
   },

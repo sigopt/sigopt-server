@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from libsigopt.sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
+from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 
 class TestMultimetric(object):

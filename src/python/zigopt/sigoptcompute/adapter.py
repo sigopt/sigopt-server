@@ -4,8 +4,8 @@
 import sys
 
 import numpy
-from libsigopt.sigoptaux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DEFAULT_TASK_SELECTION_STRATEGY,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
@@ -18,13 +18,13 @@ from libsigopt.sigoptaux.constant import (
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from libsigopt.sigoptcompute.views.rest.gp_ei_categorical import GpEiCategoricalView
-from libsigopt.sigoptcompute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
-from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from libsigopt.sigoptcompute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
-from libsigopt.sigoptcompute.views.rest.search_next_points import SearchNextPoints
-from libsigopt.sigoptcompute.views.rest.spe_next_points import SPENextPoints
-from libsigopt.sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
+from libsigopt.compute.views.rest.gp_ei_categorical import GpEiCategoricalView
+from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
+from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
+from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
+from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 
 from zigopt.common import *
 from zigopt.assignments.model import MissingValueException, extract_array_for_computation_from_assignments
@@ -48,7 +48,7 @@ from zigopt.sigoptcompute.errors import SigoptComputeError
 from zigopt.suggestion.unprocessed.model import SuggestionDataProxy
 
 
-#: Maximum ``num_to_sample`` (= ``q``) to request from libsigopt.sigoptcompute when using the CL-max heuristic.
+#: Maximum ``num_to_sample`` (= ``q``) to request from libsigopt.compute when using the CL-max heuristic.
 #: Reasons for limiting: cost and incremental gain
 #: Cost: If C is the cost of obtaining 1 ``point_to_sample``, then to first-order,
 #: CL-max with ``q`` points costs ``q * C``.
@@ -60,7 +60,7 @@ MAXIMUM_NUMBER_OF_SUGGESTIONS_CL_MAX = 10
 
 
 class SCAdapter(Service):
-  def call_sigoptcompute(self, cls, view_input):
+  def call_compute(self, cls, view_input):
     try:
       return cls(view_input, logging_service=self.services.logging_service).call()
     except (ValueError, IndexError, numpy.linalg.LinAlgError) as e:
@@ -71,13 +71,13 @@ class SCAdapter(Service):
 
       self.services.exception_logger.process_soft_exception(
         exc_info=sys.exc_info(),
-        extra=dict(view_input=logging_view_input, sigoptcompute_class=cls.__name__),
+        extra=dict(view_input=logging_view_input, compute_class=cls.__name__),
       )
       raise SigoptComputeError(e) from e
 
   """
   Translates requests from zigopt (containing Experiments, Suggestions, Observations, etc),
-  to requests that sigoptcompute can understand (serialized numeric data).
+  to requests that compute can understand (serialized numeric data).
   """
   # NOTE - This has been modified for metric constraint experiments to keep the next points call
   # under ~120 seconds in the worst case scenario.
@@ -232,7 +232,7 @@ class SCAdapter(Service):
       "tag": self.supplement_tag_with_experiment_id(tag, experiment),
       "task_options": [t.cost for t in experiment.tasks],
     }
-    response = self.call_sigoptcompute(MultisolutionBestAssignments, view_input)
+    response = self.call_compute(MultisolutionBestAssignments, view_input)
     best_indices = [int(i) for i in response["best_indices"] if i is not None]
     return best_indices
 
@@ -281,7 +281,7 @@ class SCAdapter(Service):
       "metrics_info": self.form_metrics_info(experiment),
       "task_options": [t.cost for t in experiment.tasks],
     }
-    response = self.call_sigoptcompute(GpEiCategoricalView, view_input)
+    response = self.call_compute(GpEiCategoricalView, view_input)
     return [float(ei) for ei in response["expected_improvement"]]
 
   def spe_next_points(
@@ -304,7 +304,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    response = self.call_sigoptcompute(SPENextPoints, view_input)
+    response = self.call_compute(SPENextPoints, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = (float(cost) for cost in response["task_costs"]) if experiment.is_multitask else None
 
@@ -343,7 +343,7 @@ class SCAdapter(Service):
     assert view_input["metrics_info"].optimized_metrics_index == []
     assert not view_input["metrics_info"].has_optimization_metrics
 
-    response = self.call_sigoptcompute(SPESearchNextPoints, view_input)
+    response = self.call_compute(SPESearchNextPoints, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = None
 
@@ -407,7 +407,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    response = self.call_sigoptcompute(GpNextPointsCategorical, view_input)
+    response = self.call_compute(GpNextPointsCategorical, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = (float(cost) for cost in response["task_costs"]) if experiment.is_multitask else None
 
@@ -464,7 +464,7 @@ class SCAdapter(Service):
     assert view_input["metrics_info"].optimized_metrics_index == []
     assert not view_input["metrics_info"].has_optimization_metrics
 
-    response = self.call_sigoptcompute(SearchNextPoints, view_input)
+    response = self.call_compute(SearchNextPoints, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = None
 
@@ -532,7 +532,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    response = self.call_sigoptcompute(GpHyperOptMultimetricView, view_input)
+    response = self.call_compute(GpHyperOptMultimetricView, view_input)
     return response["hyperparameter_dict"]
 
   @staticmethod
@@ -670,27 +670,27 @@ class SCAdapter(Service):
           poly_indices: a list of lists which describes the polynomial to be used.
 
         These three options are provided for simplicity, so that the most common nonzero means
-        can be constructed within sigoptcompute rather than requiring an understanding here in zigopt.
+        can be constructed within compute rather than requiring an understanding here in zigopt.
 
         Option 1) Pass one of 'zero', 'constant', 'linear' for mean_type and None for poly_indices.
-          This will allow sigoptcompute to figure out the appropriate indices.
+          This will allow compute to figure out the appropriate indices.
         Option 2) Pass 'custom' for mean type and a list of lists of nonnegative integers for poly_indices
-          This will allow sigoptcompute to receive custom chosen indices.
+          This will allow compute to receive custom chosen indices.
           Example: In 3D if you wanted 1 + x^2 + xyz + yz^3 you use poly_indices=[[0,0,0], [2,0,0], [1,1,1], [0,1,3]]
         Option 3) Pass 'automatic' for mean_type and None for poly_indices.
-          This will cause sigoptcompute to automatically choose a (hopefully) good mean based on its logic.
+          This will cause compute to automatically choose a (hopefully) good mean based on its logic.
 
         The 'automatic' option (Option 3) will choose 'zero', 'constant' or 'linear' based on the
         number of points that have been sampled.  This logic is subject to change as we evolve SCAdapter
-        and Qworker and sigoptcompute itself.
+        and Qworker and compute itself.
 
-        :param nonzero_mean_choice: Used to determine what mean to command sigoptcompute to use
+        :param nonzero_mean_choice: Used to determine what mean to command compute to use
         :type nonzero_mean_choice: One of the options above
         :param num_points: number of points of historical data
         :type num_points: int >=0  (Could 0 actually happen?)
         :param dimension: number of dimensions for this data
         :type dimension: int >1
-        :return nonzero_mean_info: dict for json to interpret and send to sigoptcompute
+        :return nonzero_mean_info: dict for json to interpret and send to compute
         :rtype nonzero_mean_info: dict
         """
     if nonzero_mean_choice is None:
@@ -707,7 +707,7 @@ class SCAdapter(Service):
       elif not is_string(passed_mean_type):
         raise ValueError(f"mean_type should be a string, but passed: {type(passed_mean_type)}")
       elif not (passed_poly_indices is None or is_sequence(passed_poly_indices)):
-        raise ValueError("poly_indices must be a list of lists, or None to let sigoptcompute choose")
+        raise ValueError("poly_indices must be a list of lists, or None to let compute choose")
       else:
         if passed_mean_type == "custom":
           if passed_poly_indices is None:

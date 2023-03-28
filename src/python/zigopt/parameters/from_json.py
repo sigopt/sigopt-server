@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from libsigopt.sigoptaux.constant import ParameterPriorNames
+from libsigopt.aux.constant import ParameterPriorNames
 
 from zigopt.common import *
 from zigopt.experiment.constant import (

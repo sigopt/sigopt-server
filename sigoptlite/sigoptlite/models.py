@@ -4,7 +4,7 @@
 from dataclasses import asdict, dataclass, field
 from typing import List
 
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,

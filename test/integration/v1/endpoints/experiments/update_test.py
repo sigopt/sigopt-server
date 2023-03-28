@@ -5,7 +5,7 @@ from copy import deepcopy
 from http import HTTPStatus
 
 import pytest
-from libsigopt.sigoptaux.constant import ParameterTransformationNames
+from libsigopt.aux.constant import ParameterTransformationNames
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_epoch as get_unix_epoch

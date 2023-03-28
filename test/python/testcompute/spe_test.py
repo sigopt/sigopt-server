@@ -4,9 +4,9 @@
 
 import numpy
 import pytest
-from libsigopt.sigoptcompute.covariance import C0RadialMatern, C4RadialMatern
-from libsigopt.sigoptcompute.misc.multimetric import *
-from libsigopt.sigoptcompute.sigopt_parzen_estimator import (
+from libsigopt.compute.covariance import C0RadialMatern, C4RadialMatern
+from libsigopt.compute.misc.multimetric import *
+from libsigopt.compute.sigopt_parzen_estimator import (
   SPE_MINIMUM_UNFORGOTTEN_POINT_TOTAL,
   SigOptParzenEstimator,
   SPEInsufficientDataError,

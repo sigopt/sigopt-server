@@ -4,16 +4,16 @@
 import numpy
 import pytest
 from flaky import flaky
-from libsigopt.sigoptaux.adapter_info_containers import MetricsInfo
-from libsigopt.sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import MetricsInfo
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from libsigopt.sigoptaux.domain import CategoricalDomain
-from libsigopt.sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
-from libsigopt.sigoptcompute.views.rest.spe_next_points import (
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
+from libsigopt.compute.views.rest.spe_next_points import (
   COMPLETION_PHASE,
   INITIALIZATION_PHASE,
   SKO_PHASE,

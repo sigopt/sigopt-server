@@ -5,7 +5,7 @@ import copy
 from http import HTTPStatus
 
 import pytest
-from libsigopt.sigoptaux.constant import ParameterTransformationNames
+from libsigopt.aux.constant import ParameterTransformationNames
 
 from zigopt.experiment.constant import MAX_CONSTRAINT_METRICS, MAX_METRICS_ANY_STRATEGY, MetricStrategyNames
 from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH

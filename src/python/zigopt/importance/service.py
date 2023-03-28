@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.sigoptaux.importances import compute_importances
+from libsigopt.aux.importances import compute_importances
 
 from zigopt.common import *
 from zigopt.services.base import Service

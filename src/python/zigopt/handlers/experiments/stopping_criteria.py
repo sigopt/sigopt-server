@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
+from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 from zigopt.api.auth import api_token_authentication
 from zigopt.handlers.experiments.base import ExperimentHandler
@@ -59,7 +59,7 @@ class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
           possible_stagnation = old_frontier == current_frontier
       elif self.experiment.is_search:
         # TODO(RTL-106): consider a proper stopping criteria for search. It's not trivial to compute one
-        # without calling into sigoptcompute.
+        # without calling into compute.
         possible_stagnation = False
       else:
         lookback_points_in_order = sorted(reported_values[:-lookback_depth, 0])

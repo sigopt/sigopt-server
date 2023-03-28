@@ -10,12 +10,12 @@ It also tests the functions build_polynomial_matrix and build_grad_polynomial_te
 import numpy
 import pytest
 from flaky import flaky
-from libsigopt.sigoptaux.domain import ContinuousDomain
-from libsigopt.sigoptaux.samplers import generate_latin_hypercube_points
-from libsigopt.sigoptcompute.covariance import C4RadialMatern, SquareExponential
-from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
-from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
-from libsigopt.sigoptcompute.python_utils import (
+from libsigopt.aux.domain import ContinuousDomain
+from libsigopt.aux.samplers import generate_latin_hypercube_points
+from libsigopt.compute.covariance import C4RadialMatern, SquareExponential
+from libsigopt.compute.gaussian_process import GaussianProcess
+from libsigopt.compute.misc.data_containers import HistoricalData
+from libsigopt.compute.python_utils import (
   build_grad_polynomial_tensor,
   build_polynomial_matrix,
   compute_cholesky_for_gp_sampling,

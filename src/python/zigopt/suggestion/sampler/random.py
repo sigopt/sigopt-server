@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from dataclasses import asdict
 
-from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.aux.domain import CategoricalDomain
 
 from zigopt.common import *
 from zigopt.conditionals.util import convert_to_unconditioned_experiment
