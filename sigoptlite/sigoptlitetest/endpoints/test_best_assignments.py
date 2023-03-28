@@ -20,36 +20,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
   conn = Connection(driver=LocalDriver)
 
   @staticmethod
-  def generate_random_assignments(experiment_meta, num=DEFAULT_NUM_RANDOM):
-    temp_conn = Connection(driver=LocalDriver)
-    temp_meta = copy.deepcopy(experiment_meta)
-    temp_meta["type"] = "random"
-    e = temp_conn.experiments().create(**temp_meta)
-    assignments = []
-    for _ in range(num):
-      suggestion = temp_conn.experiments(e.id).suggestions().create()
-      temp_conn.experiments(e.id).observations().create(
-        suggestion=suggestion.id,
-        values=[dict(name=f"y{i+1}", value=1) for i in range(len(temp_meta["metrics"]))],
-      )
-      assignments.append(suggestion.assignments)
-    return assignments
-
-  @staticmethod
-  def create_values_in_simplex(on_boundary=False, num=DEFAULT_NUM_RANDOM):
-    y1_values = numpy.linspace(0, 1, num=num)
-    values_list = []
-    for y1 in y1_values:  # Create observations according to simplex in lower right quadrant
-      y2 = y1 - 1
-      alpha = 1 if on_boundary else numpy.random.uniform(low=0, high=0.8)
-      best_observation_values = [
-        dict(name="y1", value=alpha * y1),
-        dict(name="y2", value=alpha * y2),
-      ]
-      values_list.append(best_observation_values)
-    return values_list
-
-  @staticmethod
   def assert_best_assignments_are_sorted(experiment, best_assignments):
     metric_values = [best_assignment.values[0].value for best_assignment in best_assignments]
 
@@ -69,6 +39,36 @@ class TestBestAssignmentsLogger(UnitTestsBase):
       for seen_value, expected_value in zip(best.values, values):
         assert seen_value.name == expected_value["name"]
         assert seen_value.value == expected_value["value"]
+
+  @staticmethod
+  def create_values_in_simplex(on_boundary=False, num=DEFAULT_NUM_RANDOM):
+    y1_values = numpy.linspace(0, 1, num=num)
+    values_list = []
+    for y1 in y1_values:  # Create observations according to simplex in lower right quadrant
+      y2 = y1 - 1
+      alpha = 1 if on_boundary else numpy.random.uniform(low=0, high=0.8)
+      best_observation_values = [
+        dict(name="y1", value=alpha * y1),
+        dict(name="y2", value=alpha * y2),
+      ]
+      values_list.append(best_observation_values)
+    return values_list
+
+  @staticmethod
+  def generate_random_assignments(experiment_meta, num=DEFAULT_NUM_RANDOM):
+    temp_conn = Connection(driver=LocalDriver)
+    temp_meta = copy.deepcopy(experiment_meta)
+    temp_meta["type"] = "random"
+    e = temp_conn.experiments().create(**temp_meta)
+    assignments = []
+    for _ in range(num):
+      suggestion = temp_conn.experiments(e.id).suggestions().create()
+      temp_conn.experiments(e.id).observations().create(
+        suggestion=suggestion.id,
+        values=[dict(name=f"y{i+1}", value=1) for i in range(len(temp_meta["metrics"]))],
+      )
+      assignments.append(suggestion.assignments)
+    return assignments
 
   @pytest.mark.parametrize(
     "feature",
