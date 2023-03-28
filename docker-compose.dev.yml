@@ -40,7 +40,7 @@ services:
       - sleep
       - infinity
     environment:
-      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server/compute:/sigopt-server/aux:/sigopt-server
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server
       - HOST_PWD
       - REQUESTS_CA_BUNDLE=/sigopt-server/artifacts/tls/root-ca.crt
       - *api-tls-verify-env
@@ -53,12 +53,11 @@ services:
       - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
       - ./config:/sigopt-server/config:ro
       - ./failure_console_logs:/sigopt-server/failure_console_logs
-      - ./compute/compute:/sigopt-server/compute/compute:ro,cached
+      - ./libsigopt:/sigopt-server/libsigopt:ro,cached
       - ./pytest.ini:/sigopt-server/pytest.ini:ro
       - ./screenshots:/sigopt-server/screenshots
       - ./scratch:/sigopt-server/scratch:ro
       - ./scripts:/sigopt-server/scripts:cached
-      - ./aux/aux:/sigopt-server/aux/aux:ro,cached
       - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro,cached
       - ./test:/sigopt-server/test:delegated
       - ./web:/sigopt-server/web:ro,cached
@@ -103,15 +102,14 @@ services:
     logging:
       <<: *logging
     environment:
-      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/compute:/sigopt-server/aux:/sigopt-server
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
     image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
       - *pg-sock-volume
       - ./config:/sigopt-server/config:ro
-      - ./compute/compute:/sigopt-server/compute/compute:ro
-      - ./aux/aux:/sigopt-server/aux/aux:ro
+      - ./libsigopt:/sigopt-server/libsigopt:ro
       - ./scratch:/sigopt-server/scratch:ro
       - ./src/python:/sigopt-server/src/python:ro
     working_dir: /sigopt-server
@@ -152,7 +150,7 @@ services:
     command: &qworker_command
       - qworkerwatch.sh
     environment:
-      - &pythonpath PYTHONPATH=/sigopt-server/src/python:/sigopt-server/compute:/sigopt-server/aux:/sigopt-server
+      - &pythonpath PYTHONPATH=/sigopt-server/src/python:/sigopt-server
       - &config sigopt_server_config_file
       - &git_hash sigopt_server_version
       - MESSAGE_GROUP=optimization
@@ -162,8 +160,7 @@ services:
     volumes: &zigopt_volumes
       - *pg-sock-volume
       - ./config:/sigopt-server/config:ro
-      - ./compute/compute:/sigopt-server/compute/compute:ro
-      - ./aux/aux:/sigopt-server/aux/aux:ro
+      - ./libsigopt:/sigopt-server/libsigopt:ro
       - ./scratch:/sigopt-server/scratch:rw
       - ./src/python:/sigopt-server/src/python:ro
     working_dir: /sigopt-server
@@ -228,7 +225,7 @@ services:
       - -c
       - "while true; do python -m zigopt.api.main --debug --threaded; sleep 1; done"
     environment: &sigopt-server-env
-      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/compute:/sigopt-server/aux:/sigopt-server
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
       - sigopt_server_config_file
       - sigopt_server_version
       - SIGOPT_CONTAINER_ENV=x
@@ -242,8 +239,7 @@ services:
       - *pg-sock-volume
       - "./artifacts/tls:/etc/ssl/sigopt:ro"
       - "./config:/sigopt-server/config:ro"
-      - "./compute/compute:/sigopt-server/compute/compute:ro"
-      - "./aux/aux:/sigopt-server/aux/aux:ro"
+      - "./libsigopt:/sigopt-server/libsigopt:ro"
       - "./scratch:/sigopt-server/scratch:ro"
       - "./src/python:/sigopt-server/src/python:ro"
     working_dir: /sigopt-server
@@ -284,7 +280,7 @@ services:
       - "python -m zigopt.api.documentation"
       - docker cp documentation:/sigopt-server/scratch/swagger.json .
     environment:
-      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/compute:/sigopt-server/aux:/sigopt-server
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
       - sigopt_server_config_file
       - sigopt_server_version
       - SIGOPT_CONTAINER_ENV=x
@@ -296,8 +292,7 @@ services:
     volumes:
       - "./artifacts/tls:/etc/ssl/sigopt:ro"
       - "./config:/sigopt-server/config:ro"
-      - "./compute/compute:/sigopt-server/compute/compute:ro"
-      - "./aux/aux:/sigopt-server/aux/aux:ro"
+      - "./libsigopt:/sigopt-server/libsigopt:ro"
       - "./artifacts:/sigopt-server/artifacts:rw"
       - "./src/python:/sigopt-server/src/python:ro"
     working_dir: /sigopt-server
@@ -391,8 +386,7 @@ services:
       - ./artifacts/tls:/etc/ssl/sigopt:ro
       - .pyrepl.py:/sigopt-server/.pyrepl.py:ro
       - ./config:/sigopt-server/config:ro
-      - ./compute/compute:/sigopt-server/compute/compute:ro
-      - ./aux/aux:/sigopt-server/aux/aux:ro
+      - ./libsigopt:/sigopt-server/libsigopt:ro
       - ./scratch:/sigopt-server/scratch:ro
       - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro
     working_dir: /sigopt-server
@@ -508,12 +502,12 @@ services:
           python -m integration.utils.mail --verbose
         done
     environment:
-      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server/aux:/sigopt-server
+      - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server
     image: sigopt/python-development:latest
     volumes:
       - ./config:/sigopt-server/config:ro
+      - ./libsigopt:/sigopt-server/libsigopt:ro,cached
       - ./scratch:/sigopt-server/scratch:ro
-      - ./aux/aux:/sigopt-server/aux/aux:ro,cached
       - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro,cached
       - ./test/integration:/sigopt-server/test/integration:ro,cached
     working_dir: /sigopt-server
