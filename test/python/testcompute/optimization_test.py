@@ -70,7 +70,6 @@ class QuadraticFunction(ScipyOptimizable):
 
 
 class TestOptimizer(NumericalTestCase):
-
   @classmethod
   @pytest.fixture(autouse=True, scope="class")
   def base_setup(cls):
@@ -147,11 +146,7 @@ class TestOptimizer(NumericalTestCase):
   def test_slsqp_optimizer_constrained(self):
     domain_bounds = [[0, 1], [0, 1], [0, 1]]
     domain = ContinuousDomain(domain_bounds)
-    domain.set_constraint_list(
-      [
-        {"weights": numpy.array([-1, -1, -1]), "rhs": -1.6}
-      ]
-    )
+    domain.set_constraint_list([{"weights": numpy.array([-1, -1, -1]), "rhs": -1.6}])
     slsqp_optimizer = SLSQPOptimizer(domain, self.polynomial, DEFAULT_SLSQP_PARAMETERS)
 
     constrained_optimum_point = self.polynomial.optimum_point
@@ -180,11 +175,7 @@ class TestOptimizer(NumericalTestCase):
       self.assert_scalar_within_relative(gradient[i], 0.0, tolerance)
 
     # set global optimal to be outside of feasible region
-    domain.set_constraint_list(
-      [
-        {"weights": numpy.array([-1, -1, -1]), "rhs": -1}
-      ]
-    )
+    domain.set_constraint_list([{"weights": numpy.array([-1, -1, -1]), "rhs": -1}])
     slsqp_optimizer = SLSQPOptimizer(domain, self.polynomial, DEFAULT_SLSQP_PARAMETERS)
 
     constrained_optimum_point = numpy.full_like(self.polynomial.optimum_point, 1 / 3)
@@ -223,7 +214,7 @@ class TestOptimizer(NumericalTestCase):
     multistart_optimizer = MultistartOptimizer(slsqp_optimizer_okay, 0)
     test_best_point, _ = multistart_optimizer.optimize(selected_starts=points_with_opt)
     # This optimizer should be able to find the exact answer since it was included
-    for value in (test_best_point - self.polynomial.optimum_point):
+    for value in test_best_point - self.polynomial.optimum_point:
       assert value == 0.0
 
   @pytest.mark.parametrize(

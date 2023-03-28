@@ -674,12 +674,12 @@ class TestAugmentedDomain:
         {
           "weights": [1.0, 1.0, 0, -0.5, 0, 0, 0, 0, 0, 0, 0, 0],
           "rhs": 1.3,
-          "var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME
+          "var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME,
         },
         {
           "weights": [0, 0, 0, 0, 0, 0, 1.0, 1.0, 0, -0.5, 0, 0],
           "rhs": 1.3,
-          "var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME
+          "var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME,
         },
         {"weights": [0, 0, 0, 0, 1.0, 1.0, 0, 0, 0, 0, 0, 0], "rhs": 0.3, "var_type": INT_EXPERIMENT_PARAMETER_NAME},
         {"weights": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0], "rhs": 0.3, "var_type": INT_EXPERIMENT_PARAMETER_NAME},

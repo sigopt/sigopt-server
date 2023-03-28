@@ -41,9 +41,8 @@ class TestGaussianProcessSum(NumericalTestCase):
   def _base_setup(cls):
     dims = [7] * 10 if cls.fixed_dims else numpy.random.randint(2, 25, size=(10,))
     cls.domains = [
-      CategoricalDomain(
-        [{"var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME, "elements": [0, 1]}] * d
-      ).one_hot_domain for d in dims
+      CategoricalDomain([{"var_type": DOUBLE_EXPERIMENT_PARAMETER_NAME, "elements": [0, 1]}] * d).one_hot_domain
+      for d in dims
     ]
     cls.gaussian_process_lists = []
     cls.weights_lists = []

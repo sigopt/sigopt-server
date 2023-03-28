@@ -111,14 +111,10 @@ class TestGaussianProcessLogMarginalLikelihood(GaussianProcessTestCase):
     # Construct hyperparameter domain
     if log_domain:
       hdomain = ContinuousDomain(
-        [[numpy.log(1e-6), numpy.log(1e3)]]
-        + [[numpy.log(2 * 0.001), numpy.log(2 * 10)]] * dim
+        [[numpy.log(1e-6), numpy.log(1e3)]] + [[numpy.log(2 * 0.001), numpy.log(2 * 10)]] * dim
       )
     else:
-      hdomain = ContinuousDomain(
-        [[1e-6, 1e3]]
-        + [[2 * 0.001, 2 * 10]] * dim
-      )
+      hdomain = ContinuousDomain([[1e-6, 1e3]] + [[2 * 0.001, 2 * 10]] * dim)
 
     def ll(params):
       return GaussianProcessLogMarginalLikelihood(

@@ -107,9 +107,12 @@ class TestExpectedImprovement(GaussianProcessTestCase):
           len(points_to_sample),
           num_mc_iterations=10000,
         )
-        assert ei_eval.evaluate_at_point_list(
-          numpy.reshape(points_to_sample, (1, ei_eval.num_points_to_sample, ei_eval.dim))
-        )[0] >= 0
+        assert (
+          ei_eval.evaluate_at_point_list(
+            numpy.reshape(points_to_sample, (1, ei_eval.num_points_to_sample, ei_eval.dim))
+          )[0]
+          >= 0
+        )
 
       num_points_to_sample = 3
       num_points_to_evaluate = 6

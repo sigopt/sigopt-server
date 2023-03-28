@@ -65,7 +65,7 @@ class TestMultitaskAcquisitionFunction(NumericalTestCase):
 
       if multitask_af.differentiable:
         af_grad = multitask_af.evaluate_grad_at_point_list(new_point)[0]
-        assert af_grad.shape == (multitask_af.dim, )
+        assert af_grad.shape == (multitask_af.dim,)
         assert not numpy.any(numpy.isnan(af_grad)) or numpy.any(numpy.isinf(af_grad))
 
   # In this test we give the same function values at the same locations for all the costs

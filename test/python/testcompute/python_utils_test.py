@@ -225,7 +225,7 @@ class TestCholeskyFactorization(NumericalTestCase):
       DEFAULT_ABS_TOL,
     )
 
-  @pytest.mark.parametrize('size', [10, 50, 200])
+  @pytest.mark.parametrize("size", [10, 50, 200])
   def test_well_conditioned_matrices(self, size):
     # Random positive definite matrix
     A = numpy.random.randn(size, size)
@@ -242,7 +242,7 @@ class TestCholeskyFactorization(NumericalTestCase):
     L = compute_cholesky_for_gp_sampling(covariance_matrix)
     self.assert_cholesky_is_accurate(L, covariance_matrix)
 
-  @pytest.mark.parametrize('size', [10, 50, 200])
+  @pytest.mark.parametrize("size", [10, 50, 200])
   def test_ill_conditioned_matrices(self, size):
     # Random ill conditioned matrix
     matrix_rank = 4
