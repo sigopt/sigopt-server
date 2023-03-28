@@ -65,6 +65,8 @@ def initialize_blueprint(app):
     error = EndpointNotFoundError(request.path)
     return error.get_error_response()
 
+  @app.errorhandler(ValidationError)
+  @app.errorhandler(InvalidKeyError)
   def handle_validation_errors(e):
     return BadParamError(e.msg).get_error_response()
 

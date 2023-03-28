@@ -112,11 +112,20 @@ from zigopt.handlers.web_data.create import WebDataCreateHandler
 from zigopt.handlers.web_data.delete import WebDataDeleteHandler
 from zigopt.handlers.web_data.list import WebDataListHandler
 from zigopt.handlers.web_data.update import WebDataUpdateHandler
+from zigopt.net.errors import BadParamError
+
+from sigoptaux.errors import ValidationError
 
 
 def initialize_blueprint(app):
   api = ApiBlueprint("api_v1", app)
   register_handler = handler_registry(api)
+
+  @app.errorhandler(ValidationError)
+  def handle_validation_errors(e):
+    return BadParamError(e.msg).get_error_response()
+
+  api.register_error_handler(ValidationError, handle_validation_errors)
 
   def get_route(route_name, handler_cls):
     return register_handler(route_name, handler_cls, ["GET"], provide_automatic_options=True)
