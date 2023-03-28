@@ -63,16 +63,6 @@ class TestObservationCreate(ObservationEndpointTest):
     msg = "Need to pass in an assignments dictionary or a suggestion id to create an observation"
     assert exception_info.value.args[0] == msg
 
-  def test_make_observation_with_suggestion_id_matches_assignments(self, connection, experiment, suggestion):
-    true_assignments = suggestion.assignments
-    connection.experiments(experiment.id).observations().create(
-      suggestion=suggestion.id,
-      values=[{"name": "y1", "value": 0}],
-    )
-    observations = connection.experiments(experiment.id).observations().fetch()
-    observation = list(observations.iterate_pages())[0]
-    assert observation.assignments == true_assignments
-
   def test_make_observation_with_variance(self, connection, experiment, suggestion):
     value_stddev = 0.12345
     values = [{"name": "y1", "value": 0, "value_stddev": value_stddev}]
@@ -286,7 +276,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
     values_list = []
     for i in range(num_observations):
       suggestion = connection.experiments(e.id).suggestions().create()
-      assignments = dict(suggestion.assignments)
+      assignments = suggestion.assignments
       values = [{"name": metric_name, "value": i}]
       observation = self.create_observation_endpoint(
         connection=connection,
@@ -326,7 +316,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
         values=[{"name": "y1", "value": 1.23}],
       )
 
-    o = (
+    observation = (
       connection.experiments(e.id)
       .observations()
       .create(
@@ -334,7 +324,7 @@ class TestSingleMetricObservationEndpoint(ObservationEndpointTest):
         values=[{"name": "y1", "value": 1.23}],
       )
     )
-    assert o is not None
+    assert observation is not None
 
   def test_out_of_bounds_observations_int_and_doubles(self, connection):
     experiment_meta = self.get_experiment_feature("default")
@@ -470,7 +460,10 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     observation = (
       connection.experiments(e.id)
       .observations()
-      .create(suggestion=suggestion.id, values=DEFAULT_MULTIPLE_OBSERVATION_VALUES)
+      .create(
+        suggestion=suggestion.id,
+        values=DEFAULT_MULTIPLE_OBSERVATION_VALUES,
+      )
     )
     assert observation.values
     assert observation.assignments == suggestion.assignments
@@ -481,7 +474,8 @@ class TestMultipleMetricObservationEndpoint(ObservationEndpointTest):
     suggestion = connection.experiments(e.id).suggestions().create()
     with pytest.raises(SigOptException):
       connection.experiments(e.id).observations().create(
-        suggestion=suggestion.id, values=[{"name": "y1", "value": 1.1}, {"name": "y1", "value": 1.1}]
+        suggestion=suggestion.id,
+        values=[{"name": "y1", "value": 1.1}, {"name": "y1", "value": 1.1}],
       )
 
   def test_cannot_create_with_wrong_number_of_values(self, connection):
