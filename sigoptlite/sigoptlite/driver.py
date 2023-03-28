@@ -41,6 +41,8 @@ class LocalAPI:
   def observations_post(self, observation_json):
     if self.broker is None:
       raise ValueError("Need to create an experiment first before creating an observation")
+    if not set(observation_json.keys()) <= {"assignments", "values", "suggestion", "failed", "task"}:
+      raise ValueError("Unexpected keyword argument for Observation create endpoint")
     observation = self.broker.create_observation(**observation_json)
     return observation
 

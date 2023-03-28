@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from sigopt import Connection
+from sigopt.exception import SigOptException
 
 from sigoptlite.driver import LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
@@ -58,7 +59,7 @@ class TestParameterConstraints(UnitTestsBase):
         threshold=1,
       ),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**invalid_type_meta)
     msg = "strictly_less_than is not one of the allowed values: greater_than, less_than"
     assert exception_info.value.args[0] == msg
@@ -75,7 +76,7 @@ class TestParameterConstraints(UnitTestsBase):
         threshold=1,
       ),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**invalid_name_meta)
     msg = "Variable p0 is not a known parameter"
     assert exception_info.value.args[0] == msg
@@ -91,7 +92,7 @@ class TestParameterConstraints(UnitTestsBase):
         threshold=1,
       ),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**invalid_cat_term_meta)
     msg = "Variable x4 is not a parameter of type `double` or type `int`"
     assert exception_info.value.args[0] == msg
@@ -106,7 +107,7 @@ class TestParameterConstraints(UnitTestsBase):
         threshold=0.5,
       ),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**invalid_term_count_meta)
     msg = "Constraint must have more than one term"
     assert exception_info.value.args[0] == msg
@@ -122,7 +123,7 @@ class TestParameterConstraints(UnitTestsBase):
         threshold=1,
       ),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**invalid_term_count_meta)
     msg = "Duplicate constrained variable name: x0"
     assert exception_info.value.args[0] == msg
@@ -139,7 +140,7 @@ class TestParameterConstraints(UnitTestsBase):
         threshold=3,
       ),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**mixed_integer_meta)
     msg = "Constraint functions cannot mix integers and doubles. One or the other only."
     assert exception_info.value.args[0] == msg
@@ -151,7 +152,7 @@ class TestParameterConstraints(UnitTestsBase):
       type="double",
       grid=[0.1, 0.2, 0.4, 1.0],
     )
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**grid_meta)
     msg = "Constraint cannot be defined on a grid parameter x0"
     assert exception_info.value.args[0] == msg
@@ -163,7 +164,7 @@ class TestParameterConstraints(UnitTestsBase):
       bounds=dict(min=1e-4, max=1),
       transformation="log",
     )
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**log_transformed_meta)
     msg = "Constraint cannot be defined on a log-transformed parameter x0"
     assert exception_info.value.args[0] == msg
@@ -178,7 +179,7 @@ class TestParameterConstraints(UnitTestsBase):
     conditional_meta["conditionals"] = [
       dict(name="con1", values=["true", "false"]),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**conditional_meta)
     msg = "Constraint cannot be defined on a conditioned parameter x0"
     assert exception_info.value.args[0] == msg
@@ -203,7 +204,7 @@ class TestParameterConstraints(UnitTestsBase):
         threshold=1.1,
       ),
     ]
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(SigOptException) as exception_info:
       self.conn.experiments().create(**infeasible_constraint_meta)
     msg = "Infeasible constraints"
     assert exception_info.value.args[0] == msg

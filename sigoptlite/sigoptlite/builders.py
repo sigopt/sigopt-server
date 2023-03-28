@@ -233,6 +233,9 @@ def process_error(e, class_name):
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator == "minimum" else "less than"
     raise ValueError(f"{key} must be {greater_less} or equal to {e.validator_value}")
+  elif e.validator == "exclusiveMinimum":
+    key = get_path_string(e.path)
+    raise ValueError(f"{key} must be greather than {e.validator_value}")
   elif e.validator in ["minLength", "maxLength", "minItems", "maxItems"]:
     key = get_path_string(e.path)
     greater_less = "greater than" if e.validator in ["minLength", "minItems"] else "less than"
@@ -252,7 +255,11 @@ def process_error(e, class_name):
 
 class BuilderBase(object):
   def __new__(cls, input_dict, **kwargs):
-    cls.validate_input_dict(input_dict)
+    try:
+      cls.validate_input_dict(input_dict)
+    except AssertionError as e:
+      raise ValueError(f"Invalid input for {cls.__name__} {e}") from e
+
     local_object = cls.create_object(**input_dict)
     cls.validate_object(local_object, **kwargs)
     return local_object
@@ -404,14 +411,14 @@ class LocalExperimentBuilder(BuilderBase):
   @classmethod
   def validate_tasks(cls, experiment):
     if len(experiment.tasks) < 2:
-      raise ValueError(f"For multitask {cls.cls_name}, at least 2 tasks must be present.")
+      raise ValueError(f"For multitask {cls.cls_name}, at least 2 tasks must be present")
     costs = [t.cost for t in experiment.tasks]
     num_distinct_task = cls.get_num_distinct_elements([t.name for t in experiment.tasks])
     num_distinct_costs = cls.get_num_distinct_elements(costs)
     if not num_distinct_task == len(experiment.tasks):
       raise ValueError(f"For multitask {cls.cls_name}, all task names must be distinct")
     if not num_distinct_costs == len(experiment.tasks):
-      raise ValueError(f"For multitask {cls.cls_name}, all costs names must be distinct")
+      raise ValueError(f"For multitask {cls.cls_name}, all task costs must be distinct")
     if 1 not in costs:
       raise ValueError(f"For multitask {cls.cls_name}, exactly one task must have cost == 1 (none present).")
 
@@ -594,6 +601,10 @@ class LocalParameterBuilder(BuilderBase):
     if parameter.has_prior:
       if not parameter.is_double:
         raise ValueError("Prior only applies to parameters type of double")
+      if parameter.grid:
+        raise ValueError("Grid parameters cannot have priors")
+      if parameter.has_transformation:
+        raise ValueError("Parameters with log transformation cannot have priors")
       if parameter.prior.is_normal:
         if not parameter.bounds.is_value_within(parameter.prior.mean):
           raise ValueError(f"parameter.prior.mean {parameter.prior.mean} must be within bounds {parameter.bounds}")
@@ -721,7 +732,7 @@ class LocalObservationBuilder(BuilderBase):
     try:
       validate_against_schema(input_dict, OBSERVATION_CREATE_SCHEMA)
     except ValidationError as e:
-      process_error(e)
+      process_error(e, "Observation")
 
   @classmethod
   def create_object(cls, **input_dict):
@@ -757,6 +768,11 @@ class LocalObservationBuilder(BuilderBase):
       )
 
     if not observation.failed:
+      num_reported_metrics = len(observation.metric_evaluations)
+      if num_reported_metrics != len(experiment.metrics):
+        raise ValueError(
+          f"Observation data must have {len(experiment.metrics)} metrics, but only {num_reported_metrics} found"
+        )
       for m in experiment.metrics:
         if observation.get_metric_evaluation_by_name(m.name) is None:
           raise ValueError(f"Metric {m.name} not in observation metrics: {observation.metric_evaluations}.")
@@ -781,6 +797,9 @@ class LocalObservationBuilder(BuilderBase):
         f"Grid parameter {parameter.name} must have one of following grid values: "
         f"{parameter.grid} instead of {parameter_value}"
       )
+    if parameter.has_transformation:
+      if not (parameter_value > 0):
+        raise ValueError(f"Assignment must be positive for log-transformed parameter {parameter.name}")
 
   @staticmethod
   def observation_does_not_have_parameter(observation, parameter):
@@ -829,6 +848,9 @@ class MetricEvaluationBuilder(BuilderBase):
     if "value_stddev" in input_dict:
       assert isinstance(input_dict["value_stddev"], (int, float))
       assert input_dict["value_stddev"] >= 0
+      assert set(input_dict.keys()) == {"name", "value", "value_stddev"}
+    else:
+      assert set(input_dict.keys()) == {"name", "value"}
 
   @classmethod
   def create_object(cls, **input_dict):
