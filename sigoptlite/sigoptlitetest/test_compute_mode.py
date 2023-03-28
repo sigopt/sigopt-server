@@ -12,6 +12,7 @@ from sigoptcompute.views.rest.spe_next_points import SPENextPoints
 from sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
 
 from sigoptlite.driver import LocalDriver
+from sigoptlite.errors import LocalBadParamError
 from sigoptlite.models import FIXED_EXPERIMENT_ID
 from sigoptlitetest.constants import PARAMETER_DOUBLE, PARAMETER_INT
 
@@ -39,7 +40,7 @@ class TestComputeMode(object):
       )
 
   def test_wrong_flag(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       # pylint: disable=unexpected-keyword-arg
       Connection(driver=LocalDriver, compute_mode="not_valid")
 

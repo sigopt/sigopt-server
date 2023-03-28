@@ -4,6 +4,7 @@
 from sigoptlite.best_assignments import BestAssignmentsLogger
 from sigoptlite.broker import Broker
 from sigoptlite.builders import LocalExperimentBuilder
+from sigoptlite.errors import LocalBadParamError
 from sigoptlite.models import FIXED_EXPERIMENT_ID, dataclass_to_dict
 
 
@@ -27,33 +28,33 @@ class LocalAPI:
 
   def experiments_get(self, _=None):
     if self.broker is None:
-      raise ValueError("Need to create an experiment first before fetching one")
+      raise LocalBadParamError("Need to create an experiment first before fetching one")
     experiment_dict = dataclass_to_dict(self.broker.experiment)
     experiment_dict["progress"] = self.broker.experiment_progress_dict
     return experiment_dict
 
   def suggestions_post(self, _):
     if self.broker is None:
-      raise ValueError("Need to create an experiment first before creating a suggestion")
+      raise LocalBadParamError("Need to create an experiment first before creating a suggestion")
     suggestion = self.broker.create_suggestion()
     return dataclass_to_dict(suggestion)
 
   def observations_post(self, observation_json):
     if self.broker is None:
-      raise ValueError("Need to create an experiment first before creating an observation")
+      raise LocalBadParamError("Need to create an experiment first before creating an observation")
     if not set(observation_json.keys()) <= {"assignments", "values", "suggestion", "failed", "task"}:
-      raise ValueError("Unexpected keyword argument for Observation create endpoint")
+      raise LocalBadParamError("Unexpected keyword argument for Observation create endpoint")
     observation = self.broker.create_observation(**observation_json)
     return observation
 
   def observations_get(self, _):
     if self.broker is None:
-      raise ValueError("Need to create an experiment first before fetching observations")
+      raise LocalBadParamError("Need to create an experiment first before fetching observations")
     return self.paginate(self.broker.get_observations())
 
   def best_assignments_get(self, _):
     if self.broker is None:
-      raise ValueError("Need to create an experiment first before fetching best assignments")
+      raise LocalBadParamError("Need to create an experiment first before fetching best assignments")
     return self.paginate(self.best_assignments_logger.fetch(self.broker.observations))
 
   def paginate(self, items):
@@ -69,7 +70,9 @@ class LocalAPI:
 class LocalDriver:
   def __init__(self, compute_mode=DEFAULT_COMPUTE_MODE):
     if compute_mode not in [DEFAULT_COMPUTE_MODE, SPE_COMPUTE_MODE]:
-      raise ValueError(f"The argument compute_mode must be either {DEFAULT_COMPUTE_MODE}  or {SPE_COMPUTE_MODE}")
+      raise LocalBadParamError(
+        f"The argument compute_mode must be either {DEFAULT_COMPUTE_MODE}  or {SPE_COMPUTE_MODE}"
+      )
 
     self.name = "Local"
     local_api = LocalAPI(compute_mode=compute_mode)

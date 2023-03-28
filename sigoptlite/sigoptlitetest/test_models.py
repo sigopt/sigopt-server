@@ -4,6 +4,7 @@
 import pytest
 
 from sigoptlite.builders import LocalExperimentBuilder
+from sigoptlite.errors import LocalBadParamError
 from sigoptlite.models import LocalSuggestion
 from sigoptlitetest.base_test import UnitTestsBase
 
@@ -134,7 +135,7 @@ class TestLocalExperiment(LocalExperimentBase):
   def test_experiment_parallel_bandwidth_incompatible(self, parallel_bandwidth):
     experiment_meta = self.get_experiment_feature("default")
     experiment_meta["parallel_bandwidth"] = parallel_bandwidth
-    with pytest.raises(ValueError) as exception_info:
+    with pytest.raises(LocalBadParamError) as exception_info:
       LocalExperimentBuilder(experiment_meta)
     if parallel_bandwidth > 1:
       msg = "sigoptlite experiment must have parallel_bandwidth == 1"

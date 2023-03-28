@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from sigoptaux.constant import DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS, DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 from sigoptlite.builders import LocalObservationBuilder
+from sigoptlite.errors import LocalBadParamError
 from sigoptlite.models import LocalSuggestion, dataclass_to_dict
 from sigoptlite.sources import GPSource, RandomSearchSource, SPESource
 
@@ -50,14 +51,14 @@ class Broker(object):
 
   def create_observation(self, assignments=None, values=None, suggestion=None, failed=False, task=None):
     if not (bool(not assignments) ^ bool(not suggestion)):
-      raise ValueError("Need to pass in an assignments dictionary or a suggestion id to create an observation")
+      raise LocalBadParamError("Need to pass in an assignments dictionary or a suggestion id to create an observation")
 
     if assignments is None:
       if self.stored_suggestion is None:
-        raise ValueError("There is no stored suggestion to use. Please create a suggestion")
+        raise LocalBadParamError("There is no stored suggestion to use. Please create a suggestion")
 
       if suggestion != self.stored_suggestion.id:
-        raise ValueError(
+        raise LocalBadParamError(
           f"The suggestion you provided: {suggestion} does not match the suggestion stored: {self.stored_suggestion.id}"
         )
 

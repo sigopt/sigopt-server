@@ -6,6 +6,7 @@ import random
 import pytest
 
 from sigoptlite.builders import *
+from sigoptlite.errors import LocalBadParamError
 from sigoptlitetest.base_test import UnitTestsBase
 from sigoptlitetest.constants import PARAMETER_CATEGORICAL, PARAMETER_INT
 
@@ -16,19 +17,19 @@ class TestLocalExperimentBuilder(UnitTestsBase):
     # experiment_meta has at least three parameters for this test
     assert len(experiment_meta["parameters"]) >= 3
     experiment_meta["parameters"][-2] = experiment_meta["parameters"][0]
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalExperimentBuilder(experiment_meta)
 
   def test_metrics_are_unique(self):
     experiment_meta = self.get_experiment_feature("multimetric")
     experiment_meta["metrics"][-1] = experiment_meta["metrics"][0]
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalExperimentBuilder(experiment_meta)
 
   def test_conditionals_satisfy_values(self):
     experiment_meta = self.get_experiment_feature("multimetric")
     experiment_meta["metrics"][-1] = experiment_meta["metrics"][0]
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalExperimentBuilder(experiment_meta)
 
 
@@ -104,13 +105,13 @@ class TestLocalParameterBuilder(UnitTestsBase):
   def test_categorical_bounds_incompatible(self, valid_categorical_input_dict):
     input_dict = dict(valid_categorical_input_dict)
     input_dict["bounds"] = {"min": 1e-6, "max": 1}
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
   def test_categorical_grid_incompatible(self, valid_categorical_input_dict):
     input_dict = dict(valid_categorical_input_dict)
     input_dict["grid"] = [0, 1]
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
   @pytest.mark.parametrize("transformation", [None, "log"])
@@ -146,7 +147,7 @@ class TestLocalParameterBuilder(UnitTestsBase):
       "type": param_type,
       "grid": [1.0],
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
   def test_parameter_log_transformation(self):
@@ -167,14 +168,14 @@ class TestLocalParameterBuilder(UnitTestsBase):
       "bounds": {"min": min_value, "max": 1},
       "transformation": "log",
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
   @pytest.mark.parametrize("param_dict", [PARAMETER_INT, PARAMETER_CATEGORICAL])
   def test_parameter_log_transformation_parameter_incompatible(self, param_dict):
     input_dict = dict(param_dict)
     input_dict["transformation"] = "log"
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
   @pytest.mark.parametrize("min_value", [-10, -1, 0])
@@ -185,7 +186,7 @@ class TestLocalParameterBuilder(UnitTestsBase):
       "grid": [1, min_value],
       "transformation": "log",
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
   @pytest.mark.parametrize("valid_mean", [-1, -0.1, 0, 0.1, 1])
@@ -209,14 +210,14 @@ class TestLocalParameterBuilder(UnitTestsBase):
       "bounds": {"min": -1, "max": 1},
       "prior": {"name": "normal", "mean": bad_mean, "scale": 0.01},
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
   @pytest.mark.parametrize("param_dict", [PARAMETER_INT, PARAMETER_CATEGORICAL])
   def test_parameter_with_prior_incompatible(self, param_dict):
     input_dict = dict(param_dict)
     input_dict["prior"] = {"name": "normal", "mean": 0.1, "scale": 0.01}
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterBuilder(input_dict)
 
 
@@ -267,7 +268,7 @@ class TestLocalTaskBuilder(UnitTestsBase):
       "name": "bad_task",
       "cost": bad_cost,
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalTaskBuilder(input_dict)
 
 
@@ -287,7 +288,7 @@ class TestLocalBuilder(UnitTestsBase):
       "min": 2,
       "max": 1,
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalBoundsBuilder(input_dict)
 
 
@@ -313,7 +314,7 @@ class TestLocalParameterPriorBuilder(UnitTestsBase):
     }
     field = random.choice(["shape_a", "shape_b"])
     input_dict[field] = bad_value
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterPriorBuilder(input_dict)
 
   def test_create_local_parameter_prior_normal(self):
@@ -335,5 +336,5 @@ class TestLocalParameterPriorBuilder(UnitTestsBase):
       "mean": 2,
       "scale": bad_value,
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(LocalBadParamError):
       LocalParameterPriorBuilder(input_dict)
