@@ -15,6 +15,19 @@ from sigoptlitetest.constants import DEFAULT_PARAMETERS
 class TestBestAssignmentsLogger(UnitTestsBase):
   conn = Connection(driver=LocalDriver)
 
+  def create_values_in_simplex(self, on_boundary=False, num=10):
+    y1_values = numpy.linspace(0, 1, num=num)
+    values_list = []
+    for y1 in y1_values:  # Create observations according to simplex in lower right quadrant
+      y2 = y1 - 1
+      alpha = 1 if on_boundary else numpy.random.uniform(low=0, high=0.8)
+      best_observation_values = [
+        dict(name="y1", value=alpha * y1),
+        dict(name="y2", value=alpha * y2),
+      ]
+      values_list.append(best_observation_values)
+    return values_list
+
   @staticmethod
   def best_assignments_to_value_list(best_assignments):
     best_values_seen = []
@@ -28,29 +41,14 @@ class TestBestAssignmentsLogger(UnitTestsBase):
 
   @staticmethod
   def assert_best_assignments_are_sorted(experiment, best_assignments):
-    objective = experiment.metrics[0].objective
+    metric_values = [
+      best_assignment.values[0].value for best_assignment in best_assignments
+    ]
 
-    metric_values = []
-    for best_assignment in best_assignments:
-      metric_values.append(best_assignment.values[0].value)
-
-    if objective == "minimize":
+    if experiment.metrics[0].objective == "minimize":
       assert sorted(metric_values) == metric_values
     else:
       assert sorted(metric_values, reverse=True) == metric_values
-
-  def create_values_in_simplex(self, on_boundary=False, num=10):
-    y1_values = numpy.linspace(0, 1, num=num)
-    values_list = []
-    for y1 in y1_values:  # Create observations according to simplex in lower right quadrant
-      y2 = y1 - 1
-      alpha = 1 if on_boundary else numpy.random.uniform(low=0, high=0.8)
-      best_observation_values = [
-        dict(name="y1", value=alpha * y1),
-        dict(name="y2", value=alpha * y2),
-      ]
-      values_list.append(best_observation_values)
-    return values_list
 
   @pytest.mark.parametrize(
     "feature",
@@ -115,14 +113,12 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     pareto_optimal_values = self.create_values_in_simplex(on_boundary=True, num=num_optimal)
     non_optimal_values = self.create_values_in_simplex(on_boundary=False)
     observation_values_list = pareto_optimal_values + non_optimal_values
-    assignments_list = [
-      self.conn.experiments(e.id).suggestions().create().assignments for _ in range(len(observation_values_list))
-    ]
     random.shuffle(observation_values_list)
 
-    for assignments, values in zip(assignments_list, observation_values_list):
+    for values in observation_values_list:
+      suggestion = self.conn.experiments(e.id).suggestions().create()
       self.conn.experiments(e.id).observations().create(
-        assignments=assignments,
+        suggestion=suggestion.id,
         values=values,
       )
 
@@ -151,14 +147,12 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     pareto_optimal_values = self.create_values_in_simplex(on_boundary=True, num=num_optimal)
     non_optimal_values = self.create_values_in_simplex(on_boundary=False)
     observation_values_list = pareto_optimal_values + non_optimal_values
-    assignments_list = [
-      self.conn.experiments(e.id).suggestions().create().assignments for _ in range(len(observation_values_list))
-    ]
     random.shuffle(observation_values_list)
 
-    for assignments, values in zip(assignments_list, observation_values_list):
+    for values in observation_values_list:
+      suggestion = self.conn.experiments(e.id).suggestions().create()
       self.conn.experiments(e.id).observations().create(
-        assignments=assignments,
+        suggestion=suggestion.id,
         values=values,
       )
 
@@ -211,8 +205,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
   def test_multimetric_search(self):
     experiment_meta = self.get_experiment_feature("search")
     experiment_meta["type"] = "random"
-    thresholds = [m["threshold"] for m in experiment_meta["metrics"]]
-    objectives = [m["objective"] for m in experiment_meta["metrics"]]
     e = self.conn.experiments().create(**experiment_meta)
 
     num_observations = 25
@@ -229,11 +221,12 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     assert len(best_assignments_list) > 1
 
     for best_assignment in best_assignments_list:
-      for i, value in enumerate(best_assignment.values):
-        if objectives[i] == "maximize":
-          assert value.value >= thresholds[i]
-        if objectives[i] == "minimize":
-          assert value.value <= thresholds[i]
+      for i, metric in enumerate(experiment_meta["metrics"]):
+        assert metric["name"] == best_assignment.values[i].name
+        if metric["objective"] == "maximize":
+          assert best_assignment.values[i].value >= metric["threshold"]
+        if metric["objective"] == "minimize":
+          assert best_assignment.values[i].value <= metric["threshold"]
 
   def test_multitask(self):
     experiment_meta = self.get_experiment_feature("multitask")
