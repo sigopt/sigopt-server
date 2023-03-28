@@ -85,33 +85,12 @@ commands:
         type: string
   docker-test-setup:
     steps:
-      - checkout
-      - run: pyenv global 3.10.6
-      - run: python3 -mpip install docker python-dotenv
       - run: make submodules
-      - run:
-          command: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
-          no_output_timeout: 30m
       - sigopt-ninja-dns
-    parameters:
-      build_images:
-        type: string
   integration-test-setup:
     steps:
-      - docker-test-setup:
-          build_images: << parameters.build_images >> test-runner
       - run: ./ci/create_development_tls_certs.sh
-      - run: |
-          ./ci/compose.sh create \
-            api \
-            createdb \
-            minio \
-            nginx \
-            postgres \
-            qworker \
-            qworker-analytics \
-            redis \
-            smtp
+      - run: ./ci/compose.sh create test-runner
       - start-service:
           description: PostgreSQL
           service: postgres
@@ -145,14 +124,11 @@ commands:
           command: |
             ./ci/compose.sh run --rm init-minio-cookiejar
             ./ci/compose.sh run --rm init-minio-filestorage
-    parameters:
-      build_images:
-        type: string
-        default: nginx zigopt
   run-integration-test:
     steps:
-      - integration-test-setup:
-          build_images: << parameters.build_images >>
+      - checkout
+      - docker-test-setup
+      - integration-test-setup
       - run-parallel-integration-tests:
           count: << parameters.count >>
           test_path: << parameters.test_path >>
@@ -161,9 +137,6 @@ commands:
       count:
         type: integer
         default: 1
-      build_images:
-        type: string
-        default: nginx zigopt
       test_path:
         type: string
   run-parallel-integration-tests:
@@ -186,8 +159,10 @@ commands:
       - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
   run-browser-test:
     steps:
-      - integration-test-setup:
-          build_images: nginx web zigopt
+      - checkout
+      - docker-test-setup
+      - run: ./ci/compose.sh build --progress=plain web-server
+      - integration-test-setup
       - start-web-server
       - run: mkdir -p screenshots/failure
       - run: mkdir -p failure_console_logs
@@ -210,8 +185,10 @@ commands:
         default: 1
   run-web-test:
     steps:
-      - integration-test-setup:
-          build_images: nginx web zigopt
+      - checkout
+      - docker-test-setup
+      - run: ./ci/compose.sh build --progress=plain web-server
+      - integration-test-setup
       - start-web-server
       - run-parallel-integration-tests:
           count: << parameters.count >>
@@ -400,8 +377,6 @@ jobs:
       - run: pyenv global 3.10.6
       - install-submodules
       - install-trivy
-      - run: python3 -mpip install docker python-dotenv
-      - run: python3 docker/image_builder.py nginx web zigopt --build-tag=scan
       - run: ./ci/trivy_scan_images.sh --ignore-unfixed
       - store_artifacts:
           path: artifacts/trivy/
@@ -420,7 +395,6 @@ jobs:
     steps:
       - checkout
       - update-docker-cli
-      - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - sigopt-ninja-dns
       - run: mkdir -p scratch
       - run: |
@@ -441,10 +415,9 @@ jobs:
     steps:
       - checkout
       - update-docker-cli
-      - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - run: ./ci/create_development_tls_certs.sh
       - sigopt-ninja-dns
-      - run: make build-debug-images fix-db setup-cookiejar setup-filestorage
+      - run: make submodules fix-db setup-cookiejar setup-filestorage
       - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
       - run:
           name: Development services
@@ -536,6 +509,8 @@ jobs:
   client-integration:
     executor: sigopt-integration
     steps:
+      - checkout
+      - docker-test-setup
       - integration-test-setup
       - start-service:
           description: Mongodb
@@ -554,15 +529,15 @@ jobs:
   worker-health:
     executor: sigopt-integration
     steps:
-      - docker-test-setup:
-          build_images: zigopt
-      - run: ./ci/compose.sh create createdb postgres redis
+      - checkout
+      - docker-test-setup
       - start-service:
           description: PostgreSQL
           service: postgres
       - run: sleep 5
       - run: ./ci/compose.sh create createdb
       - run: ./ci/compose.sh run createdb
+      - run: ./ci/compose.sh create qworker qworker-analytics
       - run: ./ci/worker_health_fail.sh
       - run: ./ci/compose.sh create redis
       - start-service:
