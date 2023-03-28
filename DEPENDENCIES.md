@@ -17,9 +17,9 @@ We store data in the following:
 - Redis 5 for transient suggestion data
 - Minio 1.19 for user uploaded file data
 
-## Production services
+## Services
 
-This lists the service we use to run SigOpt.
+This lists the services we use to run SigOpt.
 The configuration of these services in specfied in the appropriate config file
 (such as config/development.json for development).
 Most of these can be disabled to run in a minimal environment.
@@ -46,3 +46,5 @@ Disabling the DB is not supported.
 
 We store user-generated files associated with each run in MinIO, version 1.19.
 User-generated files can be disabled with `"user_uploads": {"s3": {"enabled": false}}".
+
+We also store web session data in MinIO. This is required for running the website and cannot be disabled.
