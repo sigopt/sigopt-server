@@ -524,6 +524,7 @@ jobs:
   worker-health:
     executor: sigopt-integration
     steps:
+      - checkout
       - docker-test-setup
       - start-service:
           description: PostgreSQL
