@@ -410,7 +410,7 @@ jobs:
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - run: ./ci/create_development_tls_certs.sh
       - sigopt-ninja-dns
-      - run: make fix-db setup-cookiejar setup-filestorage
+      - run: make submodules fix-db setup-cookiejar setup-filestorage
       - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
       - run:
           name: Development services

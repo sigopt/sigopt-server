@@ -9,6 +9,10 @@ MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
 export MINIO_ROOT_PASSWORD
 sigopt_server_version="git:$(git rev-parse HEAD)"
 export sigopt_server_version
+echo "Preparing submodules..."
+git submodule init
+git submodule update
+echo "Submodules are ready."
 echo "Checking docker..."
 if docker ps -q >/dev/null; then
   echo "Docker is running."
