@@ -100,4 +100,4 @@ The following set of soft limitations are recommended by the SigOpt research tea
 - Maximum number of [parameter constraints](https://docs.sigopt.com/advanced_experimentation/parameter_constraints) <= 10
 - Maximum number of unique integer constrained variables <= 10
 - Maximum number of [metric constraints](https://docs.sigopt.com/advanced_experimentation/metric_constraints) <= 4
-- Maximum conditionals breadth (total number of conditional values across all [conditional parameters](https://docs.sigopt.com/intro/main-concepts/parameter_space#define-conditional-parameters) <= 10
+- Maximum conditionals breadth (total number of conditional values across all [conditional parameters](https://docs.sigopt.com/intro/main-concepts/parameter_space#define-conditional-parameters) <= 6
