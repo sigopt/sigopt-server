@@ -31,7 +31,8 @@ from zigopt.protobuf.dict import (
 )
 from zigopt.protobuf.gen.color.color_pb2 import Color  # type: ignore
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import SysMetadata  # type: ignore
-from sigoptaux.errors import (InvalidKeyError)
+
+from sigoptaux.errors import InvalidKeyError # type: ignore
 
 
 ID_STRING_PATTERN = r"^[a-z0-9\-_\.]+$"

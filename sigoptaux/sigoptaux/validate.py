@@ -2,11 +2,13 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 
-from jsonschema import validate as validate_against_schema  
-from jsonschema.exceptions import ValidationError 
-import re
 import json
+import re
+
 import errors
+from jsonschema import validate as validate_against_schema
+from jsonschema.exceptions import ValidationError
+
 
 def validate(json_dict, schema):
   try:

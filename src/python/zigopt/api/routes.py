@@ -8,10 +8,10 @@ from flask import request
 
 from zigopt.api.common import handler_registry
 from zigopt.handlers.base.welcome import WelcomeHandler
-from zigopt.net.errors import EndpointNotFoundError, InvalidMethodError, BadParamError
+from zigopt.net.errors import BadParamError, EndpointNotFoundError, InvalidMethodError
 from zigopt.net.responses import success_response
 
-from sigoptaux.errors import ValidationError, MissingParamError, MissingJsonKeyError, InvalidTypeError, InvalidValueError, InvalidKeyError, InvalidKeyError
+from sigoptaux.errors import ValidationError
 
 
 HEALTH_PATH = "/health"
@@ -38,6 +38,7 @@ def log_requests(app):
       )
 
   app.teardown_request(teardown_request)
+
 
 def initialize_blueprint(app):
   register_handler = handler_registry(app)
@@ -67,7 +68,6 @@ def initialize_blueprint(app):
   @app.errorhandler(ValidationError)
   def handle_validation_errors(e):
     return BadParamError(e.msg).get_error_response()
-
 
   app.register_error_handler(HTTPStatus.NOT_FOUND, not_found)
   app.register_error_handler(ValidationError, handle_validation_errors)
