@@ -5,6 +5,7 @@ set -o pipefail
 PYTHON_DIR=$(mktemp -d)
 
 source .env
+PYTHON_VERSION="${PYTHON_MAJOR}.${PYTHON_MINOR}.${PYTHON_PATCH}"
 
 JOBS=4
 while [[ $# -gt 0 ]]

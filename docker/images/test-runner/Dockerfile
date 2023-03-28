@@ -85,7 +85,10 @@ RUN set -ex \
   ; /install_protobuf.sh "$PROTOBUF_VERSION" \
   ; :
 
-ARG PYTHON_VERSION
+ARG PYTHON_MAJOR
+ARG PYTHON_MINOR
+ARG PYTHON_PATCH
+ENV PYTHON_VERSION "${PYTHON_MAJOR}.${PYTHON_MINOR}.${PYTHON_PATCH}"
 ENV PYTHON_TAR_URL "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
 RUN : \
   ; curl -fSsL "$PYTHON_TAR_URL" | tar -xzf - --strip-components=1 \
