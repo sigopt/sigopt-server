@@ -339,7 +339,7 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def set_hash_fields(self, redis_key, mapping):
-    return self.redis.hmset(self.services.redis_key_service.get_key_value(redis_key), mapping)
+    return self.redis.hset(self.services.redis_key_service.get_key_value(redis_key), mapping=mapping)
 
   @retry_on_failure
   @ensure_redis
