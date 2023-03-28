@@ -1,3 +1,7 @@
+# Copyright © 2022 Intel Corporation
+#
+# SPDX-License-Identifier: Apache License 2.0
+
 import json
 
 class ValidationError(Exception):
@@ -7,7 +11,7 @@ class ValidationError(Exception):
   
 
 class BadParamError(ValidationError):
-  def __init(self, msg):
+  def __init__(self, msg):
     self.msg = msg
 
 class MissingParamError(ValidationError):

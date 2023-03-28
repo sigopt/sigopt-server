@@ -1,8 +1,12 @@
+# Copyright © 2022 Intel Corporation
+#
+# SPDX-License-Identifier: Apache License 2.0
+
 from jsonschema import validate as validate_against_schema  
 from jsonschema.exceptions import ValidationError 
 import re
 import json
-import sigoptaux.errors
+import errors
 
 def validate(json_dict, schema):
   try:
