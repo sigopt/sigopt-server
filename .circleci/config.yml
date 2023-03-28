@@ -504,6 +504,8 @@ jobs:
   client-integration:
     executor: sigopt-integration
     steps:
+      - checkout
+      - docker-test-setup
       - integration-test-setup
       - start-service:
           description: Mongodb
