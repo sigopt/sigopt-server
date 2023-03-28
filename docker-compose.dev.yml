@@ -47,6 +47,7 @@ services:
     image: sigopt/test-runner:latest
     volumes:
       - &pg-sock-volume pg-sock:/var/run/postgresql
+      - &redis-run-volume redis-run:/var/run/redis
       - /dev/shm:/dev/shm
       - &babelrc ./.babelrc:/sigopt-server/.babelrc:ro
       - *rootca-volume
@@ -161,6 +162,7 @@ services:
     tty: true
     volumes: &zigopt_volumes
       - *pg-sock-volume
+      - *redis-run-volume
       - ./config:/sigopt-server/config:ro
       - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
       - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
@@ -240,6 +242,7 @@ services:
     tty: true
     volumes:
       - *pg-sock-volume
+      - *redis-run-volume
       - "./artifacts/tls:/etc/ssl/sigopt:ro"
       - "./config:/sigopt-server/config:ro"
       - "./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro"
@@ -388,6 +391,7 @@ services:
     tty: true
     volumes:
       - *pg-sock-volume
+      - *redis-run-volume
       - ./artifacts/tls:/etc/ssl/sigopt:ro
       - .pyrepl.py:/sigopt-server/.pyrepl.py:ro
       - ./config:/sigopt-server/config:ro
@@ -562,18 +566,17 @@ services:
       - "no-new-privileges:true"
   redis:
     restart: on-failure:5
-    command:
-      - redis-server
-      - --save
-      - ""
-      - --appendonly
-      - "no"
     logging:
       <<: *logging
     image: "redis:${REDIS_VERSION}"
-    ports:
-      - target: 6379
-        host_ip: 127.0.0.1
+    entrypoint:
+      - redis-server
+    command:
+      - /etc/redis/redis.conf
+    volumes:
+      - redis-run:/var/run/redis
+      - ./redis.conf:/etc/redis/redis.conf
+    network_mode: none
     deploy:
       resources:
         limits:
@@ -671,6 +674,7 @@ volumes:
   minio-data: {}
   pg-data: {}
   pg-sock: {}
+  redis-run: {}
   server-bin: {}
   static-artifacts: {}
   test-routes: {}
