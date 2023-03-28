@@ -7,8 +7,6 @@ import numpy
 import pytest
 from sigopt import Connection
 
-from sigoptlite.best_assignments import BestAssignmentsLogger
-from sigoptlite.builders import LocalExperimentBuilder
 from sigoptlite.driver import LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
 from sigoptlitetest.constants import DEFAULT_PARAMETERS
@@ -197,7 +195,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
     best_assignments_list = list(best_assignments.iterate_pages())
     assert len(best_assignments_list) == 1
-
     best_observation = best_assignments_list[0]
     assert best_observation.values[0].value >= threshold
 
@@ -272,7 +269,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     e = self.conn.experiments().create(**experiment_meta)
 
     initial_values = [[dict(name="y1", value=numpy.random.rand())] for _ in range(num_solutions)]
-
     for i in range(num_solutions):
       suggestion = self.conn.experiments(e.id).suggestions().create()
       self.conn.experiments(e.id).observations().create(
