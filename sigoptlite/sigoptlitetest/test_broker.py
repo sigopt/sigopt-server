@@ -5,7 +5,6 @@ import pytest
 
 from sigoptlite.broker import Broker
 from sigoptlite.builders import LocalExperimentBuilder
-from sigoptlite.driver import dataclass_to_dict
 from sigoptlitetest.base_test import UnitTestsBase
 
 
@@ -19,13 +18,5 @@ class TestBroker(UnitTestsBase):
       self.assert_valid_suggestion(suggestion, experiment)
 
       local_observation = self.make_random_observation(experiment, suggestion=suggestion)
-      assignments_dict = local_observation.assignments
-      values_dicts = [dataclass_to_dict(v) for v in local_observation.values] if local_observation.values else None
-      task_dict = dataclass_to_dict(local_observation.task) if local_observation.task else None
-
-      broker.create_observation(
-        assignments=assignments_dict,
-        values=values_dicts,
-        failed=local_observation.failed,
-        task=task_dict,
-      )
+      observation_dict = local_observation.get_client_observation(experiment)
+      broker.create_observation(**observation_dict)

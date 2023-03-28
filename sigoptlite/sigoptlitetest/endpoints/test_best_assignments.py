@@ -23,7 +23,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     default_metric = experiment.metrics[0] if experiment.is_search else experiment.optimized_metrics[0]
     metric_values = []
     for observation in observations:
-      metric_values.append(next(meval for meval in observation.values if meval.name == default_metric.name).value)
+      metric_values.append(next(v for v in observation["values"] if v["name"] == default_metric.name)["value"])
 
     if default_metric.objective == "minimize":
       assert sorted(metric_values) == metric_values
@@ -44,6 +44,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
         dict(name="y2", value=alpha * y2),
       ]
       best_observation = self.make_observation(
+        experiment=experiment,
         assignments=best_observation_assignments,
         values=best_observation_values,
       )
@@ -72,6 +73,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     # All observations are failures
     for _ in range(10):
       observation = self.make_observation(
+        experiment=experiment,
         assignments=self.make_random_suggestions(experiment)[0].assignments,
         failed=True,
       )
@@ -89,6 +91,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_observation_assignments = self.make_random_suggestions(experiment)[0].assignments
     best_observation_values = [dict(name="y1", value=best_value)]
     best_observation = self.make_observation(
+      experiment=experiment,
       assignments=best_observation_assignments,
       values=best_observation_values,
     )
@@ -98,7 +101,8 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_assignments_logger = BestAssignmentsLogger(experiment)
     best_observations_from_logger = best_assignments_logger.fetch(observations)
     assert len(best_observations_from_logger) == 1
-    assert best_observation == best_observations_from_logger[0]
+    expected_best_observation = best_observation.get_client_observation(experiment)
+    assert expected_best_observation == best_observations_from_logger[0]
 
   def test_multimetric(self):
     experiment_meta = self.get_experiment_feature("multimetric")
@@ -111,7 +115,8 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_assignments_logger = BestAssignmentsLogger(experiment)
     best_observations_from_logger = best_assignments_logger.fetch(observations)
     self.assert_observations_are_sorted(best_observations_from_logger, experiment)
-    self.assert_observation_lists_are_equal(best_observations_from_logger, pareto_optimal_observations)
+    expected_pareto_optimal_observations = [o.get_client_observation(experiment) for o in pareto_optimal_observations]
+    self.assert_observation_lists_are_equal(best_observations_from_logger, expected_pareto_optimal_observations)
 
   @pytest.mark.parametrize("threshold_y1, threshold_y2", [(None, -0.25), (0.25, None), (0.25, -0.25)])
   def test_multimetric_thresholds(self, threshold_y1, threshold_y2):
@@ -139,8 +144,9 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_observations_from_logger = best_assignments_logger.fetch(observations)
     self.assert_observations_are_sorted(best_observations_from_logger, experiment)
 
-    for observation in pareto_optimal_observations:
-      if observation.values[0].value >= threshold_y1 and observation.values[1].value <= threshold_y2:
+    expected_pareto_optimal_observations = [o.get_client_observation(experiment) for o in pareto_optimal_observations]
+    for observation in expected_pareto_optimal_observations:
+      if observation["values"][0]["value"] >= threshold_y1 and observation["values"][1]["value"] <= threshold_y2:
         assert observation in best_observations_from_logger
       else:
         assert observation not in best_observations_from_logger
@@ -157,11 +163,12 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     assert len(best_observations_from_logger) == 1
 
     best_observation = best_observations_from_logger[0]
-    assert best_observation.values[0].value >= threshold
+    assert best_observation["values"][0]["value"] >= threshold
 
     valid_observations = best_assignments_logger.filter_valid_full_cost_observations(observations)
-    for observation in valid_observations:
-      assert best_observation.values[1].value <= observation.values[1].value
+    expected_valid_observations = [o.get_client_observation(experiment) for o in valid_observations]
+    for observation in expected_valid_observations:
+      assert best_observation["values"][1]["value"] <= observation["values"][1]["value"]
 
   def test_multimetric_search(self):
     experiment_meta = self.get_experiment_feature("search")
@@ -175,15 +182,16 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     self.assert_observations_are_sorted(best_observations_from_logger, experiment)
 
     for best_observation in best_observations_from_logger:
-      for i, metric in enumerate(best_observation.values):
+      for i, metric in enumerate(best_observation["values"]):
         if objectives[i] == "maximize":
-          assert metric.value >= thresholds[i]
+          assert metric["value"] >= thresholds[i]
         if objectives[i] == "minimize":
-          assert metric.value <= thresholds[i]
+          assert metric["value"] <= thresholds[i]
 
     valid_observations = best_assignments_logger.filter_valid_full_cost_observations(observations)
+    expected_valid_observations = [o.get_client_observation(experiment) for o in valid_observations]
     assert len(best_observations_from_logger) > 1
-    self.assert_observation_lists_are_equal(best_observations_from_logger, valid_observations)
+    self.assert_observation_lists_are_equal(best_observations_from_logger, expected_valid_observations)
 
   def test_multitask(self):
     experiment_meta = self.get_experiment_feature("multitask")
@@ -191,6 +199,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     observations = []
     for _ in range(20):
       observation_with_task = self.make_observation(
+        experiment=experiment,
         assignments=self.make_random_suggestions(experiment)[0].assignments,
         values=[dict(name="y1", value=numpy.random.rand())],
         task=numpy.random.choice(experiment_meta["tasks"]),
@@ -200,8 +209,8 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_assignments_logger = BestAssignmentsLogger(experiment)
     best_observations_from_logger = best_assignments_logger.fetch(observations)
     assert len(best_observations_from_logger) == 1
-    assert best_observations_from_logger[0].task.cost == 1
-    assert best_observations_from_logger[0].task.name == "expensive"
+    assert best_observations_from_logger[0]["task"]["cost"] == 1
+    assert best_observations_from_logger[0]["task"]["name"] == "expensive"
 
   def test_multisolutions(self):
     experiment_meta = self.get_experiment_feature("multisolution")
@@ -211,12 +220,14 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     observations = []
     for _ in range(num_solutions):
       observation = self.make_observation(
+        experiment=experiment,
         assignments=self.make_random_suggestions(experiment)[0].assignments,
         values=[dict(name="y1", value=numpy.random.rand())],
       )
       observations.append(observation)
       best_observations_from_logger = best_assignments_logger.fetch(observations)
-      self.assert_observation_lists_are_equal(best_observations_from_logger, observations)
+      expected_observations = [o.get_client_observation(experiment) for o in observations]
+      self.assert_observation_lists_are_equal(best_observations_from_logger, expected_observations)
 
     observations.extend(self.make_random_observations(experiment, 100))
     best_observations_from_logger = best_assignments_logger.fetch(observations)
