@@ -44,14 +44,16 @@ services:
     security_opt:
       - "no-new-privileges:true"
   createdb:
-    command:
+    entrypoint:
       - python
       - -m
       - zigopt.utils.create_database
       - &config-file "$sigopt_server_config_file"
+    command:
       - --drop-tables
-      - --fake-data
     image: "sigopt/zigopt:${TAG}"
+    environment:
+      - "sigopt.clients.client.user.password=$OWNER_PASSWORD"
     read_only: true
     security_opt:
       - "no-new-privileges:true"
