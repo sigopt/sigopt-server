@@ -86,7 +86,8 @@ RUN set -ex \
   ; :
 
 ARG PYTHON_VERSION
-ENV PYTHON_TAR_URL "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
+ENV PYTHON_PATCH_VERSION 10
+ENV PYTHON_TAR_URL "https://www.python.org/ftp/python/${PYTHON_VERSION}.${PYTHON_PATCH_VERSION}/Python-${PYTHON_VERSION}.${PYTHON_PATCH_VERSION}.tgz"
 RUN : \
   ; curl -fSsL "$PYTHON_TAR_URL" | tar -xzf - --strip-components=1 \
   ; ./configure --with-ensurepip=install >/dev/null \
