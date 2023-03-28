@@ -168,42 +168,52 @@ class TestBestAssignmentsLogger(UnitTestsBase):
         values=values,
       )
 
-    if threshold_y1 is None:
-      threshold_y1 = 0
-
-    if threshold_y2 is None:
-      threshold_y2 = 0
-
     best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
     best_assignments_list = list(best_assignments.iterate_pages())
 
     self.assert_best_assignments_are_sorted(e, best_assignments_list)
     best_values_seen = self.best_assignments_to_value_list(best_assignments_list)
+
+    if threshold_y1 is None:
+      threshold_y1 = 0
+    if threshold_y2 is None:
+      threshold_y2 = 0
     for best_values in best_values_seen:
       if best_values[0]["value"] >= threshold_y1 and best_values[1]["value"] <= threshold_y2:
         assert best_values in pareto_optimal_values
       else:
         assert best_values not in pareto_optimal_values
 
-  @pytest.mark.xfail
   def test_metric_constraints(self):
     experiment_meta = self.get_experiment_feature("metric_constraint")
-    assert experiment_meta["metrics"][0]["strategy"] == "constraint"
+    experiment_meta["type"] = "random"
     threshold = experiment_meta["metrics"][0]["threshold"]
-    experiment = LocalExperimentBuilder(experiment_meta)
-    observations = self.make_random_observations(experiment, num_observations=25)
+    e = self.conn.experiments().create(**experiment_meta)
 
-    best_assignments_logger = BestAssignmentsLogger(experiment)
-    best_observations_from_logger = best_assignments_logger.fetch(observations)
-    assert len(best_observations_from_logger) == 1
+    num_observations = 25
+    for _ in range(num_observations):
+      suggestion = self.conn.experiments(e.id).suggestions().create()
+      self.conn.experiments(e.id).observations().create(
+        suggestion=suggestion.id,
+        values=[dict(name="y1", value=numpy.random.rand()), dict(name="y2", value=numpy.random.rand())],
+      )
 
-    best_observation = best_observations_from_logger[0]
-    assert best_observation["values"][0]["value"] >= threshold
+    best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
+    best_assignments_list = list(best_assignments.iterate_pages())
+    assert len(best_assignments_list) == 1
 
-    valid_observations = best_assignments_logger.filter_valid_full_cost_observations(observations)
-    expected_valid_observations = [o.get_client_observation(experiment) for o in valid_observations]
-    for observation in expected_valid_observations:
-      assert best_observation["values"][1]["value"] <= observation["values"][1]["value"]
+    best_observation = best_assignments_list[0]
+    assert best_observation.values[0].value >= threshold
+
+    observations = self.conn.experiments(e.id).observations().fetch()
+    observations_list = list(observations.iterate_pages())
+    optimized_values_within_threshold = []
+    for observation in observations_list:
+      if observation.values[0].value >= threshold:
+        optimized_values_within_threshold.append(observation.values[1].value)
+
+    for optimized_value in optimized_values_within_threshold:
+      assert best_observation.values[1].value <= optimized_value
 
   @pytest.mark.xfail
   def test_multimetric_search(self):
