@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import copy
 import random
 
 import numpy
@@ -12,10 +13,30 @@ from sigoptlitetest.base_test import UnitTestsBase
 from sigoptlitetest.constants import DEFAULT_PARAMETERS
 
 
+DEFAULT_NUM_RANDOM = 10
+
+
 class TestBestAssignmentsLogger(UnitTestsBase):
   conn = Connection(driver=LocalDriver)
 
-  def create_values_in_simplex(self, on_boundary=False, num=10):
+  @staticmethod
+  def generate_random_assignments(experiment_meta, num=DEFAULT_NUM_RANDOM):
+    temp_conn = Connection(driver=LocalDriver)
+    temp_meta = copy.deepcopy(experiment_meta)
+    temp_meta["type"] = "random"
+    e = temp_conn.experiments().create(**temp_meta)
+    assignments = []
+    for _ in range(num):
+      suggestion = temp_conn.experiments(e.id).suggestions().create()
+      temp_conn.experiments(e.id).observations().create(
+        suggestion=suggestion.id,
+        values=[dict(name=f"y{i+1}", value=1) for i in range(len(temp_meta["metrics"]))],
+      )
+      assignments.append(suggestion.assignments)
+    return assignments
+
+  @staticmethod
+  def create_values_in_simplex(on_boundary=False, num=DEFAULT_NUM_RANDOM):
     y1_values = numpy.linspace(0, 1, num=num)
     values_list = []
     for y1 in y1_values:  # Create observations according to simplex in lower right quadrant
@@ -29,26 +50,25 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     return values_list
 
   @staticmethod
-  def best_assignments_to_value_list(best_assignments):
-    best_values_seen = []
-    for best_assignment in best_assignments:
-      best_values_seen.append([dict(name=value.name, value=value.value) for value in best_assignment.values])
-    return best_values_seen
-
-  @staticmethod
-  def assert_observation_lists_are_equal(list_1, list_2):
-    assert len(list_1) == len(list_2) and all(l1 in list_2 for l1 in list_1)
-
-  @staticmethod
   def assert_best_assignments_are_sorted(experiment, best_assignments):
-    metric_values = [
-      best_assignment.values[0].value for best_assignment in best_assignments
-    ]
+    metric_values = [best_assignment.values[0].value for best_assignment in best_assignments]
 
     if experiment.metrics[0].objective == "minimize":
       assert sorted(metric_values) == metric_values
     else:
       assert sorted(metric_values, reverse=True) == metric_values
+
+  @staticmethod
+  def assert_best_assignments_match_observation_data(best_assignments, assignments_list, values_list):
+    assert len(best_assignments) == len(assignments_list) == len(values_list)
+
+    for assignments, values in zip(assignments_list, values_list):
+      matching_index = next(i for i, best in enumerate(best_assignments) if best.assignments == assignments)
+      best = best_assignments[matching_index]
+      assert best.assignments == assignments
+      for seen_value, expected_value in zip(best.values, values):
+        assert seen_value.name == expected_value["name"]
+        assert seen_value.value == expected_value["value"]
 
   @pytest.mark.parametrize(
     "feature",
@@ -89,13 +109,13 @@ class TestBestAssignmentsLogger(UnitTestsBase):
 
     num_observations = 10
     values_list = [[dict(name="y1", value=numpy.random.rand())] for _ in range(num_observations)]
+    assignments_list = self.generate_random_assignments(experiment_meta, num=num_observations)
     idx = numpy.random.randint(num_observations)
     values_list[idx] = [dict(name="y1", value=best_value)]
 
-    for values in values_list:
-      suggestion = self.conn.experiments(e.id).suggestions().create()
+    for assignments, values in zip(assignments_list, values_list):
       self.conn.experiments(e.id).observations().create(
-        suggestion=suggestion.id,
+        assignments=assignments,
         values=values,
       )
 
@@ -103,6 +123,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_assignments_list = list(best_assignments.iterate_pages())
     assert len(best_assignments_list) == 1
     assert best_assignments_list[0].values[0].value == best_value
+    assert best_assignments_list[0].assignments == assignments_list[idx]
 
   def test_multimetric(self):
     experiment_meta = self.get_experiment_feature("multimetric")
@@ -110,15 +131,17 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     e = self.conn.experiments().create(**experiment_meta)
 
     num_optimal = 12
+    pareto_optimal_assignments = self.generate_random_assignments(experiment_meta, num=num_optimal)
+    non_optimal_assignments = self.generate_random_assignments(experiment_meta, num=num_optimal)
+    assignments_list = pareto_optimal_assignments + non_optimal_assignments
+
     pareto_optimal_values = self.create_values_in_simplex(on_boundary=True, num=num_optimal)
     non_optimal_values = self.create_values_in_simplex(on_boundary=False)
-    observation_values_list = pareto_optimal_values + non_optimal_values
-    random.shuffle(observation_values_list)
+    values_list = pareto_optimal_values + non_optimal_values
 
-    for values in observation_values_list:
-      suggestion = self.conn.experiments(e.id).suggestions().create()
+    for assignments, values in sorted(zip(assignments_list, values_list), key=lambda _: random.random()):
       self.conn.experiments(e.id).observations().create(
-        suggestion=suggestion.id,
+        assignments=assignments,
         values=values,
       )
 
@@ -127,8 +150,9 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     assert len(best_assignments_list) == num_optimal
 
     self.assert_best_assignments_are_sorted(e, best_assignments_list)
-    best_values_seen = self.best_assignments_to_value_list(best_assignments_list)
-    self.assert_observation_lists_are_equal(best_values_seen, pareto_optimal_values)
+    self.assert_best_assignments_match_observation_data(
+      best_assignments_list, pareto_optimal_assignments, pareto_optimal_values
+    )
 
   @pytest.mark.parametrize("threshold_y1, threshold_y2", [(None, -0.25), (0.25, None), (0.25, -0.25)])
   def test_multimetric_thresholds(self, threshold_y1, threshold_y2):
@@ -144,29 +168,30 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     e = self.conn.experiments().create(**experiment_meta)
 
     num_optimal = 12
+    pareto_optimal_assignments = self.generate_random_assignments(experiment_meta, num=num_optimal)
+    non_optimal_assignments = self.generate_random_assignments(experiment_meta, num=num_optimal)
+    assignments_list = pareto_optimal_assignments + non_optimal_assignments
+
     pareto_optimal_values = self.create_values_in_simplex(on_boundary=True, num=num_optimal)
     non_optimal_values = self.create_values_in_simplex(on_boundary=False)
-    observation_values_list = pareto_optimal_values + non_optimal_values
-    random.shuffle(observation_values_list)
+    values_list = pareto_optimal_values + non_optimal_values
 
-    for values in observation_values_list:
-      suggestion = self.conn.experiments(e.id).suggestions().create()
+    for assignments, values in sorted(zip(assignments_list, values_list), key=lambda _: random.random()):
       self.conn.experiments(e.id).observations().create(
-        suggestion=suggestion.id,
+        assignments=assignments,
         values=values,
       )
 
     best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
     best_assignments_list = list(best_assignments.iterate_pages())
-
     self.assert_best_assignments_are_sorted(e, best_assignments_list)
-    best_values_seen = self.best_assignments_to_value_list(best_assignments_list)
 
     if threshold_y1 is None:
       threshold_y1 = 0
     if threshold_y2 is None:
       threshold_y2 = 0
-    for best_values in best_values_seen:
+    for best_assignment in best_assignments_list:
+      best_values = [dict(name=value.name, value=value.value) for value in best_assignment.values]
       if best_values[0]["value"] >= threshold_y1 and best_values[1]["value"] <= threshold_y2:
         assert best_values in pareto_optimal_values
       else:
@@ -250,8 +275,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
     best_assignments_list = list(best_assignments.iterate_pages())
     assert len(best_assignments_list) == 1
-
-    assert best_assignments_list[0].values[0].value != 200
     assert best_assignments_list[0].values[0].value <= 1
 
   def test_multisolutions(self):
@@ -261,16 +284,17 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     e = self.conn.experiments().create(**experiment_meta)
 
     initial_values = [[dict(name="y1", value=numpy.random.rand())] for _ in range(num_solutions)]
+    initial_assignments = self.generate_random_assignments(experiment_meta, num=num_solutions)
     for i in range(num_solutions):
-      suggestion = self.conn.experiments(e.id).suggestions().create()
       self.conn.experiments(e.id).observations().create(
-        suggestion=suggestion.id,
+        assignments=initial_assignments[i],
         values=initial_values[i],
       )
       best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
       best_assignments_list = list(best_assignments.iterate_pages())
-      best_values_seen = self.best_assignments_to_value_list(best_assignments_list)
-      self.assert_observation_lists_are_equal(best_values_seen, initial_values[: i + 1])
+      self.assert_best_assignments_match_observation_data(
+        best_assignments_list, initial_assignments[: i + 1], initial_values[: i + 1]
+      )
 
     for i in range(100):
       suggestion = self.conn.experiments(e.id).suggestions().create()
