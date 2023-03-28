@@ -19,11 +19,12 @@ class Broker(object):
   @property
   def is_initialization_phase(self):
     minimum_num_initial_observations = max(2 * self.experiment.dimension, 4)
-    return len(self.observations) <= minimum_num_initial_observations
+    num_valid_observations = sum(1 for o in self.observations if not o.failed)
+    return num_valid_observations <= minimum_num_initial_observations
 
   @property
   def use_random(self):
-    return self.is_initialization_phase or self.experiment.is_random
+    return self.experiment.is_random or self.is_initialization_phase
 
   @property
   def use_spe(self):
@@ -48,24 +49,37 @@ class Broker(object):
     )
 
   def create_observation(self, assignments=None, values=None, suggestion=None, failed=False, task=None):
-    assert assignments or suggestion
+    if not (bool(not assignments) ^ bool(not suggestion)):
+      raise ValueError("Need to pass in an assignments dictionary or a suggestion id to create an observation")
+
     if assignments is None:
-      assert suggestion == self.stored_suggestion.id
+      if self.stored_suggestion is None:
+        raise ValueError("There is no stored suggestion to use. Please create a suggestion")
+
+      if suggestion != self.stored_suggestion.id:
+        raise ValueError(
+          f"The suggestion you provided: {suggestion} does not match the suggestion stored: {self.stored_suggestion.id}"
+        )
+
       assignments = self.stored_suggestion.assignments
       if self.stored_suggestion.task is not None:
         task = dataclass_to_dict(self.stored_suggestion.task)
 
     observation = LocalObservationBuilder(
-      dict(
+      input_dict=dict(
         assignments=assignments,
         values=values,
         failed=failed,
         task=task,
-      )
+      ),
+      experiment=self.experiment,
     )
     self.observations.append(observation)
     self.stored_suggestion = None
-    return observation
+    return observation.get_client_observation(self.experiment)
+
+  def get_observations(self):
+    return [o.get_client_observation(self.experiment) for o in self.observations]
 
   def create_suggestion(self):
     if self.stored_suggestion is not None:
