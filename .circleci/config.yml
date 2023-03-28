@@ -117,7 +117,7 @@ commands:
           service: postgres
       - run: sleep 5
       - run: ./ci/compose.sh create createdb
-      - run: ./ci/compose.sh run createdb
+      - run: ./ci/compose.sh run --rm createdb --fake-data
       - start-service:
           description: Redis
           service: redis
@@ -422,14 +422,19 @@ jobs:
       - update-docker-cli
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - sigopt-ninja-dns
-      - run: EDITOR=true ./setup.sh
+      - run: mkdir -p scratch
+      - run: |
+          set -o pipefail
+          EDITOR=true ./setup.sh | tee scratch/setup_output.log
       - run:
           command: ./start.sh
           background: true
       - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
-      - run: "./ci/wait_for.sh url https://sigopt.ninja:4443/api/ --user client_token:"
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/api/health
       - run: |
-          curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "owner@sigopt.ninja", "password": "owner"}'
+          EMAIL="$(tail -n 2 scratch/setup_output.log | grep -E '^  email:' | awk -F': ' '{ print $2 }')"
+          PASSWORD="$(tail -n 2 scratch/setup_output.log | grep -E '^  password:' | awk -F': ' '{ print $2 }')"
+          curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "'"$EMAIL"'", "password": "'"$PASSWORD"'"}'
   test-docker-development:
     executor: sigopt-build
     resource_class: xlarge
@@ -742,3 +747,15 @@ workflows:
       - python-custom-lint
       - python-vulture
       - python-mypy
+  nightly:
+    jobs:
+      - trivy-scan-images
+      - trivy-scan-project
+      - test-docker-deployment
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main

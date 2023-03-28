@@ -1,11 +1,11 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG NODE_VERSION
+ARG NODE_MAJOR
 
 
 # hadolint ignore=DL3006
-FROM node:${NODE_VERSION}-buster
+FROM node:${NODE_MAJOR}-buster
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
