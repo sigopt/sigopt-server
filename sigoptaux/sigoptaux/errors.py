@@ -1,0 +1,61 @@
+import json
+
+class ValidationError(Exception):
+  def __init__(self):
+    super().__init__()
+    self.msg = "Validation error"
+  
+
+class BadParamError(ValidationError):
+  def __init(self, msg):
+    self.msg = msg
+
+class MissingParamError(ValidationError):
+  def __init__(self, param, msg=None):
+    super().__init__()
+    if not msg:
+      msg = f"Missing required param: {param}"
+    self.msg = msg
+
+
+class MissingJsonKeyError(ValidationError):
+  def __init__(self, param, json_obj):
+    super().__init__()
+    self.missing_json_key = param
+    self.msg = f'Missing required json key "{param}" in: {json.dumps(json_obj)}'
+
+
+# Note: TypeError is a stdlib name
+class InvalidTypeError(ValidationError):
+  def __init__(self, value, expected_type, key=None):
+    try:
+      value_str = json.dumps(value)
+      value_sep = f": {value_str} - "
+    except TypeError:
+      value_sep = ", "
+    if key:
+      msg = f"Invalid type for {key}{value_sep}expected type {str(expected_type)}"
+    else:
+      msg = f"Invalid type{value_sep}expected type {str(expected_type)}"
+
+    super().__init__()
+    self.value = value
+    self.msg = msg
+    self.expected_type = expected_type
+
+
+# Note: ValueError is a stdlib name
+class InvalidValueError(ValidationError):
+  def __init__(self, msg):
+    super().__init__()
+    self.msg = msg
+
+
+# Note: KeyError is a stdlib name
+class InvalidKeyError(ValidationError):
+  def __init__(self, key, msg=None):
+    if not msg:
+      msg = f"Invalid key: {key}"
+    super().__init__()
+    self.msg = msg
+    self.invalid_key = key

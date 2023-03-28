@@ -17,7 +17,6 @@ from zigopt.common import *
 from zigopt.common.numbers import is_integer, is_integer_valued_number, is_number
 from zigopt.net.errors import (  # type: ignore
   BadParamError,
-  InvalidKeyError,
   InvalidTypeError,
   InvalidValueError,
   MissingJsonKeyError,
@@ -32,6 +31,7 @@ from zigopt.protobuf.dict import (
 )
 from zigopt.protobuf.gen.color.color_pb2 import Color  # type: ignore
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import SysMetadata  # type: ignore
+from sigoptaux.errors import (InvalidKeyError)
 
 
 ID_STRING_PATTERN = r"^[a-z0-9\-_\.]+$"
