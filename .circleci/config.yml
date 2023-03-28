@@ -161,7 +161,7 @@ commands:
     steps:
       - checkout
       - docker-test-setup
-      - run: ./ci/compose.sh create web-server
+      - run: ./ci/compose.sh build --progress=plain web-server
       - integration-test-setup
       - start-web-server
       - run: mkdir -p screenshots/failure
