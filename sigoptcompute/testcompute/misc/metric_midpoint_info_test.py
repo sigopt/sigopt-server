@@ -3,14 +3,13 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-
-from sigoptcompute.misc.constant import (
+from libsigopt.sigoptcompute.misc.constant import (
   CONSTANT_LIAR_MAX,
   CONSTANT_LIAR_MEAN,
   CONSTANT_LIAR_MIN,
   DEFAULT_CONSTANT_LIAR_VALUE,
 )
-from sigoptcompute.misc.data_containers import MultiMetricMidpointInfo, SingleMetricMidpointInfo
+from libsigopt.sigoptcompute.misc.data_containers import MultiMetricMidpointInfo, SingleMetricMidpointInfo
 
 from testaux.numerical_test_case import NumericalTestCase
 

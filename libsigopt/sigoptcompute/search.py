@@ -4,13 +4,11 @@
 from dataclasses import dataclass
 
 import numpy
-
-from sigoptcompute.acquisition_function import AcquisitionFunction
-from sigoptcompute.predictor import Predictor
-from sigoptcompute.probabilistic_failures import ProbabilisticFailuresBase
-
-from sigoptaux.domain import CategoricalDomain, ContinuousDomain
-from sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.sigoptaux.domain import CategoricalDomain, ContinuousDomain
+from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.sigoptcompute.acquisition_function import AcquisitionFunction
+from libsigopt.sigoptcompute.predictor import Predictor
+from libsigopt.sigoptcompute.probabilistic_failures import ProbabilisticFailuresBase
 
 
 @dataclass(frozen=True, slots=True)

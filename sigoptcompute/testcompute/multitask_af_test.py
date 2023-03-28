@@ -5,21 +5,20 @@
 import numpy
 import pytest
 from flaky import flaky
-
-from sigoptcompute.covariance import SquareExponential
-from sigoptcompute.expected_improvement import (
+from libsigopt.sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.covariance import SquareExponential
+from libsigopt.sigoptcompute.expected_improvement import (
   AugmentedExpectedImprovement,
   ExpectedImprovement,
   ExpectedImprovementWithFailures,
   ExpectedParallelImprovement,
 )
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from sigoptcompute.probabilistic_failures import ProbabilisticFailuresCDF
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.sigoptcompute.probabilistic_failures import ProbabilisticFailuresCDF
 
-from sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from sigoptaux.domain import CategoricalDomain
 from testaux.numerical_test_case import NumericalTestCase
 
 

@@ -5,24 +5,23 @@ import copy
 from dataclasses import dataclass
 
 import numpy
-from scipy.linalg import cho_factor, cho_solve, solve_triangular
-
-from sigoptcompute.covariance_base import CovarianceBase, DifferentiableCovariance
-from sigoptcompute.misc.constant import (
+from libsigopt.sigoptcompute.covariance_base import CovarianceBase, DifferentiableCovariance
+from libsigopt.sigoptcompute.misc.constant import (
   CONSTANT_LIAR_MAX,
   CONSTANT_LIAR_MEAN,
   CONSTANT_LIAR_MIN,
   DEFAULT_CONSTANT_LIAR_LIE_NOISE_VARIANCE,
 )
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.predictor import Predictor
-from sigoptcompute.python_utils import (
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.predictor import Predictor
+from libsigopt.sigoptcompute.python_utils import (
   build_grad_polynomial_tensor,
   build_polynomial_matrix,
   compute_cholesky_for_gp_sampling,
   indices_represent_zero_mean,
   polynomial_index_point_check,
 )
+from scipy.linalg import cho_factor, cho_solve, solve_triangular
 
 
 # TODO(RTL-38): Think some more on these quantities and the associated enforcement

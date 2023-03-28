@@ -4,18 +4,20 @@
 from copy import deepcopy
 
 import numpy
-
-from sigoptcompute.acquisition_function_optimization import (
+from libsigopt.sigoptaux.constant import (
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  PARALLEL_QEI,
+  TASK_SELECTION_STRATEGY_A_PRIORI,
+)
+from libsigopt.sigoptaux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
+from libsigopt.sigoptcompute.acquisition_function_optimization import (
   constant_liar_acquisition_function_optimization,
   qei_acquisition_function_optimization,
 )
-from sigoptcompute.expected_improvement import ExpectedParallelImprovement
-from sigoptcompute.misc.constant import CATEGORICAL_POINT_UNIQUENESS_TOLERANCE
-from sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from sigoptcompute.views.view import GPView
-
-from sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME, PARALLEL_QEI, TASK_SELECTION_STRATEGY_A_PRIORI
-from sigoptaux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
+from libsigopt.sigoptcompute.expected_improvement import ExpectedParallelImprovement
+from libsigopt.sigoptcompute.misc.constant import CATEGORICAL_POINT_UNIQUENESS_TOLERANCE
+from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.sigoptcompute.views.view import GPView
 
 
 MAXIMUM_NEIGHBORING_POINTS = 30000

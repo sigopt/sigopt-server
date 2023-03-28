@@ -3,18 +3,17 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-
-from sigoptcompute.covariance import SquareExponential
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.misc.data_containers import HistoricalData, SingleMetricMidpointInfo
-from sigoptcompute.probabilistic_failures import (
+from libsigopt.sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
+from libsigopt.sigoptaux.domain import CategoricalDomain, ContinuousDomain
+from libsigopt.sigoptcompute.covariance import SquareExponential
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData, SingleMetricMidpointInfo
+from libsigopt.sigoptcompute.probabilistic_failures import (
   ProbabilisticFailures,
   ProbabilisticFailuresCDF,
   ProductOfListOfProbabilisticFailures,
 )
 
-from sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from sigoptaux.domain import CategoricalDomain, ContinuousDomain
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import form_points_sampled, form_random_hyperparameter_dict
 

@@ -4,13 +4,15 @@
 from copy import deepcopy
 
 import numpy
-
-from sigoptcompute.misc.constant import CATEGORICAL_POINT_UNIQUENESS_TOLERANCE, DEFAULT_MAX_SIMULTANEOUS_EI_POINTS
-from sigoptcompute.optimization_auxiliary import DEParameters, OptimizerInfo
-from sigoptcompute.search import ProbabilityOfImprovementSearch, SearchAcquisitionFunction
-from sigoptcompute.vectorized_optimizers import DEOptimizer
-from sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical, convert_from_one_hot
-from sigoptcompute.views.view import GPView
+from libsigopt.sigoptcompute.misc.constant import (
+  CATEGORICAL_POINT_UNIQUENESS_TOLERANCE,
+  DEFAULT_MAX_SIMULTANEOUS_EI_POINTS,
+)
+from libsigopt.sigoptcompute.optimization_auxiliary import DEParameters, OptimizerInfo
+from libsigopt.sigoptcompute.search import ProbabilityOfImprovementSearch, SearchAcquisitionFunction
+from libsigopt.sigoptcompute.vectorized_optimizers import DEOptimizer
+from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical, convert_from_one_hot
+from libsigopt.sigoptcompute.views.view import GPView
 
 
 RESOLVE_PHASE_PROB = 0.8

@@ -2,6 +2,14 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
+from libsigopt.sigoptaux.constant import (
+  DEFAULT_HYPERPARAMETER_ALPHA,
+  DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE,
+  DEFAULT_HYPERPARAMETER_TIKHONOV,
+  DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS,
+  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS,
+  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS_WITH_CONSTRAINTS,
+)
 
 from zigopt.optimize.sources.base import OptimizationSource
 from zigopt.protobuf.gen.optimize.sources_pb2 import CategoricalHyperparameters, MultimetricHyperparameters
@@ -14,15 +22,6 @@ from zigopt.sigoptcompute.constant import (
 )
 from zigopt.suggestion.lib import ScoredSuggestion
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
-
-from sigoptaux.constant import (
-  DEFAULT_HYPERPARAMETER_ALPHA,
-  DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE,
-  DEFAULT_HYPERPARAMETER_TIKHONOV,
-  DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS,
-  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS,
-  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS_WITH_CONSTRAINTS,
-)
 
 
 """

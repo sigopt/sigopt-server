@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from flaky import flaky
+from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 from zigopt.common.lists import *
 from zigopt.experiment.model import Experiment
@@ -18,7 +19,6 @@ from integration.utils.constants import EXPECTED_GP_OPTIMIZATION_SOURCE
 from integration.utils.random_assignment import random_assignments
 from integration.utils.wait import wait_for
 from integration.v1.test_base import V1Base
-from sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 
 @pytest.mark.slow

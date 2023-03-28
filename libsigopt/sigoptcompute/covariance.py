@@ -11,9 +11,8 @@ incorporate that into the check_hyperparameters function.
 
 """
 import numpy
-
-from sigoptcompute.covariance_base import DifferentiableRadialCovariance, RadialCovariance
-from sigoptcompute.misc.constant import (
+from libsigopt.sigoptcompute.covariance_base import DifferentiableRadialCovariance, RadialCovariance
+from libsigopt.sigoptcompute.misc.constant import (
   C0_RADIAL_MATERN_COVARIANCE_TYPE,
   C2_RADIAL_MATERN_COVARIANCE_TYPE,
   C4_RADIAL_MATERN_COVARIANCE_TYPE,

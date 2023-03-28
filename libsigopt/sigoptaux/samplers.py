@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import qmcpy
-
-from sigoptaux.geometry_utils import find_interior_point
+from libsigopt.sigoptaux.geometry_utils import find_interior_point
 
 
 DEFAULT_REJECTION_SAMPLING_TRIALS = 1000000

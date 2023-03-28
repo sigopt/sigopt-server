@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-
-from sigoptcompute.acquisition_function import AcquisitionFunction
-from sigoptcompute.misc.constant import ADAM_OPTIMIZER, DE_OPTIMIZER
-from sigoptcompute.optimization_auxiliary import (
+from libsigopt.sigoptaux.domain import ContinuousDomain, FixedIndicesOnContinuousDomain
+from libsigopt.sigoptcompute.acquisition_function import AcquisitionFunction
+from libsigopt.sigoptcompute.misc.constant import ADAM_OPTIMIZER, DE_OPTIMIZER
+from libsigopt.sigoptcompute.optimization_auxiliary import (
   DEFAULT_VECOPT_MAXITER,
   OPTIMIZATION_PARAMETERS_TO_DEFAULTS,
   AdamParameters,
@@ -13,8 +13,6 @@ from sigoptcompute.optimization_auxiliary import (
   OptimizationResults,
   Optimizer,
 )
-
-from sigoptaux.domain import ContinuousDomain, FixedIndicesOnContinuousDomain
 
 
 class VectorizedOptimizer(Optimizer):

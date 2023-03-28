@@ -4,14 +4,27 @@
 import sys
 
 import numpy
-
-from sigoptcompute.views.rest.gp_ei_categorical import GpEiCategoricalView
-from sigoptcompute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
-from sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from sigoptcompute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
-from sigoptcompute.views.rest.search_next_points import SearchNextPoints
-from sigoptcompute.views.rest.spe_next_points import SPENextPoints
-from sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
+from libsigopt.sigoptaux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
+from libsigopt.sigoptaux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DEFAULT_TASK_SELECTION_STRATEGY,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  INT_EXPERIMENT_PARAMETER_NAME,
+  MAX_SIMULTANEOUS_AF_POINTS,
+  MINIMUM_VALUE_VAR,
+  MULTISOLUTION_QUANTILE_FOR_SEARCH_THRESHOLD,
+  PARALLEL_CONSTANT_LIAR,
+  PARALLEL_QEI,
+  QUANTIZED_EXPERIMENT_PARAMETER_NAME,
+  ParameterPriorNames,
+)
+from libsigopt.sigoptcompute.views.rest.gp_ei_categorical import GpEiCategoricalView
+from libsigopt.sigoptcompute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
+from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.sigoptcompute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.sigoptcompute.views.rest.search_next_points import SearchNextPoints
+from libsigopt.sigoptcompute.views.rest.spe_next_points import SPENextPoints
+from libsigopt.sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
 
 from zigopt.common import *
 from zigopt.assignments.model import MissingValueException, extract_array_for_computation_from_assignments
@@ -34,23 +47,8 @@ from zigopt.sigoptcompute.constant import (
 from zigopt.sigoptcompute.errors import SigoptComputeError
 from zigopt.suggestion.unprocessed.model import SuggestionDataProxy
 
-from sigoptaux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
-from sigoptaux.constant import (
-  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  DEFAULT_TASK_SELECTION_STRATEGY,
-  DOUBLE_EXPERIMENT_PARAMETER_NAME,
-  INT_EXPERIMENT_PARAMETER_NAME,
-  MAX_SIMULTANEOUS_AF_POINTS,
-  MINIMUM_VALUE_VAR,
-  MULTISOLUTION_QUANTILE_FOR_SEARCH_THRESHOLD,
-  PARALLEL_CONSTANT_LIAR,
-  PARALLEL_QEI,
-  QUANTIZED_EXPERIMENT_PARAMETER_NAME,
-  ParameterPriorNames,
-)
 
-
-#: Maximum ``num_to_sample`` (= ``q``) to request from sigoptcompute when using the CL-max heuristic.
+#: Maximum ``num_to_sample`` (= ``q``) to request from libsigopt.sigoptcompute when using the CL-max heuristic.
 #: Reasons for limiting: cost and incremental gain
 #: Cost: If C is the cost of obtaining 1 ``point_to_sample``, then to first-order,
 #: CL-max with ``q`` points costs ``q * C``.

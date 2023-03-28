@@ -5,16 +5,15 @@ from unittest.mock import patch
 
 import numpy
 import pytest
-
-from sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
-from sigoptcompute.misc.multimetric import *
-
-from sigoptaux.constant import (
+from libsigopt.sigoptaux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
+from libsigopt.sigoptcompute.misc.multimetric import *
+
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import form_points_sampled
 

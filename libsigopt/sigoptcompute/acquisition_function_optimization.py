@@ -4,14 +4,13 @@
 import copy
 
 import numpy
-
-from sigoptcompute.misc.constant import (
+from libsigopt.sigoptcompute.misc.constant import (
   AF_OPT_NEAR_BEST_STD_DEV,
   DEFAULT_MAX_SIMULTANEOUS_EI_POINTS,
   GRADIENT_BASED_OPTIMIZERS,
 )
-from sigoptcompute.optimization_auxiliary import AdamParameters, DEParameters, OptimizerInfo
-from sigoptcompute.vectorized_optimizers import AdamOptimizer, DEOptimizer
+from libsigopt.sigoptcompute.optimization_auxiliary import AdamParameters, DEParameters, OptimizerInfo
+from libsigopt.sigoptcompute.vectorized_optimizers import AdamOptimizer, DEOptimizer
 
 
 DEFAULT_NEXT_POINTS_ES_OPTIMIZER_INFO = OptimizerInfo(

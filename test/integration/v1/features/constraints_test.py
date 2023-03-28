@@ -5,13 +5,13 @@ import copy
 from http import HTTPStatus
 
 import pytest
+from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS, MAX_NUM_INT_CONSTRAINT_VARIABLES
 
 from zigopt.best_practices.constants import MAX_DIMENSION_WITH_CONSTRAINTS, MAX_OBSERVATIONS_WITH_CONSTRAINTS
 
 from integration.base import RaisesApiException
 from integration.v1.constants import EXPERIMENT_META_WITH_CONSTRAINTS
 from integration.v1.experiments_test_base import ExperimentFeaturesTestBase
-from sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS, MAX_NUM_INT_CONSTRAINT_VARIABLES
 
 
 class ExperimentsConstraintsTestBase(ExperimentFeaturesTestBase):

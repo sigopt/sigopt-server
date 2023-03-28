@@ -4,6 +4,7 @@
 import random
 
 import pytest
+from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS
 from mock import Mock, patch
 
 from zigopt.observation.model import Observation, ObservationDataProxy
@@ -13,7 +14,6 @@ from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 from integration.service.optimize.optimizer.test_base import OptimizerServiceTestBase
 from integration.utils.constants import EXPECTED_GP_OPTIMIZATION_SOURCE
-from sigoptaux.constant import DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS
 
 
 class TestTriggerNextPoints(OptimizerServiceTestBase):

@@ -3,9 +3,15 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-
-from sigoptcompute.probabilistic_failures import ProbabilisticFailuresCDF
-from sigoptcompute.search import (
+from libsigopt.sigoptaux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  INT_EXPERIMENT_PARAMETER_NAME,
+)
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.sigoptcompute.probabilistic_failures import ProbabilisticFailuresCDF
+from libsigopt.sigoptcompute.search import (
   ProbabilityOfImprovementSearch,
   convert_one_hot_to_search_hypercube_points,
   map_non_categorical_points_from_unit_hypercube,
@@ -13,13 +19,6 @@ from sigoptcompute.search import (
   round_one_hot_points_categorical_values_to_target,
 )
 
-from sigoptaux.constant import (
-  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  DOUBLE_EXPERIMENT_PARAMETER_NAME,
-  INT_EXPERIMENT_PARAMETER_NAME,
-)
-from sigoptaux.domain import CategoricalDomain
-from sigoptaux.geometry_utils import compute_distance_matrix_squared
 from testcompute.gaussian_process_test_case import GaussianProcessTestCase
 from testcompute.zigopt_input_utils import form_random_unconstrained_categorical_domain
 

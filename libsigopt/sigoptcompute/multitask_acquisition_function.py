@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from sigoptcompute.acquisition_function import AcquisitionFunction
+from libsigopt.sigoptcompute.acquisition_function import AcquisitionFunction
 
 
 # The underlying AF will need to be in phys_dim + 1 dimensions, where the last column is the task column.

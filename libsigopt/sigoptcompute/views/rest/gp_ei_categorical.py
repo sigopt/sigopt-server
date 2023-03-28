@@ -1,11 +1,10 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from sigoptcompute.misc.constant import DEFAULT_MAX_SIMULTANEOUS_QEI_POINTS
-from sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from sigoptcompute.views.view import GPView
-
-from sigoptaux.constant import PARALLEL_QEI
+from libsigopt.sigoptaux.constant import PARALLEL_QEI
+from libsigopt.sigoptcompute.misc.constant import DEFAULT_MAX_SIMULTANEOUS_QEI_POINTS
+from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.sigoptcompute.views.view import GPView
 
 
 class GpEiCategoricalView(GPView):

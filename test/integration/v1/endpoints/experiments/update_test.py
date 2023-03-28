@@ -5,6 +5,7 @@ from copy import deepcopy
 from http import HTTPStatus
 
 import pytest
+from libsigopt.sigoptaux.constant import ParameterTransformationNames
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_epoch as get_unix_epoch
@@ -15,7 +16,6 @@ from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH
 from integration.base import RaisesApiException
 from integration.v1.constants import DEFAULT_EXPERIMENT_META
 from integration.v1.experiments_test_base import ExperimentsTestBase
-from sigoptaux.constant import ParameterTransformationNames
 
 
 unix_epoch_timestamp = 0

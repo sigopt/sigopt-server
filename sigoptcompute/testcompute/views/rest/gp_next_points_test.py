@@ -4,12 +4,19 @@
 import numpy
 import pytest
 from flaky import flaky
-from mock import Mock
-
-from sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from sigoptcompute.views.rest.gp_next_points_categorical import (
+from libsigopt.sigoptaux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  INT_EXPERIMENT_PARAMETER_NAME,
+  PARALLEL_CONSTANT_LIAR,
+  PARALLEL_QEI,
+  QUANTIZED_EXPERIMENT_PARAMETER_NAME,
+)
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import (
   GpNextPointsCategorical,
   convert_from_one_hot,
   find_best_one_hot_neighbor_by_af,
@@ -18,16 +25,8 @@ from sigoptcompute.views.rest.gp_next_points_categorical import (
   generate_neighboring_integer_points,
   get_discrete_conversion_option,
 )
+from mock import Mock
 
-from sigoptaux.constant import (
-  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  DOUBLE_EXPERIMENT_PARAMETER_NAME,
-  INT_EXPERIMENT_PARAMETER_NAME,
-  PARALLEL_CONSTANT_LIAR,
-  PARALLEL_QEI,
-  QUANTIZED_EXPERIMENT_PARAMETER_NAME,
-)
-from sigoptaux.domain import CategoricalDomain
 from testaux.domain_test import domains_approximately_equal
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import ZigoptSimulator, form_random_unconstrained_categorical_domain

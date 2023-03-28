@@ -5,18 +5,15 @@ import copy
 from collections import OrderedDict
 
 import numpy
-from scipy.spatial.distance import cdist
-from scipy.stats import beta, truncnorm
-
-from sigoptaux.constant import (
+from libsigopt.sigoptaux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from sigoptaux.geometry_utils import find_interior_point
-from sigoptaux.samplers import (
+from libsigopt.sigoptaux.geometry_utils import find_interior_point
+from libsigopt.sigoptaux.samplers import (
   generate_grid_points,
   generate_halton_points,
   generate_hitandrun_random_points,
@@ -25,6 +22,8 @@ from sigoptaux.samplers import (
   generate_uniform_random_points,
   generate_uniform_random_points_rejection_sampling_with_hitandrun_padding,
 )
+from scipy.spatial.distance import cdist
+from scipy.stats import beta, truncnorm
 
 
 DEFAULT_QUASI_RANDOM_SAMPLER = "latin_hypercube"

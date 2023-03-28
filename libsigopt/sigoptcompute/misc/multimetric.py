@@ -4,11 +4,12 @@
 from dataclasses import dataclass
 
 import numpy
-
-from sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_IN_BOUNDS_POINTS, MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
-
-from sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
-from sigoptaux.samplers import generate_grid_points, generate_halton_points
+from libsigopt.sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
+from libsigopt.sigoptaux.samplers import generate_grid_points, generate_halton_points
+from libsigopt.sigoptcompute.misc.constant import (
+  MULTIMETRIC_MIN_NUM_IN_BOUNDS_POINTS,
+  MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS,
+)
 
 
 # These are the names of the multimetric optimization methods

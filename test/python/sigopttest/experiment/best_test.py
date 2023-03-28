@@ -4,13 +4,12 @@
 import random
 
 import pytest
+from libsigopt.sigoptaux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
 from mock import Mock
 
 from zigopt.experiment.best import ExperimentBestObservationService
 from zigopt.experiment.util import get_experiment_default_metric_name
 from zigopt.sigoptcompute.errors import SigoptComputeError
-
-from sigoptaux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
 
 
 class TestExperimentBestObservationService(object):

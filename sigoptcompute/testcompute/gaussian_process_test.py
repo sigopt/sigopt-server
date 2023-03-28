@@ -5,11 +5,10 @@ import copy
 
 import numpy
 from flaky import flaky
-
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.misc.constant import CONSTANT_LIAR_MAX, CONSTANT_LIAR_MEAN
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.predictor import HasPredictor
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.misc.constant import CONSTANT_LIAR_MAX, CONSTANT_LIAR_MEAN
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.predictor import HasPredictor
 
 from testcompute.gaussian_process_test_case import GaussianProcessTestCase
 

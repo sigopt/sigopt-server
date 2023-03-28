@@ -4,8 +4,7 @@
 from dataclasses import dataclass
 
 import numpy
-
-from sigoptcompute.predictor import HasPredictor, PredictorCoreComponents
+from libsigopt.sigoptcompute.predictor import HasPredictor, PredictorCoreComponents
 
 
 POSITIVE_EXPONENT_CAP = 40.0

@@ -1,13 +1,13 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
+
 from zigopt.common import *
 from zigopt.experiment.constant import MetricStrategyNames
 from zigopt.optimize.sources.categorical import CategoricalOptimizationSource
 from zigopt.optimize.sources.conditional import ConditionalOptimizationSource
 from zigopt.optimize.sources.spe import SPEOptimizationSource
-
-from sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 
 def source_class_from_experiment_meta(experiment_meta):

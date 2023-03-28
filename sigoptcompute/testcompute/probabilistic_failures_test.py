@@ -4,14 +4,13 @@
 """Test the Python implementation of Knowledge Gradient."""
 
 import numpy
-from scipy.stats import norm
-
-from sigoptcompute.probabilistic_failures import (
+from libsigopt.sigoptcompute.probabilistic_failures import (
   POSITIVE_EXPONENT_CAP,
   ProbabilisticFailures,
   ProbabilisticFailuresCDF,
   ProductOfListOfProbabilisticFailures,
 )
+from scipy.stats import norm
 
 from testcompute.gaussian_process_test_case import GaussianProcessTestCase
 

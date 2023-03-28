@@ -4,27 +4,25 @@
 from copy import deepcopy
 
 import numpy
-
-from sigoptcompute.log_likelihood import GaussianProcessLogMarginalLikelihood
-from sigoptcompute.misc.constant import (
-  DEFAULT_COVARIANCE_KERNEL,
-  DISCRETE_UNIQUENESS_LENGTH_SCALE_MIN_BOUND,
-  QUANTIZED_LENGTH_SCALE_LOWER_FACTOR,
-  TASK_LENGTH_LOWER_BOUND,
-)
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.optimization import MultistartOptimizer, SLSQPOptimizer
-from sigoptcompute.optimization_auxiliary import OptimizerInfo, SLSQPParameters
-from sigoptcompute.views.view import GPView
-
-from sigoptaux.constant import (
+from libsigopt.sigoptaux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   MINIMUM_VALUE_VAR,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
 )
-from sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.log_likelihood import GaussianProcessLogMarginalLikelihood
+from libsigopt.sigoptcompute.misc.constant import (
+  DEFAULT_COVARIANCE_KERNEL,
+  DISCRETE_UNIQUENESS_LENGTH_SCALE_MIN_BOUND,
+  QUANTIZED_LENGTH_SCALE_LOWER_FACTOR,
+  TASK_LENGTH_LOWER_BOUND,
+)
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.optimization import MultistartOptimizer, SLSQPOptimizer
+from libsigopt.sigoptcompute.optimization_auxiliary import OptimizerInfo, SLSQPParameters
+from libsigopt.sigoptcompute.views.view import GPView
 
 
 SELECT_HYPER_OPT_IN_LOG_DOMAIN = False

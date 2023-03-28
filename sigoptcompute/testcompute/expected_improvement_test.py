@@ -3,18 +3,17 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 from flaky import flaky
-
-from sigoptcompute.covariance import SquareExponential
-from sigoptcompute.expected_improvement import (
+from libsigopt.sigoptaux.domain import ContinuousDomain
+from libsigopt.sigoptcompute.covariance import SquareExponential
+from libsigopt.sigoptcompute.expected_improvement import (
   ExpectedImprovement,
   ExpectedImprovementWithFailures,
   ExpectedParallelImprovement,
 )
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.vectorized_optimizers import AdamOptimizer
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.vectorized_optimizers import AdamOptimizer
 
-from sigoptaux.domain import ContinuousDomain
 from testcompute.gaussian_process_test_case import GaussianProcessTestCase
 
 

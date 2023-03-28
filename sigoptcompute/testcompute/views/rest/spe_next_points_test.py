@@ -4,9 +4,16 @@
 import numpy
 import pytest
 from flaky import flaky
-
-from sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
-from sigoptcompute.views.rest.spe_next_points import (
+from libsigopt.sigoptaux.adapter_info_containers import MetricsInfo
+from libsigopt.sigoptaux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  INT_EXPERIMENT_PARAMETER_NAME,
+  ParameterPriorNames,
+)
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
+from libsigopt.sigoptcompute.views.rest.spe_next_points import (
   COMPLETION_PHASE,
   INITIALIZATION_PHASE,
   SKO_PHASE,
@@ -15,14 +22,6 @@ from sigoptcompute.views.rest.spe_next_points import (
   get_experiment_phase,
 )
 
-from sigoptaux.adapter_info_containers import MetricsInfo
-from sigoptaux.constant import (
-  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  DOUBLE_EXPERIMENT_PARAMETER_NAME,
-  INT_EXPERIMENT_PARAMETER_NAME,
-  ParameterPriorNames,
-)
-from sigoptaux.domain import CategoricalDomain
 from testaux.domain_test import samples_satisfy_kolmogorov_smirnov_test
 from testcompute.zigopt_input_utils import ZigoptSimulator
 

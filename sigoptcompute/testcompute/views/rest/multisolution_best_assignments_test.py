@@ -3,17 +3,16 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-
-from sigoptcompute.search import convert_one_hot_to_search_hypercube_points
-from sigoptcompute.views.rest.multisolution_best_assignments import k_center_clustering
-
-from sigoptaux.constant import (
+from libsigopt.sigoptaux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from sigoptaux.domain import CategoricalDomain
-from sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.sigoptcompute.search import convert_one_hot_to_search_hypercube_points
+from libsigopt.sigoptcompute.views.rest.multisolution_best_assignments import k_center_clustering
+
 from testcompute.zigopt_input_utils import form_random_unconstrained_categorical_domain
 
 

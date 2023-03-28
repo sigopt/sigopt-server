@@ -3,9 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import scipy.linalg
-
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.optimization import ScipyOptimizable
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.optimization import ScipyOptimizable
 
 
 DEFAULT_LOG_LIKELIHOOD_SCALING_FACTOR = 1.0

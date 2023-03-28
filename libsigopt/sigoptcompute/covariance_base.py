@@ -10,9 +10,8 @@ assumed behavior of the Gaussian Process.  We use some optimization strategies (
 choices based on the data.
 """
 import numpy
+from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
 from scipy.spatial.distance import pdist, squareform
-
-from sigoptaux.geometry_utils import compute_distance_matrix_squared
 
 
 class HyperparameterInvalidError(ValueError):

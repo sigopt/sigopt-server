@@ -4,11 +4,13 @@
 from dataclasses import dataclass
 
 import numpy
+from libsigopt.sigoptcompute.acquisition_function import AcquisitionFunction
+from libsigopt.sigoptcompute.probabilistic_failures import (
+  ProbabilisticFailuresBase,
+  ProductOfListOfProbabilisticFailures,
+)
+from libsigopt.sigoptcompute.python_utils import compute_cholesky_for_gp_sampling
 from scipy.stats import kde, norm
-
-from sigoptcompute.acquisition_function import AcquisitionFunction
-from sigoptcompute.probabilistic_failures import ProbabilisticFailuresBase, ProductOfListOfProbabilisticFailures
-from sigoptcompute.python_utils import compute_cholesky_for_gp_sampling
 
 
 # These number is defined based on certain bounds we currently have in place ... should be handled more intelligently

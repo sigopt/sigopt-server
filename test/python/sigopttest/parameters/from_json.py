@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
+from libsigopt.sigoptaux.constant import ParameterPriorNames
 from mock import Mock
 
 from zigopt.net.errors import BadParamError, InvalidKeyError, InvalidTypeError, InvalidValueError
@@ -17,8 +18,6 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentConditionalValue,
   ExperimentParameter,
 )
-
-from sigoptaux.constant import ParameterPriorNames
 
 
 class TestSetConditionsFromJson(object):

@@ -7,23 +7,22 @@ from functools import namedtuple
 import numpy
 import pytest
 from flaky import flaky
-from scipy.stats import norm
-
-from sigoptcompute.covariance import C2RadialMatern
-from sigoptcompute.expected_improvement import (
+from libsigopt.sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.covariance import C2RadialMatern
+from libsigopt.sigoptcompute.expected_improvement import (
   AugmentedExpectedImprovement,
   ExpectedImprovement,
   ExpectedImprovementWithFailures,
   ExpectedParallelImprovement,
   ExpectedParallelImprovementWithFailures,
 )
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.gaussian_process_sum import GaussianProcessSum
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.probabilistic_failures import ProbabilisticFailures, ProductOfListOfProbabilisticFailures
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.gaussian_process_sum import GaussianProcessSum
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.probabilistic_failures import ProbabilisticFailures, ProductOfListOfProbabilisticFailures
+from scipy.stats import norm
 
-from sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from sigoptaux.domain import CategoricalDomain
 from testaux.numerical_test_case import NumericalTestCase
 
 

@@ -3,10 +3,18 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-
-from sigoptcompute.misc.constant import CONSTANT_LIAR_MIN, NONZERO_MEAN_CONSTANT_MEAN_TYPE
-from sigoptcompute.misc.data_containers import MultiMetricMidpointInfo, SingleMetricMidpointInfo
-from sigoptcompute.views.view import (
+from libsigopt.sigoptaux.adapter_info_containers import MetricsInfo
+from libsigopt.sigoptaux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  INT_EXPERIMENT_PARAMETER_NAME,
+  PARALLEL_CONSTANT_LIAR,
+  PARALLEL_QEI,
+)
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.misc.constant import CONSTANT_LIAR_MIN, NONZERO_MEAN_CONSTANT_MEAN_TYPE
+from libsigopt.sigoptcompute.misc.data_containers import MultiMetricMidpointInfo, SingleMetricMidpointInfo
+from libsigopt.sigoptcompute.views.view import (
   _UNSET,
   GPView,
   View,
@@ -16,15 +24,6 @@ from sigoptcompute.views.view import (
   identify_scaled_values_exceeding_scaled_upper_thresholds,
 )
 
-from sigoptaux.adapter_info_containers import MetricsInfo
-from sigoptaux.constant import (
-  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  DOUBLE_EXPERIMENT_PARAMETER_NAME,
-  INT_EXPERIMENT_PARAMETER_NAME,
-  PARALLEL_CONSTANT_LIAR,
-  PARALLEL_QEI,
-)
-from sigoptaux.domain import CategoricalDomain
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import ZigoptSimulator, form_points_sampled
 

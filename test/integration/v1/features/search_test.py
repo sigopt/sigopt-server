@@ -5,13 +5,13 @@ from copy import deepcopy
 from http import HTTPStatus
 
 import pytest
+from libsigopt.sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 from integration.base import RaisesApiException
 from integration.v1.constants import EXPERIMENT_META_SEARCH
 from integration.v1.experiments_test_base import ExperimentFeaturesTestBase
-from sigoptaux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 
 class SearchExperimentsTestBase(ExperimentFeaturesTestBase):

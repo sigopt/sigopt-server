@@ -4,17 +4,16 @@
 
 import numpy
 import pytest
+from libsigopt.sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
+from libsigopt.sigoptaux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
+from libsigopt.sigoptcompute.covariance import C2RadialMatern, SquareExponential
+from libsigopt.sigoptcompute.expected_improvement import AugmentedExpectedImprovement, ExpectedImprovement
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
+from libsigopt.sigoptcompute.multitask_covariance import MultitaskTensorCovariance
+from libsigopt.sigoptcompute.vectorized_optimizers import AdamOptimizer, DEOptimizer
 
-from sigoptcompute.covariance import C2RadialMatern, SquareExponential
-from sigoptcompute.expected_improvement import AugmentedExpectedImprovement, ExpectedImprovement
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.multitask_acquisition_function import MultitaskAcquisitionFunction
-from sigoptcompute.multitask_covariance import MultitaskTensorCovariance
-from sigoptcompute.vectorized_optimizers import AdamOptimizer, DEOptimizer
-
-from sigoptaux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from sigoptaux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.vectorized_optimizers_test import QuadraticFunction
 

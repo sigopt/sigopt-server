@@ -5,25 +5,31 @@ import logging
 from dataclasses import asdict
 
 import numpy
-
-from sigoptcompute.covariance import COVARIANCE_TYPES_TO_CLASSES
-from sigoptcompute.expected_improvement import (
+from libsigopt.sigoptaux.adapter_info_containers import GPModelInfo
+from libsigopt.sigoptaux.constant import PARALLEL_CONSTANT_LIAR
+from libsigopt.sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.covariance import COVARIANCE_TYPES_TO_CLASSES
+from libsigopt.sigoptcompute.expected_improvement import (
   AugmentedExpectedImprovement,
   ExpectedImprovement,
   ExpectedImprovementWithFailures,
   ExpectedParallelImprovement,
   ExpectedParallelImprovementWithFailures,
 )
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.gaussian_process_sum import GaussianProcessSum
-from sigoptcompute.misc.constant import (
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.gaussian_process_sum import GaussianProcessSum
+from libsigopt.sigoptcompute.misc.constant import (
   CONSTANT_LIAR_MIN,
   DEFAULT_CONSTANT_LIAR_LIE_NOISE_VARIANCE,
   DEFAULT_COVARIANCE_KERNEL,
   DEFAULT_TASK_COVARIANCE_KERNEL,
 )
-from sigoptcompute.misc.data_containers import HistoricalData, MultiMetricMidpointInfo, SingleMetricMidpointInfo
-from sigoptcompute.misc.multimetric import (
+from libsigopt.sigoptcompute.misc.data_containers import (
+  HistoricalData,
+  MultiMetricMidpointInfo,
+  SingleMetricMidpointInfo,
+)
+from libsigopt.sigoptcompute.misc.multimetric import (
   CONVEX_COMBINATION,
   EPSILON_CONSTRAINT,
   MULTIMETRIC_INFO_NOT_MULTIMETRIC,
@@ -33,17 +39,13 @@ from sigoptcompute.misc.multimetric import (
   form_multimetric_info_from_phase,
   identify_multimetric_phase,
 )
-from sigoptcompute.multitask_covariance import MultitaskTensorCovariance
-from sigoptcompute.probabilistic_failures import (
+from libsigopt.sigoptcompute.multitask_covariance import MultitaskTensorCovariance
+from libsigopt.sigoptcompute.probabilistic_failures import (
   ProbabilisticFailures,
   ProbabilisticFailuresCDF,
   ProductOfListOfProbabilisticFailures,
 )
-from sigoptcompute.python_utils import validate_polynomial_indices
-
-from sigoptaux.adapter_info_containers import GPModelInfo
-from sigoptaux.constant import PARALLEL_CONSTANT_LIAR
-from sigoptaux.domain import CategoricalDomain
+from libsigopt.sigoptcompute.python_utils import validate_polynomial_indices
 
 
 _UNSET = object()

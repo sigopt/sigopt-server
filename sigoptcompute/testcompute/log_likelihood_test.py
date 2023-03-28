@@ -5,14 +5,13 @@
 import numpy
 import pytest
 import scipy
+from libsigopt.sigoptaux.domain import ContinuousDomain
+from libsigopt.sigoptcompute.covariance import C2RadialMatern, C4RadialMatern, SquareExponential
+from libsigopt.sigoptcompute.log_likelihood import GaussianProcessLogMarginalLikelihood
+from libsigopt.sigoptcompute.misc.data_containers import HistoricalData
+from libsigopt.sigoptcompute.optimization import MultistartOptimizer, SLSQPOptimizer
+from libsigopt.sigoptcompute.optimization_auxiliary import DEFAULT_SLSQP_PARAMETERS
 
-from sigoptcompute.covariance import C2RadialMatern, C4RadialMatern, SquareExponential
-from sigoptcompute.log_likelihood import GaussianProcessLogMarginalLikelihood
-from sigoptcompute.misc.data_containers import HistoricalData
-from sigoptcompute.optimization import MultistartOptimizer, SLSQPOptimizer
-from sigoptcompute.optimization_auxiliary import DEFAULT_SLSQP_PARAMETERS
-
-from sigoptaux.domain import ContinuousDomain
 from testcompute.gaussian_process_test_case import GaussianProcessTestCase
 
 

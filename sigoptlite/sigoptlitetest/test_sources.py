@@ -3,11 +3,10 @@
 # SPDX-License-Identifier: Apache License 2.0
 import mock
 import pytest
+from libsigopt.sigoptaux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME
+from libsigopt.sigoptcompute.views.rest.search_next_points import SearchNextPoints
+from libsigopt.sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
 
-from sigoptcompute.views.rest.search_next_points import SearchNextPoints
-from sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
-
-from sigoptaux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME
 from sigoptlite.builders import LocalExperimentBuilder
 from sigoptlite.sources import GPSource, RandomSearchSource, SPESource
 from sigoptlitetest.base_test import UnitTestsBase

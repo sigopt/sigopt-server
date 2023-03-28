@@ -2,11 +2,10 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
+from libsigopt.sigoptaux.constant import PARALLEL_CONSTANT_LIAR, PARALLEL_QEI
+from libsigopt.sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
+from libsigopt.sigoptcompute.views.rest.gp_ei_categorical import GpEiCategoricalView
 
-from sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
-from sigoptcompute.views.rest.gp_ei_categorical import GpEiCategoricalView
-
-from sigoptaux.constant import PARALLEL_CONSTANT_LIAR, PARALLEL_QEI
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import ZigoptSimulator
 

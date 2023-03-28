@@ -2,10 +2,9 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-
-from sigoptcompute.gaussian_process import GaussianProcess
-from sigoptcompute.misc.constant import CONSTANT_LIAR_MIN
-from sigoptcompute.predictor import Predictor
+from libsigopt.sigoptcompute.gaussian_process import GaussianProcess
+from libsigopt.sigoptcompute.misc.constant import CONSTANT_LIAR_MIN
+from libsigopt.sigoptcompute.predictor import Predictor
 
 
 class GaussianProcessSum(Predictor):

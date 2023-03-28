@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from libsigopt.sigoptaux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
+
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication, client_token_authentication
 from zigopt.common.sigopt_datetime import current_datetime
@@ -50,8 +52,6 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 )
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.suggestion.sampler.grid import GridSampler
-
-from sigoptaux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
 
 
 class BaseExperimentsCreateHandler(Handler):

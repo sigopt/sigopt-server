@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-
-from sigoptcompute.predictor import HasPredictor
+from libsigopt.sigoptcompute.predictor import HasPredictor
 
 
 class AcquisitionFunction(HasPredictor):

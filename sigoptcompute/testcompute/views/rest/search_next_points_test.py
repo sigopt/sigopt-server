@@ -3,12 +3,11 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
+from libsigopt.sigoptaux.constant import PARALLEL_CONSTANT_LIAR
+from libsigopt.sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
+from libsigopt.sigoptcompute.views.rest.search_next_points import SearchNextPoints
 from mock import patch
 
-from sigoptcompute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE
-from sigoptcompute.views.rest.search_next_points import SearchNextPoints
-
-from sigoptaux.constant import PARALLEL_CONSTANT_LIAR
 from testcompute.zigopt_input_utils import ZigoptSimulator
 
 

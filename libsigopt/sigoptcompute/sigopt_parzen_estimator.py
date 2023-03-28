@@ -4,9 +4,8 @@
 from copy import deepcopy
 
 import numpy
-
-from sigoptcompute.covariance_base import DifferentiableCovariance, RadialCovariance
-from sigoptcompute.optimization import ScipyOptimizable
+from libsigopt.sigoptcompute.covariance_base import DifferentiableCovariance, RadialCovariance
+from libsigopt.sigoptcompute.optimization import ScipyOptimizable
 
 
 SPE_MINIMUM_LOWER_DENSITY_VALUE = 1e-10

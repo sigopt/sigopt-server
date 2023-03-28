@@ -4,17 +4,18 @@
 from copy import deepcopy
 
 import numpy
-
-from sigoptcompute.covariance import C4RadialMatern
-from sigoptcompute.covariance_base import HyperparameterInvalidError
-from sigoptcompute.misc.constant import MULTIMETRIC_MIN_NUM_IN_BOUNDS_POINTS, MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
-from sigoptcompute.misc.multimetric import filter_multimetric_points_sampled_spe
-from sigoptcompute.optimization import LBFGSBOptimizer, MultistartOptimizer, SLSQPOptimizer
-from sigoptcompute.sigopt_parzen_estimator import SigOptParzenEstimator, SPEInsufficientDataError
-from sigoptcompute.views.rest.gp_next_points_categorical import select_random_task_by_softmax
-from sigoptcompute.views.view import View, identify_scaled_values_exceeding_scaled_upper_thresholds
-
-from sigoptaux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME
+from libsigopt.sigoptaux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME
+from libsigopt.sigoptcompute.covariance import C4RadialMatern
+from libsigopt.sigoptcompute.covariance_base import HyperparameterInvalidError
+from libsigopt.sigoptcompute.misc.constant import (
+  MULTIMETRIC_MIN_NUM_IN_BOUNDS_POINTS,
+  MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS,
+)
+from libsigopt.sigoptcompute.misc.multimetric import filter_multimetric_points_sampled_spe
+from libsigopt.sigoptcompute.optimization import LBFGSBOptimizer, MultistartOptimizer, SLSQPOptimizer
+from libsigopt.sigoptcompute.sigopt_parzen_estimator import SigOptParzenEstimator, SPEInsufficientDataError
+from libsigopt.sigoptcompute.views.rest.gp_next_points_categorical import select_random_task_by_softmax
+from libsigopt.sigoptcompute.views.view import View, identify_scaled_values_exceeding_scaled_upper_thresholds
 
 
 # SPE Phases

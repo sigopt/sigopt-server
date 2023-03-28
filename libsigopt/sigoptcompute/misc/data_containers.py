@@ -2,15 +2,13 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-
-from sigoptcompute.misc.constant import (
+from libsigopt.sigoptaux.constant import MINIMUM_VALUE_VAR
+from libsigopt.sigoptcompute.misc.constant import (
   CONSTANT_LIAR_MAX,
   CONSTANT_LIAR_MEAN,
   CONSTANT_LIAR_MIN,
   DEFAULT_CONSTANT_LIAR_VALUE,
 )
-
-from sigoptaux.constant import MINIMUM_VALUE_VAR
 
 
 DEFAULT_VALUE_VAR = 0.0

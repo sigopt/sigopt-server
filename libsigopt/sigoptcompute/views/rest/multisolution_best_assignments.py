@@ -2,11 +2,9 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-
-from sigoptcompute.search import convert_one_hot_to_search_hypercube_points
-from sigoptcompute.views.view import View
-
-from sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.sigoptcompute.search import convert_one_hot_to_search_hypercube_points
+from libsigopt.sigoptcompute.views.view import View
 
 
 def k_center_clustering(points, first_center_index, k):
