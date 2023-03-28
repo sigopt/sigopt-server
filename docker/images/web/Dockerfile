@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 ARG BUILD_TAG=build
-ARG NODE_VERSION
+ARG NODE_MAJOR
 
 
-FROM node:${NODE_VERSION} AS node-build
+FROM node:${NODE_MAJOR} AS node-build
 
 # hadolint ignore=DL3016
 RUN set -ex \
@@ -40,7 +40,7 @@ COPY scripts/compile/minify_js_server_bundle.sh /sigopt-server/scripts/compile/m
 RUN ./scripts/compile/minify_js_server_bundle.sh
 
 
-FROM node:${NODE_VERSION}-alpine
+FROM node:${NODE_MAJOR}-alpine
 
 # hadolint ignore=DL3018
 RUN set -ex \
