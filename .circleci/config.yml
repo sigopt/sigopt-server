@@ -237,7 +237,7 @@ commands:
     steps:
       - checkout
       - install-python-libraries
-      - run: ./pp pytest -rw sigoptaux/testaux/ --durations 5 --count=<< parameters.count >> --junitxml=junit-results/aux-tests/junit.xml
+      - run: ./pp pytest -rw test/python/testaux/ --durations 5 --count=<< parameters.count >> --junitxml=junit-results/aux-tests/junit.xml
       - store_test_results:
           path: junit-results
     parameters:
@@ -249,7 +249,7 @@ commands:
       - checkout
       - install-python-libraries
       - run:
-          command: circleci tests glob "sigoptcompute/testcompute/**/*.py" | circleci tests split --split-by=timings | xargs ./pp pytest -rw --durations 5 --count=<< parameters.count >> --junitxml=junit-results/sigoptcompute-tests/junit.xml
+          command: circleci tests glob "test/python/testcompute/**/*.py" | circleci tests split --split-by=timings | xargs ./pp pytest -rw --durations 5 --count=<< parameters.count >> --junitxml=junit-results/sigoptcompute-tests/junit.xml
           environment:
             OMP_NUM_THREADS: "1"
             OPENBLAS_NUM_THREADS: "1"
