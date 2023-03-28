@@ -11,7 +11,7 @@ from zigopt.handlers.base.welcome import WelcomeHandler
 from zigopt.net.errors import BadParamError, EndpointNotFoundError, InvalidMethodError
 from zigopt.net.responses import success_response
 
-from sigoptaux.errors import ValidationError, InvalidKeyError
+from sigoptaux.errors import InvalidKeyError, ValidationError
 
 
 HEALTH_PATH = "/health"
