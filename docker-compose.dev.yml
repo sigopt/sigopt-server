@@ -10,7 +10,8 @@ services:
       dockerfile: docker/images/python-development/Dockerfile
       args:
         - PROTOBUF_VERSION
-        - PYTHON_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
     logging: &logging
       options:
         max-file: "5"
@@ -41,9 +42,11 @@ services:
     build:
       dockerfile: docker/images/test-runner/Dockerfile
       args:
-        - NODE_VERSION
+        - NODE_MAJOR
         - PROTOBUF_VERSION
-        - PYTHON_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
+        - PYTHON_PATCH
     logging:
       <<: *logging
     command:
@@ -89,7 +92,7 @@ services:
     build: &node-development-build
       dockerfile: docker/images/node-development/Dockerfile
       args:
-        - NODE_VERSION
+        - NODE_MAJOR
     logging:
       <<: *logging
     command:
@@ -683,7 +686,8 @@ services:
     build:
       dockerfile: docker/images/hyperopt/Dockerfile
       args:
-        - PYTHON_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
     logging:
       <<: *logging
     depends_on:

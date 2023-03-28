@@ -9,9 +9,11 @@ services:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
       args:
-        - NODE_VERSION
+        - NODE_MAJOR
         - PROTOBUF_VERSION
-        - PYTHON_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
+        - PYTHON_PATCH
     environment:
       - ALLOW_SLOW=1
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
@@ -54,7 +56,8 @@ services:
       dockerfile: docker/images/zigopt/Dockerfile
       args:
         - PROTOBUF_VERSION
-        - PYTHON_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
     entrypoint:
       - python
       - -m
@@ -149,7 +152,7 @@ services:
     build:
       dockerfile: docker/images/web/Dockerfile
       args:
-        - NODE_VERSION
+        - NODE_MAJOR
     environment:
       - "sigopt.web.cookiejar_credentials.secretAccessKey=$MINIO_ROOT_PASSWORD"
       - "sigopt_server_config_file=$sigopt_server_config_file"
