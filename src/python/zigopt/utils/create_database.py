@@ -96,8 +96,9 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
       {
         "user": superuser or "postgres",
         "password": superuser_password,
-        "host": config_broker.get("db.create_host"),
-        "port": config_broker.get("db.create_port"),
+        "host": config_broker.get("db.host"),
+        "port": config_broker.get("db.port"),
+        **(config_broker.get_object("db.query") or {}),
       }
     )
   )
@@ -256,12 +257,14 @@ def create_db(
   database = config_broker.get("db.path")
   username = config_broker.get("db.user")
   password = config_broker.get("db.password")
+  query = config_broker.get_object("db.query")
   if allow_list:
     assert username in USERNAME_ALLOW_LIST
   make_produser(
     host=host,
     port=port,
     database=database,
+    query=query,
     produser=username,
     produser_password=password,
     superuser=superuser,

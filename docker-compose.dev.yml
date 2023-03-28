@@ -19,7 +19,7 @@ services:
       - SIGOPT_APP_URL=https://sigopt.ninja:4443
       - SIGOPT_API_TOKEN=client_token
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt/root-ca.crt
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     volumes:
       - &rootca-volume ./artifacts/tls:/etc/ssl/certs/sigopt:ro
       - ./test:/sigopt-server/test:ro
@@ -44,8 +44,9 @@ services:
       - HOST_PWD
       - REQUESTS_CA_BUNDLE=/sigopt-server/artifacts/tls/root-ca.crt
       - *api-tls-verify-env
-    image: sigopt/test-runner-web:latest
+    image: sigopt/test-runner:latest
     volumes:
+      - &pg-sock-volume pg-sock:/var/run/postgresql
       - /dev/shm:/dev/shm
       - &babelrc ./.babelrc:/sigopt-server/.babelrc:ro
       - *rootca-volume
@@ -62,7 +63,6 @@ services:
       - ./test:/sigopt-server/test:delegated
       - ./web:/sigopt-server/web:ro,cached
       - ./webpack.config.script.babel.js:/sigopt-server/webpack.config.script.babel.js
-      - /var/run/docker.sock:/var/run/docker.sock
       - &test-routes-volume test-routes:/sigopt-server/artifacts/web/routes
     working_dir: /sigopt-server
     depends_on:
@@ -82,7 +82,7 @@ services:
     command:
       - ./scripts/compile/generate_routes.sh
       - "${sigopt_server_config_file}"
-    image: sigopt/node:latest
+    image: sigopt/node-development:latest
     volumes:
       - *babelrc
       - *test-routes-volume
@@ -104,10 +104,11 @@ services:
       <<: *logging
     environment:
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
+      - *pg-sock-volume
       - ./config:/sigopt-server/config:ro
       - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
       - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
@@ -133,7 +134,7 @@ services:
       - -c
       - |
         rm -rf /server-bin/* /static-artifacts/*
-    image: sigopt/node:latest
+    image: sigopt/node-development:latest
     volumes:
       - server-bin:/server-bin
       - static-artifacts:/static-artifacts
@@ -155,10 +156,11 @@ services:
       - &config sigopt_server_config_file
       - &git_hash sigopt_server_version
       - MESSAGE_GROUP=optimization
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes: &zigopt_volumes
+      - *pg-sock-volume
       - ./config:/sigopt-server/config:ro
       - ./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro
       - ./sigoptaux/sigoptaux:/sigopt-server/sigoptaux/sigoptaux:ro
@@ -200,7 +202,7 @@ services:
       - *git_hash
       - "sigopt.queue.pull_queue_name=dev-analytics-messages"
       - MESSAGE_GROUP=analytics
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes: *zigopt_volumes
@@ -230,13 +232,14 @@ services:
       - sigopt_server_config_file
       - sigopt_server_version
       - SIGOPT_CONTAINER_ENV=x
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     ports:
       - target: 5000
         host_ip: 127.0.0.1
     stdin_open: true
     tty: true
     volumes:
+      - *pg-sock-volume
       - "./artifacts/tls:/etc/ssl/sigopt:ro"
       - "./config:/sigopt-server/config:ro"
       - "./sigoptcompute/sigoptcompute:/sigopt-server/sigoptcompute/sigoptcompute:ro"
@@ -287,7 +290,7 @@ services:
       - SIGOPT_CONTAINER_ENV=x
       - SIGOPT_SWAGGER_PATH=/sigopt-server/artifacts/
       - SIGOPT_SWAGGER_FILENAME=swagger.json
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
@@ -316,8 +319,9 @@ services:
     volumes:
       - "./artifacts/tls:/etc/ssl/sigopt"
       - "./nginx:/etc/nginx:ro"
-      - nginx-cache:/var/cache/nginx
-      - nginx-var:/var/run/nginx
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run/nginx
     working_dir: /sigopt-server
     networks:
       default:
@@ -343,7 +347,7 @@ services:
       <<: *logging
     command:
       - protowatch.sh
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     volumes:
       - "./src/protobuf:/sigopt-server/src/protobuf:ro"
       - "./src/python:/sigopt-server/src/python"
@@ -379,10 +383,11 @@ services:
       - --
       - "--config=${sigopt_server_config_file}"
     environment: *sigopt-server-env
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
+      - *pg-sock-volume
       - ./artifacts/tls:/etc/ssl/sigopt:ro
       - .pyrepl.py:/sigopt-server/.pyrepl.py:ro
       - ./config:/sigopt-server/config:ro
@@ -409,7 +414,7 @@ services:
       - sigopt_server_version
       - &node-ca-certs-env "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
       - "NODE_OPTIONS=--max-old-space-size=4096"
-    image: sigopt/node:latest
+    image: sigopt/node-development:latest
     user: root
     stdin_open: true
     tty: true
@@ -460,7 +465,7 @@ services:
       - *node-ca-certs-env
       - "NODE_OPTIONS=--max-old-space-size=4096"
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
-    image: sigopt/node:latest
+    image: sigopt/node-development:latest
     user: root
     stdin_open: true
     tty: true
@@ -489,6 +494,8 @@ services:
       start_period: "2m"
     security_opt:
       - "no-new-privileges:true"
+    depends_on:
+      - minio
   smtp:
     restart: on-failure:5
     logging:
@@ -502,7 +509,7 @@ services:
         done
     environment:
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server/sigoptaux:/sigopt-server
-    image: sigopt/python:latest
+    image: sigopt/python-development:latest
     volumes:
       - ./config:/sigopt-server/config:ro
       - ./scratch:/sigopt-server/scratch:ro
@@ -532,14 +539,12 @@ services:
       <<: *logging
     image: "postgres:${POSTGRES_VERSION}"
     volumes:
-      - pgvolume:/var/lib/postgresql/data
-      - pg-var:/var/run/postgresql
+      - *pg-sock-volume
+      - pg-data:/var/lib/postgresql/data
     tmpfs:
       - /tmp
+    network_mode: none
     read_only: true
-    ports:
-      - target: 5432
-        host_ip: 127.0.0.1
     deploy:
       resources:
         limits:
@@ -599,7 +604,7 @@ services:
     command:
       - |
         mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
-        mc mb --ignore-existing sigopt/sigopt-development-user-uploads
+        mc mb --ignore-existing sigopt/sigopt-user-uploads
     depends_on:
       - minio
   minio:
@@ -664,10 +669,8 @@ services:
 volumes:
   minio-config: {}
   minio-data: {}
-  nginx-cache: {}
-  nginx-var: {}
-  pg-var: {}
-  pgvolume: {}
+  pg-data: {}
+  pg-sock: {}
   server-bin: {}
   static-artifacts: {}
   test-routes: {}

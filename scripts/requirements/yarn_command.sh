@@ -16,7 +16,7 @@ docker run -ti --name="$CONTAINER_NAME" \
   "$(m package.json)" \
   "$(m yarn.lock)" \
   --workdir=/sigopt-server \
-  sigopt/node:latest \
+  sigopt/node-development:latest \
   yarn "$@"
 
-docker commit "$CONTAINER_NAME" sigopt/node:latest
+docker commit "$CONTAINER_NAME" sigopt/node-development:latest

@@ -17,5 +17,5 @@ if [ -n "$_RUN" ]; then
     sleep 1
   done
 else
-  _RUN=x run_command_on_change.py --dir=sigoptcompute/sigoptcompute --dir=/sigopt-server/src/python/zigopt --initial-run qworkerwatch
+  _RUN=x run_command_on_change.py --dir=sigoptcompute/sigoptcompute --dir=/sigopt-server/src/python/zigopt --initial-run "$0"
 fi

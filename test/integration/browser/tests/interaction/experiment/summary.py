@@ -4,7 +4,6 @@
 import pytest
 from selenium.webdriver.common.by import By
 
-from integration.browser.models.test_error import FindElementErrorInTest
 from integration.browser.tests.interaction.experiment.test_base import ExperimentBrowserTest
 
 
@@ -88,11 +87,6 @@ class TestSummary(ExperimentBrowserTest):
     driver.get(guest_url)
 
     driver.wait_for_element_by_css_selector(".chart-holder")
-    try:
-      driver.find_element_by_text("Share")
-    except FindElementErrorInTest:
-      return True
-    return False
 
   def test_page_loads_with_no_data(self, logged_in_driver, experiment):
     driver = logged_in_driver

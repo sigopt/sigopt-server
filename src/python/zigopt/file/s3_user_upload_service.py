@@ -24,11 +24,10 @@ class S3UserUploadService(Service):
       credentials["aws_access_key_id"] = config_broker.get("user_uploads.s3.aws_access_key_id")
       credentials["aws_secret_access_key"] = config_broker.get("user_uploads.s3.aws_secret_access_key")
       credentials["aws_session_token"] = None
-      credentials["verify"] = config_broker.get("user_uploads.s3.verify", True)
       self.s3_client = boto3.client(
         "s3",
         config=BotoConfig(signature_version="s3v4"),
-        region_name=config_broker.get("user_uploads.s3.region"),
+        region_name=config_broker.get("user_uploads.s3.region", "us-east-1"),
         **credentials,
       )
 

@@ -72,7 +72,7 @@ class DatabaseConnection(object):
     del executemany
     params_to_log = self.sanitized_params(parameters)
     conn.info.setdefault("query_start_time", []).append(time.time())
-    self._sensitive_logger.info("%s\n%s", statement, params_to_log)
+    self._sensitive_logger.debug("%s\n%s", statement, params_to_log)
 
   def after_cursor_execute(self, conn, cursor, statement, parameters, context, executemany):
     del executemany
@@ -101,25 +101,14 @@ class DatabaseConnection(object):
 class DatabaseConnectionService(Service):
   @classmethod
   def make_engine(cls, config, poolclass=None, **kwargs):
-    if config["scheme"] == "postgresql":
-      raise Exception(
-        "The `postgresql` scheme is not supported. You must use `postgresql+pg8000`."
-        " Please update the db.scheme key in your config file."
-      )
-
     config = extend_dict({}, config, kwargs)
     echo = config.get("echo", False)
     ssl_context = config.get("ssl_context", None)
 
-    use_ssl = config["ssl"]
+    use_ssl = config.get("ssl", True)
     connect_args = {}
-    if config["scheme"] == "postgresql":
-      if ssl_context:
-        raise Exception("Custom ssl context not supported for psycopg2")
-      connect_args = {"sslmode": "require" if use_ssl else "disable"}
-    elif config["scheme"] == "postgresql+pg8000":
-      context_to_use = ssl_context or ssl.create_default_context()
-      connect_args = {"ssl_context": context_to_use if use_ssl else None}
+    context_to_use = ssl_context or ssl.create_default_context()
+    connect_args = {"ssl_context": context_to_use if use_ssl else None}
 
     override_pool_kwargs = remove_nones(dict(poolclass=poolclass))
     default_pool_kwargs = dict(
@@ -136,12 +125,13 @@ class DatabaseConnectionService(Service):
 
     return create_engine(
       URL(
-        config["scheme"],
-        username=config.get("user"),
+        "postgresql+pg8000",
+        username=config.get("user", "postgres"),
         password=config.get("password"),
-        host=config["host"],
-        port=config["port"],
-        database=config["path"],
+        host=config.get("host"),
+        port=config.get("port"),
+        database=config.get("path"),
+        query=config.get("query"),
       ),
       connect_args=connect_args,
       execution_options={

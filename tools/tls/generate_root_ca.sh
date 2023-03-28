@@ -9,6 +9,8 @@ CONFIG="$(mktemp)"
 
 CN="SigOpt ${NAME} $(date +%F) CA"
 cat >"$CONFIG" <<EOF
+# SigOpt root certificate configuration
+
 [ req ]
 default_bits = 4096
 prompt = no

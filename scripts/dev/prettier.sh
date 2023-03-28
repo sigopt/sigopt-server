@@ -8,7 +8,7 @@ docker create \
   --mount="source=$(pwd),target=/sigopt-server/to-fix,type=bind,consistency=cached" \
   --workdir=/sigopt-server/to-fix \
   --entrypoint=/usr/bin/env \
-  sigopt/node:latest \
+  sigopt/node-development:latest \
   node /sigopt-server/node_modules/.bin/prettier "$@" \
   >/dev/null
 

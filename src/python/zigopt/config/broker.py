@@ -57,7 +57,7 @@ class ConfigBroker(object):
 
   def log_configs(self) -> None:
     for source in self.impl.sources:
-      logging.getLogger("sigopt.config").info(
+      logging.getLogger("sigopt.config").debug(
         "%s %s",
         source.__class__.__name__,
         json.dumps(source.all_configs_for_logging()),

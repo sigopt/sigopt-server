@@ -6,14 +6,14 @@ DIRS = scratch web/static/js
 
 DEVELOPMENT_IMAGES = \
 	nginx \
-	node \
-	python \
-	test-runner-web
+	node-development \
+	python-development \
+	test-runner
 
 RUN_IMAGES = \
 	nginx \
-	node \
-	python
+	web \
+	zigopt
 
 compile: protocompile pytest lint eslint
 
@@ -23,7 +23,7 @@ dist-compile: compile
 protocompile:
 	@./tools/protobuf/compile.sh
 
-docker-protocompile: build-docker-images
+docker-protocompile: build-debug-images
 	@./scripts/dev/compile_protobuf_in_docker.sh
 
 clean-test-pycache:

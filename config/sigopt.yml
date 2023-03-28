@@ -1,0 +1,25 @@
+clients:
+  client:
+    id: 1
+    name: SigOpt
+    user:
+      email: owner@sigopt.ninja
+      has_verified_email: true
+      name: Default Owner
+  enabled: true
+extends: defaults.json
+redis:
+  host: redis
+  ssl: false
+user_uploads:
+  s3:
+    aws_access_key_id: ROOTUSER
+    bucket: sigopt-user-uploads
+    enabled: true
+    external_url: https://sigopt.ninja:9000
+    region: us-east-1
+web:
+  cookiejar_bucket: sigopt-cookiejar
+  cookiejar_credentials:
+    accessKeyId: ROOTUSER
+  cookiejar_endpoint: http://minio:9000

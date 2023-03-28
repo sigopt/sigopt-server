@@ -15,6 +15,9 @@ from zigopt.common.strings import is_string
 from zigopt.services.base import Service
 
 
+DEFAULT_REDIS_PORT = 6379
+
+
 class RedisServiceError(Exception):
   pass
 
@@ -51,7 +54,9 @@ def ensure_redis(func):
     if not self.redis or not self.blocking_conn_redis:
       self.warmup()
       if not self.redis or not self.blocking_conn_redis:
-        raise RedisServiceError(f"Attempting to access Redis but failed to connect to {self.host}:{self.port}")
+        host = self.services.config_broker.get("redis.host")
+        port = self.services.config_broker.get("redis.port", DEFAULT_REDIS_PORT)
+        raise RedisServiceError(f"Attempting to access Redis but failed to connect to {host}:{port}")
     return func(self, *args, **kwargs)
 
   return wrapper
@@ -161,9 +166,6 @@ class RedisService(Service):
     super().__init__(services)
     self.redis = None
     self.blocking_conn_redis = None
-    self.host = None
-    self.port = None
-    self.ssl = None
 
   @property
   def enabled(self):
@@ -173,7 +175,7 @@ class RedisService(Service):
   def make_redis(cls, config, **kwargs):
     config = extend_dict({}, config, kwargs)
     host = config.get("host")
-    port = config.get("port")
+    port = config.get("port", DEFAULT_REDIS_PORT)
     password = config.get("password", None)
     ssl = config.get("ssl", True)
     ssl_ca_certs = config.get("ssl_ca_certs", None)
@@ -194,10 +196,6 @@ class RedisService(Service):
 
   def warmup(self):
     if self.enabled:
-      self.host = self.services.config_broker.get("redis.host")
-      self.port = self.services.config_broker.get("redis.port")
-      self.ssl = self.services.config_broker.get("redis.ssl")
-
       try:
         self.redis = self.make_redis(
           self.services.config_broker.get_object("redis"),
@@ -217,9 +215,9 @@ class RedisService(Service):
         self.blocking_conn_redis = None
         self.logger.warning(
           "Unable to connect to Redis at %s:%s (ssl=%s)",
-          self.host,
-          self.port,
-          self.ssl,
+          self.services.config_broker.get("redis.host"),
+          self.services.config_broker.get("redis.port", DEFAULT_REDIS_PORT),
+          self.services.config_broker.get("redis.ssl"),
         )
     else:
       self.logger.warning("redis disabled")
@@ -341,7 +339,7 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def set_hash_fields(self, redis_key, mapping):
-    return self.redis.hmset(self.services.redis_key_service.get_key_value(redis_key), mapping)
+    return self.redis.hset(self.services.redis_key_service.get_key_value(redis_key), mapping=mapping)
 
   @retry_on_failure
   @ensure_redis

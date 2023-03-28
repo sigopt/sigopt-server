@@ -11,7 +11,7 @@ import requests
 import werkzeug
 
 from zigopt.common import *
-from zigopt.config.broker import ConfigBroker, DictConfigBrokerSource
+from zigopt.config.broker import ConfigBroker
 from zigopt.profile.profile import NullProfiler, Profiler
 from zigopt.queue.message_groups import MessageGroup
 from zigopt.services.api import ApiRequestLocalServiceBag, ApiServiceBag
@@ -62,34 +62,10 @@ def profiler(request):
   profiler.print_stats()
 
 
-def _prepare_session_broker(broker):
-  config = {
-    "db": {
-      "host": broker.get("db.test_host", broker["db.host"]),
-      "port": broker.get("db.test_port", broker["db.port"]),
-    },
-    "smtp": {
-      "host": broker.get("smtp.test_host", broker.get("smtp.host")),
-      "port": broker.get("smtp.test_port", broker.get("smtp.port")),
-    },
-    "redis": {
-      "host": broker.get("redis.test_host", broker.get("redis.host")),
-      "port": broker.get("redis.test_port", broker.get("redis.port")),
-    },
-  }
-  broker.impl.sources.insert(1, DictConfigBrokerSource(config))
-
-
-def _make_config_broker(config_file):
-  broker = ConfigBroker.from_file(config_file)
-  _prepare_session_broker(broker)
-  return broker
-
-
 @pytest.fixture(scope="session")
 def config_broker(request):
   config_file = request.config.getoption("--config-file")
-  return _make_config_broker(config_file)
+  return ConfigBroker.from_file(config_file)
 
 
 @pytest.fixture(scope="session")

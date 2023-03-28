@@ -39,6 +39,11 @@ commands:
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: docker version
+  sigopt-ninja-dns:
+    steps:
+      - run:
+          name: Add sigopt.ninja DNS entry
+          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
   compile-protobuf:
     steps:
       - run: sudo apt-get update -yqq && sudo apt-get install -yqq --no-install-recommends --no-install-suggests libprotobuf-dev protobuf-compiler
@@ -84,15 +89,17 @@ commands:
       - run: pyenv global 3.10.6
       - run: python3 -mpip install docker python-dotenv
       - run: make submodules
-      - run: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
-      - run: docker image ls
+      - run:
+          command: python3 docker/image_builder.py --build-tag "$CIRCLE_SHA1" << parameters.build_images >>
+          no_output_timeout: 30m
+      - sigopt-ninja-dns
     parameters:
       build_images:
         type: string
   integration-test-setup:
     steps:
       - docker-test-setup:
-          build_images: << parameters.build_images >> << parameters.test_runner_name >>
+          build_images: << parameters.build_images >> test-runner
       - run: ./ci/create_development_tls_certs.sh
       - run: |
           ./ci/compose.sh create \
@@ -108,8 +115,9 @@ commands:
       - start-service:
           description: PostgreSQL
           service: postgres
+      - run: sleep 5
       - run: ./ci/compose.sh create createdb
-      - run: ./ci/compose.sh run createdb
+      - run: ./ci/compose.sh run --rm createdb --fake-data
       - start-service:
           description: Redis
           service: redis
@@ -131,22 +139,16 @@ commands:
       - start-sigopt-service:
           description: API Server
           service: api
+      - run: "./ci/wait_for.sh url https://sigopt.ninja:4443/api/ --user client_token:"
       - run:
           name: Set up MinIO buckets
           command: |
-            wget https://dl.min.io/client/mc/release/linux-amd64/mc
-            chmod +x mc
-            echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
-            ./mc alias set --insecure sigopt https://sigopt.ninja:9000 ROOTUSER CHANGEME123
-            ./mc mb --insecure sigopt/sigopt-cookiejar
-            ./mc mb --insecure sigopt/sigopt-development-user-uploads
+            ./ci/compose.sh run --rm init-minio-cookiejar
+            ./ci/compose.sh run --rm init-minio-filestorage
     parameters:
       build_images:
         type: string
         default: nginx zigopt
-      test_runner_name:
-        type: string
-        default: test-runner
   run-integration-test:
     steps:
       - integration-test-setup:
@@ -166,7 +168,7 @@ commands:
         type: string
   run-parallel-integration-tests:
     steps:
-      - run: TEST_RUNNER_NAME=<< parameters.test_runner_name >> ./ci/compose_test.sh "<< parameters.test_path >>" --count=<< parameters.count >> $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" | circleci tests split --split-by=timings) << parameters.extra_test_args >>
+      - run: ./ci/compose_test.sh "<< parameters.test_path >>" --count=<< parameters.count >> $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" | circleci tests split --split-by=timings) << parameters.extra_test_args >>
     parameters:
       count:
         type: integer
@@ -176,19 +178,16 @@ commands:
         default: ""
       test_path:
         type: string
-      test_runner_name:
-        type: string
-        default: test-runner
   start-web-server:
     steps:
       - start-sigopt-service:
           description: Web Server
           service: web-server
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
   run-browser-test:
     steps:
       - integration-test-setup:
           build_images: nginx web zigopt
-          test_runner_name: test-runner-web
       - start-web-server
       - run: mkdir -p screenshots/failure
       - run: mkdir -p failure_console_logs
@@ -196,7 +195,6 @@ commands:
           count: << parameters.count >>
           extra_test_args: --headless
           test_path: /browser/tests/interaction<< parameters.test_path >>
-          test_runner_name: test-runner-web
       - store-junit-test-results
       - store_artifacts:
           path: screenshots/failure
@@ -214,12 +212,10 @@ commands:
     steps:
       - integration-test-setup:
           build_images: nginx web zigopt
-          test_runner_name: test-runner-web
       - start-web-server
       - run-parallel-integration-tests:
           count: << parameters.count >>
           test_path: /web
-          test_runner_name: test-runner-web
       - store_test_results:
           path: junit-results
     parameters:
@@ -402,9 +398,10 @@ jobs:
     steps:
       - checkout
       - run: pyenv global 3.10.6
+      - install-submodules
       - install-trivy
       - run: python3 -mpip install docker python-dotenv
-      - run: python3 docker/image_builder.py nginx node zigopt --build-tag=scan
+      - run: python3 docker/image_builder.py nginx web zigopt --build-tag=scan
       - run: ./ci/trivy_scan_images.sh --ignore-unfixed
       - store_artifacts:
           path: artifacts/trivy/
@@ -417,6 +414,27 @@ jobs:
       - run: mkdir -p artifacts/trivy && trivy fs .
       - store_artifacts:
           path: artifacts/trivy/
+  test-docker-deployment:
+    executor: sigopt-build
+    resource_class: xlarge
+    steps:
+      - checkout
+      - update-docker-cli
+      - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
+      - sigopt-ninja-dns
+      - run: mkdir -p scratch
+      - run: |
+          set -o pipefail
+          EDITOR=true ./setup.sh | tee scratch/setup_output.log
+      - run:
+          command: ./start.sh
+          background: true
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/api/health
+      - run: |
+          EMAIL="$(tail -n 2 scratch/setup_output.log | grep -E '^  email:' | awk -F': ' '{ print $2 }')"
+          PASSWORD="$(tail -n 2 scratch/setup_output.log | grep -E '^  password:' | awk -F': ' '{ print $2 }')"
+          curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "'"$EMAIL"'", "password": "'"$PASSWORD"'"}'
   test-docker-development:
     executor: sigopt-build
     resource_class: xlarge
@@ -425,9 +443,7 @@ jobs:
       - update-docker-cli
       - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - run: ./ci/create_development_tls_certs.sh
-      - run:
-          name: Add sigopt.ninja DNS entry
-          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+      - sigopt-ninja-dns
       - run: make build-debug-images fix-db setup-cookiejar setup-filestorage
       - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
       - run:
@@ -544,6 +560,7 @@ jobs:
       - start-service:
           description: PostgreSQL
           service: postgres
+      - run: sleep 5
       - run: ./ci/compose.sh create createdb
       - run: ./ci/compose.sh run createdb
       - run: ./ci/worker_health_fail.sh
@@ -671,6 +688,7 @@ workflows:
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
+      - test-docker-deployment
       - test-docker-development
       - setup-web
       - compile-protobuf
@@ -729,3 +747,15 @@ workflows:
       - python-custom-lint
       - python-vulture
       - python-mypy
+  nightly:
+    jobs:
+      - trivy-scan-images
+      - trivy-scan-project
+      - test-docker-deployment
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main

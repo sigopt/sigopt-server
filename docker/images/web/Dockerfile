@@ -2,14 +2,45 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 ARG BUILD_TAG=build
-ARG NODE_VERSION
+ARG NODE_MAJOR
 
 
-FROM sigopt/compile-web-client-side:${BUILD_TAG} AS client-artifacts
-FROM sigopt/compile-web-server-side:${BUILD_TAG} AS server-artifacts
+FROM node:${NODE_MAJOR} AS node-build
+
+# hadolint ignore=DL3016
+RUN set -ex \
+  ; npm update -g \
+  ; npm install -g npm yarn --force \
+  ; npm cache clean --force \
+  ; :
+
+WORKDIR /sigopt-server
+
+COPY package.json /sigopt-server/package.json
+RUN set -ex \
+  ; yarn install --production --silent \
+  ; yarn cache clean \
+  ; :
+
+COPY .babelrc /sigopt-server/
+COPY web /sigopt-server/web
 
 
-FROM node:${NODE_VERSION}-alpine
+FROM node-build AS client-artifacts
+
+COPY scripts/compile/minify_js.sh /sigopt-server/scripts/compile/minify_js.sh
+
+RUN ./scripts/compile/minify_js.sh
+
+
+FROM node-build AS server-artifacts
+
+COPY scripts/compile/minify_js_server_bundle.sh /sigopt-server/scripts/compile/minify_js_server_bundle.sh
+
+RUN ./scripts/compile/minify_js_server_bundle.sh
+
+
+FROM node:${NODE_MAJOR}-alpine
 
 # hadolint ignore=DL3018
 RUN set -ex \
@@ -19,14 +50,14 @@ RUN set -ex \
   ; :
 
 RUN set -ex \
+  ; npm update -g \
+  ; :
+
+RUN set -ex \
   ; apk add --no-cache runuser~=2 \
   ; :
 
 WORKDIR /sigopt-server
-
-COPY config /sigopt-server/config
-COPY web/js /sigopt-server/web/js
-COPY web/scripts /sigopt-server/web/scripts
 
 COPY --from=client-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
 COPY --from=server-artifacts /sigopt-server/artifacts/web/ /sigopt-server/artifacts/web/
