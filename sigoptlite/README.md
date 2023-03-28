@@ -94,9 +94,9 @@ The following behavior limitations are strictly enforced in SigOpt-Lite.
 
 The following set of soft limitations are recommended by the SigOpt research team to ensure a pleasant experience using SigOpt-Lite.
 
-- Maximum categorical breadth (total number of categorical values across all [categorical parameters](https://docs.sigopt.com/intro/main-concepts/parameter_space#categorical-parameters) <= 10
 - Maximum number of parameters <= 100
 - Maximum number of observations <= 10,000
+- Maximum categorical breadth (total number of categorical values across all [categorical parameters](https://docs.sigopt.com/intro/main-concepts/parameter_space#categorical-parameters) <= 10
 - Maximum number of [parameter constraints](https://docs.sigopt.com/advanced_experimentation/parameter_constraints) <= 10
 - Maximum number of unique integer constrained variables <= 10
 - Maximum number of [metric constraints](https://docs.sigopt.com/advanced_experimentation/metric_constraints) <= 4
