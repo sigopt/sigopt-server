@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache License 2.0
 
 # SigOpt-Lite
 
-SigOpt-Lite is an open source tool for locally running a lightweight version of [SigOpt](www.sigopt.com). Sigopt-Lite contains all the computation elements of SigOpt-Server, but bypasses the need to set up servers and Docker. SigOpt-Lite gives access to the SigOpt Core Module functionality; to learn more about that, visit the [SigOpt documentation](https://docs.sigopt.com/intro/sigopt-api-modules). To learn about how to host your own SigOpt server, visit our [SigOpt-Server documentation](../#README.md).
+SigOpt-Lite is an open source tool for locally running a lightweight version of [SigOpt](https://www.sigopt.com). Sigopt-Lite contains all the computation elements of SigOpt-Server, but bypasses the need to set up servers and Docker. SigOpt-Lite gives access to the SigOpt Core Module functionality; to learn more about that, visit the [SigOpt documentation](https://docs.sigopt.com/intro/sigopt-api-modules). To learn about how to host your own SigOpt server, visit our [SigOpt-Server documentation](../#README.md) or [the official SigOpt OSS site (sigopt.org)](https://sigopt.org/).
 
 ## Installation
 
@@ -68,19 +68,36 @@ conn = Connection(driver="lite", compute_mode="kde_only")
 
 To support easy use of SigOpt-Lite, the calling sequences involving the `Connection` object are meant to match those for connecting with api.sigopt.com (as is directed in the [SigOpt documentation](https://docs.sigopt.com)). Still, in pursuit of simplicitly and a minimalistic installation, SigOpt-Lite does have some limitations.
 
-### API Objects and Endpoints
+### Supported API Objects and Endpoints
 
 Sigopt-Lite functionality matches the core module of our hosted SigOpt platform, but only certain [API endpoints](https://docs.sigopt.com/core-module-api-references/api-endpoints) are available.
 
 | Objects          | Endpoints      |
 | ---------------- | -------------- |
-| Experiment       | Create, Detail |
-| Suggestion       | Create         |
-| Observation      | Create, List   |
-| Best Assignments | Detail         |
+| Experiment       | [Create](https://docs.sigopt.com/core-module-api-references/api-endpoints/experiment-create), [Detail](https://docs.sigopt.com/core-module-api-references/api-endpoints/experiment-detail) |
+| Suggestion       | [Create](https://docs.sigopt.com/core-module-api-references/api-endpoints/suggestion-create)         |
+| Observation      | [Create](https://docs.sigopt.com/core-module-api-references/api-endpoints/observation-create), [List](https://docs.sigopt.com/core-module-api-references/api-endpoints/observation-list)   |
+| Best Assignments | [Detail](https://docs.sigopt.com/core-module-api-references/api-endpoints/experiment-best-assignments)         |
 
-### SigOpt-Lite Behavior Limitations
+## SigOpt-Lite Behavior Limitations
+
+### Limitations
+
+The following behavior limitations are strictly enforced in SigOpt-Lite.
 
 - SigOpt-Lite can only run one Experiment at a time: the Experiment ID for the sole experiment is `"-1"`.
 - SigOpt-Lite supports no [parallelism](https://docs.sigopt.com/advanced_experimentation/parallelism): an observation must be reported for the open suggestion before creating another unique suggestion. Parallel suggestions can be accessed through an account at [sigopt.com](https://app.sigopt.com/signup) or through the open source SigOpt-Server.
 - SigOpt-Lite does not support [Grid Searh](https://docs.sigopt.com/intro/main-concepts/random_search#grid-search).
+
+
+### Recommended Limitations
+
+The following set of soft limitations are recommended by the SigOpt research team to ensure a pleasant experience using SigOpt-Lite.
+
+- Maximum categorical breadth (total number of categorical values across all [categorical parameters](https://docs.sigopt.com/intro/main-concepts/parameter_space#categorical-parameters) <= 10
+- Maximum number of parameters <= 100
+- Maximum number of observations <= 10,000
+- Maximum number of [parameter constraints](https://docs.sigopt.com/advanced_experimentation/parameter_constraints) <= 10
+- Maximum number of unique integer constrained variables <= 10
+- Maximum number of [metric constraints](https://docs.sigopt.com/advanced_experimentation/metric_constraints) <= 4
+- Maximum conditionals breadth (total number of conditional values across all [conditional parameters](https://docs.sigopt.com/intro/main-concepts/parameter_space#define-conditional-parameters) <= 10
