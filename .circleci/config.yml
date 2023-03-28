@@ -86,8 +86,6 @@ commands:
   docker-test-setup:
     steps:
       - checkout
-      - run: pyenv global 3.10.6
-      - run: python3 -mpip install docker python-dotenv
       - run: make submodules
       - sigopt-ninja-dns
   integration-test-setup:
@@ -391,7 +389,6 @@ jobs:
     steps:
       - checkout
       - update-docker-cli
-      - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - sigopt-ninja-dns
       - run: EDITOR=true ./setup.sh
       - run:
@@ -407,7 +404,6 @@ jobs:
     steps:
       - checkout
       - update-docker-cli
-      - run: grep -Eh '^(docker|python-dotenv)=' requirements-dev.txt | xargs python3 -mpip install
       - run: ./ci/create_development_tls_certs.sh
       - sigopt-ninja-dns
       - run: make submodules fix-db setup-cookiejar setup-filestorage
