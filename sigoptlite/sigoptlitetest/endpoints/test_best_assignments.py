@@ -136,7 +136,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_values_seen = self.best_assignments_to_value_list(best_assignments_list)
     self.assert_observation_lists_are_equal(best_values_seen, pareto_optimal_values)
 
-  # @pytest.mark.xfail
   @pytest.mark.parametrize("threshold_y1, threshold_y2", [(None, -0.25), (0.25, None), (0.25, -0.25)])
   def test_multimetric_thresholds(self, threshold_y1, threshold_y2):
     experiment_meta = dict(
@@ -212,7 +211,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     for optimized_value in optimized_values_within_threshold:
       assert best_observation.values[1].value <= optimized_value
 
-  @pytest.mark.xfail
   def test_multimetric_search(self):
     experiment_meta = self.get_experiment_feature("search")
     experiment_meta["type"] = "random"
@@ -240,27 +238,32 @@ class TestBestAssignmentsLogger(UnitTestsBase):
         if objectives[i] == "minimize":
           assert value.value <= thresholds[i]
 
-  @pytest.mark.xfail
   def test_multitask(self):
     experiment_meta = self.get_experiment_feature("multitask")
     experiment_meta["type"] = "random"
     e = self.conn.experiments().create(**experiment_meta)
 
+    wrong_optimal_value = 200
     num_observations = 25
     for _ in range(num_observations):
       suggestion = self.conn.experiments(e.id).suggestions().create()
+      if suggestion.task.cost < 1:
+        values = [dict(name="y1", value=wrong_optimal_value)]
+      else:
+        values = [dict(name="y1", value=numpy.random.rand())]
       self.conn.experiments(e.id).observations().create(
         suggestion=suggestion.id,
-        values=[dict(name="y1", value=numpy.random.rand()), dict(name="y2", value=numpy.random.rand())],
+        values=values,
         task=suggestion.task,
       )
 
     best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
     best_assignments_list = list(best_assignments.iterate_pages())
     assert len(best_assignments_list) == 1
+
     self.conn.experiments(e.id).observations().fetch()
-    assert best_assignments_list[0].task.cost == 1
-    assert best_assignments_list[0].task.name == "expensive"
+    assert best_assignments_list[0].values[0].value != 200
+    assert best_assignments_list[0].values[0].value <= 1
 
   def test_multisolutions(self):
     experiment_meta = self.get_experiment_feature("multisolution")
