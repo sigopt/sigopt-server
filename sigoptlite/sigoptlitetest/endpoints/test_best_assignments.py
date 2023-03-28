@@ -251,7 +251,6 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     best_assignments_list = list(best_assignments.iterate_pages())
     assert len(best_assignments_list) == 1
 
-    self.conn.experiments(e.id).observations().fetch()
     assert best_assignments_list[0].values[0].value != 200
     assert best_assignments_list[0].values[0].value <= 1
 
