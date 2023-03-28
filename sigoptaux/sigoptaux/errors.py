@@ -11,11 +11,6 @@ class ValidationError(Exception):
     self.msg = "Validation error"
 
 
-class BadParamError(ValidationError):
-  def __init__(self, msg):
-    self.msg = msg
-
-
 class MissingParamError(ValidationError):
   def __init__(self, param, msg=None):
     super().__init__()
