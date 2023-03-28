@@ -119,7 +119,7 @@ class TestSearchNextPoints(object):
     parallelism_method = PARALLEL_CONSTANT_LIAR
     view_input, _ = zs.form_search_next_points_categorical_inputs(parallelism_method)
 
-    with patch("sigoptcompute.views.rest.search_next_points.GpNextPointsCategorical") as mock_gp_next_point:
+    with patch("libsigopt.sigoptcompute.views.rest.search_next_points.GpNextPointsCategorical") as mock_gp_next_point:
       search_next_point = SearchNextPoints(view_input)
       search_next_point.search_next_points_expected_improvement_with_failures()
 
@@ -182,7 +182,7 @@ class TestSearchNextPoints(object):
     parallelism_method = PARALLEL_CONSTANT_LIAR
     view_input, _ = zs.form_search_next_points_categorical_inputs(parallelism_method)
 
-    with patch("sigoptcompute.views.rest.search_next_points.GpNextPointsCategorical") as mock_gp_next_point:
+    with patch("libsigopt.sigoptcompute.views.rest.search_next_points.GpNextPointsCategorical") as mock_gp_next_point:
       search_next_point = SearchNextPoints(view_input)
       search_next_point.search_next_points_expected_improvement()
 
