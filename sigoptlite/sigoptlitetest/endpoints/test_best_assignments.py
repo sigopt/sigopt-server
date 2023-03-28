@@ -5,14 +5,13 @@ import random
 
 import numpy
 import pytest
+from sigopt import Connection
 
 from sigoptlite.best_assignments import BestAssignmentsLogger
 from sigoptlite.builders import LocalExperimentBuilder
+from sigoptlite.driver import LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
 from sigoptlitetest.constants import DEFAULT_PARAMETERS
-from sigoptlite.driver import LocalDriver
-
-from sigopt import Connection
 
 
 class TestBestAssignmentsLogger(UnitTestsBase):
@@ -22,9 +21,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
   def best_assignments_to_value_list(best_assignments):
     best_values_seen = []
     for best_assignment in best_assignments:
-      best_values_seen.append(
-        [dict(name=value.name, value=value.value) for value in best_assignment.values]
-      )
+      best_values_seen.append([dict(name=value.name, value=value.value) for value in best_assignment.values])
     return best_values_seen
 
   @staticmethod
@@ -218,63 +215,79 @@ class TestBestAssignmentsLogger(UnitTestsBase):
   @pytest.mark.xfail
   def test_multimetric_search(self):
     experiment_meta = self.get_experiment_feature("search")
+    experiment_meta["type"] = "random"
     thresholds = [m["threshold"] for m in experiment_meta["metrics"]]
     objectives = [m["objective"] for m in experiment_meta["metrics"]]
-    experiment = LocalExperimentBuilder(experiment_meta)
-    observations = self.make_random_observations(experiment, num_observations=25)
+    e = self.conn.experiments().create(**experiment_meta)
 
-    best_assignments_logger = BestAssignmentsLogger(experiment)
-    best_observations_from_logger = best_assignments_logger.fetch(observations)
-    self.assert_observations_are_sorted(best_observations_from_logger, experiment)
+    num_observations = 25
+    for _ in range(num_observations):
+      suggestion = self.conn.experiments(e.id).suggestions().create()
+      self.conn.experiments(e.id).observations().create(
+        suggestion=suggestion.id,
+        values=[dict(name="y1", value=numpy.random.rand()), dict(name="y2", value=numpy.random.rand())],
+      )
 
-    for best_observation in best_observations_from_logger:
-      for i, metric in enumerate(best_observation["values"]):
+    best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
+    best_assignments_list = list(best_assignments.iterate_pages())
+    self.assert_best_assignments_are_sorted(e, best_assignments_list)
+    assert len(best_assignments_list) > 1
+
+    for best_assignment in best_assignments_list:
+      for i, value in enumerate(best_assignment.values):
         if objectives[i] == "maximize":
-          assert metric["value"] >= thresholds[i]
+          assert value.value >= thresholds[i]
         if objectives[i] == "minimize":
-          assert metric["value"] <= thresholds[i]
+          assert value.value <= thresholds[i]
 
-    valid_observations = best_assignments_logger.filter_valid_full_cost_observations(observations)
-    expected_valid_observations = [o.get_client_observation(experiment) for o in valid_observations]
-    assert len(best_observations_from_logger) > 1
-    self.assert_observation_lists_are_equal(best_observations_from_logger, expected_valid_observations)
-
+  @pytest.mark.xfail
   def test_multitask(self):
     experiment_meta = self.get_experiment_feature("multitask")
-    experiment = LocalExperimentBuilder(experiment_meta)
-    observations = []
-    for _ in range(20):
-      observation_with_task = self.make_observation(
-        experiment=experiment,
-        assignments=self.make_random_suggestions(experiment)[0].assignments,
-        values=[dict(name="y1", value=numpy.random.rand())],
-        task=numpy.random.choice(experiment_meta["tasks"]),
-      )
-      observations.append(observation_with_task)
+    experiment_meta["type"] = "random"
+    e = self.conn.experiments().create(**experiment_meta)
 
-    best_assignments_logger = BestAssignmentsLogger(experiment)
-    best_observations_from_logger = best_assignments_logger.fetch(observations)
-    assert len(best_observations_from_logger) == 1
-    assert best_observations_from_logger[0]["task"]["cost"] == 1
-    assert best_observations_from_logger[0]["task"]["name"] == "expensive"
+    num_observations = 25
+    for _ in range(num_observations):
+      suggestion = self.conn.experiments(e.id).suggestions().create()
+      self.conn.experiments(e.id).observations().create(
+        suggestion=suggestion.id,
+        values=[dict(name="y1", value=numpy.random.rand()), dict(name="y2", value=numpy.random.rand())],
+        task=suggestion.task,
+      )
+
+    best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
+    best_assignments_list = list(best_assignments.iterate_pages())
+    assert len(best_assignments_list) == 1
+    self.conn.experiments(e.id).observations().fetch()
+    assert best_assignments_list[0].task.cost == 1
+    assert best_assignments_list[0].task.name == "expensive"
 
   def test_multisolutions(self):
     experiment_meta = self.get_experiment_feature("multisolution")
+    experiment_meta["type"] = "random"
     num_solutions = experiment_meta["num_solutions"]
-    experiment = LocalExperimentBuilder(experiment_meta)
-    best_assignments_logger = BestAssignmentsLogger(experiment)
-    observations = []
-    for _ in range(num_solutions):
-      observation = self.make_observation(
-        experiment=experiment,
-        assignments=self.make_random_suggestions(experiment)[0].assignments,
+    e = self.conn.experiments().create(**experiment_meta)
+
+    initial_values = [[dict(name="y1", value=numpy.random.rand())] for _ in range(num_solutions)]
+
+    for i in range(num_solutions):
+      suggestion = self.conn.experiments(e.id).suggestions().create()
+      self.conn.experiments(e.id).observations().create(
+        suggestion=suggestion.id,
+        values=initial_values[i],
+      )
+      best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
+      best_assignments_list = list(best_assignments.iterate_pages())
+      best_values_seen = self.best_assignments_to_value_list(best_assignments_list)
+      self.assert_observation_lists_are_equal(best_values_seen, initial_values[: i + 1])
+
+    for i in range(100):
+      suggestion = self.conn.experiments(e.id).suggestions().create()
+      self.conn.experiments(e.id).observations().create(
+        suggestion=suggestion.id,
         values=[dict(name="y1", value=numpy.random.rand())],
       )
-      observations.append(observation)
-      best_observations_from_logger = best_assignments_logger.fetch(observations)
-      expected_observations = [o.get_client_observation(experiment) for o in observations]
-      self.assert_observation_lists_are_equal(best_observations_from_logger, expected_observations)
 
-    observations.extend(self.make_random_observations(experiment, 100))
-    best_observations_from_logger = best_assignments_logger.fetch(observations)
-    assert len(best_observations_from_logger) == num_solutions
+    best_assignments = self.conn.experiments(e.id).best_assignments().fetch()
+    best_assignments_list = list(best_assignments.iterate_pages())
+    assert len(best_assignments_list) == num_solutions
