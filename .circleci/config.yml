@@ -742,3 +742,15 @@ workflows:
       - python-custom-lint
       - python-vulture
       - python-mypy
+  nightly:
+    jobs:
+      - trivy-scan-images
+      - trivy-scan-project
+      - test-docker-deployment
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
