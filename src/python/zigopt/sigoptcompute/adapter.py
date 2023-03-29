@@ -77,7 +77,7 @@ class SCAdapter(Service):
 
   """
   Translates requests from zigopt (containing Experiments, Suggestions, Observations, etc),
-  to requests that compute can understand (serialized numeric data).
+  to requests that sigoptcompute can understand (serialized numeric data).
   """
   # NOTE - This has been modified for metric constraint experiments to keep the next points call
   # under ~120 seconds in the worst case scenario.
@@ -670,21 +670,21 @@ class SCAdapter(Service):
           poly_indices: a list of lists which describes the polynomial to be used.
 
         These three options are provided for simplicity, so that the most common nonzero means
-        can be constructed within compute rather than requiring an understanding here in zigopt.
+        can be constructed within sigoptcompute rather than requiring an understanding here in zigopt.
 
         Option 1) Pass one of 'zero', 'constant', 'linear' for mean_type and None for poly_indices.
-          This will allow compute to figure out the appropriate indices.
+          This will allow sigoptcompute to figure out the appropriate indices.
         Option 2) Pass 'custom' for mean type and a list of lists of nonnegative integers for poly_indices
-          This will allow compute to receive custom chosen indices.
+          This will allow sigoptcompute to receive custom chosen indices.
           Example: In 3D if you wanted 1 + x^2 + xyz + yz^3 you use poly_indices=[[0,0,0], [2,0,0], [1,1,1], [0,1,3]]
         Option 3) Pass 'automatic' for mean_type and None for poly_indices.
-          This will cause compute to automatically choose a (hopefully) good mean based on its logic.
+          This will cause sigoptcompute to automatically choose a (hopefully) good mean based on its logic.
 
         The 'automatic' option (Option 3) will choose 'zero', 'constant' or 'linear' based on the
         number of points that have been sampled.  This logic is subject to change as we evolve SCAdapter
-        and Qworker and compute itself.
+        and Qworker and sigoptcompute itself.
 
-        :param nonzero_mean_choice: Used to determine what mean to command compute to use
+        :param nonzero_mean_choice: Used to determine what mean to command sigoptcompute to use
         :type nonzero_mean_choice: One of the options above
         :param num_points: number of points of historical data
         :type num_points: int >=0  (Could 0 actually happen?)
@@ -707,7 +707,7 @@ class SCAdapter(Service):
       elif not is_string(passed_mean_type):
         raise ValueError(f"mean_type should be a string, but passed: {type(passed_mean_type)}")
       elif not (passed_poly_indices is None or is_sequence(passed_poly_indices)):
-        raise ValueError("poly_indices must be a list of lists, or None to let compute choose")
+        raise ValueError("poly_indices must be a list of lists, or None to let sigoptcompute choose")
       else:
         if passed_mean_type == "custom":
           if passed_poly_indices is None:
