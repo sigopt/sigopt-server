@@ -55,3 +55,4 @@ coverage.xml
 # build/dist files for sigoptlite
 sigoptlite/build/
 sigoptlite/dist/
+sigoptlite/lite_*
