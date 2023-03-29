@@ -58,7 +58,7 @@ COPY --from=protobuf /sigopt-server/src/python/zigopt/ /sigopt-server/src/python
 
 COPY libsigopt /sigopt-server/libsigopt
 
-ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/compute:/sigopt-server
+ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server
 
 RUN set -ex \
   ; python -c 'import zigopt.api.prod' \
