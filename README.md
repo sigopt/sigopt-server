@@ -72,6 +72,9 @@ Make sure there really is nothing running with `docker ps`.
 If there is indeed nothing running, try reducing the number of CPUs allocated to Docker.
 This will require a restart of Docker.
 
+</details>
+</details>
+
 # Setup for Running Experiments
 
 If you don't wish to do any development on SigOpt, and just want to run experiments using the full capabilities of the SigOpt system, we have an automated configuration script for you to run one time. In order to provide secure connections it will create new, locally generated TLS certificates, and you will need to add them to your trust stores to be able to interact with SigOpt, either through the client in your code or to view the results of your experiments on the web. If you already have TLS certificates- and if you aren't sure you probably don't- you can place them as `tls.crt` and `tls.key` in the `artifacts/tls` directory of the sigopt-server install and they should work just fine (presuming they are in PEM encoded format). If you are using self-signed certificates, you will need to add the `root-ca.crt` into your keychain or you will get a lot of errors about unsafe and insecure connections.
