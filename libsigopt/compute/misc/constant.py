@@ -26,7 +26,7 @@ NONZERO_MEAN_LINEAR_MEAN_TYPE = "linear"
 NONZERO_MEAN_CUSTOM_MEAN_TYPE = "custom"
 
 #: Nonzero mean types which can be passed by SigOpt
-#   A more diverse selection is available within compute itself, but we restrict this to strings only
+#   A more diverse selection is available within libsigopt.compute itself, but we restrict this to strings only
 NONZERO_MEAN_TYPES = [
   NONZERO_MEAN_ZERO_MEAN_TYPE,
   NONZERO_MEAN_CONSTANT_MEAN_TYPE,

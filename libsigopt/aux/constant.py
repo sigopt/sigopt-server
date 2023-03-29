@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-#: The minimum value_var/noise variance we are allowed to pass to compute.
+#: The minimum value_var/noise variance we are allowed to pass to libsigopt.compute.
 #: This is for numerical stability reasons--avoiding singular matrix errors
 #: by making the data "slightly wrong."
 # NOTE: If this is for numerical issues, we should reconsider it in the context of the more stable
