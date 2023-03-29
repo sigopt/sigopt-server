@@ -18,6 +18,8 @@ pytest-mock==3.7.0
 pytest-repeat==0.9.1
 selenium==4.3.0
 git+https://github.com/sigopt/sigopt-python.git
+twine==4.0.2
+build==0.10.0
 types-PyYAML==5.4.1
 types-protobuf==3.20.4
 types-pytz==2023.2.0.0
