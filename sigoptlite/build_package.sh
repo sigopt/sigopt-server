@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 set -o pipefail
 
 
@@ -24,7 +24,7 @@ function setup_packages () {
     for package_name in "${packages[@]}";
         do
             local lite_package_name="${LITE_PREFIX}${package_name}"
-            find $SCRIPT_DIR/ -name "*.py" -type f -exec sed -i '' "s/from ${package_name}/from ${lite_package_name}/g" {} \;
+            find "$SCRIPT_DIR/" -name "*.py" -type f -exec sed -i '' "s/from ${package_name}/from ${lite_package_name}/g" {} \;
         done  
 }
 
@@ -34,14 +34,14 @@ function cleanup_packages () {
     for package_name in "${packages[@]}";
         do
             local lite_package_name="${LITE_PREFIX}${package_name}"
-            rm -rf "${SCRIPT_DIR}/${lite_package_name}"
-            find $SCRIPT_DIR/ -name "*.py" -type f -exec sed -i '' "s/from ${lite_package_name}/from ${package_name}/g" {} \;
+            rm -rf "${SCRIPT_DIR:?}/${lite_package_name}"
+            find "$SCRIPT_DIR/" -name "*.py" -type f -exec sed -i '' "s/from ${lite_package_name}/from ${package_name}/g" {} \;
         done
     
 }
 
-rm -rf $SCRIPT_DIR/sigoptlite.egg-info
-rm -rf $SCRIPT_DIR/dist
+rm -rf "${SCRIPT_DIR:?}/sigoptlite.egg-info"
+rm -rf "${SCRIPT_DIR:?}/dist"
 
 setup_packages "${REQUIRED_SIGOPT_PACKAGES[@]}"
 
