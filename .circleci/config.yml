@@ -10,7 +10,7 @@ commands:
           at: /home/circleci
   install-trivy:
     steps:
-      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.35.0/trivy_0.35.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
+      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.38.3/trivy_0.38.3_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
   install-submodules:
     steps:
       - add_ssh_keys:
