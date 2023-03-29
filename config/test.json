@@ -42,6 +42,7 @@
       "flake8.checker": 50,
       "flake8.main.application": 50,
       "flake8.plugins.manager": 50,
+      "libsigopt.compute.timing": 20,
       "selenium.webdriver.remote.remote_connection": 30,
       "sigopt.apiexception": 50,
       "sigopt.config": 30,
@@ -50,8 +51,7 @@
       "sigopt.sql": 30,
       "sigopt.suggestions": 20,
       "sigopt.www": 10,
-      "sigopt.www.apiexception": 30,
-      "sigoptcompute.timing": 20
+      "sigopt.www.apiexception": 30
     },
     "warnings": "error"
   },

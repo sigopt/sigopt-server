@@ -9,8 +9,8 @@ from zigopt.optimize.sources.base import OptimizationSource
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 from zigopt.sigoptcompute.adapter import SCAdapter
 
-from sigoptaux.adapter_info_containers import DomainInfo
-from sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import DomainInfo
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,

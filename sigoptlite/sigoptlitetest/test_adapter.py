@@ -4,8 +4,8 @@
 import numpy
 import pytest
 
-from sigoptaux.adapter_info_containers import DomainInfo
-from sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import DomainInfo
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,

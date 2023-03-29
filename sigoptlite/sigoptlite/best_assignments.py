@@ -1,8 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from sigoptaux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
-from sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
+from libsigopt.aux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
+from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 from sigoptlite.sources import BaseOptimizationSource
 
 

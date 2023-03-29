@@ -48,10 +48,10 @@ pytest: clean-test-pycache protocompile
 test: pytest
 
 computetest:
-	@cd sigoptcompute && make test
+	@./pp pytest -rw --durations=5 test/python/testcompute
 
 auxtest:
-	@cd sigoptaux && make test
+	@./pp pytest -rw --durations=5 test/python/testaux
 
 litetest:
 	@cd sigoptlite && make test

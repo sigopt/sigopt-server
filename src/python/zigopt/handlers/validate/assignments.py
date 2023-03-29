@@ -9,7 +9,7 @@ from zigopt.handlers.validate.validate_dict import ValidationType, validate_type
 from zigopt.net.errors import BadParamError, InvalidValueError, ServerError  # type: ignore
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConstraint, ExperimentParameter  # type: ignore
 
-from sigoptaux.constant import ConstraintType  # type: ignore
+from libsigopt.aux.constant import ConstraintType  # type: ignore
 
 
 def get_assignment(param: ExperimentParameter, assignment: float | str) -> float | str:

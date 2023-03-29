@@ -5,15 +5,8 @@ from dataclasses import asdict
 
 import numpy
 
-from sigoptcompute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
-from sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from sigoptcompute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
-from sigoptcompute.views.rest.search_next_points import SearchNextPoints
-from sigoptcompute.views.rest.spe_next_points import SPENextPoints
-from sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
-
-from sigoptaux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
-from sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DEFAULT_HYPERPARAMETER_ALPHA,
   DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE,
@@ -27,7 +20,13 @@ from sigoptaux.constant import (
   ParameterPriorNames,
   ParameterTransformationNames,
 )
-from sigoptaux.domain import CategoricalDomain
+from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
+from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
+from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
+from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 from sigoptlite.builders import create_experiment_from_template
 from sigoptlite.models import LocalSuggestion, dataclass_to_dict, replacement_value_if_missing
 

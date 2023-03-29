@@ -51,7 +51,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.suggestion.sampler.grid import GridSampler
 
-from sigoptaux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
+from libsigopt.aux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
 
 
 class BaseExperimentsCreateHandler(Handler):

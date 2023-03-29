@@ -16,7 +16,7 @@ from integration.v1.constants import (
   EXPERIMENT_META_MULTISOLUTION,
 )
 from integration.v1.experiments_test_base import ExperimentsTestBase
-from sigoptaux.constant import ParameterTransformationNames
+from libsigopt.aux.constant import ParameterTransformationNames
 
 
 class TestCreateExperiments(ExperimentsTestBase):

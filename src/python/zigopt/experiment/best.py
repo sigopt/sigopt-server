@@ -6,8 +6,8 @@ from zigopt.experiment.util import get_experiment_default_metric_name
 from zigopt.services.base import Service
 from zigopt.sigoptcompute.errors import SigoptComputeError
 
-from sigoptaux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
-from sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
+from libsigopt.aux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
+from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 
 class ExperimentBestObservationService(Service):

@@ -6,7 +6,7 @@ import math
 from zigopt.profile.timing import *
 from zigopt.services.base import Service
 
-from sigoptaux.constant import MINIMUM_VALUE_VAR
+from libsigopt.aux.constant import MINIMUM_VALUE_VAR
 
 
 class SuggestionRanker(Service):

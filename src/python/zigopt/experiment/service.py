@@ -18,7 +18,7 @@ from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import MetricImportance, MetricImportanceMap
 from zigopt.services.base import Service
 
-from sigoptaux.samplers import generate_uniform_random_points_rejection_sampling
+from libsigopt.aux.samplers import generate_uniform_random_points_rejection_sampling
 
 
 NUM_SAMPLES_FOR_FLAG = 10

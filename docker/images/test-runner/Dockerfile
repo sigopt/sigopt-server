@@ -128,10 +128,9 @@ RUN : \
   ; /compile_protobuf.sh \
   ; :
 
-COPY sigoptcompute/sigoptcompute /sigopt-server/sigoptcompute/sigoptcompute
-COPY sigoptaux/sigoptaux /sigopt-server/sigoptaux/sigoptaux
+COPY libsigopt /sigopt-server/libsigopt
 
-ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
+ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server
 
 RUN set -ex \
   ; python -c 'import zigopt.api.prod' \
@@ -143,8 +142,6 @@ COPY pytest.ini /sigopt-server/pytest.ini
 COPY scripts /sigopt-server/scripts
 COPY test /sigopt-server/test
 COPY web /sigopt-server/web
-
-ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
 
 RUN set -ex \
   ; mkdir -p \

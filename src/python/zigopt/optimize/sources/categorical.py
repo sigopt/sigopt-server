@@ -15,7 +15,7 @@ from zigopt.sigoptcompute.constant import (
 from zigopt.suggestion.lib import ScoredSuggestion
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
-from sigoptaux.constant import (
+from libsigopt.aux.constant import (
   DEFAULT_HYPERPARAMETER_ALPHA,
   DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE,
   DEFAULT_HYPERPARAMETER_TIKHONOV,

@@ -8,7 +8,7 @@ from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.json.builder import StoppingCriteriaJsonBuilder
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 
-from sigoptaux.multimetric import find_pareto_frontier_observations_for_maximization
+from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 
 # If there has been no change after 5D observations, start reporting possible stagnation
@@ -60,7 +60,7 @@ class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
           possible_stagnation = old_frontier == current_frontier
       elif self.experiment.is_search:
         # TODO(RTL-106): consider a proper stopping criteria for search. It's not trivial to compute one
-        # without calling into sigoptcompute.
+        # without calling into libsigopt.compute.
         possible_stagnation = False
       else:
         lookback_points_in_order = sorted(reported_values[:-lookback_depth, 0])

@@ -10,13 +10,13 @@ import numpy
 from jsonschema import validate as validate_against_schema
 from jsonschema.exceptions import ValidationError
 
-from sigoptaux.constant import (
+from libsigopt.aux.constant import (
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
   ConstraintType,
   ParameterTransformationNames,
 )
-from sigoptaux.geometry_utils import find_interior_point
+from libsigopt.aux.geometry_utils import find_interior_point
 from sigoptlite.models import *
 
 
