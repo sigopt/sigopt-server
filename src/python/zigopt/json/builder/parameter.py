@@ -19,7 +19,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (  # type: ignore
   Prior,
 )
 
-from sigoptaux.constant import ParameterPriorNames  # type: ignore
+from libsigopt.aux.constant import ParameterPriorNames  # type: ignore
 
 
 class BoundsJsonBuilder(JsonBuilder):

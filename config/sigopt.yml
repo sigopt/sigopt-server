@@ -6,14 +6,7 @@ clients:
       email: owner@sigopt.ninja
       has_verified_email: true
       name: Default Owner
-      password: owner
   enabled: true
-db:
-  host: postgres
-  password: produser_password_for_development
-  path: basedb
-  ssl: false
-  user: produser
 extends: defaults.json
 redis:
   host: redis

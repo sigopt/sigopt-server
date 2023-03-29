@@ -6,7 +6,7 @@ import copy
 import numpy
 import pytest
 
-from sigoptaux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME, INT_EXPERIMENT_PARAMETER_NAME
+from libsigopt.aux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME, INT_EXPERIMENT_PARAMETER_NAME
 from sigoptlite.builders import LocalObservationBuilder
 from sigoptlite.models import LocalSuggestion
 from sigoptlite.sources import RandomSearchSource
@@ -91,7 +91,7 @@ class UnitTestsBase(object):
       task=task,
     )
 
-  def make_observation(self, assignments, values=None, failed=False, task=None):
+  def make_observation(self, experiment, assignments, values=None, failed=False, task=None):
     assert bool(values) ^ failed
     observation_dict = {}
     observation_dict["assignments"] = assignments
@@ -101,7 +101,7 @@ class UnitTestsBase(object):
       observation_dict["failed"] = failed
     if task:
       observation_dict["task"] = task
-    return LocalObservationBuilder(observation_dict)
+    return LocalObservationBuilder(observation_dict, experiment=experiment)
 
   def make_random_observation(self, experiment, suggestion=None):
     suggestion = self.make_random_suggestions(experiment)[0] if suggestion is None else suggestion
@@ -111,6 +111,7 @@ class UnitTestsBase(object):
     if not failed:
       values = [dict(name=m.name, value=numpy.random.rand(), value_stddev=0) for m in experiment.metrics]
     return self.make_observation(
+      experiment=experiment,
       assignments=suggestion.assignments,
       values=values,
       failed=failed,

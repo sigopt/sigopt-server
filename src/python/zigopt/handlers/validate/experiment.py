@@ -17,7 +17,7 @@ from zigopt.handlers.validate.project import PROJECT_ID_SCHEMA as _PROJECT_ID_SC
 from zigopt.handlers.validate.validate_dict import validate
 from zigopt.net.errors import BadParamError  # type: ignore
 
-from sigoptaux.constant import ConstraintType  # type: ignore
+from libsigopt.aux.constant import ConstraintType  # type: ignore
 
 
 PROJECT_ID_SCHEMA = copy.deepcopy(_PROJECT_ID_SCHEMA)

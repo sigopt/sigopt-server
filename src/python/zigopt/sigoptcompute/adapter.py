@@ -5,14 +5,6 @@ import sys
 
 import numpy
 
-from sigoptcompute.views.rest.gp_ei_categorical import GpEiCategoricalView
-from sigoptcompute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
-from sigoptcompute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from sigoptcompute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
-from sigoptcompute.views.rest.search_next_points import SearchNextPoints
-from sigoptcompute.views.rest.spe_next_points import SPENextPoints
-from sigoptcompute.views.rest.spe_search_next_points import SPESearchNextPoints
-
 from zigopt.common import *
 from zigopt.assignments.model import MissingValueException, extract_array_for_computation_from_assignments
 from zigopt.experiment.constant import METRIC_OBJECTIVE_TYPE_TO_NAME
@@ -34,8 +26,8 @@ from zigopt.sigoptcompute.constant import (
 from zigopt.sigoptcompute.errors import SigoptComputeError
 from zigopt.suggestion.unprocessed.model import SuggestionDataProxy
 
-from sigoptaux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
-from sigoptaux.constant import (
+from libsigopt.aux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DEFAULT_TASK_SELECTION_STRATEGY,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
@@ -48,9 +40,16 @@ from sigoptaux.constant import (
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
+from libsigopt.compute.views.rest.gp_ei_categorical import GpEiCategoricalView
+from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
+from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
+from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
+from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 
 
-#: Maximum ``num_to_sample`` (= ``q``) to request from sigoptcompute when using the CL-max heuristic.
+#: Maximum ``num_to_sample`` (= ``q``) to request from libsigopt.compute when using the CL-max heuristic.
 #: Reasons for limiting: cost and incremental gain
 #: Cost: If C is the cost of obtaining 1 ``point_to_sample``, then to first-order,
 #: CL-max with ``q`` points costs ``q * C``.
@@ -73,7 +72,7 @@ class SCAdapter(Service):
 
       self.services.exception_logger.process_soft_exception(
         exc_info=sys.exc_info(),
-        extra=dict(view_input=logging_view_input, sigoptcompute_class=cls.__name__),
+        extra=dict(view_input=logging_view_input, libsigopt_compute_class=cls.__name__),
       )
       raise SigoptComputeError(e) from e
 
@@ -692,7 +691,7 @@ class SCAdapter(Service):
         :type num_points: int >=0  (Could 0 actually happen?)
         :param dimension: number of dimensions for this data
         :type dimension: int >1
-        :return nonzero_mean_info: dict for json to interpret and send to sigoptcompute
+        :return nonzero_mean_info: dict for json to interpret and send to libsigopt.compute
         :rtype nonzero_mean_info: dict
         """
     if nonzero_mean_choice is None:

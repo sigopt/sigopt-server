@@ -6,7 +6,7 @@ import numpy
 from zigopt.common import *
 from zigopt.services.base import Service
 
-from sigoptaux.importances import compute_importances
+from libsigopt.aux.importances import compute_importances
 
 
 class ImportancesService(Service):

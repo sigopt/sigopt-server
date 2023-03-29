@@ -4,7 +4,7 @@
 from dataclasses import asdict, dataclass, field
 from typing import List
 
-from sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
@@ -147,6 +147,10 @@ class LocalMetric:
   def is_constraint(self):
     return self.strategy == "constraint"
 
+  @property
+  def is_minimized(self):
+    return self.objective == "minimize"
+
 
 @dataclass(frozen=True, kw_only=True)
 class LocalExperiment:
@@ -222,9 +226,47 @@ class MetricEvaluation:
 @dataclass(frozen=True, kw_only=True)
 class LocalObservation:
   assignments: LocalAssignments
-  values: list = field(default_factory=list)
+  metric_evaluations: dict = field(default_factory=dict)
   failed: bool = False
   task: LocalTask = None
+
+  def get_client_observation(self, experiment):
+    return dict(
+      assignments=dict(self.assignments),
+      values=None if self.failed else [dataclass_to_dict(me) for me in self.get_metric_evaluations(experiment)],
+      task=dataclass_to_dict(self.task) if self.task else None,
+      failed=self.failed,
+    )
+
+  def get_metric_evaluations(self, experiment):
+    return [self.get_metric_evaluation_by_name(m.name) for m in experiment.metrics]
+
+  def get_metric_evaluation_by_name(self, metric_name):
+    return self.metric_evaluations.get(metric_name)
+
+  def get_optimized_measurements_for_maximization(self, experiment):
+    return [self.get_value_for_maximization(metric) for metric in experiment.optimized_metrics]
+
+  def get_value_for_maximization(self, metric):
+    value = self.get_metric_evaluation_by_name(metric.name).value
+    if value is None:
+      raise Exception(f"Metric `{metric.name}` is not in observation data.")
+    if metric.is_minimized:
+      return -value
+    return value
+
+  def within_metric_threshold(self, metric, metric_evaluation):
+    if metric.threshold is None:
+      return True
+    if metric.objective == "minimize":
+      return metric_evaluation.value <= metric.threshold
+    return metric_evaluation.value >= metric.threshold
+
+  def within_metric_thresholds(self, experiment):
+    return all(
+      self.within_metric_threshold(metric, self.get_metric_evaluation_by_name(metric.name))
+      for metric in experiment.metrics
+    )
 
 
 @dataclass(frozen=True, kw_only=True)

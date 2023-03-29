@@ -15,7 +15,7 @@ from zigopt.optimize.sources.spe import SPEOptimizationSource
 from zigopt.redis.service import RedisServiceTimeoutError
 from zigopt.services.base import Service
 
-from sigoptaux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 
 
 class OptimizerService(Service):

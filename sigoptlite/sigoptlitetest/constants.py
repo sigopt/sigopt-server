@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
@@ -173,6 +173,12 @@ DEFAULT_EXPERIMENT_META = dict(
   observation_budget=100,
 )
 
+EXPERIMENT_META_SIMPLE = dict(
+  parameters=DEFAULT_SIMPLE_PARAMETERS,
+  metrics=DEFAULT_METRICS,
+  observation_budget=100,
+)
+
 EXPERIMENT_META_MULTIMETRIC = dict(
   parameters=DEFAULT_SIMPLE_PARAMETERS,
   metrics=DEFAULT_METRICS_MULTIPLE,
@@ -270,4 +276,5 @@ ALL_META = dict(
   metric_threshold=EXPERIMENT_META_MULTIMETRIC_THRESHOLD,
   priors=EXPERIMENT_META_PRIORS,
   search=EXPERIMENT_META_SEARCH,
+  simple=EXPERIMENT_META_SIMPLE,
 )

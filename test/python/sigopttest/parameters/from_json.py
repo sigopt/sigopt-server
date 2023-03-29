@@ -18,7 +18,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentParameter,
 )
 
-from sigoptaux.constant import ParameterPriorNames
+from libsigopt.aux.constant import ParameterPriorNames
 
 
 class TestSetConditionsFromJson(object):

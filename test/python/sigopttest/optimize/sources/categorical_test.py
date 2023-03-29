@@ -8,7 +8,10 @@ from zigopt.experiment.model import Experiment
 from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.optimize.sources.categorical import CategoricalOptimizationSource
 
-from sigoptaux.constant import DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS, DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
+from libsigopt.aux.constant import (
+  DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS,
+  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS,
+)
 
 
 class TestExperimentProgress(object):

@@ -1,7 +1,10 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from sigoptaux.constant import DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS, DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
+from libsigopt.aux.constant import (
+  DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS,
+  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS,
+)
 from sigoptlite.builders import LocalObservationBuilder
 from sigoptlite.models import LocalSuggestion, dataclass_to_dict
 from sigoptlite.sources import GPSource, RandomSearchSource, SPESource
@@ -19,11 +22,12 @@ class Broker(object):
   @property
   def is_initialization_phase(self):
     minimum_num_initial_observations = max(2 * self.experiment.dimension, 4)
-    return len(self.observations) <= minimum_num_initial_observations
+    num_valid_observations = sum(1 for o in self.observations if not o.failed)
+    return num_valid_observations <= minimum_num_initial_observations
 
   @property
   def use_random(self):
-    return self.is_initialization_phase or self.experiment.is_random
+    return self.experiment.is_random or self.is_initialization_phase
 
   @property
   def use_spe(self):
@@ -48,24 +52,29 @@ class Broker(object):
     )
 
   def create_observation(self, assignments=None, values=None, suggestion=None, failed=False, task=None):
-    assert assignments or suggestion
+    self.validate_observation_assignments_and_suggestions(assignments, suggestion)
+
     if assignments is None:
-      assert suggestion == self.stored_suggestion.id
+      self.validate_observation_with_suggestion_id(suggestion)
       assignments = self.stored_suggestion.assignments
       if self.stored_suggestion.task is not None:
         task = dataclass_to_dict(self.stored_suggestion.task)
 
     observation = LocalObservationBuilder(
-      dict(
+      input_dict=dict(
         assignments=assignments,
         values=values,
         failed=failed,
         task=task,
-      )
+      ),
+      experiment=self.experiment,
     )
     self.observations.append(observation)
     self.stored_suggestion = None
-    return observation
+    return observation.get_client_observation(self.experiment)
+
+  def get_observations(self):
+    return [o.get_client_observation(self.experiment) for o in self.observations]
 
   def create_suggestion(self):
     if self.stored_suggestion is not None:
@@ -88,3 +97,18 @@ class Broker(object):
     self.stored_suggestion = suggestion_to_serve
     self.suggestion_id += 1
     return suggestion_to_serve
+
+  def validate_observation_assignments_and_suggestions(self, suggestion_id, assignments):
+    if (assignments is None) and (suggestion_id is None):
+      raise ValueError("Need to pass in an assignments dictionary or a suggestion id to create an observation")
+    if (assignments is not None) and (suggestion_id is not None):
+      raise ValueError("Cannot specify `suggestion` and `assignments`.")
+
+  def validate_observation_with_suggestion_id(self, suggestion_id):
+    if self.stored_suggestion is None:
+      raise ValueError("There is no stored suggestion to use. Please create a suggestion")
+    if suggestion_id != self.stored_suggestion.id:
+      raise ValueError(
+        f"The suggestion you provided: {suggestion_id} does not match the suggestion stored:"
+        f" {self.stored_suggestion.id}"
+      )

@@ -22,7 +22,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 )
 from zigopt.sigoptcompute.constant import MINIMUM_DOMAIN_EDGE_LENGTH
 
-from sigoptaux.constant import ParameterPriorNames
+from libsigopt.aux.constant import ParameterPriorNames
 
 
 class GridError(BadParamError):

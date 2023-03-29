@@ -1,7 +1,34 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG BUILD_TAG=build
+ARG NODE_MAJOR
+
+
+FROM node:${NODE_MAJOR} AS test-routes
+
+# hadolint ignore=DL3016
+RUN set -ex \
+  ; npm install -g npm yarn --force \
+  ; npm cache clean --force \
+  ; :
+
+WORKDIR /sigopt-server
+
+COPY package.json /sigopt-server/package.json
+COPY yarn.lock /sigopt-server/yarn.lock
+
+RUN set -ex \
+  ; yarn install --production --silent \
+  ; yarn cache clean \
+  ; :
+
+COPY web /sigopt-server/web
+COPY config/defaults.json /sigopt-server/config/defaults.json
+COPY scripts/compile/generate_routes.sh /sigopt-server/scripts/compile/generate_routes.sh
+COPY .babelrc /sigopt-server/.babelrc
+COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.js
+
+RUN ./scripts/compile/generate_routes.sh config/defaults.json
 
 
 FROM ubuntu:focal-20221130
@@ -58,7 +85,10 @@ RUN set -ex \
   ; /install_protobuf.sh "$PROTOBUF_VERSION" \
   ; :
 
-ARG PYTHON_VERSION
+ARG PYTHON_MAJOR
+ARG PYTHON_MINOR
+ARG PYTHON_PATCH
+ENV PYTHON_VERSION "${PYTHON_MAJOR}.${PYTHON_MINOR}.${PYTHON_PATCH}"
 ENV PYTHON_TAR_URL "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
 RUN : \
   ; curl -fSsL "$PYTHON_TAR_URL" | tar -xzf - --strip-components=1 \
@@ -98,10 +128,9 @@ RUN : \
   ; /compile_protobuf.sh \
   ; :
 
-COPY sigoptcompute/sigoptcompute /sigopt-server/sigoptcompute/sigoptcompute
-COPY sigoptaux/sigoptaux /sigopt-server/sigoptaux/sigoptaux
+COPY libsigopt /sigopt-server/libsigopt
 
-ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
+ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server
 
 RUN set -ex \
   ; python -c 'import zigopt.api.prod' \
@@ -114,8 +143,6 @@ COPY scripts /sigopt-server/scripts
 COPY test /sigopt-server/test
 COPY web /sigopt-server/web
 
-ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server/sigoptcompute:/sigopt-server/sigoptaux:/sigopt-server
-
 RUN set -ex \
   ; mkdir -p \
       failure_console_logs \
@@ -127,3 +154,36 @@ ENV OPENBLAS_NUM_THREADS 1
 ENV MKL_NUM_THREADS 1
 ENV VECLIB_MAXIMUM_THREADS 1
 ENV NUMEXPR_NUM_THREADS 1
+
+ENV CHROMEDRIVER_VERSION "111.0.5563.41"
+
+RUN : \
+  ; apt-get update -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests gnupg=2.2.* >/dev/null \
+  ; curl -fSs https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add \
+  ; apt-get purge -yqq --autoremove gnupg2 >/dev/null \
+  ; rm -rf /var/lib/apt/lists/* \
+  ; echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list \
+  ; apt-get update -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      google-chrome-stable=111.* \
+      unzip=6.* \
+  ; rm -rf /var/lib/apt/lists/* \
+  ; curl -fSsL -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
+  ; mkdir -p /tmp/chromedriver \
+  ; unzip /tmp/chromedriver.zip -d /tmp/chromedriver \
+  ; install /tmp/chromedriver/chromedriver /usr/local/bin/chromedriver \
+  ; rm -r /tmp/chromedriver \
+  ; :
+
+COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /sigopt-server/artifacts/web/routes/
+
+COPY docker/images/test-runner/start-x11vnc.sh /start-x11vnc.sh
+COPY docker/images/test-runner/entrypoint.py /entrypoint.py
+
+ENV DISPLAY_NUM "20"
+ENV DISPLAY ":$DISPLAY_NUM"
+ENV GEOMETRY "1920x1080"
+ENV HOME "/root"
+
+ENTRYPOINT ["/entrypoint.py"]

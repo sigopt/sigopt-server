@@ -40,17 +40,6 @@ sudo usermod -aG docker "$(id -u -n)"
 
 You will need to log out or exit your current session for these changes to take effect.
 
-We require at least a Python greater than 3.7 to already be installed on your machine. If not, please install from [Python](https://www.python.org/downloads/).
-
-Run
-
-```bash
-sudo apt-get install python-is-python3 python3-pip
-python -mpip install --user docker python-dotenv
-```
-
-This makes python3 your python version, installs the docker-compose tool, pip, and a python interface to control docker (which we use for generating docker images).
-
 </details>
 
 <details>
@@ -83,35 +72,6 @@ Make sure there really is nothing running with `docker ps`.
 If there is indeed nothing running, try reducing the number of CPUs allocated to Docker.
 This will require a restart of Docker.
 
-</details>
-
-## Install Pip
-
-Next, you might need to install pip, a python package manager which we require for gathering our dependencies.
-
-Check if you do, by running
-
-```bash
-which pip3
-```
-
-If there is no response, you need to [install pip](https://pip.pypa.io/en/stable/installing/). If there is a line giving a path, you are fine.
-
-You may need to run the following commands before pip is able to work:
-
-```bash
-pip install --upgrade setuptools
-pip install --upgrade pip
-```
-
-You will need to run this command once before Sigopt Server will work:
-
-```bash
-pip install docker python-dotenv
-```
-
-</details>
-
 # Setup for Running Experiments
 
 If you don't wish to do any development on SigOpt, and just want to run experiments using the full capabilities of the SigOpt system, we have an automated configuration script for you to run one time. In order to provide secure connections it will create new, locally generated TLS certificates, and you will need to add them to your trust stores to be able to interact with SigOpt, either through the client in your code or to view the results of your experiments on the web. If you already have TLS certificates- and if you aren't sure you probably don't- you can place them as `tls.crt` and `tls.key` in the `artifacts/tls` directory of the sigopt-server install and they should work just fine (presuming they are in PEM encoded format). If you are using self-signed certificates, you will need to add the `root-ca.crt` into your keychain or you will get a lot of errors about unsafe and insecure connections.
@@ -121,6 +81,8 @@ From the terminal in the `sigopt-server` directory you created in the git clone 
 ```bash
 ./setup.sh
 ```
+
+When the command has finished, make a note of the default log in information. You will need this to sign in later.
 
 On AWS clean installs, you might need to restart the instance after adding yourself to the `docker` group.
 
@@ -144,18 +106,7 @@ from the same sigopt-server directory you ran the configuration script from. Ctr
 
 ## Everything is running
 
-The website is now [running](https://sigopt.ninja:4443/) (Note: you may need to wait a few minutes for the code to compile)! Try out signing in with either one of our default accounts:
-
-**Organization Owner**
-
-- Email: owner@sigopt.ninja
-- Password: owner
-
-**Regular User**
-
-- Email: user@sigopt.ninja
-- Password: password
-- API Token: `client_token`
+The website is now [running](https://sigopt.ninja:4443/)! Sign in with the credentials from the `./setup.sh` step.
 
 With an [API Token](https://sigopt.ninja:4443/tokens/info) for your account you can use the [client](https://github.com/sigopt/sigopt-python) and conduct experiments with the SigOpt system and view the results on the [website](https://sigopt.ninja:4443/).
 

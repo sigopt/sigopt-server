@@ -15,7 +15,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Prior,
 )
 
-from sigoptaux.constant import (
+from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
