@@ -4,7 +4,7 @@
 from dataclasses import dataclass
 
 import numpy
-from scipy.stats import kde, norm
+from scipy.stats import multivariate_normal, norm
 
 from libsigopt.compute.acquisition_function import AcquisitionFunction
 from libsigopt.compute.probabilistic_failures import ProbabilisticFailuresBase, ProductOfListOfProbabilisticFailures
@@ -256,40 +256,14 @@ class ExpectedParallelImprovement(AcquisitionFunction):
       if upper.size == 1:
         return norm.cdf(upper[0], 0, numpy.sqrt(cov_matrix[0, 0]))
 
-      # Standardize the upper bound u using the standard deviation
-      std = numpy.sqrt(numpy.diag(cov_matrix))
-      std_upper = upper / std
-
-      # Convert covariance matrix into correlation matrix:
-      # http://en.wikipedia.org/wiki/Correlation_and_dependence#Correlation_matrices
-      corr_matrix = cov_matrix / std / std.reshape(upper.size, 1)  # standardize -> correlation matrix
-
-      # Indices for traversing the strict lower triangular elements of corr_matrix in column major, as required by the
-      # fortran mvndst function.
-      strict_lower_diag_indices = numpy.tril_indices(upper.size, -1)
-
-      # Call into the scipy wrapper for the fortran method "mvndst"
-      # Link: http://www.math.wsu.edu/faculty/genz/software/fort77/mvtdstpack.f
-      out = kde.mvn.mvndst(
-        # The lower bound of integration. We initialize with 0 because it is ignored (because of the third
-        # argument).
-        numpy.zeros(upper.size, dtype=int),
-        # The upper bound of integration
-        std_upper,
-        # For each dim, 0 means -inf for lower bound
-        numpy.zeros(upper.size, dtype=int),
-        # The vector of strict lower triangular correlation coefficients
-        corr_matrix[strict_lower_diag_indices],
-        # Maximum number of iterations for the mvndst function
+      return multivariate_normal.cdf(
+        x=upper,
+        mean=None,
+        cov=cov_matrix,
         maxpts=20000 * upper.size,
-        # The error allowed relative to actual value
         releps=1.0e-9,
-        # The absolute error allowed
         abseps=1.0e-9,
       )
-
-      # Index 1 corresponds to the actual value. 0 has the error, and 2 is a flag denoting whether releps was reached
-      return out[1]
 
     # Calculation of outer sum (from Proposition 2, equation 3)
     # Although the paper describes a minimization, we can achieve a maximization by inverting m_k and b_k, and then the
