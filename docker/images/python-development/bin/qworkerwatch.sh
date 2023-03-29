@@ -17,5 +17,5 @@ if [ -n "$_RUN" ]; then
     sleep 1
   done
 else
-  _RUN=x run_command_on_change.py --dir=compute/compute --dir=/sigopt-server/src/python/zigopt --initial-run "$0"
+  _RUN=x run_command_on_change.py --dir=/sigopt-server/libsigopt --dir=/sigopt-server/src/python/zigopt --initial-run "$0"
 fi
