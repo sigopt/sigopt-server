@@ -6,6 +6,12 @@ networks:
 
 services:
   test-client:
+    build: &python-development-build
+      dockerfile: docker/images/python-development/Dockerfile
+      args:
+        - PROTOBUF_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
     logging: &logging
       options:
         max-file: "5"
@@ -19,7 +25,6 @@ services:
       - SIGOPT_APP_URL=https://sigopt.ninja:4443
       - SIGOPT_API_TOKEN=client_token
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt/root-ca.crt
-    image: sigopt/python-development:latest
     volumes:
       - &rootca-volume ./artifacts/tls:/etc/ssl/certs/sigopt:ro
       - ./test:/sigopt-server/test:ro
@@ -34,6 +39,14 @@ services:
     security_opt:
       - "no-new-privileges:true"
   test-runner:
+    build:
+      dockerfile: docker/images/test-runner/Dockerfile
+      args:
+        - NODE_MAJOR
+        - PROTOBUF_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
+        - PYTHON_PATCH
     logging:
       <<: *logging
     command:
@@ -44,7 +57,6 @@ services:
       - HOST_PWD
       - REQUESTS_CA_BUNDLE=/sigopt-server/artifacts/tls/root-ca.crt
       - *api-tls-verify-env
-    image: sigopt/test-runner:latest
     volumes:
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - /dev/shm:/dev/shm
@@ -76,12 +88,15 @@ services:
     security_opt:
       - "no-new-privileges:true"
   generate-routes:
+    build: &node-development-build
+      dockerfile: docker/images/node-development/Dockerfile
+      args:
+        - NODE_MAJOR
     logging:
       <<: *logging
     command:
       - ./scripts/compile/generate_routes.sh
       - "${sigopt_server_config_file}"
-    image: sigopt/node-development:latest
     volumes:
       - *babelrc
       - *test-routes-volume
@@ -99,11 +114,12 @@ services:
     security_opt:
       - "no-new-privileges:true"
   createdb:
+    build:
+      <<: *python-development-build
     logging:
       <<: *logging
     environment:
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
-    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
@@ -124,6 +140,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
   init-web:
+    image: busybox
     logging:
       <<: *logging
     command:
@@ -132,7 +149,6 @@ services:
       - -c
       - |
         rm -rf /server-bin/* /static-artifacts/*
-    image: sigopt/node-development:latest
     volumes:
       - server-bin:/server-bin
       - static-artifacts:/static-artifacts
@@ -144,6 +160,8 @@ services:
     security_opt:
       - "no-new-privileges:true"
   qworker:
+    build:
+      <<: *python-development-build
     restart: on-failure:5
     logging:
       <<: *logging
@@ -154,7 +172,6 @@ services:
       - &config sigopt_server_config_file
       - &git_hash sigopt_server_version
       - MESSAGE_GROUP=optimization
-    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes: &zigopt_volumes
@@ -189,6 +206,8 @@ services:
     security_opt:
       - "no-new-privileges:true"
   qworker-analytics:
+    build:
+      <<: *python-development-build
     restart: on-failure:5
     logging:
       <<: *logging
@@ -199,7 +218,6 @@ services:
       - *git_hash
       - "sigopt.queue.pull_queue_name=dev-analytics-messages"
       - MESSAGE_GROUP=analytics
-    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes: *zigopt_volumes
@@ -217,6 +235,8 @@ services:
     security_opt:
       - "no-new-privileges:true"
   api:
+    build:
+      <<: *python-development-build
     restart: on-failure:5
     logging:
       <<: *logging
@@ -229,7 +249,6 @@ services:
       - sigopt_server_config_file
       - sigopt_server_version
       - SIGOPT_CONTAINER_ENV=x
-    image: sigopt/python-development:latest
     ports:
       - target: 5000
         host_ip: 127.0.0.1
@@ -272,6 +291,8 @@ services:
     security_opt:
       - "no-new-privileges:true"
   documentation:
+    build:
+      <<: *python-development-build
     logging:
       <<: *logging
     command:
@@ -286,7 +307,6 @@ services:
       - SIGOPT_CONTAINER_ENV=x
       - SIGOPT_SWAGGER_PATH=/sigopt-server/artifacts/
       - SIGOPT_SWAGGER_FILENAME=swagger.json
-    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
@@ -299,6 +319,10 @@ services:
     security_opt:
       - "no-new-privileges:true"
   nginx:
+    build:
+      dockerfile: docker/images/nginx/Dockerfile
+      args:
+        - NGINX_VERSION
     restart: on-failure:5
     logging:
       <<: *logging
@@ -310,7 +334,6 @@ services:
       - "127.0.0.1:4443:4443"
       - "127.0.0.1:7800:7800"
       - "127.0.0.1:9000:9000"
-    image: sigopt/nginx:latest
     volumes:
       - "./artifacts/tls:/etc/ssl/sigopt"
       - "./nginx:/etc/nginx:ro"
@@ -337,15 +360,17 @@ services:
     security_opt:
       - "no-new-privileges:true"
   protowatch:
+    build:
+      <<: *python-development-build
     restart: on-failure:5
     logging:
       <<: *logging
     command:
       - protowatch.sh
-    image: sigopt/python-development:latest
     volumes:
       - "./src/protobuf:/sigopt-server/src/protobuf:ro"
       - "./src/python:/sigopt-server/src/python"
+      - "./tools:/sigopt-server/tools:ro"
       - "./web/js:/sigopt-server/web/js"
     deploy:
       resources:
@@ -369,6 +394,8 @@ services:
     security_opt:
       - "no-new-privileges:true"
   repl:
+    build:
+      <<: *python-development-build
     logging:
       <<: *logging
     command:
@@ -378,7 +405,6 @@ services:
       - --
       - "--config=${sigopt_server_config_file}"
     environment: *sigopt-server-env
-    image: sigopt/python-development:latest
     stdin_open: true
     tty: true
     volumes:
@@ -393,6 +419,8 @@ services:
     security_opt:
       - "no-new-privileges:true"
   web-client:
+    build:
+      <<: *node-development-build
     restart: on-failure:5
     logging:
       <<: *logging
@@ -408,7 +436,6 @@ services:
       - sigopt_server_version
       - &node-ca-certs-env "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
       - "NODE_OPTIONS=--max-old-space-size=4096"
-    image: sigopt/node-development:latest
     user: root
     stdin_open: true
     tty: true
@@ -443,6 +470,8 @@ services:
     security_opt:
       - "no-new-privileges:true"
   web-server:
+    build:
+      <<: *node-development-build
     restart: on-failure:5
     logging:
       <<: *logging
@@ -459,7 +488,6 @@ services:
       - *node-ca-certs-env
       - "NODE_OPTIONS=--max-old-space-size=4096"
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
-    image: sigopt/node-development:latest
     user: root
     stdin_open: true
     tty: true
@@ -491,6 +519,8 @@ services:
     depends_on:
       - minio
   smtp:
+    build:
+      <<: *python-development-build
     restart: on-failure:5
     logging:
       <<: *logging
@@ -503,7 +533,6 @@ services:
         done
     environment:
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server
-    image: sigopt/python-development:latest
     volumes:
       - ./config:/sigopt-server/config:ro
       - ./libsigopt:/sigopt-server/libsigopt:ro,cached
@@ -648,9 +677,13 @@ services:
       - "no-new-privileges:true"
 
   hyperopt-mongo-worker:
+    build:
+      dockerfile: docker/images/hyperopt/Dockerfile
+      args:
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
     logging:
       <<: *logging
-    image: sigopt/hyperopt:latest
     depends_on:
       - mongodb
     container_name: "hyperopt-mongo-worker"

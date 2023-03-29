@@ -40,17 +40,6 @@ sudo usermod -aG docker "$(id -u -n)"
 
 You will need to log out or exit your current session for these changes to take effect.
 
-We require at least a Python greater than 3.7 to already be installed on your machine. If not, please install from [Python](https://www.python.org/downloads/).
-
-Run
-
-```bash
-sudo apt-get install python-is-python3 python3-pip
-python -mpip install --user docker python-dotenv
-```
-
-This makes python3 your python version, installs the docker-compose tool, pip, and a python interface to control docker (which we use for generating docker images).
-
 </details>
 
 <details>
@@ -82,35 +71,6 @@ Sometimes Docker appears to use a large amout of CPU while apparently being idle
 Make sure there really is nothing running with `docker ps`.
 If there is indeed nothing running, try reducing the number of CPUs allocated to Docker.
 This will require a restart of Docker.
-
-</details>
-
-## Install Pip
-
-Next, you might need to install pip, a python package manager which we require for gathering our dependencies.
-
-Check if you do, by running
-
-```bash
-which pip3
-```
-
-If there is no response, you need to [install pip](https://pip.pypa.io/en/stable/installing/). If there is a line giving a path, you are fine.
-
-You may need to run the following commands before pip is able to work:
-
-```bash
-pip install --upgrade setuptools
-pip install --upgrade pip
-```
-
-You will need to run this command once before Sigopt Server will work:
-
-```bash
-pip install docker python-dotenv
-```
-
-</details>
 
 # Setup for Running Experiments
 
