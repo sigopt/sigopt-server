@@ -15,8 +15,8 @@ from libsigopt.aux.constant import (
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from libsigopt.aux.domain import CategoricalDomain, ContinuousDomain, FixedIndicesOnContinuousDomain
 from libsigopt.aux.geometry_utils import find_interior_point
+from libsigopt.compute.domain import CategoricalDomain, ContinuousDomain, FixedIndicesOnContinuousDomain
 from testaux.utils import form_random_constrained_categorical_domain, form_random_unconstrained_categorical_domain
 
 

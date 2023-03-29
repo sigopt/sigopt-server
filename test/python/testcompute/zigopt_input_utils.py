@@ -5,7 +5,7 @@ import numpy
 
 from libsigopt.aux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
 from libsigopt.aux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME, TASK_SELECTION_STRATEGY_A_PRIORI
-from libsigopt.aux.domain import ContinuousDomain
+from libsigopt.compute.domain import ContinuousDomain
 from libsigopt.compute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE, NONZERO_MEAN_CUSTOM_MEAN_TYPE
 from testaux.utils import form_random_unconstrained_categorical_domain
 

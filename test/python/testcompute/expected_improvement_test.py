@@ -4,8 +4,8 @@
 import numpy
 from flaky import flaky
 
-from libsigopt.aux.domain import ContinuousDomain
 from libsigopt.compute.covariance import SquareExponential
+from libsigopt.compute.domain import ContinuousDomain
 from libsigopt.compute.expected_improvement import (
   ExpectedImprovement,
   ExpectedImprovementWithFailures,

@@ -7,7 +7,7 @@ objective."""
 import numpy
 import pytest
 
-from libsigopt.aux.domain import DEFAULT_SAFETY_MARGIN_FOR_CONSTRAINTS, ContinuousDomain
+from libsigopt.compute.domain import DEFAULT_SAFETY_MARGIN_FOR_CONSTRAINTS, ContinuousDomain
 from libsigopt.compute.optimization import LBFGSBOptimizer, MultistartOptimizer, ScipyOptimizable, SLSQPOptimizer
 from libsigopt.compute.optimization_auxiliary import (
   DEFAULT_LBFGSB_PARAMETERS,

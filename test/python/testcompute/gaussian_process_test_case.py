@@ -5,8 +5,8 @@ import numpy
 import pytest
 
 from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from libsigopt.aux.domain import CategoricalDomain, ContinuousDomain
 from libsigopt.compute.covariance import SquareExponential
+from libsigopt.compute.domain import CategoricalDomain, ContinuousDomain
 from libsigopt.compute.gaussian_process import GaussianProcess
 from libsigopt.compute.misc.data_containers import HistoricalData, SingleMetricMidpointInfo
 from libsigopt.compute.probabilistic_failures import (

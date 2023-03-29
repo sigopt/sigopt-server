@@ -11,9 +11,9 @@ import numpy
 import pytest
 from flaky import flaky
 
-from libsigopt.aux.domain import ContinuousDomain
 from libsigopt.aux.samplers import generate_latin_hypercube_points
 from libsigopt.compute.covariance import C4RadialMatern, SquareExponential
+from libsigopt.compute.domain import ContinuousDomain
 from libsigopt.compute.gaussian_process import GaussianProcess
 from libsigopt.compute.misc.data_containers import HistoricalData
 from libsigopt.compute.python_utils import (

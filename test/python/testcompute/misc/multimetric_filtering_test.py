@@ -11,7 +11,7 @@ from libsigopt.aux.constant import (
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
 from libsigopt.compute.misc.multimetric import *
 from testaux.numerical_test_case import NumericalTestCase

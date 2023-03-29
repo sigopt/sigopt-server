@@ -9,7 +9,7 @@ from libsigopt.aux.constant import (
   INT_EXPERIMENT_PARAMETER_NAME,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.domain import CategoricalDomain
 
 
 def form_random_unconstrained_categorical_domain(dim, categoricals_allowed=True, quantized_allowed=True):

@@ -10,7 +10,7 @@ from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.sampler.base import SuggestionSampler
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
-from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.domain import CategoricalDomain
 
 
 # NOTE: This sampler should not be using the optimization_args at all, so I pass None in.
