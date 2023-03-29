@@ -72,7 +72,7 @@ class SCAdapter(Service):
 
       self.services.exception_logger.process_soft_exception(
         exc_info=sys.exc_info(),
-        extra=dict(view_input=logging_view_input, compute_class=cls.__name__),
+        extra=dict(view_input=logging_view_input, libsigopt_compute_class=cls.__name__),
       )
       raise SigoptComputeError(e) from e
 
