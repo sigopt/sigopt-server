@@ -4,4 +4,7 @@ set -e
 
 COUNT="${1:-48}"
 
-tr --complement --delete 'A-Za-z0-9_-~@#%^&*()+={}[]|:<>,./?' </dev/urandom | head -c"$COUNT"
+docker pull --quiet busybox >/dev/null
+docker run -i --rm busybox sh <<EOF
+tr -cd 'A-Za-z0-9_-~@#%^&*()+={}[]|:<>,./?' </dev/urandom | head -c"$COUNT"
+EOF
