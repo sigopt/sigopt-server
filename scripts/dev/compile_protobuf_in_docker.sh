@@ -2,15 +2,6 @@
 set -e
 set -o pipefail
 
-function m {
-  echo "--mount=type=bind,source=$(pwd)/$1,target=/sigopt-server/$1"
-}
-
-docker run -i --rm \
-  "$(m scripts)" \
-  "$(m src)" \
-  "$(m test)" \
-  "$(m tools)" \
-  --workdir=/sigopt-server \
-  sigopt/python-development:latest \
+./scripts/launch/compose.sh run --rm \
+  protowatch \
   ./tools/protobuf/compile.sh

@@ -6,7 +6,14 @@ networks:
 
 services:
   test-runner:
-    image: "sigopt/test-runner:${TAG}"
+    build: &test-runner-build
+      dockerfile: docker/images/test-runner/Dockerfile
+      args:
+        - NODE_MAJOR
+        - PROTOBUF_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
+        - PYTHON_PATCH
     environment:
       - ALLOW_SLOW=1
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
@@ -21,6 +28,8 @@ services:
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - &redis-run-volume redis-run:/var/run/redis
   smtp:
+    build:
+      <<: *test-runner-build
     restart: on-failure:5
     command:
       - python
@@ -28,7 +37,6 @@ services:
       - integration.utils.mail
       - --send-port=6001
       - --receive-port=6002
-    image: "sigopt/test-runner:${TAG}"
     deploy:
       resources:
         limits:
@@ -45,6 +53,12 @@ services:
     security_opt:
       - "no-new-privileges:true"
   createdb:
+    build: &zigopt-build
+      dockerfile: docker/images/zigopt/Dockerfile
+      args:
+        - PROTOBUF_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
     entrypoint:
       - python
       - -m
@@ -52,7 +66,6 @@ services:
       - &config-file "$sigopt_server_config_file"
     command:
       - --drop-tables
-    image: "sigopt/zigopt:${TAG}"
     environment:
       - "sigopt.clients.client.user.password=$OWNER_PASSWORD"
     read_only: true
@@ -62,8 +75,11 @@ services:
       - *sigopt-config-volume
       - *pg-sock-volume
   nginx:
+    build:
+      dockerfile: docker/images/nginx/Dockerfile
+      args:
+        - NGINX_VERSION
     restart: on-failure:5
-    image: "sigopt/nginx:${TAG}"
     volumes:
       - ./artifacts/tls:/etc/ssl/sigopt:ro
     tmpfs:
@@ -91,17 +107,18 @@ services:
     security_opt:
       - "no-new-privileges:true"
   api:
+    build:
+      <<: *zigopt-build
     restart: on-failure:5
     command:
       - /usr/local/bin/gunicorn_serve.sh
       - -b
       - 0.0.0.0:5000
       - zigopt.api.main:GUNICORN_ENTRY_POINT
-    image: "sigopt/zigopt:${TAG}"
     environment: &zigopt_environment
       - "sigopt.user_uploads.s3.aws_secret_access_key=$MINIO_ROOT_PASSWORD"
       - "sigopt_server_config_file=$sigopt_server_config_file"
-      - "sigopt_server_version=git:$TAG"
+      - sigopt_server_version
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
@@ -134,12 +151,15 @@ services:
     security_opt:
       - "no-new-privileges:true"
   web-server:
-    image: "sigopt/web:${TAG}"
+    build:
+      dockerfile: docker/images/web/Dockerfile
+      args:
+        - NODE_MAJOR
     environment:
       - "sigopt.web.cookiejar_credentials.secretAccessKey=$MINIO_ROOT_PASSWORD"
       - "sigopt_server_config_file=$sigopt_server_config_file"
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
-      - "sigopt_server_version=git:$TAG"
+      - sigopt_server_version
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
     volumes:
       - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
@@ -164,13 +184,14 @@ services:
     security_opt:
       - "no-new-privileges:true"
   qworker:
+    build:
+      <<: *zigopt-build
     restart: on-failure:5
     command:
       - python
       - -m
       - zigopt.queue.api
       - optimization
-    image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
     volumes:
       - *sigopt-config-volume
@@ -198,13 +219,14 @@ services:
     security_opt:
       - "no-new-privileges:true"
   qworker-analytics:
+    build:
+      <<: *zigopt-build
     restart: on-failure:5
     command:
       - python
       - -m
       - zigopt.queue.api
       - analytics
-    image: "sigopt/zigopt:${TAG}"
     environment: *zigopt_environment
     volumes:
       - *sigopt-config-volume
@@ -315,6 +337,8 @@ services:
       - "no-new-privileges:true"
 
   test-client:
+    build:
+      <<: *test-runner-build
     command:
       - sleep
       - infinity
@@ -324,7 +348,6 @@ services:
       - SIGOPT_API_TOKEN=client_token
       - *api-tls-verify-env
       - ALLOW_SLOW=1
-    image: "sigopt/test-runner:${TAG}"
     volumes:
       - *rootca-volume
       - *sigopt-config-volume

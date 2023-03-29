@@ -2,15 +2,11 @@
 set -e
 set -o pipefail
 
-python3 docker/image_builder.py --build-tag freeze-reqs python
+source .env
 
-# NOTE: qmcpy gets frozen as the following every time:
-#   # Editable install with no version control (qmcpy==1.2)
-#   -e /usr/local/lib/python3.10/site-packages
-# need to filter it out and replace with qmcpy==1.2
 docker run -i --rm \
   --volume="$(pwd):/sigopt-server" \
-  sigopt/python-development:freeze-reqs \
+  "python:${PYTHON_VERSION}-buster" \
   bash -eo pipefail \
   <<EOF
 apt-get update -yqq

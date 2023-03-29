@@ -23,7 +23,7 @@ dist-compile: compile
 protocompile:
 	@./tools/protobuf/compile.sh
 
-docker-protocompile: build-debug-images
+docker-protocompile:
 	@./scripts/dev/compile_protobuf_in_docker.sh
 
 clean-test-pycache:
@@ -130,21 +130,7 @@ playwright-install: python-requirements
 
 local-requirements: js-requirements python-requirements
 
-build-docker-images: mkdirs submodules
-	@ python3 docker/image_builder.py \
-		--build-tag=latest \
-		--threads=2 \
-		--clean-intermediate \
-		$(RUN_IMAGES)
-
-build-debug-images: mkdirs submodules
-	@ python3 docker/image_builder.py \
-		--build-tag=latest \
-		--threads=2 \
-		--clean-intermediate \
-		$(DEVELOPMENT_IMAGES)
-
 submodules:
 	@git submodule init && git submodule update
 
-update: mkdirs submodules docker-protocompile local-requirements playwright-install build-debug-images setup-hooks setup-cookiejar setup-filestorage
+update: mkdirs submodules docker-protocompile local-requirements playwright-install setup-hooks setup-cookiejar setup-filestorage
