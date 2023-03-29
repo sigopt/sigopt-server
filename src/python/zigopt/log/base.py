@@ -142,7 +142,7 @@ def configure_loggers(config_broker):
       "botocore": logging.WARNING,
       "botocore.vendored.requests.packages.urllib3": logging.WARNING,
       "gunicorn": logging.WARNING,
-      "compute.timing": logging.INFO,
+      "libsigopt.compute.timing": logging.INFO,
       "requests.packages.urllib3": logging.INFO,
       "sigopt": logging.INFO,
       "sigopt.apiexception": logging.INFO,
