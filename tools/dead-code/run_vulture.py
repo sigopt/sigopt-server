@@ -12,7 +12,6 @@ from vulture.core import Vulture
 DEFAULTS.update(
   {
     "exclude": [
-      "libsigopt/",
       "node_modules/",
       "scratch/",
       "src/python/zigopt/db/all_models.py",

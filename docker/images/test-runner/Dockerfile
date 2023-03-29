@@ -128,8 +128,6 @@ RUN : \
   ; /compile_protobuf.sh \
   ; :
 
-COPY libsigopt /sigopt-server/libsigopt
-
 ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server
 
 RUN set -ex \
