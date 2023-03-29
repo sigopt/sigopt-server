@@ -60,7 +60,7 @@ class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
           possible_stagnation = old_frontier == current_frontier
       elif self.experiment.is_search:
         # TODO(RTL-106): consider a proper stopping criteria for search. It's not trivial to compute one
-        # without calling into compute.
+        # without calling into libsigopt.compute.
         possible_stagnation = False
       else:
         lookback_points_in_order = sorted(reported_values[:-lookback_depth, 0])
