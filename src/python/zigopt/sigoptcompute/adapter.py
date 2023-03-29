@@ -691,7 +691,7 @@ class SCAdapter(Service):
         :type num_points: int >=0  (Could 0 actually happen?)
         :param dimension: number of dimensions for this data
         :type dimension: int >1
-        :return nonzero_mean_info: dict for json to interpret and send to compute
+        :return nonzero_mean_info: dict for json to interpret and send to libsigopt.compute
         :rtype nonzero_mean_info: dict
         """
     if nonzero_mean_choice is None:
