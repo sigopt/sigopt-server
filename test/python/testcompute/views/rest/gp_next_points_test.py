@@ -4,6 +4,8 @@
 import numpy
 import pytest
 from flaky import flaky
+from mock import Mock
+
 from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
@@ -25,8 +27,6 @@ from libsigopt.compute.views.rest.gp_next_points_categorical import (
   generate_neighboring_integer_points,
   get_discrete_conversion_option,
 )
-from mock import Mock
-
 from testaux.domain_test import domains_approximately_equal
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import ZigoptSimulator, form_random_unconstrained_categorical_domain

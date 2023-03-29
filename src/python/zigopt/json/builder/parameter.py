@@ -3,8 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Optional
 
-from libsigopt.aux.constant import ParameterPriorNames  # type: ignore
-
 from zigopt.common import *
 from zigopt.experiment.constant import (  # type: ignore
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
@@ -20,6 +18,8 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (  # type: ignore
   ExperimentParameter,
   Prior,
 )
+
+from libsigopt.aux.constant import ParameterPriorNames  # type: ignore
 
 
 class BoundsJsonBuilder(JsonBuilder):

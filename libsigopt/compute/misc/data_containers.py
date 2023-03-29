@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
+
 from libsigopt.aux.constant import MINIMUM_VALUE_VAR
 from libsigopt.compute.misc.constant import (
   CONSTANT_LIAR_MAX,

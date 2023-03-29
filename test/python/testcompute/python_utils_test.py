@@ -10,6 +10,7 @@ It also tests the functions build_polynomial_matrix and build_grad_polynomial_te
 import numpy
 import pytest
 from flaky import flaky
+
 from libsigopt.aux.domain import ContinuousDomain
 from libsigopt.aux.samplers import generate_latin_hypercube_points
 from libsigopt.compute.covariance import C4RadialMatern, SquareExponential
@@ -23,7 +24,6 @@ from libsigopt.compute.python_utils import (
   indices_represent_zero_mean,
   polynomial_index_point_check,
 )
-
 from testaux.numerical_test_case import DEFAULT_ABS_TOL, NumericalTestCase
 
 

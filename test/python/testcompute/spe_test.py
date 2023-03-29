@@ -4,6 +4,7 @@
 
 import numpy
 import pytest
+
 from libsigopt.compute.covariance import C0RadialMatern, C4RadialMatern
 from libsigopt.compute.misc.multimetric import *
 from libsigopt.compute.sigopt_parzen_estimator import (
@@ -11,7 +12,6 @@ from libsigopt.compute.sigopt_parzen_estimator import (
   SigOptParzenEstimator,
   SPEInsufficientDataError,
 )
-
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import form_points_sampled, form_random_unconstrained_categorical_domain
 

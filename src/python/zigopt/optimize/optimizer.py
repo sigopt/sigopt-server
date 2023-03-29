@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 
 from zigopt.common import *
 from zigopt.assignments.model import extract_array_for_computation_from_assignments
@@ -15,6 +14,8 @@ from zigopt.optimize.sources.search import SearchOptimizationSource
 from zigopt.optimize.sources.spe import SPEOptimizationSource
 from zigopt.redis.service import RedisServiceTimeoutError
 from zigopt.services.base import Service
+
+from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 
 
 class OptimizerService(Service):

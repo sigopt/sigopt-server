@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 
+from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 from testcompute.zigopt_input_utils import ZigoptSimulator
 
 

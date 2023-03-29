@@ -4,27 +4,6 @@
 import sys
 
 import numpy
-from libsigopt.aux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
-from libsigopt.aux.constant import (
-  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  DEFAULT_TASK_SELECTION_STRATEGY,
-  DOUBLE_EXPERIMENT_PARAMETER_NAME,
-  INT_EXPERIMENT_PARAMETER_NAME,
-  MAX_SIMULTANEOUS_AF_POINTS,
-  MINIMUM_VALUE_VAR,
-  MULTISOLUTION_QUANTILE_FOR_SEARCH_THRESHOLD,
-  PARALLEL_CONSTANT_LIAR,
-  PARALLEL_QEI,
-  QUANTIZED_EXPERIMENT_PARAMETER_NAME,
-  ParameterPriorNames,
-)
-from libsigopt.compute.views.rest.gp_ei_categorical import GpEiCategoricalView
-from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
-from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
-from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
-from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
-from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 
 from zigopt.common import *
 from zigopt.assignments.model import MissingValueException, extract_array_for_computation_from_assignments
@@ -46,6 +25,28 @@ from zigopt.sigoptcompute.constant import (
 )
 from zigopt.sigoptcompute.errors import SigoptComputeError
 from zigopt.suggestion.unprocessed.model import SuggestionDataProxy
+
+from libsigopt.aux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
+from libsigopt.aux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DEFAULT_TASK_SELECTION_STRATEGY,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  INT_EXPERIMENT_PARAMETER_NAME,
+  MAX_SIMULTANEOUS_AF_POINTS,
+  MINIMUM_VALUE_VAR,
+  MULTISOLUTION_QUANTILE_FOR_SEARCH_THRESHOLD,
+  PARALLEL_CONSTANT_LIAR,
+  PARALLEL_QEI,
+  QUANTIZED_EXPERIMENT_PARAMETER_NAME,
+  ParameterPriorNames,
+)
+from libsigopt.compute.views.rest.gp_ei_categorical import GpEiCategoricalView
+from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
+from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
+from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
+from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
 
 
 #: Maximum ``num_to_sample`` (= ``q``) to request from libsigopt.compute when using the CL-max heuristic.

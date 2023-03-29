@@ -2,11 +2,12 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME, INT_EXPERIMENT_PARAMETER_NAME, ConstraintType
-from libsigopt.aux.geometry_utils import find_interior_point
 
 from zigopt.common.lists import *
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import PARAMETER_DOUBLE, PARAMETER_INT
+
+from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME, INT_EXPERIMENT_PARAMETER_NAME, ConstraintType
+from libsigopt.aux.geometry_utils import find_interior_point
 
 
 CONSTRAINT_SYMBOL_MAP = {ConstraintType.greater_than: ">=", ConstraintType.less_than: "<="}

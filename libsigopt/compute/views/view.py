@@ -5,6 +5,7 @@ import logging
 from dataclasses import asdict
 
 import numpy
+
 from libsigopt.aux.adapter_info_containers import GPModelInfo
 from libsigopt.aux.constant import PARALLEL_CONSTANT_LIAR
 from libsigopt.aux.domain import CategoricalDomain

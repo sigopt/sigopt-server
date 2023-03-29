@@ -4,9 +4,9 @@
 import numpy
 import pytest
 from flaky import flaky
-from libsigopt.aux.importances import compute_importances
 from sklearn import datasets
 
+from libsigopt.aux.importances import compute_importances
 from testaux.numerical_test_case import NumericalTestCase
 
 

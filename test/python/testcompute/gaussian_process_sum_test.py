@@ -7,6 +7,8 @@ from functools import namedtuple
 import numpy
 import pytest
 from flaky import flaky
+from scipy.stats import norm
+
 from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
 from libsigopt.aux.domain import CategoricalDomain
 from libsigopt.compute.covariance import C2RadialMatern
@@ -21,8 +23,6 @@ from libsigopt.compute.gaussian_process import GaussianProcess
 from libsigopt.compute.gaussian_process_sum import GaussianProcessSum
 from libsigopt.compute.misc.data_containers import HistoricalData
 from libsigopt.compute.probabilistic_failures import ProbabilisticFailures, ProductOfListOfProbabilisticFailures
-from scipy.stats import norm
-
 from testaux.numerical_test_case import NumericalTestCase
 
 

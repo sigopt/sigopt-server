@@ -4,6 +4,7 @@
 from copy import deepcopy
 
 import numpy
+
 from libsigopt.compute.covariance import C4RadialMatern
 from libsigopt.compute.sigopt_parzen_estimator import SigOptParzenEstimator
 from libsigopt.compute.views.rest.search_next_points import (

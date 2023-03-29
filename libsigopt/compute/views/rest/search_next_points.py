@@ -4,6 +4,7 @@
 from copy import deepcopy
 
 import numpy
+
 from libsigopt.compute.misc.constant import CATEGORICAL_POINT_UNIQUENESS_TOLERANCE, DEFAULT_MAX_SIMULTANEOUS_EI_POINTS
 from libsigopt.compute.optimization_auxiliary import DEParameters, OptimizerInfo
 from libsigopt.compute.search import ProbabilityOfImprovementSearch, SearchAcquisitionFunction

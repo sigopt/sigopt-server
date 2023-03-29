@@ -4,6 +4,7 @@
 
 import numpy
 import pytest
+
 from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
 from libsigopt.aux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
 from libsigopt.compute.covariance import C2RadialMatern, SquareExponential
@@ -13,7 +14,6 @@ from libsigopt.compute.misc.data_containers import HistoricalData
 from libsigopt.compute.multitask_acquisition_function import MultitaskAcquisitionFunction
 from libsigopt.compute.multitask_covariance import MultitaskTensorCovariance
 from libsigopt.compute.vectorized_optimizers import AdamOptimizer, DEOptimizer
-
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.vectorized_optimizers_test import QuadraticFunction
 

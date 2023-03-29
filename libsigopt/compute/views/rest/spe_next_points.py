@@ -4,6 +4,7 @@
 from copy import deepcopy
 
 import numpy
+
 from libsigopt.aux.constant import CATEGORICAL_EXPERIMENT_PARAMETER_NAME
 from libsigopt.compute.covariance import C4RadialMatern
 from libsigopt.compute.covariance_base import HyperparameterInvalidError

@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
+
 from libsigopt.aux.domain import ContinuousDomain, FixedIndicesOnContinuousDomain
 from libsigopt.compute.acquisition_function import AcquisitionFunction
 from libsigopt.compute.misc.constant import ADAM_OPTIMIZER, DE_OPTIMIZER

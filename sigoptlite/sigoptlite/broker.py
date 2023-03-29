@@ -5,7 +5,6 @@ from libsigopt.aux.constant import (
   DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS,
   DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS,
 )
-
 from sigoptlite.builders import LocalObservationBuilder
 from sigoptlite.models import LocalSuggestion, dataclass_to_dict
 from sigoptlite.sources import GPSource, RandomSearchSource, SPESource

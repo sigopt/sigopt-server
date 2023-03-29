@@ -5,6 +5,7 @@ import warnings
 
 import numpy
 import scipy.optimize
+
 from libsigopt.compute.misc.constant import L_BFGS_B_OPTIMIZER, SLSQP_OPTIMIZER
 from libsigopt.compute.optimization_auxiliary import (
   OPTIMIZATION_PARAMETERS_TO_DEFAULTS,

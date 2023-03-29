@@ -4,6 +4,7 @@
 from dataclasses import dataclass
 
 import numpy
+
 from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 from libsigopt.aux.samplers import generate_grid_points, generate_halton_points
 from libsigopt.compute.misc.constant import MULTIMETRIC_MIN_NUM_IN_BOUNDS_POINTS, MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS

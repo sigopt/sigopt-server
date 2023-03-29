@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import scipy.linalg
+
 from libsigopt.compute.gaussian_process import GaussianProcess
 from libsigopt.compute.optimization import ScipyOptimizable
 

@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
+
 from libsigopt.compute.gaussian_process import GaussianProcess
 from libsigopt.compute.misc.constant import CONSTANT_LIAR_MIN
 from libsigopt.compute.predictor import Predictor

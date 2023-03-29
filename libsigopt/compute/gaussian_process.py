@@ -5,6 +5,8 @@ import copy
 from dataclasses import dataclass
 
 import numpy
+from scipy.linalg import cho_factor, cho_solve, solve_triangular
+
 from libsigopt.compute.covariance_base import CovarianceBase, DifferentiableCovariance
 from libsigopt.compute.misc.constant import (
   CONSTANT_LIAR_MAX,
@@ -21,7 +23,6 @@ from libsigopt.compute.python_utils import (
   indices_represent_zero_mean,
   polynomial_index_point_check,
 )
-from scipy.linalg import cho_factor, cho_solve, solve_triangular
 
 
 # TODO(RTL-38): Think some more on these quantities and the associated enforcement

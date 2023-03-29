@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import scipy.linalg
+
 from libsigopt.compute.misc.constant import NONZERO_MEAN_CONSTANT_MEAN_TYPE, NONZERO_MEAN_LINEAR_MEAN_TYPE
 
 

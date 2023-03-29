@@ -4,6 +4,7 @@
 from dataclasses import dataclass
 
 import numpy
+
 from libsigopt.compute.predictor import HasPredictor, PredictorCoreComponents
 
 

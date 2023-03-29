@@ -4,6 +4,7 @@
 import numpy
 import pytest
 from flaky import flaky
+
 from libsigopt.aux.adapter_info_containers import MetricsInfo
 from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
@@ -21,7 +22,6 @@ from libsigopt.compute.views.rest.spe_next_points import (
   SPENextPoints,
   get_experiment_phase,
 )
-
 from testaux.domain_test import samples_satisfy_kolmogorov_smirnov_test
 from testcompute.zigopt_input_utils import ZigoptSimulator
 

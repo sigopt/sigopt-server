@@ -5,6 +5,7 @@
 import numpy
 import pytest
 from flaky import flaky
+
 from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
 from libsigopt.aux.domain import CategoricalDomain
 from libsigopt.compute.covariance import SquareExponential
@@ -18,7 +19,6 @@ from libsigopt.compute.gaussian_process import GaussianProcess
 from libsigopt.compute.misc.data_containers import HistoricalData
 from libsigopt.compute.multitask_acquisition_function import MultitaskAcquisitionFunction
 from libsigopt.compute.probabilistic_failures import ProbabilisticFailuresCDF
-
 from testaux.numerical_test_case import NumericalTestCase
 
 

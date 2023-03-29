@@ -3,14 +3,14 @@
 # SPDX-License-Identifier: Apache License 2.0
 from dataclasses import asdict
 
-from libsigopt.aux.domain import CategoricalDomain
-
 from zigopt.common import *
 from zigopt.conditionals.util import convert_to_unconditioned_experiment
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData
 from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.sampler.base import SuggestionSampler
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
+
+from libsigopt.aux.domain import CategoricalDomain
 
 
 # NOTE: This sampler should not be using the optimization_args at all, so I pass None in.

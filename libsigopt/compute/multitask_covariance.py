@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
+
 from libsigopt.compute.covariance_base import DifferentiableCovariance
 
 

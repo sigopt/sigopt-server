@@ -4,7 +4,6 @@
 import random
 
 import pytest
-from libsigopt.aux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
@@ -16,6 +15,7 @@ from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData, Suggestio
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 from integration.service.test_base import ServiceBase
+from libsigopt.aux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 
 
 class OptimizerServiceTestBase(ServiceBase):

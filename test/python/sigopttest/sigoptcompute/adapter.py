@@ -3,6 +3,12 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
+
+from zigopt.experiment.model import Experiment
+from zigopt.optimize.sources.base import OptimizationSource
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
+from zigopt.sigoptcompute.adapter import SCAdapter
+
 from libsigopt.aux.adapter_info_containers import DomainInfo
 from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
@@ -11,12 +17,6 @@ from libsigopt.aux.constant import (
   MULTISOLUTION_QUANTILE_FOR_SEARCH_THRESHOLD,
   ParameterPriorNames,
 )
-
-from zigopt.experiment.model import Experiment
-from zigopt.optimize.sources.base import OptimizationSource
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
-from zigopt.sigoptcompute.adapter import SCAdapter
-
 from sigopttest.base.utils import partial_opt_args
 from sigopttest.optimize.sources.base_test import UnitTestBase
 

@@ -1,8 +1,6 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from libsigopt.aux.constant import ParameterPriorNames
-
 from zigopt.common import *
 from zigopt.experiment.constant import (
   ALL_PARAMETER_PRIOR_NAMES,
@@ -23,6 +21,8 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentParameter,
 )
 from zigopt.sigoptcompute.constant import MINIMUM_DOMAIN_EDGE_LENGTH
+
+from libsigopt.aux.constant import ParameterPriorNames
 
 
 class GridError(BadParamError):

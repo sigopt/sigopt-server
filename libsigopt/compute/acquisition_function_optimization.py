@@ -4,6 +4,7 @@
 import copy
 
 import numpy
+
 from libsigopt.compute.misc.constant import (
   AF_OPT_NEAR_BEST_STD_DEV,
   DEFAULT_MAX_SIMULTANEOUS_EI_POINTS,

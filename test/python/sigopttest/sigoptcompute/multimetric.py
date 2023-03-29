@@ -3,9 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
-from libsigopt.aux.adapter_info_containers import MetricsInfo
-from libsigopt.aux.constant import MULTISOLUTION_QUANTILE_FOR_SEARCH_THRESHOLD
-from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 from zigopt.experiment.model import Experiment
 from zigopt.observation.model import Observation
@@ -19,6 +16,9 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData, ObservationValue
 from zigopt.sigoptcompute.adapter import SCAdapter
 
+from libsigopt.aux.adapter_info_containers import MetricsInfo
+from libsigopt.aux.constant import MULTISOLUTION_QUANTILE_FOR_SEARCH_THRESHOLD
+from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 from sigopttest.optimize.sources.base_test import UnitTestBase
 
 

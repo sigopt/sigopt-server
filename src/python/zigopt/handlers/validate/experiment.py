@@ -4,8 +4,6 @@
 import copy
 from typing import Any, Optional
 
-from libsigopt.aux.constant import ConstraintType  # type: ignore
-
 from zigopt.experiment.constant import (  # type: ignore
   ALL_METRIC_OBJECTIVE_NAMES,
   ALL_METRIC_STRATEGY_NAMES,
@@ -18,6 +16,8 @@ from zigopt.handlers.validate.base import validate_name
 from zigopt.handlers.validate.project import PROJECT_ID_SCHEMA as _PROJECT_ID_SCHEMA
 from zigopt.handlers.validate.validate_dict import validate
 from zigopt.net.errors import BadParamError  # type: ignore
+
+from libsigopt.aux.constant import ConstraintType  # type: ignore
 
 
 PROJECT_ID_SCHEMA = copy.deepcopy(_PROJECT_ID_SCHEMA)

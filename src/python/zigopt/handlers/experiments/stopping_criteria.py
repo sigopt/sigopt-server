@@ -2,12 +2,13 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
-from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 from zigopt.api.auth import api_token_authentication
 from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.json.builder import StoppingCriteriaJsonBuilder
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
+
+from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 
 # If there has been no change after 5D observations, start reporting possible stagnation

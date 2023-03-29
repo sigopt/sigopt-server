@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
+
 from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
@@ -12,7 +13,6 @@ from libsigopt.aux.domain import CategoricalDomain
 from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 from libsigopt.compute.search import convert_one_hot_to_search_hypercube_points
 from libsigopt.compute.views.rest.multisolution_best_assignments import k_center_clustering
-
 from testcompute.zigopt_input_utils import form_random_unconstrained_categorical_domain
 
 

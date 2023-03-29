@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 import pytest
+
 from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
 from libsigopt.aux.domain import CategoricalDomain, ContinuousDomain
 from libsigopt.compute.covariance import SquareExponential
@@ -13,7 +14,6 @@ from libsigopt.compute.probabilistic_failures import (
   ProbabilisticFailuresCDF,
   ProductOfListOfProbabilisticFailures,
 )
-
 from testaux.numerical_test_case import NumericalTestCase
 from testcompute.zigopt_input_utils import form_points_sampled, form_random_hyperparameter_dict
 

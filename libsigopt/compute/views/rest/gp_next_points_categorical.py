@@ -4,6 +4,7 @@
 from copy import deepcopy
 
 import numpy
+
 from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME, PARALLEL_QEI, TASK_SELECTION_STRATEGY_A_PRIORI
 from libsigopt.aux.domain import CategoricalDomain, FixedIndicesOnContinuousDomain
 from libsigopt.compute.acquisition_function_optimization import (

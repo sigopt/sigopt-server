@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: Apache License 2.0
 import math
 
-from libsigopt.aux.constant import MINIMUM_VALUE_VAR
-
 from zigopt.profile.timing import *
 from zigopt.services.base import Service
+
+from libsigopt.aux.constant import MINIMUM_VALUE_VAR
 
 
 class SuggestionRanker(Service):

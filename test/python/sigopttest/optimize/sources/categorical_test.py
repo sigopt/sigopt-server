@@ -1,16 +1,17 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from libsigopt.aux.constant import (
-  DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS,
-  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS,
-)
 from mock import Mock
 
 from zigopt.config.broker import ConfigBroker
 from zigopt.experiment.model import Experiment
 from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.optimize.sources.categorical import CategoricalOptimizationSource
+
+from libsigopt.aux.constant import (
+  DEFAULT_USE_SPE_AFTER_THIS_MANY_OBSERVATIONS,
+  DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS,
+)
 
 
 class TestExperimentProgress(object):

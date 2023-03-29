@@ -5,7 +5,6 @@ import copy
 from http import HTTPStatus
 
 import pytest
-from libsigopt.aux.constant import ParameterTransformationNames
 
 from zigopt.experiment.constant import MAX_CONSTRAINT_METRICS, MAX_METRICS_ANY_STRATEGY, MetricStrategyNames
 from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH
@@ -17,6 +16,7 @@ from integration.v1.constants import (
   EXPERIMENT_META_MULTISOLUTION,
 )
 from integration.v1.experiments_test_base import ExperimentsTestBase
+from libsigopt.aux.constant import ParameterTransformationNames
 
 
 class TestCreateExperiments(ExperimentsTestBase):

@@ -5,6 +5,9 @@ import copy
 from collections import OrderedDict
 
 import numpy
+from scipy.spatial.distance import cdist
+from scipy.stats import beta, truncnorm
+
 from libsigopt.aux.constant import (
   CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
@@ -22,8 +25,6 @@ from libsigopt.aux.samplers import (
   generate_uniform_random_points,
   generate_uniform_random_points_rejection_sampling_with_hitandrun_padding,
 )
-from scipy.spatial.distance import cdist
-from scipy.stats import beta, truncnorm
 
 
 DEFAULT_QUASI_RANDOM_SAMPLER = "latin_hypercube"

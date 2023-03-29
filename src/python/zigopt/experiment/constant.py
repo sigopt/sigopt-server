@@ -2,14 +2,6 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 """Constants for ``sigopt-server`` experiment components."""
-from libsigopt.aux.constant import (
-  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
-  DOUBLE_EXPERIMENT_PARAMETER_NAME,
-  INT_EXPERIMENT_PARAMETER_NAME,
-  ParameterPriorNames,
-  ParameterTransformationNames,
-)
-
 from zigopt.common import *
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   MAXIMIZE,
@@ -21,6 +13,14 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentMetric,
   ExperimentParameter,
   Prior,
+)
+
+from libsigopt.aux.constant import (
+  CATEGORICAL_EXPERIMENT_PARAMETER_NAME,
+  DOUBLE_EXPERIMENT_PARAMETER_NAME,
+  INT_EXPERIMENT_PARAMETER_NAME,
+  ParameterPriorNames,
+  ParameterTransformationNames,
 )
 
 

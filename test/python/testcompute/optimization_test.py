@@ -6,6 +6,7 @@ objective."""
 
 import numpy
 import pytest
+
 from libsigopt.aux.domain import DEFAULT_SAFETY_MARGIN_FOR_CONSTRAINTS, ContinuousDomain
 from libsigopt.compute.optimization import LBFGSBOptimizer, MultistartOptimizer, ScipyOptimizable, SLSQPOptimizer
 from libsigopt.compute.optimization_auxiliary import (
@@ -14,7 +15,6 @@ from libsigopt.compute.optimization_auxiliary import (
   LBFGSBParameters,
   SLSQPParameters,
 )
-
 from testaux.numerical_test_case import NumericalTestCase
 
 

@@ -4,6 +4,7 @@
 from copy import deepcopy
 
 import numpy
+
 from libsigopt.compute.covariance_base import DifferentiableCovariance, RadialCovariance
 from libsigopt.compute.optimization import ScipyOptimizable
 
