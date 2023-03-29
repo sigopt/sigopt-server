@@ -14,7 +14,7 @@ Node dependencies are listed in `yarn.lock`.
 We store data in the following:
 
 - Postgres 11.2 for durable application data
-- Redis 5 for transient suggestion data
+- Redis 7.0 for transient suggestion data
 - Minio 1.19 for user uploaded file data
 
 ## Services

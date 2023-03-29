@@ -26,6 +26,7 @@ services:
       - ./failure_console_logs:/sigopt-server/failure_console_logs
       - /dev/shm:/dev/shm
       - &pg-sock-volume pg-sock:/var/run/postgresql
+      - &redis-run-volume redis-run:/var/run/redis
   smtp:
     build:
       <<: *test-runner-build
@@ -121,6 +122,7 @@ services:
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
+      - *redis-run-volume
     tmpfs:
       - /tmp
     networks:
@@ -194,6 +196,7 @@ services:
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
+      - *redis-run-volume
     deploy:
       resources:
         limits:
@@ -228,6 +231,7 @@ services:
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
+      - *redis-run-volume
     deploy:
       resources:
         limits:
@@ -267,16 +271,15 @@ services:
       - "no-new-privileges:true"
   redis:
     restart: on-failure:5
-    command:
-      - redis-server
-      - --save
-      - ""
-      - --appendonly
-      - "no"
     image: "redis:${REDIS_VERSION}"
-    ports:
-      - target: 6379
-        host_ip: 127.0.0.1
+    entrypoint:
+      - redis-server
+    command:
+      - /etc/redis/redis.conf
+    volumes:
+      - *redis-run-volume
+      - ./redis.conf:/etc/redis/redis.conf
+    network_mode: none
     deploy:
       resources:
         limits:
@@ -362,3 +365,4 @@ volumes:
   minio-data: {}
   pg-data: {}
   pg-sock: {}
+  redis-run: {}
