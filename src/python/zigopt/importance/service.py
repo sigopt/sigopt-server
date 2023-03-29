@@ -9,7 +9,6 @@ from zigopt.services.base import Service
 
 
 def compute_importances(features, values):
-
   def _get_n_estimators(n_dimensions, n_observations):
     if n_dimensions <= 50 and n_observations <= 10000:
       n_estimators = 100
@@ -39,6 +38,7 @@ def compute_importances(features, values):
     return numpy.ones(n_dimensions) / n_dimensions
 
   return feature_importances
+
 
 class ImportancesService(Service):
   @staticmethod
