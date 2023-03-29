@@ -4,6 +4,7 @@
 # on a different version than another requirements.txt somewhere, in which case, you
 # need to update the lower version to match the higher version.
 
+git+http://github.com/sigopt/libsigopt@main
 Flask==2.1.1
 PyYAML==5.4.1
 backoff==1.10.0
