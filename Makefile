@@ -4,17 +4,6 @@ SHELL = /usr/bin/env bash -eo pipefail
 
 DIRS = scratch web/static/js
 
-DEVELOPMENT_IMAGES = \
-	nginx \
-	node-development \
-	python-development \
-	test-runner
-
-RUN_IMAGES = \
-	nginx \
-	web \
-	zigopt
-
 compile: protocompile pytest lint eslint
 
 dist-compile: compile
