@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Copyright © 2023 Intel Corporation
+#
+# SPDX-License-Identifier: Apache License 2.0
 # This script checks and fixes the sorting of object properties.
 # It should not be executed directly.
 

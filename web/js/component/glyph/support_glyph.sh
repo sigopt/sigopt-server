@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Copyright © 2023 Intel Corporation
+#
+# SPDX-License-Identifier: Apache License 2.0
 # This script adds support for the provided glyph by adding a css style for .fa-$GLYPH:before with content:GLYPH_CHARACTER
 # and creating a React component for the glyph at ./$GLYPH
 set -e
