@@ -10,8 +10,8 @@ from flaky import flaky
 from scipy.stats import norm
 
 from libsigopt.aux.constant import DOUBLE_EXPERIMENT_PARAMETER_NAME
-from libsigopt.aux.domain import CategoricalDomain
 from libsigopt.compute.covariance import C2RadialMatern
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.expected_improvement import (
   AugmentedExpectedImprovement,
   ExpectedImprovement,

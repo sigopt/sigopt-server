@@ -12,7 +12,7 @@ from libsigopt.aux.constant import (
   PARALLEL_CONSTANT_LIAR,
   PARALLEL_QEI,
 )
-from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.misc.constant import CONSTANT_LIAR_MIN, NONZERO_MEAN_CONSTANT_MEAN_TYPE
 from libsigopt.compute.misc.data_containers import MultiMetricMidpointInfo, SingleMetricMidpointInfo
 from libsigopt.compute.views.view import (

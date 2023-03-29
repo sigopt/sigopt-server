@@ -5,9 +5,9 @@ from dataclasses import dataclass
 
 import numpy
 
-from libsigopt.aux.domain import CategoricalDomain, ContinuousDomain
 from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 from libsigopt.compute.acquisition_function import AcquisitionFunction
+from libsigopt.compute.domain import CategoricalDomain, ContinuousDomain
 from libsigopt.compute.predictor import Predictor
 from libsigopt.compute.probabilistic_failures import ProbabilisticFailuresBase
 

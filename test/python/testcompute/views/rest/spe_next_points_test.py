@@ -12,7 +12,7 @@ from libsigopt.aux.constant import (
   INT_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.misc.constant import MULTIMETRIC_MIN_NUM_SUCCESSFUL_POINTS
 from libsigopt.compute.views.rest.spe_next_points import (
   COMPLETION_PHASE,
@@ -22,7 +22,7 @@ from libsigopt.compute.views.rest.spe_next_points import (
   SPENextPoints,
   get_experiment_phase,
 )
-from testaux.domain_test import samples_satisfy_kolmogorov_smirnov_test
+from testcompute.domain_test import samples_satisfy_kolmogorov_smirnov_test
 from testcompute.zigopt_input_utils import ZigoptSimulator
 
 

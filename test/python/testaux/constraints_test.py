@@ -9,8 +9,8 @@ from libsigopt.aux.constant import (
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.aux.domain import DEFAULT_NUM_RANDOM_NEIGHBORS, MAX_GRID_DIM, CategoricalDomain
 from libsigopt.aux.geometry_utils import find_interior_point
+from libsigopt.compute.domain import DEFAULT_NUM_RANDOM_NEIGHBORS, MAX_GRID_DIM, CategoricalDomain
 from testaux.numerical_test_case import NumericalTestCase
 
 

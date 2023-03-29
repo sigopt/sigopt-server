@@ -9,8 +9,8 @@ from libsigopt.aux.constant import (
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   INT_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.aux.domain import CategoricalDomain
 from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.probabilistic_failures import ProbabilisticFailuresCDF
 from libsigopt.compute.search import (
   ProbabilityOfImprovementSearch,

@@ -20,7 +20,7 @@ from libsigopt.aux.constant import (
   ParameterPriorNames,
   ParameterTransformationNames,
 )
-from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
 from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
 from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments

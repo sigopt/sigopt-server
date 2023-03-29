@@ -12,7 +12,7 @@ from libsigopt.aux.constant import (
   MINIMUM_VALUE_VAR,
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
 )
-from libsigopt.aux.domain import CategoricalDomain
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.log_likelihood import GaussianProcessLogMarginalLikelihood
 from libsigopt.compute.misc.constant import (
   DEFAULT_COVARIANCE_KERNEL,

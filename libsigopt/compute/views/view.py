@@ -8,8 +8,8 @@ import numpy
 
 from libsigopt.aux.adapter_info_containers import GPModelInfo
 from libsigopt.aux.constant import PARALLEL_CONSTANT_LIAR
-from libsigopt.aux.domain import CategoricalDomain
 from libsigopt.compute.covariance import COVARIANCE_TYPES_TO_CLASSES
+from libsigopt.compute.domain import CategoricalDomain
 from libsigopt.compute.expected_improvement import (
   AugmentedExpectedImprovement,
   ExpectedImprovement,
