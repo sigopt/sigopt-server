@@ -770,12 +770,12 @@ class LocalObservationBuilder(BuilderBase):
     if not observation.failed:
       num_reported_metrics = len(observation.metric_evaluations)
       if num_reported_metrics != len(experiment.metrics):
-        raise ValueError(
-          f"Observation data must have {len(experiment.metrics)} metrics, but only {num_reported_metrics} found"
-        )
+        raise ValueError("The number of observation values and experiment metrics must be equal.")
       for m in experiment.metrics:
         if observation.get_metric_evaluation_by_name(m.name) is None:
-          raise ValueError(f"Metric {m.name} not in observation metrics: {observation.metric_evaluations}.")
+          raise ValueError(
+            f"Values must have metric names defined in experiment: {[m.name for m in experiment.metrics]}."
+          )
 
   @staticmethod
   def observation_must_have_parameter(observation, parameter):

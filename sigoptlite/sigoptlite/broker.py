@@ -52,18 +52,10 @@ class Broker(object):
     )
 
   def create_observation(self, assignments=None, values=None, suggestion=None, failed=False, task=None):
-    if not (bool(not assignments) ^ bool(not suggestion)):
-      raise ValueError("Need to pass in an assignments dictionary or a suggestion id to create an observation")
+    self.validate_observation_assignments_and_suggestions(assignments, suggestion)
 
     if assignments is None:
-      if self.stored_suggestion is None:
-        raise ValueError("There is no stored suggestion to use. Please create a suggestion")
-
-      if suggestion != self.stored_suggestion.id:
-        raise ValueError(
-          f"The suggestion you provided: {suggestion} does not match the suggestion stored: {self.stored_suggestion.id}"
-        )
-
+      self.validate_observation_with_suggestion_id(suggestion)
       assignments = self.stored_suggestion.assignments
       if self.stored_suggestion.task is not None:
         task = dataclass_to_dict(self.stored_suggestion.task)
@@ -105,3 +97,18 @@ class Broker(object):
     self.stored_suggestion = suggestion_to_serve
     self.suggestion_id += 1
     return suggestion_to_serve
+
+  def validate_observation_assignments_and_suggestions(self, suggestion_id, assignments):
+    if (assignments is None) and (suggestion_id is None):
+      raise ValueError("Need to pass in an assignments dictionary or a suggestion id to create an observation")
+    if (assignments is not None) and (suggestion_id is not None):
+      raise ValueError("Cannot specify `suggestion` and `assignments`.")
+
+  def validate_observation_with_suggestion_id(self, suggestion_id):
+    if self.stored_suggestion is None:
+      raise ValueError("There is no stored suggestion to use. Please create a suggestion")
+    if suggestion_id != self.stored_suggestion.id:
+      raise ValueError(
+        f"The suggestion you provided: {suggestion_id} does not match the suggestion stored:"
+        f" {self.stored_suggestion.id}"
+      )
