@@ -60,7 +60,7 @@ MAXIMUM_NUMBER_OF_SUGGESTIONS_CL_MAX = 10
 
 
 class SCAdapter(Service):
-  def call_compute(self, cls, view_input):
+  def call_sigoptcompute(self, cls, view_input):
     try:
       return cls(view_input, logging_service=self.services.logging_service).call()
     except (ValueError, IndexError, numpy.linalg.LinAlgError) as e:
@@ -232,7 +232,7 @@ class SCAdapter(Service):
       "tag": self.supplement_tag_with_experiment_id(tag, experiment),
       "task_options": [t.cost for t in experiment.tasks],
     }
-    response = self.call_compute(MultisolutionBestAssignments, view_input)
+    response = self.call_sigoptcompute(MultisolutionBestAssignments, view_input)
     best_indices = [int(i) for i in response["best_indices"] if i is not None]
     return best_indices
 
@@ -281,7 +281,7 @@ class SCAdapter(Service):
       "metrics_info": self.form_metrics_info(experiment),
       "task_options": [t.cost for t in experiment.tasks],
     }
-    response = self.call_compute(GpEiCategoricalView, view_input)
+    response = self.call_sigoptcompute(GpEiCategoricalView, view_input)
     return [float(ei) for ei in response["expected_improvement"]]
 
   def spe_next_points(
@@ -304,7 +304,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    response = self.call_compute(SPENextPoints, view_input)
+    response = self.call_sigoptcompute(SPENextPoints, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = (float(cost) for cost in response["task_costs"]) if experiment.is_multitask else None
 
@@ -343,7 +343,7 @@ class SCAdapter(Service):
     assert view_input["metrics_info"].optimized_metrics_index == []
     assert not view_input["metrics_info"].has_optimization_metrics
 
-    response = self.call_compute(SPESearchNextPoints, view_input)
+    response = self.call_sigoptcompute(SPESearchNextPoints, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = None
 
@@ -407,7 +407,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    response = self.call_compute(GpNextPointsCategorical, view_input)
+    response = self.call_sigoptcompute(GpNextPointsCategorical, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = (float(cost) for cost in response["task_costs"]) if experiment.is_multitask else None
 
@@ -464,7 +464,7 @@ class SCAdapter(Service):
     assert view_input["metrics_info"].optimized_metrics_index == []
     assert not view_input["metrics_info"].has_optimization_metrics
 
-    response = self.call_compute(SearchNextPoints, view_input)
+    response = self.call_sigoptcompute(SearchNextPoints, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
     task_costs = None
 
@@ -532,7 +532,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    response = self.call_compute(GpHyperOptMultimetricView, view_input)
+    response = self.call_sigoptcompute(GpHyperOptMultimetricView, view_input)
     return response["hyperparameter_dict"]
 
   @staticmethod
