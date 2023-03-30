@@ -29,14 +29,13 @@ class ProdApp(Flask):
     def handle_validation_errors(e):
       return BadParamError(e.msg).get_error_response()
 
-    self.register_error_handler(ValidationError, handle_validation_errors)
-
     self.global_services = self.ServiceBag(config_broker, is_qworker=False)
     self.request_local_services_factory = self.RequestLocalServiceBag
 
     log_requests(self)
     initialize_base_blueprint(self)
     self.register_blueprint(initialize_v1_blueprint(self), url_prefix="/v1")
+    self.register_error_handler(ValidationError, handle_validation_errors)
 
   def make_default_options_response(self):
     return success_response({})
