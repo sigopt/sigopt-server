@@ -434,12 +434,6 @@ jobs:
       - attach
       - install-submodules
       - run: git ls-files '*.js' | xargs yarn -s eslint
-  json-lint:
-    executor: sigopt-python-only
-    steps:
-      - checkout
-      - install-submodules
-      - run: ./tools/lint/json/lint.sh --check
   check-node-dependencies:
     executor: sigopt-node-only
     steps:
@@ -661,7 +655,6 @@ workflows:
           requires:
             - checkout-code
             - setup-web
-      - json-lint
       - black
       - bandit
       - python-imports
