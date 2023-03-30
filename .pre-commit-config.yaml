@@ -60,6 +60,12 @@ repos:
         description: "An AST-based pattern checker for JavaScript."
         language: system
         types: [javascript]
+      - id: pylint
+        name: pylint
+        entry: ./pp pylint
+        language: system
+        types: [python]
+        args: [-rn, -sn]
       - id: apply-copyright-notice
         name: Apply the copywright notice
         description: This hook applies the copyright notice and license disclaimer to all files.
