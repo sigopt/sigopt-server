@@ -348,7 +348,7 @@ jobs:
       - run: pyenv global 3.10.6
       - install-submodules
       - install-trivy
-      - run: ./ci/trivy_scan_images.sh --ignore-unfixed
+      - run: ./ci/trivy_scan_images.sh --ignore-unfixed --debug
       - store_artifacts:
           path: artifacts/trivy/
   trivy-scan-project:
@@ -357,7 +357,7 @@ jobs:
     steps:
       - checkout
       - install-trivy
-      - run: mkdir -p artifacts/trivy && trivy fs .
+      - run: mkdir -p artifacts/trivy && trivy fs . --debug
       - store_artifacts:
           path: artifacts/trivy/
   test-docker-deployment:
