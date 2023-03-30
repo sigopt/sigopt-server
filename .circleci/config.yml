@@ -630,6 +630,7 @@ workflows:
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
+      - yarn-audit
       - test-docker-deployment
       - test-docker-development
       - setup-web
