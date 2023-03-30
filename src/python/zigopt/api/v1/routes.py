@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.api.blueprint import ApiBlueprint
 from zigopt.api.common import handler_registry
+from zigopt.api.errors import ValidationError
 from zigopt.handlers.aiexperiments.best_training_runs import AiExperimentsBestTrainingRunsHandler
 from zigopt.handlers.aiexperiments.create import ClientsProjectsAiExperimentsCreateHandler
 from zigopt.handlers.aiexperiments.delete import AiExperimentsDeleteHandler
@@ -113,8 +114,6 @@ from zigopt.handlers.web_data.delete import WebDataDeleteHandler
 from zigopt.handlers.web_data.list import WebDataListHandler
 from zigopt.handlers.web_data.update import WebDataUpdateHandler
 from zigopt.net.errors import BadParamError
-
-from sigoptaux.errors import ValidationError
 
 
 def initialize_blueprint(app):
