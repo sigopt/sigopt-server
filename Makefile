@@ -66,18 +66,8 @@ fix-db: docker-protocompile
 setup-cookiejar:
 	@./scripts/launch/compose.sh run --rm init-minio-cookiejar
 
-setup-pre-push:
-	@ln -fs $$(pwd)/tools/git/pre-push.sh .git/hooks/pre-push
-
-setup-pre-commit:
-	@ln -fs $$(pwd)/tools/git/pre-commit.sh .git/hooks/pre-commit
-
-setup-post-checkout:
-	@ln -fs "$$(pwd)/tools/git/post-checkout.sh" .git/hooks/post-checkout
-
-setup-hooks: setup-pre-push setup-post-checkout
-	@echo "installed pre-push and post-checkout hooks"
-	@echo "pre-commit hooks may be slow; run \`make setup-pre-commit\` if you want them"
+setup-hooks: python-requirements
+	@pre-commit install --install-hooks
 
 mkdirs: $(DIRS)
 
