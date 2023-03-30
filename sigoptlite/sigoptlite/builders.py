@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 import itertools
 import json
+import numbers
 from collections.abc import Mapping
-from numbers import Integral
 
 import numpy
 from jsonschema import validate as validate_against_schema
@@ -209,10 +209,18 @@ def get_path_string(path):
 def is_integer(num):
   if isinstance(num, bool):
     return False
-  elif isinstance(num, Integral):
+  elif isinstance(num, numbers.Integral):
     return True
   else:
     return False
+
+
+def is_number(x):
+  if isinstance(x, bool):
+    return False
+  if isinstance(x, float) and not numpy.isfinite(x):
+    return False
+  return isinstance(x, numbers.Number) or is_integer(x)
 
 
 def process_error(e, class_name):
@@ -577,6 +585,12 @@ class LocalParameterBuilder(BuilderBase):
       if parameter.bounds:
         raise ValueError(f"Categorical parameter should not have bounds: {parameter.bounds}")
 
+    if parameter.bounds:
+      parameter_bounds = [parameter.bounds.min, parameter.bounds.max]
+      if any(not cls.check_type_for_value(parameter, p) for p in parameter_bounds):
+        invalid_parameter = (not cls.check_type_for_value(parameter, p) for p in parameter_bounds).next()
+        raise ValueError(f"Parameter bound {invalid_parameter} is not a proper parameter bound for {parameter}")
+
     # parameter with grid
     if parameter.grid:
       if not len(parameter.grid) > 1:
@@ -587,6 +601,9 @@ class LocalParameterBuilder(BuilderBase):
         raise ValueError(f"Grid parameter should not have bounds: {parameter.bounds}")
       if not cls.get_num_distinct_elements(parameter.grid) == len(parameter.grid):
         raise ValueError(f"Grid values should be unique: {parameter.grid}")
+      if any(not cls.check_type_for_value(parameter, p) for p in parameter.grid):
+        invalid_parameter = (not cls.check_type_for_value(parameter, p) for p in parameter.grid).next()
+        raise ValueError(f"Grid value {invalid_parameter} is not a proper parameter for {parameter}")
 
     # log transformation
     if parameter.has_transformation:
@@ -610,6 +627,18 @@ class LocalParameterBuilder(BuilderBase):
           raise ValueError(f"parameter.prior.mean {parameter.prior.mean} must be within bounds {parameter.bounds}")
       if not (parameter.prior.is_normal ^ parameter.prior.is_beta):
         raise ValueError(f"{parameter.prior} must be either normal or beta")
+
+  @staticmethod
+  def check_type_for_value(parameter, value):
+    if parameter.is_int:
+      return is_integer(value)
+    elif parameter.is_double:
+      return is_number(value)
+    elif parameter.is_categorical:
+      return is_number(value) or isinstance(value, str)
+    else:
+      # Raising a ValueErrros here just to faciliate replacement for a custimized error later
+      raise ValueError(f"Parameter value {value} is not the same as parameter.type {parameter.type}")
 
 
 class LocalMetricBuilder(BuilderBase):
