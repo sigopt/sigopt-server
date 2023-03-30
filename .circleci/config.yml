@@ -585,16 +585,6 @@ jobs:
       - checkout
       - run: grep -E '(mypy|types)' requirements-dev.txt | xargs pip install -r requirements.txt
       - run: make mypy
-  bash-lint:
-    docker:
-      - image: circleci/buildpack-deps:buster
-    resource_class: small
-    steps:
-      - checkout
-      - run: sudo apt-get update -yqq
-      - run: sudo apt-get -yqq install shellcheck
-      - run: mkdir -p ../bin && wget -O ../bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 && chmod +x ../bin/hadolint
-      - run: PATH="../bin:$PATH" ./pp ./tools/lint/bash/run_linters.py
   disclaimers-lint:
     executor: sigopt-python-only
     steps:
@@ -650,8 +640,6 @@ workflows:
           requires:
             - setup-web
             - documentation-generation
-      - bash-lint
-      - disclaimers-lint
       - js-lint:
           requires:
             - checkout-code

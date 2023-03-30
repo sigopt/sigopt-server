@@ -167,7 +167,6 @@
       "pre-commit run --files"
     ],
     "*.sh": [
-      "./pp python -m tools.lint.bash.run_linters",
       "pre-commit run --files"
     ],
     "*.{yaml,yml}": [
@@ -177,7 +176,6 @@
       "pre-commit run --files"
     ],
     "Dockerfile*": [
-      "./pp python -m tools.lint.bash.run_linters",
       "pre-commit run --files"
     ]
   },

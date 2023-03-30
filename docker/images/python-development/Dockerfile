@@ -62,7 +62,6 @@ RUN set -ex \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       make=4.2.* \
       libxml2=2.9.* \
-      shellcheck=0.5.* \
       sqlite3=3.27.* \
       git=1:2.20.* \
       >/dev/null \
