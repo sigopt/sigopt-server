@@ -88,6 +88,7 @@ repos:
         description: "An AST-based pattern checker for JavaScript."
         language: system
         types: [javascript]
+        require_serial: true
       - id: pylint
         name: pylint
         entry: ./pp pylint
@@ -103,6 +104,7 @@ repos:
         types_or:
           - markdown
           - python
+        require_serial: true
       - id: custom-bash-lint
         name: custom-bash-lint
         entry: tools/lint/bash/custom_lint.py
