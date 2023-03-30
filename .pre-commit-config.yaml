@@ -33,6 +33,12 @@ repos:
         additional_dependencies:
           - prettier@2.8.6
           - prettier-plugin-import-sort@0.0.7
+  - repo: https://github.com/syntaqx/git-hooks.git
+    rev: "v0.0.17"
+    hooks:
+      - id: circleci-config-validate
+      - id: shellcheck
+        args: ["--exclude", "SC1090,SC1091,SC2029", "-f", "gcc"]
   - repo: local
     hooks:
       - id: eslint
