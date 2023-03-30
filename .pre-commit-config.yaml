@@ -69,3 +69,10 @@ repos:
         entry: tools/lint/bash/custom_lint.py
         language: python
         types: [shell]
+      - id: custom-python-lint
+        name: custom-python-lint
+        entry: ./pp tools/lint/python/custom_lint.py
+        language: python
+        additional_dependencies:
+          - numpy
+        types: [python]
