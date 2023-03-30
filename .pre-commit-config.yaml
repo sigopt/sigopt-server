@@ -5,16 +5,22 @@ repos:
       - id: check-added-large-files
         args: [--maxkb=1024]
       - id: check-ast
+      - id: check-executables-have-shebangs
       - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
       - id: check-toml
+      - id: check-vcs-permalinks
       - id: check-yaml
       - id: debug-statements
+      - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: no-commit-to-branch
         args: [--branch=main]
+      - id: pretty-format-json
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: local

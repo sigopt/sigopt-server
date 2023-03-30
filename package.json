@@ -153,8 +153,6 @@
       "pre-commit run --files"
     ],
     "*.json": [
-      "./tools/lint/json/lint.sh --fix",
-      "prettier --write",
       "pre-commit run --files"
     ],
     "*.less": [
