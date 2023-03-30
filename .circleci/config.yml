@@ -90,12 +90,12 @@ commands:
   integration-test-setup:
     steps:
       - run: ./ci/create_development_tls_certs.sh
-      - run: ./ci/compose.sh create test-runner
+      - run: ./ci/compose.sh build --progress=plain test-runner
       - start-service:
           description: PostgreSQL
           service: postgres
       - run: sleep 5
-      - run: ./ci/compose.sh create createdb
+      - run: ./ci/compose.sh build --progress=plain createdb
       - run: ./ci/compose.sh run --rm createdb --fake-data
       - start-service:
           description: Redis
@@ -517,7 +517,7 @@ jobs:
           service: mongodb
       - run:
           name: Create test container
-          command: ./ci/compose.sh create test-client
+          command: ./ci/compose.sh build --progress=plain test-client
       - run:
           name: Client Integration Test
           command: ./ci/compose.sh run test-client test/run_client_integration_tests.sh main
@@ -535,9 +535,9 @@ jobs:
           description: PostgreSQL
           service: postgres
       - run: sleep 5
-      - run: ./ci/compose.sh create createdb
+      - run: ./ci/compose.sh build --progress=plain createdb
       - run: ./ci/compose.sh run createdb
-      - run: ./ci/compose.sh create qworker qworker-analytics
+      - run: ./ci/compose.sh build --progress=plain qworker qworker-analytics
       - run: ./ci/worker_health_fail.sh
       - run: ./ci/compose.sh create redis
       - start-service:
