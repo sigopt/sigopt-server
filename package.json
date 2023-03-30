@@ -160,7 +160,6 @@
     "*.py": [
       "./tools/lint/python/black.sh",
       "./pp isort --filter-files --settings ./tools/lint/python/isort.cfg",
-      "./pp flake8 --config=./tools/lint/python/flake8.config",
       "./pp python -m tools.lint.python.custom_lint",
       "./pp pylint --rcfile=./tools/lint/python/pylint.rc",
       "./tools/lint/python/bandit.sh -q",

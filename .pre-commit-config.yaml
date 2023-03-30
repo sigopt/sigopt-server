@@ -22,6 +22,13 @@ repos:
         args: [--branch=main]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/PyCQA/flake8.git
+    rev: "6.0.0"
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-print==4.0.0
+        entry: ./pp flake8
   - repo: https://github.com/hadolint/hadolint.git
     rev: "v2.12.1-beta"
     hooks:

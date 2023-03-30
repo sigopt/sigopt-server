@@ -93,7 +93,7 @@ if __name__ == "__main__":
   pwd = os.getcwd()
   with open(allowlist_path, "w+") if allow_list else sys.stdout as fp:
     for item in vulture.get_unused_code(min_confidence=min_confidence, sort_by_size=sort_by_size):
-      print(
+      print(  # noqa: T001
         item.get_whitelist_string().rstrip().replace(pwd + "/", "")
         if allow_list
         else item.get_report(add_size=sort_by_size),

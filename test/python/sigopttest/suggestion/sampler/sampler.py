@@ -544,7 +544,6 @@ class TestSuggestSampler(object):
     parameter = self.double_parameter(0, 1, grid=grid_values)
 
     intervals = segmenter.segmented_intervals(parameter, 3)
-    print(intervals)
     assert len(intervals) == 3
     assert len([i for i in intervals if size(i) == 2]) == 3
     self.assert_exclusively_in(grid_values[0], intervals, 0)

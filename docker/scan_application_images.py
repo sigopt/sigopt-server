@@ -40,5 +40,5 @@ if __name__ == "__main__":
     if result:
       failed.append(image_uri)
   if failed:
-    print(f"Trivy scan failed for the following images: {' '.join(failed)}")
+    print(f"Trivy scan failed for the following images: {' '.join(failed)}")  # noqa: T001
   sys.exit(bool(failed))

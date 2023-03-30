@@ -382,5 +382,5 @@ if __name__ == "__main__":
   for source_name in source_names:
     for message in check_file(source_name):
       problems = True
-      print(message)
+      print(message)  # noqa: T001
   sys.exit(int(problems))

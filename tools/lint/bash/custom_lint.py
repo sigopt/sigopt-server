@@ -38,5 +38,5 @@ if __name__ == "__main__":
     if response:
       responses.append(response)
   if responses:
-    print("\n".join(responses))
+    print("\n".join(responses))  # noqa: T001
     sys.exit(1)
