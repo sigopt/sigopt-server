@@ -323,9 +323,9 @@ jobs:
             - .ssh
             - project
   pre-commit:
-    docker:
-      - image: cimg/python:3.10
-    resource_class: small
+    machine:
+      image: *ubuntu-executor-image
+    resource_class: medium
     steps:
       - checkout
       - run: pip install -r requirements.txt -r requirements-dev.txt
