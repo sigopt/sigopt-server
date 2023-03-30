@@ -10,7 +10,7 @@ from sigopt import Connection
 
 from sigoptlite.driver import FIXED_EXPERIMENT_ID, LocalDriver
 from sigoptlitetest.base_test import UnitTestsBase
-from sigoptlitetest.constants import DEFAULT_PARAMETERS
+from sigoptlitetest.constants import DEFAULT_SIMPLE_PARAMETERS
 
 
 DEFAULT_NUM_RANDOM = 10
@@ -153,7 +153,7 @@ class TestBestAssignmentsLogger(UnitTestsBase):
   @pytest.mark.parametrize("threshold_y1, threshold_y2", [(None, -0.25), (0.25, None), (0.25, -0.25)])
   def test_multimetric_thresholds(self, threshold_y1, threshold_y2):
     experiment_meta = dict(
-      parameters=DEFAULT_PARAMETERS,
+      parameters=DEFAULT_SIMPLE_PARAMETERS,
       metrics=[
         dict(name="y1", objective="maximize", threshold=threshold_y1),
         dict(name="y2", objective="minimize", threshold=threshold_y2),
@@ -179,6 +179,8 @@ class TestBestAssignmentsLogger(UnitTestsBase):
       threshold_y1 = 0
     if threshold_y2 is None:
       threshold_y2 = 0
+
+    assert len(best_assignments_list) < num_optimal
     for best_assignment in best_assignments_list:
       best_values = [dict(name=value.name, value=value.value) for value in best_assignment.values]
       assert best_values[0]["value"] >= threshold_y1 and best_values[1]["value"] <= threshold_y2
@@ -256,30 +258,19 @@ class TestBestAssignmentsLogger(UnitTestsBase):
     assert len(best_assignments_list) == 1
     assert best_assignments_list[0].values[0].value <= 1
 
-  @pytest.mark.parametrize(
-    "metrics",
-    [
-      [dict(name="y1", objective="maximize", threshold=1), dict(name="y2", objective="maximize", threshold=1)],
-      [
-        dict(name="y1", objective="maximize", strategy="constraint", threshold=1),
-        dict(name="y2", objective="minimize", strategy="optimize"),
-      ],
-      [
-        dict(name="y1", objective="maximize", strategy="constraint", threshold=1),
-        dict(name="y2", objective="minimize", strategy="constraint", threshold=1),
-      ],
-    ],
-  )
-  def test_multimetric_all_points_unsatisfactory_empty_list(self, metrics):
-    experiment_meta = dict(
-      parameters=DEFAULT_PARAMETERS,
-      metrics=metrics,
-      observation_budget=123,
-    )
+  @pytest.mark.parametrize("feature", ["metric_threshold", "metric_constraint", "search"])
+  def test_multimetric_all_points_unsatisfactory_empty_list(self, feature):
+    experiment_meta = self.get_experiment_feature(feature)
+    threshold = experiment_meta["metrics"][0]["threshold"]
+    experiment_meta["metrics"][0]["objective"] = "maximize"
     e = self.conn.experiments().create(**experiment_meta)
 
+    num_unsatisfactory = 10
+    bad_values_list = [
+      [dict(name="y1", value=threshold - numpy.random.rand()), dict(name="y2", value=numpy.random.rand())]
+      for _ in range(num_unsatisfactory)
+    ]
     bad_assignments_list = self.generate_random_assignments(experiment_meta)
-    bad_values_list = self.create_values_in_simplex(on_boundary=False)
 
     self.create_shuffled_observations(self.conn, bad_assignments_list, bad_values_list)
     best_assignments_list = list(self.conn.experiments(e.id).best_assignments().fetch().iterate_pages())
