@@ -6,8 +6,8 @@
 
 import _ from "underscore";
 import cluster from "cluster";
-import commander from "commander";
 import path from "path";
+import {program} from "commander";
 
 import ConfigBroker from "../config/broker";
 import GlobalServiceBag from "../services/global";
@@ -17,7 +17,7 @@ import {ENTRY_MANIFEST_FILE_NAME} from "../webpack/constants";
 /* eslint-disable no-console */
 
 export default function main() {
-  const opts = commander
+  const opts = program
     .option("--workers [n]", "How many worker processes to run")
     .parse(process.argv);
   process.on("unhandledRejection", (reason, p) => {
