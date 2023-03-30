@@ -440,12 +440,6 @@ jobs:
       - checkout
       - install-submodules
       - run: ./tools/lint/json/lint.sh --check
-  prettier:
-    executor: sigopt-node-only
-    steps:
-      - attach
-      - install-submodules
-      - run: yarn prettier --check .
   check-node-dependencies:
     executor: sigopt-node-only
     steps:
@@ -668,10 +662,6 @@ workflows:
             - checkout-code
             - setup-web
       - json-lint
-      - prettier:
-          requires:
-            - checkout-code
-            - setup-web
       - black
       - bandit
       - python-imports

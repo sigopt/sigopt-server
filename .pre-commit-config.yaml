@@ -23,9 +23,12 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-prettier.git
-    rev: v2.7.1
+    rev: "v3.0.0-alpha.6"
     hooks:
       - id: prettier
+        additional_dependencies:
+          - prettier@2.8.6
+          - prettier-plugin-import-sort@0.0.7
   - repo: local
     hooks:
       - id: eslint
