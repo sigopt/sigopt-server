@@ -353,7 +353,7 @@ jobs:
           path: artifacts/trivy/
   trivy-scan-project:
     docker:
-      image: cimg/base:stable
+      - image: cimg/base:stable
     resource_class: medium
     steps:
       - checkout
