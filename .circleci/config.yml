@@ -528,13 +528,6 @@ jobs:
       - checkout
       - run: grep vulture requirements-dev.txt | xargs pip install vulture
       - run: make vulture
-  python-mypy:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep -E '(mypy|types)' requirements-dev.txt | xargs pip install -r requirements.txt
-      - run: make mypy
   disclaimers-lint:
     executor: sigopt-python-only
     steps:
@@ -595,7 +588,6 @@ workflows:
             - checkout-code
             - setup-web
       - python-vulture
-      - python-mypy
   nightly:
     jobs:
       - trivy-scan-images

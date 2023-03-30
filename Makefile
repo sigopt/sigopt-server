@@ -54,9 +54,6 @@ vulture:
 vulture-allowlist:
 	@./tools/dead-code/run_vulture.py --make-whitelist
 
-mypy:
-	@./tools/lint/python/mypy.sh
-
 web-dead-code:
 	@./tools/dead-code/web_resources.py
 

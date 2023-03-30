@@ -2,7 +2,6 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-import argparse
 import logging
 from contextlib import contextmanager
 
@@ -90,63 +89,3 @@ def execute_query(conn, cursor, query_string, query_args=None, error_allow_list=
           return False
     raise
   return True
-
-
-def parse_args():
-  parser = argparse.ArgumentParser(
-    description="Create produser",
-  )
-
-  parser.add_argument(
-    "--database",
-    default="basedb",
-  )
-
-  parser.add_argument(
-    "--host",
-    default=None,
-  )
-
-  parser.add_argument(
-    "--port",
-    default=None,
-  )
-
-  parser.add_argument(
-    "--superuser",
-    default="postgres",
-    help="The superuser used for sigopt-server's database service",
-  )
-
-  parser.add_argument(
-    "--superuser_password",
-    default=None,
-    help="The superuser's password",
-  )
-
-  parser.add_argument(
-    "--produser",
-    default="produser",
-    help="The name of the new produser to be created",
-  )
-
-  parser.add_argument(
-    "--produser_password",
-    default="produser_password_for_development",
-    help="The produser's password",
-  )
-
-  return parser.parse_args()
-
-
-if __name__ == "__main__":
-  args = parse_args()
-  make_produser(
-    host=args.host,
-    port=args.port,
-    database=args.database,
-    produser=args.produser,
-    produser_password=args.produser_password,
-    superuser=args.superuser,
-    superuser_password=args.superuser_password,
-  )
