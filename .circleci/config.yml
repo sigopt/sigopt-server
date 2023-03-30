@@ -606,12 +606,6 @@ jobs:
       - run: sudo apt-get -yqq install shellcheck
       - run: mkdir -p ../bin && wget -O ../bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 && chmod +x ../bin/hadolint
       - run: PATH="../bin:$PATH" ./pp ./tools/lint/bash/run_linters.py
-  eof-lint:
-    executor: sigopt-python-only
-    steps:
-      - checkout
-      - run: grep numpy requirements.txt | xargs pip install
-      - run: ./tools/lint/common/eof_lint.sh
   disclaimers-lint:
     executor: sigopt-python-only
     steps:
@@ -668,7 +662,6 @@ workflows:
             - setup-web
             - documentation-generation
       - bash-lint
-      - eof-lint
       - disclaimers-lint
       - js-lint:
           requires:

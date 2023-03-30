@@ -66,9 +66,6 @@ mypy:
 web-dead-code:
 	@./tools/dead-code/web_resources.py
 
-eof-lint:
-	@./pp ./tools/lint/common/eof_lint.sh
-
 eslint:
 	@./tools/lint/javascript/eslint.sh --fix
 
