@@ -329,6 +329,7 @@ jobs:
     steps:
       - checkout
       - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pre-commit validate-config
       - run: pre-commit run --all-files
       - run: git diff
   check-integration-test-inits:
