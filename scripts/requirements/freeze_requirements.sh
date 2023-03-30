@@ -9,7 +9,7 @@ source .env
 
 docker run -i --rm \
   --volume="$(pwd):/sigopt-server" \
-  "python:${PYTHON_VERSION}-buster" \
+  "python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster" \
   bash -eo pipefail \
   <<EOF
 apt-get update -yqq

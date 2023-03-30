@@ -8,8 +8,6 @@ set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server
 export sigopt_server_config_file="${sigopt_server_config_file:-config/sigopt.yml}"
-MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
-export MINIO_ROOT_PASSWORD
 sigopt_server_version="git:$(git rev-parse HEAD)"
 export sigopt_server_version
 echo "Preparing submodules..."
@@ -23,6 +21,8 @@ else
   echo "Could not connect to Docker! It might not be running or you might not have permission to access the Docker socket."
   exit 1
 fi
+MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
+export MINIO_ROOT_PASSWORD
 echo "Building docker images..."
 if docker-compose --file=docker-compose.yml build --progress=quiet api createdb nginx qworker qworker-analytics web-server; then
   echo "Finished building docker images."

@@ -6,11 +6,10 @@ import pytest
 from flaky import flaky
 from sklearn import datasets
 
-from libsigopt.aux.importances import compute_importances
-from testaux.numerical_test_case import NumericalTestCase
+from zigopt.importance.service import compute_importances
 
 
-class TestImportancesComputation(NumericalTestCase):
+class TestImportancesComputation(object):
   @pytest.mark.parametrize("n_samples", [50, 200, 800])
   @pytest.mark.parametrize("n_features", [3, 10, 60])
   def test_basic_functionalities(self, n_samples, n_features):
@@ -22,7 +21,7 @@ class TestImportancesComputation(NumericalTestCase):
     )
     importances = compute_importances(features, values)
     assert len(importances) == n_features
-    self.assert_scalar_within_relative(sum(importances), 1, 1e-9)
+    assert numpy.isclose(sum(importances), 1, rtol=1e-9)
 
   @flaky(max_runs=2)
   def test_actually_compute_importances(self):
@@ -35,7 +34,7 @@ class TestImportancesComputation(NumericalTestCase):
     )
     importances = compute_importances(features, values)
     assert len(importances) == 3
-    self.assert_scalar_within_relative(sum(importances), 1, 1e-9)
+    assert numpy.isclose(sum(importances), 1, rtol=1e-9)
     large_importances = importances[coef != 0]
     small_importance = importances[coef == 0][0]
     assert numpy.all(large_importances > small_importance)
@@ -51,5 +50,5 @@ class TestImportancesComputation(NumericalTestCase):
     values = numpy.zeros(200)
     importances = compute_importances(features, values)
     assert len(importances) == n_features
-    self.assert_scalar_within_relative(sum(importances), 1, 1e-9)
-    self.assert_vector_within_relative(importances, numpy.full_like(importances, 1 / n_features), 1e-9)
+    assert numpy.isclose(sum(importances), 1, rtol=1e-9)
+    assert numpy.allclose(importances, numpy.full_like(importances, 1 / n_features), rtol=1e-9)

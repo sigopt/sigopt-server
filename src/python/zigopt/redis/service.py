@@ -16,6 +16,7 @@ from zigopt.services.base import Service
 
 
 DEFAULT_REDIS_PORT = 6379
+DEFAULT_REDIS_SOCKET_PATH = "/var/run/redis/redis.sock"
 
 
 class RedisServiceError(Exception):
@@ -24,6 +25,12 @@ class RedisServiceError(Exception):
 
 class RedisServiceTimeoutError(RedisServiceError):
   pass
+
+
+class SigOptUnixDomainSocketConnection(redis.UnixDomainSocketConnection):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.socket_timeout = kwargs.get("socket_timeout")
 
 
 # Retries the query if there is a Redis timeout error. Only appropriate for idempotent calls
@@ -54,9 +61,8 @@ def ensure_redis(func):
     if not self.redis or not self.blocking_conn_redis:
       self.warmup()
       if not self.redis or not self.blocking_conn_redis:
-        host = self.services.config_broker.get("redis.host")
-        port = self.services.config_broker.get("redis.port", DEFAULT_REDIS_PORT)
-        raise RedisServiceError(f"Attempting to access Redis but failed to connect to {host}:{port}")
+        uri = self.get_redis_uri()
+        raise RedisServiceError(f"Attempting to access Redis but failed to connect to {uri}")
     return func(self, *args, **kwargs)
 
   return wrapper
@@ -172,8 +178,7 @@ class RedisService(Service):
     return self.services.config_broker.get("redis.enabled", True)
 
   @classmethod
-  def make_redis(cls, config, **kwargs):
-    config = extend_dict({}, config, kwargs)
+  def _make_redis_tcp(cls, config):
     host = config.get("host")
     port = config.get("port", DEFAULT_REDIS_PORT)
     password = config.get("password", None)
@@ -191,8 +196,50 @@ class RedisService(Service):
       socket_connect_timeout=0.5,  # in seconds
       socket_timeout=socket_timeout,
     )
+    return ret
+
+  @classmethod
+  def _make_redis_unix_socket(cls, config):
+    socket_path = config.get("socket_path", DEFAULT_REDIS_SOCKET_PATH)
+    socket_timeout = config.get("socket_timeout")
+    connection_pool = redis.ConnectionPool(
+      connection_class=SigOptUnixDomainSocketConnection,
+      path=socket_path,
+    )
+
+    ret = redis.Redis(
+      connection_pool=connection_pool,
+      socket_connect_timeout=0.1,  # in seconds
+      socket_timeout=socket_timeout,
+    )
+    return ret
+
+  @classmethod
+  def make_redis(cls, config, **kwargs):
+    config = extend_dict({}, config, kwargs)
+    mode = config.get("connection_mode", "socket")
+    if mode == "socket":
+      ret = cls._make_redis_unix_socket(config)
+    else:
+      assert mode == "tcp"
+      ret = cls._make_redis_tcp(config)
     ret.ping()
     return ret
+
+  def get_redis_uri(self):
+    mode = self.services.config_broker.get("redis.connection_mode", "socket")
+    scheme = "redis"
+    if mode == "socket":
+      scheme = "redis-socket"
+      addr = self.services.config_broker.get("redis.socket_path", DEFAULT_REDIS_SOCKET_PATH)
+    else:
+      if self.services.config_broker.get("redis.ssl", True):
+        scheme = "rediss"
+      addr = ":".join(
+        str(self.services.config_broker.get(key, default))
+        for key, default in (("redis.host", "localhost"), ("redis.port", DEFAULT_REDIS_PORT))
+      )
+    return f"{scheme}://{addr}"
 
   def warmup(self):
     if self.enabled:
@@ -214,10 +261,8 @@ class RedisService(Service):
         self.redis = None
         self.blocking_conn_redis = None
         self.logger.warning(
-          "Unable to connect to Redis at %s:%s (ssl=%s)",
-          self.services.config_broker.get("redis.host"),
-          self.services.config_broker.get("redis.port", DEFAULT_REDIS_PORT),
-          self.services.config_broker.get("redis.ssl"),
+          "Unable to connect to Redis at %s",
+          self.get_redis_uri(),
         )
     else:
       self.logger.warning("redis disabled")

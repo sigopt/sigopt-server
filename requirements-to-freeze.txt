@@ -4,6 +4,7 @@
 # on a different version than another requirements.txt somewhere, in which case, you
 # need to update the lower version to match the higher version.
 
+git+http://github.com/sigopt/libsigopt@main
 Flask==2.1.1
 PyYAML==5.4.1
 backoff==1.10.0
@@ -23,7 +24,7 @@ pg8000==1.15.2
 protobuf==3.20.2
 pytz==2023.2
 qmcpy==1.2
-redis==4.5.3
+redis==4.5.4
 scikit-learn==1.1.1
 scipy==1.10.1
 sqlalchemy[postgresql_pg8000]==1.3.23

@@ -10,7 +10,7 @@ commands:
           at: /home/circleci
   install-trivy:
     steps:
-      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.35.0/trivy_0.35.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
+      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.38.3/trivy_0.38.3_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
   install-submodules:
     steps:
       - add_ssh_keys:
@@ -90,12 +90,12 @@ commands:
   integration-test-setup:
     steps:
       - run: ./ci/create_development_tls_certs.sh
-      - run: ./ci/compose.sh create test-runner
+      - run: ./ci/compose.sh build --progress=plain test-runner
       - start-service:
           description: PostgreSQL
           service: postgres
       - run: sleep 5
-      - run: ./ci/compose.sh create createdb
+      - run: ./ci/compose.sh build --progress=plain createdb
       - run: ./ci/compose.sh run --rm createdb --fake-data
       - start-service:
           description: Redis
@@ -204,35 +204,6 @@ commands:
       - attach
       - install-python-libraries
       - run: ./test/unit_tests.sh --junitxml=junit-results/unit-tests/junit.xml --count=<< parameters.count >> test/python/sigopttest
-      - store_test_results:
-          path: junit-results
-    parameters:
-      count:
-        type: integer
-        default: 1
-  run-aux-test:
-    steps:
-      - checkout
-      - install-python-libraries
-      - run: ./pp pytest -rw test/python/testaux/ --durations 5 --count=<< parameters.count >> --junitxml=junit-results/aux-tests/junit.xml
-      - store_test_results:
-          path: junit-results
-    parameters:
-      count:
-        type: integer
-        default: 1
-  run-compute-test:
-    steps:
-      - checkout
-      - install-python-libraries
-      - run:
-          command: circleci tests glob "test/python/testcompute/**/*.py" | circleci tests split --split-by=timings | xargs ./pp pytest -rw --durations 5 --count=<< parameters.count >> --junitxml=junit-results/compute-tests/junit.xml
-          environment:
-            OMP_NUM_THREADS: "1"
-            OPENBLAS_NUM_THREADS: "1"
-            MKL_NUM_THREADS: "1"
-            VECLIB_MAXIMUM_THREADS: "1"
-            NUMEXPR_NUM_THREADS: "1"
       - store_test_results:
           path: junit-results
     parameters:
@@ -517,7 +488,7 @@ jobs:
           service: mongodb
       - run:
           name: Create test container
-          command: ./ci/compose.sh create test-client
+          command: ./ci/compose.sh build --progress=plain test-client
       - run:
           name: Client Integration Test
           command: ./ci/compose.sh run test-client test/run_client_integration_tests.sh main
@@ -535,9 +506,9 @@ jobs:
           description: PostgreSQL
           service: postgres
       - run: sleep 5
-      - run: ./ci/compose.sh create createdb
+      - run: ./ci/compose.sh build --progress=plain createdb
       - run: ./ci/compose.sh run createdb
-      - run: ./ci/compose.sh create qworker qworker-analytics
+      - run: ./ci/compose.sh build --progress=plain qworker qworker-analytics
       - run: ./ci/worker_health_fail.sh
       - run: ./ci/compose.sh create redis
       - start-service:
@@ -548,16 +519,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-zigopt-test
-  aux-unit:
-    executor: sigopt-python-only
-    steps:
-      - run-aux-test
-  compute-unit:
-    executor: sigopt-python-only
-    resource_class: small
-    parallelism: 4
-    steps:
-      - run-compute-test
   sigoptlite-unit:
     executor: sigopt-python-only
     steps:
@@ -673,8 +634,6 @@ workflows:
       - service-integration
       - worker-health
       - web-integration
-      - compute-unit
-      - aux-unit
       - sigoptlite-unit
       - check-node-dependencies:
           requires:

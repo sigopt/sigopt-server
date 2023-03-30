@@ -56,8 +56,6 @@ RUN set -ex \
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
 COPY --from=protobuf /sigopt-server/src/python/zigopt/ /sigopt-server/src/python/zigopt/
 
-COPY libsigopt /sigopt-server/libsigopt
-
 ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server
 
 RUN set -ex \
@@ -69,5 +67,11 @@ RUN set -ex \
   ; :
 
 USER produser
+
+ENV OMP_NUM_THREADS 1
+ENV OPENBLAS_NUM_THREADS 1
+ENV MKL_NUM_THREADS 1
+ENV VECLIB_MAXIMUM_THREADS 1
+ENV NUMEXPR_NUM_THREADS 1
 
 COPY docker/images/zigopt/bin/ /usr/local/bin/

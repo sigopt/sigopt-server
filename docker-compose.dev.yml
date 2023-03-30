@@ -59,13 +59,13 @@ services:
       - *api-tls-verify-env
     volumes:
       - &pg-sock-volume pg-sock:/var/run/postgresql
+      - &redis-run-volume redis-run:/var/run/redis
       - /dev/shm:/dev/shm
       - &babelrc ./.babelrc:/sigopt-server/.babelrc:ro
       - *rootca-volume
       - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
       - ./config:/sigopt-server/config:ro
       - ./failure_console_logs:/sigopt-server/failure_console_logs
-      - ./libsigopt:/sigopt-server/libsigopt:ro,cached
       - ./pytest.ini:/sigopt-server/pytest.ini:ro
       - ./screenshots:/sigopt-server/screenshots
       - ./scratch:/sigopt-server/scratch:ro
@@ -125,7 +125,6 @@ services:
     volumes:
       - *pg-sock-volume
       - ./config:/sigopt-server/config:ro
-      - ./libsigopt:/sigopt-server/libsigopt:ro
       - ./scratch:/sigopt-server/scratch:ro
       - ./src/python:/sigopt-server/src/python:ro
     working_dir: /sigopt-server
@@ -176,8 +175,8 @@ services:
     tty: true
     volumes: &zigopt_volumes
       - *pg-sock-volume
+      - *redis-run-volume
       - ./config:/sigopt-server/config:ro
-      - ./libsigopt:/sigopt-server/libsigopt:ro
       - ./scratch:/sigopt-server/scratch:rw
       - ./src/python:/sigopt-server/src/python:ro
     working_dir: /sigopt-server
@@ -256,9 +255,9 @@ services:
     tty: true
     volumes:
       - *pg-sock-volume
+      - *redis-run-volume
       - "./artifacts/tls:/etc/ssl/sigopt:ro"
       - "./config:/sigopt-server/config:ro"
-      - "./libsigopt:/sigopt-server/libsigopt:ro"
       - "./scratch:/sigopt-server/scratch:ro"
       - "./src/python:/sigopt-server/src/python:ro"
     working_dir: /sigopt-server
@@ -312,7 +311,6 @@ services:
     volumes:
       - "./artifacts/tls:/etc/ssl/sigopt:ro"
       - "./config:/sigopt-server/config:ro"
-      - "./libsigopt:/sigopt-server/libsigopt:ro"
       - "./artifacts:/sigopt-server/artifacts:rw"
       - "./src/python:/sigopt-server/src/python:ro"
     working_dir: /sigopt-server
@@ -409,10 +407,10 @@ services:
     tty: true
     volumes:
       - *pg-sock-volume
+      - *redis-run-volume
       - ./artifacts/tls:/etc/ssl/sigopt:ro
       - .pyrepl.py:/sigopt-server/.pyrepl.py:ro
       - ./config:/sigopt-server/config:ro
-      - ./libsigopt:/sigopt-server/libsigopt:ro
       - ./scratch:/sigopt-server/scratch:ro
       - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro
     working_dir: /sigopt-server
@@ -535,7 +533,6 @@ services:
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server
     volumes:
       - ./config:/sigopt-server/config:ro
-      - ./libsigopt:/sigopt-server/libsigopt:ro,cached
       - ./scratch:/sigopt-server/scratch:ro
       - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro,cached
       - ./test/integration:/sigopt-server/test/integration:ro,cached
@@ -585,18 +582,17 @@ services:
       - "no-new-privileges:true"
   redis:
     restart: on-failure:5
-    command:
-      - redis-server
-      - --save
-      - ""
-      - --appendonly
-      - "no"
     logging:
       <<: *logging
     image: "redis:${REDIS_VERSION}"
-    ports:
-      - target: 6379
-        host_ip: 127.0.0.1
+    entrypoint:
+      - redis-server
+    command:
+      - /etc/redis/redis.conf
+    volumes:
+      - redis-run:/var/run/redis
+      - ./redis.conf:/etc/redis/redis.conf
+    network_mode: none
     deploy:
       resources:
         limits:
@@ -698,6 +694,7 @@ volumes:
   minio-data: {}
   pg-data: {}
   pg-sock: {}
+  redis-run: {}
   server-bin: {}
   static-artifacts: {}
   test-routes: {}
