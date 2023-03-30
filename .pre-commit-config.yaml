@@ -74,6 +74,11 @@ repos:
       - id: circleci-config-validate
       - id: shellcheck
         args: ["--exclude", "SC1090,SC1091,SC2029", "-f", "gcc"]
+  - repo: https://github.com/jendrikseipp/vulture.git
+    rev: "v2.7"
+    hooks:
+      - id: vulture
+        entry: tools/dead-code/run_vulture.py
   - repo: local
     hooks:
       - id: eslint
