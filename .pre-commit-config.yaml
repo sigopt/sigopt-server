@@ -22,6 +22,10 @@ repos:
         args: [--branch=main]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/hadolint/hadolint.git
+    rev: "v2.12.1-beta"
+    hooks:
+      - id: hadolint-docker
   - repo: https://github.com/pre-commit/mirrors-prettier.git
     rev: "v3.0.0-alpha.6"
     hooks:

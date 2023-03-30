@@ -17,10 +17,6 @@ def run_bash_lint(filename):
   return any([shellcheck, custom_lint])
 
 
-def run_docker_lint(filename):
-  return bool(subprocess.call(["hadolint", filename, "--failure-threshold=style"]))
-
-
 if __name__ == "__main__":
   import argparse
   import subprocess
@@ -33,13 +29,9 @@ if __name__ == "__main__":
   if subprocess.call(["which", "shellcheck"], stdout=open(os.devnull, "w")) != 0:
     print("Install shellcheck with `brew install shellcheck`")
     sys.exit(1)
-  if subprocess.call(["which", "hadolint"], stdout=open(os.devnull, "w")) != 0:
-    print("Install hadolint with `brew install hadolint`")
-    sys.exit(1)
   if not files:
     files = subprocess.check_output(["git", "ls-files"]).decode("utf-8").split("\n")
   issues = [
     *(run_bash_lint(candidate) for candidate in files if is_sh_candidate(candidate)),
-    *(run_docker_lint(candidate) for candidate in files if os.path.basename(candidate).startswith("Dockerfile")),
   ]
   sys.exit(any(issues))
