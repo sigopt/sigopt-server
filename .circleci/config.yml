@@ -210,35 +210,6 @@ commands:
       count:
         type: integer
         default: 1
-  run-aux-test:
-    steps:
-      - checkout
-      - install-python-libraries
-      - run: ./pp pytest -rw test/python/testaux/ --durations 5 --count=<< parameters.count >> --junitxml=junit-results/aux-tests/junit.xml
-      - store_test_results:
-          path: junit-results
-    parameters:
-      count:
-        type: integer
-        default: 1
-  run-compute-test:
-    steps:
-      - checkout
-      - install-python-libraries
-      - run:
-          command: circleci tests glob "test/python/testcompute/**/*.py" | circleci tests split --split-by=timings | xargs ./pp pytest -rw --durations 5 --count=<< parameters.count >> --junitxml=junit-results/compute-tests/junit.xml
-          environment:
-            OMP_NUM_THREADS: "1"
-            OPENBLAS_NUM_THREADS: "1"
-            MKL_NUM_THREADS: "1"
-            VECLIB_MAXIMUM_THREADS: "1"
-            NUMEXPR_NUM_THREADS: "1"
-      - store_test_results:
-          path: junit-results
-    parameters:
-      count:
-        type: integer
-        default: 1
   run-sigoptlite-test:
     steps:
       - checkout
@@ -548,16 +519,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-zigopt-test
-  aux-unit:
-    executor: sigopt-python-only
-    steps:
-      - run-aux-test
-  compute-unit:
-    executor: sigopt-python-only
-    resource_class: small
-    parallelism: 4
-    steps:
-      - run-compute-test
   sigoptlite-unit:
     executor: sigopt-python-only
     steps:
@@ -673,8 +634,6 @@ workflows:
       - service-integration
       - worker-health
       - web-integration
-      - compute-unit
-      - aux-unit
       - sigoptlite-unit
       - check-node-dependencies:
           requires:

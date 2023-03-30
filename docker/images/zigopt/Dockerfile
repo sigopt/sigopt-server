@@ -56,8 +56,6 @@ RUN set -ex \
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
 COPY --from=protobuf /sigopt-server/src/python/zigopt/ /sigopt-server/src/python/zigopt/
 
-COPY libsigopt /sigopt-server/libsigopt
-
 ENV PYTHONPATH /sigopt-server/src/python:/sigopt-server
 
 RUN set -ex \
