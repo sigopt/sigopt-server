@@ -1,7 +1,5 @@
 title = "SigOpt Server"
 
-[tool]
-
 [tool.black]
 line-length = 120
 
