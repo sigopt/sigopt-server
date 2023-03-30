@@ -49,7 +49,7 @@
     "minimist": "^1.2.5",
     "natural-compare-lite": "^1.4.0",
     "null-loader": "^4.0.0",
-    "on-finished": "https://registry.npmjs.org/on-finished/-/on-finished-2.3.0.tgz",
+    "on-finished": "^2.4.1",
     "plotly.js-strict-dist": "^2.11.1",
     "pluralize": "^7.0.0",
     "process": "^0.11.10",
