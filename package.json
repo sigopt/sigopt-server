@@ -158,7 +158,6 @@
       "pre-commit run --files"
     ],
     "*.py": [
-      "./tools/lint/python/black.sh",
       "./tools/lint/python/bandit.sh -q",
       "pre-commit run --files"
     ],

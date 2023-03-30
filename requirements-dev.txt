@@ -4,7 +4,6 @@ build==0.10.0
 debugpy==1.6.2
 flaky==3.7.0
 freezegun==1.2.1
-git+https://github.com/sigopt/black.git@sigopt-22.10.0
 git+https://github.com/sigopt/flasgger.git@c9c08f752a0cb3e015ee837005cbb000aa13b8ae
 git+https://github.com/sigopt/sigopt-python.git
 html5-parser==0.4.4

@@ -521,13 +521,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-sigoptlite-test
-  black:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep black requirements-dev.txt | xargs pip install
-      - run: ./tools/lint/python/black.sh --check .
   bandit:
     executor: sigopt-python-only
     resource_class: small
@@ -608,7 +601,6 @@ workflows:
           requires:
             - checkout-code
             - setup-web
-      - black
       - bandit
       - python-vulture
       - python-mypy
