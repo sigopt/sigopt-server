@@ -1,5 +1,3 @@
-ci:
-  skip: [detect-aws-credentials]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v4.4.0
@@ -11,7 +9,6 @@ repos:
       - id: check-toml
       - id: check-yaml
       - id: debug-statements
-      - id: detect-aws-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
@@ -20,3 +17,13 @@ repos:
         args: [--branch=main]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: apply-copyright-notice
+        name: Apply the copywright notice
+        description: This hook applies the copyright notice and license disclaimer to all files.
+        entry: tools/lint/common/check_copyright_and_license_disclaimers.py --fix-in-place
+        language: python
+        types_or:
+          - markdown
+          - python
