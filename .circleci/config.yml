@@ -352,7 +352,8 @@ jobs:
       - store_artifacts:
           path: artifacts/trivy/
   trivy-scan-project:
-    executor: sigopt-node-only
+    docker:
+      image: cimg/base:stable
     resource_class: medium
     steps:
       - checkout
