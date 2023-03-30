@@ -45,13 +45,7 @@ auxtest:
 litetest:
 	@cd sigoptlite && make test
 
-sort-imports:
-	@./tools/lint/python/isort_lint.sh --fix
-
 lint: vulture
-	@./pp ./lint --isort-args --fix
-
-lint-nofix: vulture
 	@./pp ./lint
 
 vulture:

@@ -535,13 +535,6 @@ jobs:
       - checkout
       - run: grep bandit requirements-dev.txt | xargs pip install
       - run: ./tools/lint/python/bandit.sh -r .
-  python-imports:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep isort requirements-dev.txt | xargs pip install
-      - run: ./tools/lint/python/isort_lint.sh
   python-pylint:
     executor: sigopt-python-only
     resource_class: small
@@ -626,7 +619,6 @@ workflows:
             - setup-web
       - black
       - bandit
-      - python-imports
       - python-pylint:
           requires:
             - compile-protobuf

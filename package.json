@@ -159,7 +159,6 @@
     ],
     "*.py": [
       "./tools/lint/python/black.sh",
-      "./pp isort --filter-files --settings ./tools/lint/python/isort.cfg",
       "./pp pylint --rcfile=./tools/lint/python/pylint.rc",
       "./tools/lint/python/bandit.sh -q",
       "pre-commit run --files"
