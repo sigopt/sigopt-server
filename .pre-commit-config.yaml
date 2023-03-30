@@ -16,12 +16,16 @@ repos:
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
+        require_serial: true
       - id: mixed-line-ending
         args: [--fix=lf]
+        require_serial: true
       - id: no-commit-to-branch
         args: [--branch=main]
       - id: requirements-txt-fixer
+        require_serial: true
       - id: trailing-whitespace
+        require_serial: true
   - repo: https://github.com/PyCQA/bandit.git
     rev: "1.7.5"
     hooks:
@@ -68,6 +72,7 @@ repos:
         additional_dependencies:
           - prettier@2.8.6
           - prettier-plugin-import-sort@0.0.7
+        require_serial: true
   - repo: https://github.com/syntaqx/git-hooks.git
     rev: "v0.0.17"
     hooks:
