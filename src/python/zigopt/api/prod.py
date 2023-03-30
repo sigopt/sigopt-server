@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from flask import Flask
 
-from zigopt.api.errors import ValidationError
+from zigopt.api.errors import InvalidKeyError, ValidationError
 from zigopt.api.request import Request
 from zigopt.api.routes import initialize_blueprint as initialize_base_blueprint
 from zigopt.api.routes import log_requests
@@ -35,7 +35,9 @@ class ProdApp(Flask):
     log_requests(self)
     initialize_base_blueprint(self)
     self.register_blueprint(initialize_v1_blueprint(self), url_prefix="/v1")
+
     self.register_error_handler(ValidationError, handle_validation_errors)
+    self.register_error_handler(InvalidKeyError, handle_validation_errors)
 
   def make_default_options_response(self):
     return success_response({})
