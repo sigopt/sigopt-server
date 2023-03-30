@@ -1,5 +1,4 @@
 aiosmtpd==1.4.2
-bandit==1.7.0
 build==0.10.0
 debugpy==1.6.2
 flaky==3.7.0

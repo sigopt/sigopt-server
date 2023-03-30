@@ -521,13 +521,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-sigoptlite-test
-  bandit:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep bandit requirements-dev.txt | xargs pip install
-      - run: ./tools/lint/python/bandit.sh -r .
   python-vulture:
     executor: sigopt-python-only
     resource_class: small
@@ -601,7 +594,6 @@ workflows:
           requires:
             - checkout-code
             - setup-web
-      - bandit
       - python-vulture
       - python-mypy
   nightly:
