@@ -33,6 +33,10 @@ class ProdApp(Flask):
     self.request_local_services_factory = self.RequestLocalServiceBag
 
     log_requests(self)
+
+    self.register_error_handler(ValidationError, handle_validation_errors)
+    self.register_error_handler(InvalidKeyError, handle_validation_errors)
+
     initialize_base_blueprint(self)
     self.register_blueprint(initialize_v1_blueprint(self), url_prefix="/v1")
 

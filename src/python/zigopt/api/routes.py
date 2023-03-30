@@ -7,9 +7,8 @@ from http import HTTPStatus
 from flask import request
 
 from zigopt.api.common import handler_registry
-from zigopt.api.errors import InvalidKeyError, ValidationError
 from zigopt.handlers.base.welcome import WelcomeHandler
-from zigopt.net.errors import BadParamError, EndpointNotFoundError, InvalidMethodError
+from zigopt.net.errors import EndpointNotFoundError, InvalidMethodError
 from zigopt.net.responses import success_response
 
 
@@ -64,13 +63,6 @@ def initialize_blueprint(app):
     error = EndpointNotFoundError(request.path)
     return error.get_error_response()
 
-  @app.errorhandler(ValidationError)
-  @app.errorhandler(InvalidKeyError)
-  def handle_validation_errors(e):
-    return BadParamError(e.msg).get_error_response()
-
   app.register_error_handler(HTTPStatus.NOT_FOUND, not_found)
-  app.register_error_handler(ValidationError, handle_validation_errors)
-  app.register_error_handler(InvalidKeyError, handle_validation_errors)
 
   return app
