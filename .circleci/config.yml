@@ -542,20 +542,6 @@ jobs:
       - checkout
       - run: grep isort requirements-dev.txt | xargs pip install
       - run: ./tools/lint/python/isort_lint.sh
-  python-flake8:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep flake8 requirements-dev.txt | xargs pip install
-      - run: ./tools/lint/python/flake8.sh
-  python-flake8-print:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep flake8 requirements-dev.txt | xargs pip install
-      - run: ./tools/lint/python/flake8_print.sh
   python-pylint:
     executor: sigopt-python-only
     resource_class: small
@@ -641,8 +627,6 @@ workflows:
       - black
       - bandit
       - python-imports
-      - python-flake8
-      - python-flake8-print
       - python-pylint:
           requires:
             - compile-protobuf

@@ -39,9 +39,6 @@
     "format": "compact",
     "levels": {
       "": 30,
-      "flake8.checker": 50,
-      "flake8.main.application": 50,
-      "flake8.plugins.manager": 50,
       "libsigopt.compute.timing": 20,
       "selenium.webdriver.remote.remote_connection": 30,
       "sigopt.apiexception": 50,

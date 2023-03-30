@@ -29,6 +29,4 @@ while [ "$#" -ne 0 ]; do
 done
 
 ./tools/lint/python/isort_lint.sh "${ISORT_ARGS[@]}" "${JOBS_ARGS[@]}"
-./tools/lint/python/flake8.sh "${JOBS_ARGS[@]}"
-./tools/lint/python/flake8_print.sh "${JOBS_ARGS[@]}"
 ./tools/lint/python/pylint.sh "${PYLINT_ARGS[@]}" "${JOBS_ARGS[@]}"
