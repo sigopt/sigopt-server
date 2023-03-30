@@ -181,8 +181,6 @@
       "pre-commit run --files"
     ],
     ".babelrc": [
-      "./tools/lint/json/lint.sh --fix",
-      "prettier --write",
       "pre-commit run --files"
     ],
     "Dockerfile*": [

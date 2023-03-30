@@ -21,6 +21,7 @@ repos:
       - id: no-commit-to-branch
         args: [--branch=main]
       - id: pretty-format-json
+        args: [--autofix]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: local
