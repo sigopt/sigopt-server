@@ -51,8 +51,14 @@ repos:
       - id: apply-copyright-notice
         name: Apply the copywright notice
         description: This hook applies the copyright notice and license disclaimer to all files.
-        entry: tools/lint/common/check_copyright_and_license_disclaimers.py --fix-in-place
+        entry: tools/lint/common/check_copyright_and_license_disclaimers.py
+        args: [--fix-in-place]
         language: python
         types_or:
           - markdown
           - python
+      - id: custom-bash-lint
+        name: custom-bash-lint
+        entry: tools/lint/bash/custom_lint.py
+        language: python
+        types: [shell]
