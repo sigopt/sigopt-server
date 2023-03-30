@@ -66,9 +66,6 @@ mypy:
 web-dead-code:
 	@./tools/dead-code/web_resources.py
 
-prettier:
-	@./scripts/dev/prettier.sh --write .
-
 setup-filestorage:
 	@./scripts/launch/compose.sh run --rm init-minio-filestorage
 
