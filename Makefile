@@ -4,7 +4,7 @@ SHELL = /usr/bin/env bash -eo pipefail
 
 DIRS = scratch web/static/js
 
-compile: protocompile pytest lint eslint
+compile: protocompile pytest lint
 
 dist-compile: compile
 	@python -m compileall .
@@ -65,12 +65,6 @@ mypy:
 
 web-dead-code:
 	@./tools/dead-code/web_resources.py
-
-eslint:
-	@./tools/lint/javascript/eslint.sh --fix
-
-eslint-nofix:
-	@./tools/lint/javascript/eslint.sh
 
 prettier:
 	@./scripts/dev/prettier.sh --write .

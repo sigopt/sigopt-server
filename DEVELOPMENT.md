@@ -274,16 +274,6 @@ Setup automatic pre-commit linter:
 make setup-pre-commit
 ```
 
-Lint all javascript/React code:
-
-```bash
-# without fixes
-make eslint-nofix
-
-# attempt to fix
-make eslint
-```
-
 Lint everything else:
 
 ```bash

@@ -433,7 +433,7 @@ jobs:
     steps:
       - attach
       - install-submodules
-      - run: make eslint-nofix
+      - run: git ls-files '*.js' | xargs yarn -s eslint
   json-lint:
     executor: sigopt-python-only
     steps:
