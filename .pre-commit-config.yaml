@@ -26,6 +26,8 @@ repos:
     rev: "1.7.5"
     hooks:
       - id: bandit
+        args: [-c, pyproject.toml]
+        additional_dependencies: [tomli]
   - repo: https://github.com/sigopt/black.git
     rev: sigopt-22.10.0
     hooks:
