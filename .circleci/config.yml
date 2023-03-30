@@ -328,6 +328,7 @@ jobs:
     resource_class: medium
     steps:
       - checkout
+      - run: pyenv global 3.10.6
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: pre-commit validate-config
       - run: pre-commit run --all-files
