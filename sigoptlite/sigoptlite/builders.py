@@ -588,8 +588,11 @@ class LocalParameterBuilder(BuilderBase):
     if parameter.bounds:
       parameter_bounds = [parameter.bounds.min, parameter.bounds.max]
       if any(not cls.check_type_for_value(parameter, p) for p in parameter_bounds):
-        invalid_parameter = (not cls.check_type_for_value(parameter, p) for p in parameter_bounds).next()
-        raise ValueError(f"Parameter bound {invalid_parameter} is not a proper parameter bound for {parameter}")
+        invalid_parameter = next(p for p in parameter_bounds if not cls.check_type_for_value(parameter, p))
+        raise ValueError(
+          f"Parameter bound {invalid_parameter} is not from the same type as paramater"
+          f" {parameter.name} ({parameter.type})"
+        )
 
     # parameter with grid
     if parameter.grid:
@@ -602,8 +605,10 @@ class LocalParameterBuilder(BuilderBase):
       if not cls.get_num_distinct_elements(parameter.grid) == len(parameter.grid):
         raise ValueError(f"Grid values should be unique: {parameter.grid}")
       if any(not cls.check_type_for_value(parameter, p) for p in parameter.grid):
-        invalid_parameter = (not cls.check_type_for_value(parameter, p) for p in parameter.grid).next()
-        raise ValueError(f"Grid value {invalid_parameter} is not a proper parameter for {parameter}")
+        invalid_parameter = next(p for p in parameter.grid if not cls.check_type_for_value(parameter, p))
+        raise ValueError(
+          f"Grid value {invalid_parameter} is not from the same type as {parameter.name} ({parameter.type})"
+        )
 
     # log transformation
     if parameter.has_transformation:
