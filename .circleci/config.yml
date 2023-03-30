@@ -322,6 +322,14 @@ jobs:
           paths:
             - .ssh
             - project
+  pre-commit:
+    docker:
+      - image: cimg/python:3.10
+    resource_class: small
+    steps:
+      - checkout
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pre-commit run --all-files
   check-integration-test-inits:
     executor: sigopt-lite
     steps:
@@ -621,6 +629,7 @@ workflows:
   main:
     jobs:
       - checkout-code
+      - pre-commit
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
