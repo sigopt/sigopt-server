@@ -112,7 +112,6 @@
     "jest-cli": "^29.3.0",
     "jest-environment-jsdom": "^29.3.0",
     "jest-junit": "^14.0.1",
-    "lint-staged": "^10.2.11",
     "raf": "^3.3.2",
     "react-refresh": "^0.11.0",
     "react-test-renderer": "16.13.1",
@@ -144,35 +143,6 @@
     "testEnvironment": "jsdom"
   },
   "license": "UNLICENSED",
-  "lint-staged": {
-    "*.js": [
-      "pre-commit run --files"
-    ],
-    "*.json": [
-      "pre-commit run --files"
-    ],
-    "*.less": [
-      "pre-commit run --files"
-    ],
-    "*.md": [
-      "pre-commit run --files"
-    ],
-    "*.py": [
-      "pre-commit run --files"
-    ],
-    "*.sh": [
-      "pre-commit run --files"
-    ],
-    "*.{yaml,yml}": [
-      "pre-commit run --files"
-    ],
-    ".babelrc": [
-      "pre-commit run --files"
-    ],
-    "Dockerfile*": [
-      "pre-commit run --files"
-    ]
-  },
   "name": "sigopt",
   "private": true,
   "repository": "https://github.com/sigopt/sigopt-server.git",
