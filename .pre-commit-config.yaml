@@ -20,10 +20,12 @@ repos:
         args: [--fix=lf]
       - id: no-commit-to-branch
         args: [--branch=main]
-      - id: pretty-format-json
-        args: [--autofix]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/mirrors-prettier.git
+    rev: v2.7.1
+    hooks:
+      - id: prettier
   - repo: local
     hooks:
       - id: eslint

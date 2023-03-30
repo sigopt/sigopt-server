@@ -148,18 +148,15 @@
   "license": "UNLICENSED",
   "lint-staged": {
     "*.js": [
-      "prettier --write",
       "pre-commit run --files"
     ],
     "*.json": [
       "pre-commit run --files"
     ],
     "*.less": [
-      "prettier --write",
       "pre-commit run --files"
     ],
     "*.md": [
-      "prettier --write",
       "pre-commit run --files"
     ],
     "*.py": [
@@ -176,7 +173,6 @@
       "pre-commit run --files"
     ],
     "*.{yaml,yml}": [
-      "prettier --write",
       "pre-commit run --files"
     ],
     ".babelrc": [
