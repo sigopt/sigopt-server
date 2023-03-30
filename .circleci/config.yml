@@ -565,13 +565,6 @@ jobs:
       - attach
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: circleci tests glob "**/*.py" | circleci tests split | _NO_PARSE_ARGS=x xargs ./tools/lint/python/pylint.sh
-  python-custom-lint:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep numpy requirements.txt | xargs pip install
-      - run: ./tools/lint/python/custom_lint.sh
   python-vulture:
     executor: sigopt-python-only
     resource_class: small
@@ -653,7 +646,6 @@ workflows:
       - python-pylint:
           requires:
             - compile-protobuf
-      - python-custom-lint
       - python-vulture
       - python-mypy
   nightly:
