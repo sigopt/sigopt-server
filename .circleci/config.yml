@@ -535,15 +535,6 @@ jobs:
       - checkout
       - run: grep bandit requirements-dev.txt | xargs pip install
       - run: ./tools/lint/python/bandit.sh -r .
-  python-pylint:
-    executor: sigopt-python-only
-    resource_class: small
-    parallelism: 8
-    steps:
-      - checkout
-      - attach
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: circleci tests glob "**/*.py" | circleci tests split | _NO_PARSE_ARGS=x xargs ./tools/lint/python/pylint.sh
   python-vulture:
     executor: sigopt-python-only
     resource_class: small
@@ -619,9 +610,6 @@ workflows:
             - setup-web
       - black
       - bandit
-      - python-pylint:
-          requires:
-            - compile-protobuf
       - python-vulture
       - python-mypy
   nightly:
