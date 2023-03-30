@@ -26,6 +26,13 @@ repos:
       - id: trailing-whitespace
   - repo: local
     hooks:
+      - id: eslint
+        name: eslint
+        entry: yarn -s eslint
+        args: [--fix]
+        description: "An AST-based pattern checker for JavaScript."
+        language: system
+        types: [javascript]
       - id: apply-copyright-notice
         name: Apply the copywright notice
         description: This hook applies the copyright notice and license disclaimer to all files.

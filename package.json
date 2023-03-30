@@ -148,7 +148,6 @@
   "license": "UNLICENSED",
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
       "prettier --write",
       "pre-commit run --files"
     ],
