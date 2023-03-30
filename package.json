@@ -150,7 +150,6 @@
     "*.js": [
       "eslint --fix",
       "prettier --write",
-      "./tools/lint/common/run_linters.sh",
       "pre-commit run --files"
     ],
     "*.json": [
@@ -160,7 +159,6 @@
     ],
     "*.less": [
       "prettier --write",
-      "./tools/lint/common/run_linters.sh",
       "pre-commit run --files"
     ],
     "*.md": [
@@ -174,12 +172,10 @@
       "./pp python -m tools.lint.python.custom_lint",
       "./pp pylint --rcfile=./tools/lint/python/pylint.rc",
       "./tools/lint/python/bandit.sh -q",
-      "./tools/lint/common/run_linters.sh",
       "pre-commit run --files"
     ],
     "*.sh": [
       "./pp python -m tools.lint.bash.run_linters",
-      "./tools/lint/common/run_linters.sh",
       "pre-commit run --files"
     ],
     "*.{yaml,yml}": [
@@ -193,7 +189,6 @@
     ],
     "Dockerfile*": [
       "./pp python -m tools.lint.bash.run_linters",
-      "./tools/lint/common/run_linters.sh",
       "pre-commit run --files"
     ]
   },
