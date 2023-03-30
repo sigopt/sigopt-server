@@ -1,10 +1,10 @@
 SHELL = /usr/bin/env bash -eo pipefail
 
-.PHONY: clean pytest lint compile protocompile vulture vulture-allowlist
+.PHONY: clean pytest compile protocompile vulture vulture-allowlist
 
 DIRS = scratch web/static/js
 
-compile: protocompile pytest lint
+compile: protocompile pytest
 
 dist-compile: compile
 	@python -m compileall .
@@ -44,9 +44,6 @@ auxtest:
 
 litetest:
 	@cd sigoptlite && make test
-
-lint: vulture
-	@./pp ./lint
 
 vulture:
 	@./tools/dead-code/run_vulture.py

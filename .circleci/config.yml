@@ -522,13 +522,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-sigoptlite-test
-  python-vulture:
-    executor: sigopt-python-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: grep vulture requirements-dev.txt | xargs pip install vulture
-      - run: make vulture
   disclaimers-lint:
     executor: sigopt-python-only
     steps:
@@ -588,7 +581,6 @@ workflows:
           requires:
             - checkout-code
             - setup-web
-      - python-vulture
   nightly:
     jobs:
       - trivy-scan-images

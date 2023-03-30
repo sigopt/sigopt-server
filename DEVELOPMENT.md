@@ -274,11 +274,10 @@ Setup automatic pre-commit linter:
 make setup-pre-commit
 ```
 
-Lint everything else:
+Run the pre-commit linter manually on staged files:
 
 ```bash
-# attempts to fix errors
-./lint
+pre-commit run
 ```
 
 # Dead code
