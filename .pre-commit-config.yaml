@@ -33,6 +33,11 @@ repos:
     rev: "v2.12.1-beta"
     hooks:
       - id: hadolint-docker
+  - repo: https://github.com/PyCQA/isort.git
+    rev: "5.12.0"
+    hooks:
+      - id: isort
+        entry: ./pp isort
   - repo: https://github.com/pre-commit/mirrors-prettier.git
     rev: "v3.0.0-alpha.6"
     hooks:
