@@ -150,18 +150,22 @@
     "*.js": [
       "eslint --fix",
       "prettier --write",
-      "./tools/lint/common/run_linters.sh"
+      "./tools/lint/common/run_linters.sh",
+      "pre-commit run --files"
     ],
     "*.json": [
       "./tools/lint/json/lint.sh --fix",
-      "prettier --write"
+      "prettier --write",
+      "pre-commit run --files"
     ],
     "*.less": [
       "prettier --write",
-      "./tools/lint/common/run_linters.sh"
+      "./tools/lint/common/run_linters.sh",
+      "pre-commit run --files"
     ],
     "*.md": [
-      "prettier --write"
+      "prettier --write",
+      "pre-commit run --files"
     ],
     "*.py": [
       "./tools/lint/python/black.sh",
@@ -170,25 +174,27 @@
       "./pp python -m tools.lint.python.custom_lint",
       "./pp pylint --rcfile=./tools/lint/python/pylint.rc",
       "./tools/lint/python/bandit.sh -q",
-      "./tools/lint/common/run_linters.sh"
+      "./tools/lint/common/run_linters.sh",
+      "pre-commit run --files"
     ],
     "*.sh": [
       "./pp python -m tools.lint.bash.run_linters",
-      "./tools/lint/common/run_linters.sh"
+      "./tools/lint/common/run_linters.sh",
+      "pre-commit run --files"
     ],
     "*.{yaml,yml}": [
-      "prettier --write"
+      "prettier --write",
+      "pre-commit run --files"
     ],
     ".babelrc": [
       "./tools/lint/json/lint.sh --fix",
-      "prettier --write"
+      "prettier --write",
+      "pre-commit run --files"
     ],
     "Dockerfile*": [
       "./pp python -m tools.lint.bash.run_linters",
-      "./tools/lint/common/run_linters.sh"
-    ],
-    "README": [
-      "prettier --write"
+      "./tools/lint/common/run_linters.sh",
+      "pre-commit run --files"
     ]
   },
   "name": "sigopt",
