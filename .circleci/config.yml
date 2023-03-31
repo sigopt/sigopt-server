@@ -316,7 +316,10 @@ jobs:
       - run: pyenv global 3.10.6
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: pre-commit validate-config
-      - run: pre-commit run --all-files hadolint-docker shellcheck eslint pylint
+      - run: pre-commit run --all-files eslint
+      - run: pre-commit run --all-files hadolint-docker
+      - run: pre-commit run --all-files pylint
+      - run: pre-commit run --all-files shellcheck
       - run: git diff
   check-integration-test-inits:
     executor: sigopt-lite
