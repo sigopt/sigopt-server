@@ -358,11 +358,12 @@ jobs:
       - run: pyenv global 3.10.6
       - install-submodules
       - install-trivy
-      - run: ./ci/trivy_scan_images.sh --ignore-unfixed
+      - run: ./ci/trivy_scan_images.sh --ignore-unfixed --debug
       - store_artifacts:
           path: artifacts/trivy/
   trivy-scan-project:
-    executor: sigopt-node-only
+    docker:
+      - image: cimg/base:stable
     resource_class: medium
     steps:
       - checkout

@@ -40,7 +40,7 @@ experiment_meta = dict(
   metrics=[
     dict(
       name="f",
-      objective="mimize",
+      objective="minimize",
     )
   ],
   observation_budget=20,
