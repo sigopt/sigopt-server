@@ -33,4 +33,3 @@ Experiment experiment = Experiment.create().data(new Experiment.Builder()
   .build())
   .call();
 System.out.println("Created experiment: {{appUrl}}/experiment/" + experiment.getId());
-

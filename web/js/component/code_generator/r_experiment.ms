@@ -5,4 +5,3 @@ Sys.setenv(SIGOPT_API_URL="{{apiUrl}}")
 
 install.packages("SigOptR", repos = "http://cran.us.r-project.org")
 library(SigOptR)
-
