@@ -307,13 +307,17 @@ jobs:
           paths:
             - .ssh
             - project
-  pylint:
-    executor: sigopt-python-only
-    resource_class: small
+  pre-commit:
+    machine:
+      image: *ubuntu-executor-image
+    resource_class: medium
     steps:
       - attach
-      - install-python-libraries
-      - run: pylint -rn -sn
+      - run: pyenv global 3.10.6
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pre-commit validate-config
+      - run: pre-commit run --all-files hadolint-docker shellcheck eslint pylint
+      - run: git diff
   check-integration-test-inits:
     executor: sigopt-lite
     steps:
@@ -541,15 +545,6 @@ jobs:
       - checkout
       - run: grep flake8 requirements-dev.txt | xargs pip install
       - run: ./tools/lint/python/flake8_print.sh
-  python-pylint:
-    executor: sigopt-python-only
-    resource_class: small
-    parallelism: 8
-    steps:
-      - checkout
-      - attach
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: circleci tests glob "**/*.py" | circleci tests split | _NO_PARSE_ARGS=x xargs ./tools/lint/python/pylint.sh
   python-custom-lint:
     executor: sigopt-python-only
     resource_class: small
@@ -604,10 +599,11 @@ workflows:
   main:
     jobs:
       - checkout-code
-      - pylint:
+      - pre-commit:
           requires:
             - checkout-code
             - compile-protobuf
+            - setup-web
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
