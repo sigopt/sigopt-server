@@ -113,11 +113,13 @@ RUN set -ex \
       >/dev/null \
   ; apt-mark auto build-essential libxml2-dev libxmlsec1-dev \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
-  ; pipenv install --dev --ignore-pipfile --system \
+  ; pipenv install --dev --ignore-pipfile \
   ; pipenv --clear \
   ; apt-get autoremove -yqq \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
+
+ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
   ; python -c 'import lxml' \

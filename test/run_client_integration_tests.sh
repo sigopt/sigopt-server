@@ -16,8 +16,9 @@ pip install .'[dev]'
 
 (
   cd ..
-  pipenv install --dev --ignore-pipfile --system
+  pipenv install --dev --ignore-pipfile
 )
+PATH="/sigopt-server/.venv/bin:$PATH"
 
 pip install .
 

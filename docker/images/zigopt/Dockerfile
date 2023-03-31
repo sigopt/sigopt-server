@@ -51,9 +51,11 @@ WORKDIR /sigopt-server
 COPY Pipfile.lock /sigopt-server/Pipfile.lock
 RUN set -ex \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
-  ; pipenv install --ignore-pipfile --system \
+  ; pipenv install --ignore-pipfile \
   ; pipenv --clear \
   ; :
+
+ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
 COPY --from=protobuf /sigopt-server/src/python/zigopt/ /sigopt-server/src/python/zigopt/

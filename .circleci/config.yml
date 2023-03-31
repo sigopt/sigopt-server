@@ -24,7 +24,7 @@ commands:
   install-python-libraries:
     steps:
       - run: pip install pipenv
-      - run: pipenv install --dev --ignore-pipfile --system
+      - run: pipenv install --dev --python=3.10
   update-docker-cli:
     steps:
       - run: sudo mkdir -p /etc/apt/keyrings
@@ -204,7 +204,7 @@ commands:
     steps:
       - attach
       - install-python-libraries
-      - run: ./test/unit_tests.sh --junitxml=junit-results/unit-tests/junit.xml --count=<< parameters.count >> test/python/sigopttest
+      - run: pipenv run ./test/unit_tests.sh --junitxml=junit-results/unit-tests/junit.xml --count=<< parameters.count >> test/python/sigopttest
       - store_test_results:
           path: junit-results
     parameters:
@@ -225,7 +225,7 @@ commands:
       - install-python-libraries
       - run:
           name: Generate swagger file
-          command: ./pp src/python/zigopt/api/documentation.py
+          command: pipenv run ./pp src/python/zigopt/api/documentation.py
           environment:
             SIGOPT_SWAGGER_PATH: /home/circleci/project/
             SIGOPT_SWAGGER_FILENAME: swagger.json
@@ -314,14 +314,13 @@ jobs:
     resource_class: medium
     steps:
       - attach
-      - run: pyenv global 3.10.6
       - run: pip install pipenv
-      - run: pipenv install --dev --ignore-pipfile --system
-      - run: pre-commit validate-config
-      - run: pre-commit run --all-files eslint
-      - run: pre-commit run --all-files hadolint-docker
-      - run: pre-commit run --all-files pylint
-      - run: pre-commit run --all-files shellcheck
+      - run: pipenv install --dev --python=3.10
+      - run: pipenv run pre-commit validate-config
+      - run: pipenv run pre-commit run --all-files eslint
+      - run: pipenv run pre-commit run --all-files hadolint-docker
+      - run: pipenv run pre-commit run --all-files pylint
+      - run: pipenv run pre-commit run --all-files shellcheck
       - run: git diff
   check-integration-test-inits:
     executor: sigopt-lite
