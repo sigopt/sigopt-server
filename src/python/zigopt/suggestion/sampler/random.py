@@ -45,19 +45,8 @@ class RandomSampler(SuggestionSampler):
       unprocessed_suggestions.append(self.form_unprocessed_suggestion(data=conditioned_suggestion_data))
     return unprocessed_suggestions
 
-  # Note: right now if there are constraints we ignore the priors explicitly here. Down the road, we need to figure out
-  # if we want to enable both (constraints on some params priors on others) and also if we want to do experiment-level
-  # checking to see if there are both constraints and priors on the same param (which shouldn't be allowed)
   def generate_random_suggestion_datas(self, count):
-    domain_info = SCAdapter.generate_domain_info(self.experiment, only_active_categorical_values=True)
-    domain = CategoricalDomain(**asdict(domain_info))
-    if domain_info.priors and not domain_info.constraint_list:
-      samples = domain.generate_random_points_according_to_priors(count)
-    else:
-      samples = domain.generate_quasi_random_points_in_domain(count)
-    # pylint: disable=protected-access
-    suggestion_datas = SCAdapter._make_suggestion_datas(self.experiment, samples)
-    # pylint: enable=protected-access
+    suggestion_datas = SCAdapter.random_search_next_points(self.experiment, num_to_suggest=count)
     assert len(suggestion_datas) == count
     return suggestion_datas
 
