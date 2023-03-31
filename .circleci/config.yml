@@ -347,6 +347,12 @@ jobs:
       - run: mkdir -p artifacts/trivy && trivy fs . --debug
       - store_artifacts:
           path: artifacts/trivy/
+  yarn-audit:
+    executor: sigopt-node-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: yarn audit
   test-docker-deployment:
     executor: sigopt-build
     resource_class: xlarge
@@ -607,6 +613,7 @@ workflows:
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
+      - yarn-audit
       - test-docker-deployment
       - test-docker-development
       - setup-web

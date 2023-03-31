@@ -9,6 +9,7 @@ FROM node:${NODE_MAJOR} AS test-routes
 # hadolint ignore=DL3016
 RUN set -ex \
   ; npm install -g npm yarn --force \
+  ; rm -rf /root/.npm \
   ; npm cache clean --force \
   ; :
 
