@@ -17,7 +17,7 @@ Jinja2==3.1.2
 jmespath==1.0.1
 joblib==1.2.0
 jsonschema==3.0.1
-libsigopt @ git+http://github.com/sigopt/libsigopt@9d8ba54ba4b94da4d06398225b7d16b2af33cdb5
+libsigopt @ git+http://github.com/sigopt/libsigopt@48aa4f6cbfa2d117962cfc8ba8bde4d683e76e1d
 Mako==1.2.2
 MarkupSafe==2.1.2
 numpy==1.22.4
