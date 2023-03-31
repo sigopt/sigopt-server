@@ -3,8 +3,8 @@ build==0.10.0
 debugpy==1.6.2
 flaky==3.7.0
 freezegun==1.2.1
-git+https://github.com/sigopt/flasgger.git@c9c08f752a0cb3e015ee837005cbb000aa13b8ae
-git+https://github.com/sigopt/sigopt-python.git
+git+https://github.com/sigopt/flasgger.git@c9c08f752a0cb3e015ee837005cbb000aa13b8ae#egg=flasgger
+git+https://github.com/sigopt/sigopt-python.git#egg=sigopt-python
 html5-parser==0.4.4
 ipython==8.10.0
 lxml==4.9.1

@@ -29,3 +29,26 @@ redis = ">=4.5.4,<5"
 scikit-learn = ">=1.1.1,<2"
 scipy = ">=1.10.1,<2"
 sqlalchemy = {version = ">=1.3.23,<2", extras = ["postgresql_pg8000"]}
+
+[dev-packages]
+aiosmtpd = "==1.4.2"
+build = "==0.10.0"
+debugpy = "==1.6.2"
+flaky = "==3.7.0"
+freezegun = "==1.2.1"
+flasgger = {ref = "c9c08f752a0cb3e015ee837005cbb000aa13b8ae", git = "https://github.com/sigopt/flasgger.git"}
+sigopt = {ref = "main", git = "https://github.com/sigopt/sigopt-python.git"}
+html5-parser = "==0.4.4"
+ipython = "==8.10.0"
+lxml = "==4.9.1"
+mock = "==2.0.0"
+networkx = "==3.0"
+playwright = "==1.31.1"
+pre-commit = "==3.2.1"
+pylint = "==2.15.5"
+pytest = "==7.2.2"
+pytest-mock = "==3.7.0"
+pytest-repeat = "==0.9.1"
+selenium = "==4.3.0"
+twine = "==4.0.2"
+vulture = "==2.7"
