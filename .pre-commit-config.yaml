@@ -78,6 +78,10 @@ repos:
     hooks:
       - id: circleci-config-validate
       - id: shellcheck
+  - repo: https://github.com/koalaman/shellcheck-precommit.git
+    rev: ""
+    hooks:
+      - id: shellcheck
         args: ["--exclude", "SC1090,SC1091,SC2029", "-f", "gcc"]
   - repo: https://github.com/jendrikseipp/vulture.git
     rev: "v2.7"
