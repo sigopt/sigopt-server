@@ -542,6 +542,7 @@ workflows:
       - checkout-code
       - pre-commit:
           requires:
+            - checkout-code
             - compile-protobuf
       - check-integration-test-inits
       - trivy-scan-images
