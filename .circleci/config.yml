@@ -210,20 +210,6 @@ commands:
       count:
         type: integer
         default: 1
-  run-sigoptlite-test:
-    steps:
-      - checkout
-      - install-python-libraries
-      - run:
-          command: ./pp pytest -rw sigoptlite/sigoptlitetest/ --durations 5 --junitxml=junit-results/sigoptlite-tests/junit.xml
-          environment:
-            OMP_NUM_THREADS: "1"
-            OPENBLAS_NUM_THREADS: "1"
-            MKL_NUM_THREADS: "1"
-            VECLIB_MAXIMUM_THREADS: "1"
-            NUMEXPR_NUM_THREADS: "1"
-      - store_test_results:
-          path: junit-results
   store-junit-test-results:
     steps:
       - store_test_results:
@@ -518,10 +504,88 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-zigopt-test
-  sigoptlite-unit:
+  black:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep black requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/black.sh --check .
+  bandit:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep bandit requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/bandit.sh -r .
+  python-imports:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep isort requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/isort_lint.sh
+  python-flake8:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep flake8 requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/flake8.sh
+  python-flake8-print:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep flake8 requirements-dev.txt | xargs pip install
+      - run: ./tools/lint/python/flake8_print.sh
+  python-pylint:
+    executor: sigopt-python-only
+    resource_class: small
+    parallelism: 8
+    steps:
+      - checkout
+      - attach
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: circleci tests glob "**/*.py" | circleci tests split | _NO_PARSE_ARGS=x xargs ./tools/lint/python/pylint.sh
+  python-custom-lint:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep numpy requirements.txt | xargs pip install
+      - run: ./tools/lint/python/custom_lint.sh
+  python-vulture:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep vulture requirements-dev.txt | xargs pip install vulture
+      - run: make vulture
+  python-mypy:
+    executor: sigopt-python-only
+    resource_class: small
+    steps:
+      - checkout
+      - run: grep -E '(mypy|types)' requirements-dev.txt | xargs pip install -r requirements.txt
+      - run: make mypy
+  bash-lint:
+    docker:
+      - image: circleci/buildpack-deps:buster
+    resource_class: small
+    steps:
+      - checkout
+      - run: sudo apt-get update -yqq
+      - run: sudo apt-get -yqq install shellcheck
+      - run: mkdir -p ../bin && wget -O ../bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 && chmod +x ../bin/hadolint
+      - run: PATH="../bin:$PATH" ./pp ./tools/lint/bash/run_linters.py
+  eof-lint:
     executor: sigopt-python-only
     steps:
-      - run-sigoptlite-test
+      - checkout
+      - run: grep numpy requirements.txt | xargs pip install
+      - run: ./tools/lint/common/eof_lint.sh
+>>>>>>> origin/main
   disclaimers-lint:
     executor: sigopt-python-only
     steps:
@@ -557,7 +621,6 @@ workflows:
       - service-integration
       - worker-health
       - web-integration
-      - sigoptlite-unit
       - check-node-dependencies:
           requires:
             - checkout-code

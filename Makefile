@@ -42,9 +42,6 @@ computetest:
 auxtest:
 	@./pp pytest -rw --durations=5 test/python/testaux
 
-litetest:
-	@cd sigoptlite && make test
-
 vulture:
 	@./tools/dead-code/run_vulture.py
 
