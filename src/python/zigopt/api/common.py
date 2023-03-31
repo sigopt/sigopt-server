@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import logging
 import sys
 import traceback
 from http import HTTPStatus
@@ -8,6 +9,7 @@ from http import HTTPStatus
 from flask import request as _request
 
 from zigopt.common import *
+from zigopt.api.errors import ValidationError
 from zigopt.api.request import RequestProxy, validate_api_input
 from zigopt.handlers.base.handler import Handler
 from zigopt.json.builder import JsonBuilder, MissingFieldError
@@ -86,7 +88,10 @@ def handler_registry(app):
         return e.get_error_response()
       except AssertionError:
         raise
+      except ValidationError:
+        raise
       except Exception as e:
+        logging.getLogger("Chris Test").error("In the generalized Except block")
         exc_info = sys.exc_info()
         user = handler and handler.auth and handler.auth.current_user
         client = handler and handler.auth and handler.auth.current_client
