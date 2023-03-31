@@ -40,13 +40,13 @@ from libsigopt.aux.constant import (
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from libsigopt.compute.views.rest.gp_ei_categorical import GpEiCategoricalView
-from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
-from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
-from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
-from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
-from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
+from libsigopt.views.rest.gp_ei_categorical import GpEiCategoricalView
+from libsigopt.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
+from libsigopt.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.views.rest.search_next_points import SearchNextPoints
+from libsigopt.views.rest.spe_next_points import SPENextPoints
+from libsigopt.views.rest.spe_search_next_points import SPESearchNextPoints
 
 
 #: Maximum ``num_to_sample`` (= ``q``) to request from libsigopt.compute when using the CL-max heuristic.
