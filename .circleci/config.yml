@@ -327,11 +327,10 @@ jobs:
       image: *ubuntu-executor-image
     resource_class: medium
     steps:
-      - checkout
+      - attach
       - run: pyenv global 3.10.6
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: yarn install
-      - compile-protobuf
       - run: pre-commit validate-config
       - run: pre-commit run --all-files
       - run: git diff
@@ -541,7 +540,9 @@ workflows:
   main:
     jobs:
       - checkout-code
-      - pre-commit
+      - pre-commit:
+          requires:
+            - compile-protobuf
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
