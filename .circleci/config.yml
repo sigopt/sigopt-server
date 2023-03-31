@@ -332,7 +332,6 @@ jobs:
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: yarn install
       - run: pre-commit validate-config
-      - run: pre-commit run --all-files eslint
       - run: pre-commit run --all-files
       - run: git diff
   check-integration-test-inits:
