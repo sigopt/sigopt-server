@@ -4,7 +4,6 @@
 from zigopt.common import *
 from zigopt.conditionals.util import convert_to_unconditioned_experiment
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData
-from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.sampler.base import SuggestionSampler
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
@@ -42,7 +41,7 @@ class RandomSampler(SuggestionSampler):
     return unprocessed_suggestions
 
   def generate_random_suggestion_datas(self, count):
-    suggestion_datas = SCAdapter.random_search_next_points(self.experiment, num_to_suggest=count)
+    suggestion_datas = self.services.sc_adapter.random_search_next_points(self.experiment, num_to_suggest=count)
     # NOTE: We could remove this assert later if we decide to make random search non memory-less (i.e., deduping)
     assert len(suggestion_datas) == count
     return suggestion_datas
