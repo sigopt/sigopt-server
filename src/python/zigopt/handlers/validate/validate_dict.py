@@ -14,15 +14,15 @@ from jsonschema import validate as validate_against_schema  # type: ignore
 from jsonschema.exceptions import ValidationError  # type: ignore
 
 from zigopt.common import *
-from zigopt.api.errors import InvalidKeyError
-from zigopt.common.numbers import is_integer, is_integer_valued_number, is_number
-from zigopt.net.errors import (  # type: ignore
-  BadParamError,
+from zigopt.api.errors import (
+  InvalidKeyError,
   InvalidTypeError,
   InvalidValueError,
   MissingJsonKeyError,
   RequestError,
+  SigoptValidationError,
 )
+from zigopt.common.numbers import is_integer, is_integer_valued_number, is_number
 from zigopt.protobuf.dict import (
   dict_to_protobuf,
   dict_to_protobuf_struct,
@@ -572,7 +572,7 @@ def validate_mutually_exclusive_properties(json_dict: dict[str, Any], properties
   present = [p for p in properties if json_dict.get(p) is not None]
   if len(present) > 1:
     present_str = " and ".join(f"`{p}`" for p in present)
-    raise BadParamError(f"Cannot specify {present_str}.")
+    raise SigoptValidationError(f"Cannot specify {present_str}.")
 
 
 def validate(json_dict: dict[str, Any], schema: dict[str, Any]) -> None:
@@ -599,7 +599,7 @@ def process_error(e: ValidationError) -> RequestError:
     return InvalidTypeError(e.instance, validation_type, key=get_path_string(e.path))
   elif e.validator in ["maxProperties", "minProperties"]:
     least_most = "at least" if e.validator == "minProperties" else "at most"
-    return BadParamError(f"Expected {least_most} {e.validator_value} keys in {json.dumps(e.instance)}")
+    return SigoptValidationError(f"Expected {least_most} {e.validator_value} keys in {json.dumps(e.instance)}")
   elif e.validator == "required":
     if is_mapping(e.instance):
       missing_keys = [key for key in e.validator_value if key not in e.instance]
@@ -617,9 +617,9 @@ def process_error(e: ValidationError) -> RequestError:
     return InvalidValueError(f"The length of {key} must be {greater_less} or equal to {e.validator_value}")
   elif e.validator == "enum":
     allowed_values = ", ".join([str(s) for s in e.validator_value if s is not None])
-    return BadParamError(f"{e.instance} is not one of the allowed values: {allowed_values}")
+    return SigoptValidationError(f"{e.instance} is not one of the allowed values: {allowed_values}")
   elif e.validator == "pattern":
-    return BadParamError(f"{e.instance} does not match the regular expression /{e.validator_value}/")
+    return SigoptValidationError(f"{e.instance} does not match the regular expression /{e.validator_value}/")
   elif e.validator in ["oneOf", "anyOf"]:
     if len(e.context) > 0:
       return process_error(e.context[0])
