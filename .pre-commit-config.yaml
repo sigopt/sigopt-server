@@ -1,3 +1,5 @@
+ci:
+  skip: [detect-aws-credentials, pylint]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v4.4.0
@@ -14,6 +16,7 @@ repos:
       - id: check-yaml
       - id: debug-statements
       - id: destroyed-symlinks
+      - id: detect-aws-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending

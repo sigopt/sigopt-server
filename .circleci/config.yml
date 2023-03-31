@@ -316,7 +316,7 @@ jobs:
       - run: pyenv global 3.10.6
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: pre-commit validate-config
-      - run: pre-commit run --all-files
+      - run: SKIP=detect-aws-credentials pre-commit run --all-files
       - run: git diff
   check-integration-test-inits:
     executor: sigopt-lite
