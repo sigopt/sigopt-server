@@ -64,7 +64,7 @@ RUN set -ex \
       pkg-config=0.29-* \
       >/dev/null \
   ; apt-mark auto gcc libxml2-dev pkg-config \
-  ; pipenv install --dev --system \
+  ; pipenv install --dev --ignore-pipfile --system \
   ; pipenv --clear \
   ; apt-get autoremove -yqq >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
