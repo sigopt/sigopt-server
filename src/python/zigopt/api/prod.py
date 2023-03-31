@@ -21,6 +21,7 @@ class ProdApp(Flask):
 
   def __init__(self, profiler, tracer, config_broker):
     super().__init__(__name__)
+    logging.getLogger("Chris Test").error("ProdApp init")
     self.request_class = Request
     self.profiler = profiler
     self.tracer = tracer
@@ -36,7 +37,7 @@ class ProdApp(Flask):
 
     log_requests(self)
 
-    logging.getLogger("Chris Test").info("About to register error handlers")
+    logging.getLogger("Chris Test").error("About to register error handlers")
 
     self.register_error_handler(ValidationError, handle_validation_errors)
     self.register_error_handler(InvalidKeyError, handle_validation_errors)
@@ -47,7 +48,7 @@ class ProdApp(Flask):
     self.register_error_handler(ValidationError, handle_validation_errors)
     self.register_error_handler(InvalidKeyError, handle_validation_errors)
 
-    logging.getLogger("Chris Test").info("Registered error handlers %s", self.error_handler_spec)
+    logging.getLogger("Chris Test").error("Registered error handlers %s", self.error_handler_spec)
 
   def make_default_options_response(self):
     return success_response({})
