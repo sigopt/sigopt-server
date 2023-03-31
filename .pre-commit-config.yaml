@@ -77,7 +77,6 @@ repos:
     rev: "v0.0.17"
     hooks:
       - id: circleci-config-validate
-      - id: shellcheck
   - repo: https://github.com/koalaman/shellcheck-precommit.git
     rev: ""
     hooks:
