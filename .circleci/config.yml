@@ -544,6 +544,7 @@ workflows:
           requires:
             - checkout-code
             - compile-protobuf
+            - setup-web
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
