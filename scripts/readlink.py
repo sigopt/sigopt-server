@@ -10,4 +10,4 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("path", type=str)
   args = parser.parse_args()
-  print(os.path.realpath(args.path))
+  print(os.path.realpath(args.path))  # noqa: T001

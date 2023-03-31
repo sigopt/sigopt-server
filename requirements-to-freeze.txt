@@ -4,16 +4,13 @@
 # on a different version than another requirements.txt somewhere, in which case, you
 # need to update the lower version to match the higher version.
 
-git+http://github.com/sigopt/libsigopt@rs-view
-Flask==2.1.1
-PyYAML==5.4.1
 backoff==1.10.0
 bcrypt==3.2.0
 boto3==1.26.99
 botocore==1.29.99
-# NOTE: our patch of black breaks with new versions of click
-click==8.0.4
+Flask==2.1.1
 gevent==22.10.2
+git+http://github.com/sigopt/libsigopt@rs-view
 greenlet==2.0.1
 gunicorn==19.10.0
 hiredis==1.0.0  # Grants a performance improvement to redis
@@ -23,6 +20,7 @@ numpy==1.22.4
 pg8000==1.15.2
 protobuf==3.20.2
 pytz==2023.2
+PyYAML==5.4.1
 qmcpy==1.2
 redis==4.5.4
 scikit-learn==1.1.1

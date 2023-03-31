@@ -16,7 +16,7 @@ class OrganizationJsonBuilder(JsonBuilder):
   def __init__(
     self,
     organization: Organization,
-    last_activity: datetime.datetime = None,
+    last_activity: Optional[datetime.datetime] = None,
     optimized_runs_in_billing_cycle: Optional[int] = None,
     data_storage_bytes: Optional[int] = None,
     total_runs_in_billing_cycle: Optional[int] = None,

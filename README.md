@@ -4,6 +4,8 @@ Copyright © 2023 Intel Corporation
 SPDX-License-Identifier: Apache License 2.0
 -->
 
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/sigopt/sigopt-server/main.svg)](https://results.pre-commit.ci/latest/github/sigopt/sigopt-server/main)
+
 Sigopt-Server is an open-source tool for managing adaptive experiments, especially for hyperparameter optimization. It uses algorithms to determine the best spots in parameter space for metric optimization, and includes web visualizations so you can improve your models. For more information you can [read about our service offering](https://sigopt.com/). Our documentation is [here](https://docs.sigopt.com/)
 
 <details>

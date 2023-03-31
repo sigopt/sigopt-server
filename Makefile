@@ -1,10 +1,10 @@
 SHELL = /usr/bin/env bash -eo pipefail
 
-.PHONY: clean pytest lint compile protocompile vulture vulture-allowlist
+.PHONY: clean pytest compile protocompile vulture vulture-allowlist
 
 DIRS = scratch web/static/js
 
-compile: protocompile pytest lint eslint
+compile: protocompile pytest
 
 dist-compile: compile
 	@python -m compileall .
@@ -42,38 +42,14 @@ computetest:
 auxtest:
 	@./pp pytest -rw --durations=5 test/python/testaux
 
-sort-imports:
-	@./tools/lint/python/isort_lint.sh --fix
-
-lint: vulture
-	@./pp ./lint --isort-args --fix
-
-lint-nofix: vulture
-	@./pp ./lint
-
 vulture:
 	@./tools/dead-code/run_vulture.py
 
 vulture-allowlist:
 	@./tools/dead-code/run_vulture.py --make-whitelist
 
-mypy:
-	@./tools/lint/python/mypy.sh
-
 web-dead-code:
 	@./tools/dead-code/web_resources.py
-
-eof-lint:
-	@./pp ./tools/lint/common/eof_lint.sh
-
-eslint:
-	@./tools/lint/javascript/eslint.sh --fix
-
-eslint-nofix:
-	@./tools/lint/javascript/eslint.sh
-
-prettier:
-	@./scripts/dev/prettier.sh --write .
 
 setup-filestorage:
 	@./scripts/launch/compose.sh run --rm init-minio-filestorage
@@ -84,18 +60,8 @@ fix-db: docker-protocompile
 setup-cookiejar:
 	@./scripts/launch/compose.sh run --rm init-minio-cookiejar
 
-setup-pre-push:
-	@ln -fs $$(pwd)/tools/git/pre-push.sh .git/hooks/pre-push
-
-setup-pre-commit:
-	@ln -fs $$(pwd)/tools/git/pre-commit.sh .git/hooks/pre-commit
-
-setup-post-checkout:
-	@ln -fs "$$(pwd)/tools/git/post-checkout.sh" .git/hooks/post-checkout
-
-setup-hooks: setup-pre-push setup-post-checkout
-	@echo "installed pre-push and post-checkout hooks"
-	@echo "pre-commit hooks may be slow; run \`make setup-pre-commit\` if you want them"
+setup-hooks: python-requirements
+	@pre-commit install --install-hooks
 
 mkdirs: $(DIRS)
 

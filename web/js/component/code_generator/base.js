@@ -288,7 +288,7 @@ export class ApiCallCodeGen extends JsonObjectCodeGen {
         {this.props.showHeader && this.props.header && (
           <Highlight
             language={this.props.language}
-            code={this.props.header(templateArgs)}
+            code={`${this.props.header(templateArgs)}\n`}
           />
         )}
         {super.render()}

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import datetime
 import os
+from typing import Optional as _Optional
 
 import pytz
 
@@ -54,7 +55,7 @@ def unix_timestamp(with_microseconds: bool = False) -> int | float:
   return datetime_to_seconds(current_datetime(), with_microseconds=with_microseconds)
 
 
-def get_month_interval(dt: datetime.datetime = None) -> tuple[datetime.datetime, datetime.datetime]:
+def get_month_interval(dt: _Optional[datetime.datetime] = None) -> tuple[datetime.datetime, datetime.datetime]:
   if dt is None:
     dt = current_datetime()
   start = dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)

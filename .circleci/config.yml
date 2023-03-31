@@ -302,12 +302,25 @@ jobs:
       - run: git reflog expire --expire=now --all
       - run: git repack -ad
       - run: git prune
-      - run: rm -rf .git/objects/*
       - persist_to_workspace:
           root: /root
           paths:
             - .ssh
             - project
+  pre-commit:
+    machine:
+      image: *ubuntu-executor-image
+    resource_class: medium
+    steps:
+      - attach
+      - run: pyenv global 3.10.6
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pre-commit validate-config
+      - run: pre-commit run --all-files eslint
+      - run: pre-commit run --all-files hadolint-docker
+      - run: pre-commit run --all-files pylint
+      - run: pre-commit run --all-files shellcheck
+      - run: git diff
   check-integration-test-inits:
     executor: sigopt-lite
     steps:
@@ -418,19 +431,7 @@ jobs:
     steps:
       - attach
       - install-submodules
-      - run: make eslint-nofix
-  json-lint:
-    executor: sigopt-python-only
-    steps:
-      - checkout
-      - install-submodules
-      - run: ./tools/lint/json/lint.sh --check
-  prettier:
-    executor: sigopt-node-only
-    steps:
-      - attach
-      - install-submodules
-      - run: yarn prettier --check .
+      - run: git ls-files '*.js' | xargs yarn -s eslint
   check-node-dependencies:
     executor: sigopt-node-only
     steps:
@@ -547,15 +548,6 @@ jobs:
       - checkout
       - run: grep flake8 requirements-dev.txt | xargs pip install
       - run: ./tools/lint/python/flake8_print.sh
-  python-pylint:
-    executor: sigopt-python-only
-    resource_class: small
-    parallelism: 8
-    steps:
-      - checkout
-      - attach
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: circleci tests glob "**/*.py" | circleci tests split | _NO_PARSE_ARGS=x xargs ./tools/lint/python/pylint.sh
   python-custom-lint:
     executor: sigopt-python-only
     resource_class: small
@@ -610,6 +602,11 @@ workflows:
   main:
     jobs:
       - checkout-code
+      - pre-commit:
+          requires:
+            - checkout-code
+            - compile-protobuf
+            - setup-web
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
@@ -647,29 +644,10 @@ workflows:
           requires:
             - setup-web
             - documentation-generation
-      - bash-lint
-      - eof-lint
-      - disclaimers-lint
       - js-lint:
           requires:
             - checkout-code
             - setup-web
-      - json-lint
-      - prettier:
-          requires:
-            - checkout-code
-            - setup-web
-      - black
-      - bandit
-      - python-imports
-      - python-flake8
-      - python-flake8-print
-      - python-pylint:
-          requires:
-            - compile-protobuf
-      - python-custom-lint
-      - python-vulture
-      - python-mypy
   nightly:
     jobs:
       - trivy-scan-images

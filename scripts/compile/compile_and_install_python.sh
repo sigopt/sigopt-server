@@ -15,7 +15,7 @@ while [[ $# -gt 0 ]]
 do
   case "$1" in
     --jobs) JOBS="${2:?Missing argument for --jobs}"; shift 2 ;;
-    --version) PYTHON_VERSION="${2:?Missing argument for --version}"; shift 2 ;; 
+    --version) PYTHON_VERSION="${2:?Missing argument for --version}"; shift 2 ;;
     --with-pip) WITH_PIP="--with-ensurepip=install" ; shift ;;
     *) echo Unknown arg: "$1"; exit 1 ;;
   esac

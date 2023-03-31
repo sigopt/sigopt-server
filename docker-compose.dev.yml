@@ -377,7 +377,7 @@ services:
           memory: 64M
           pids: 8
     read_only: true
-    healthcheck: &qworker-healthcheck
+    healthcheck:
       test:
         - CMD
         - bash

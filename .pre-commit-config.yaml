@@ -1,0 +1,124 @@
+ci:
+  skip: [detect-aws-credentials, eslint, hadolint-docker, pylint, shellcheck]
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks.git
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-ast
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-vcs-permalinks
+      - id: check-yaml
+      - id: debug-statements
+      - id: destroyed-symlinks
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: no-commit-to-branch
+        args: [--branch=main]
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/PyCQA/bandit.git
+    rev: "1.7.5"
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
+        additional_dependencies: [tomli]
+  - repo: https://github.com/sigopt/black.git
+    rev: sigopt-22.10.0
+    hooks:
+      - id: black
+        args: [--experimental-string-processing]
+  - repo: https://github.com/PyCQA/flake8.git
+    rev: "6.0.0"
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-print==4.0.0
+        entry: ./pp flake8
+        args: [--config=setup.cfg]
+  - repo: https://github.com/hadolint/hadolint.git
+    rev: "v2.12.1-beta"
+    hooks:
+      - id: hadolint-docker
+  - repo: https://github.com/PyCQA/isort.git
+    rev: "5.12.0"
+    hooks:
+      - id: isort
+        entry: ./pp isort
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v1.1.1"
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - types-mock==5.0.0.6
+          - types-protobuf==3.20.4
+          - types-pytz==2023.2.0.0
+          - types-PyYAML==5.4.1
+          - types-redis==4.5.3.0
+          - types-requests==2.28.11.2
+        exclude: "(sigoptlite|src/python/zigopt/authorization|src/python/zigopt/handlers|src/python/zigopt/training_run|src/python/zigopt/queue|src/python/zigopt/user|test)/.*\\.py"
+  - repo: https://github.com/pre-commit/mirrors-prettier.git
+    rev: "v3.0.0-alpha.6"
+    hooks:
+      - id: prettier
+        additional_dependencies:
+          - "@babel/preset-env"
+          - "@babel/preset-react"
+          - "@babel/plugin-proposal-class-properties"
+          - import-sort-style-renke@6.0.0
+          - prettier@2.8.6
+          - prettier-plugin-import-sort@0.0.7
+  - repo: https://github.com/koalaman/shellcheck-precommit.git
+    rev: "v0.9.0"
+    hooks:
+      - id: shellcheck
+        args: ["--exclude", "SC1090,SC1091,SC2029", "-f", "gcc"]
+  - repo: https://github.com/jendrikseipp/vulture.git
+    rev: "v2.7"
+    hooks:
+      - id: vulture
+        entry: tools/dead-code/run_vulture.py
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: yarn -s eslint
+        args: [--fix]
+        description: "An AST-based pattern checker for JavaScript."
+        language: system
+        types: [javascript]
+      - id: pylint
+        name: pylint
+        entry: ./pp pylint
+        language: system
+        types: [python]
+        args: [-rn, -sn]
+      - id: apply-copyright-notice
+        name: Apply the copyright notice
+        description: This hook applies the copyright notice and license disclaimer to all files.
+        entry: tools/lint/common/check_copyright_and_license_disclaimers.py
+        args: [--fix-in-place]
+        language: python
+        types_or:
+          - markdown
+          - python
+      - id: custom-bash-lint
+        name: custom-bash-lint
+        entry: tools/lint/bash/custom_lint.py
+        language: python
+        types: [shell]
+      - id: custom-python-lint
+        name: custom-python-lint
+        entry: ./pp tools/lint/python/custom_lint.py
+        language: python
+        additional_dependencies:
+          - numpy
+        types: [python]

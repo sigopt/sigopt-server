@@ -42,9 +42,9 @@ CA_PATH="$(pwd)/artifacts/tls/root-ca.crt"
 export SIGOPT_API_VERIFY_SSL_CERTS=$CA_PATH
 export NODE_EXTRA_CA_CERTS=$CA_PATH
 echo "Generating leaf certificate and key..."
-if ./tools/tls/generate_san_cert.sh; then 
+if ./tools/tls/generate_san_cert.sh; then
   echo "Leaf certificate and key at artifacts/tls/tls.*"
-  shred -u ./artifacts/tls/root-ca.key  
+  shred -u ./artifacts/tls/root-ca.key
   rm -f artifacts/tls/root-ca.srl
 else
   echo "Failed to generate leaf certificate!"
@@ -52,7 +52,7 @@ else
 fi
 
 echo "Starting required services..."
-if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then 
+if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then
   echo "Required services have started."
 else
   echo "Failed to start required services!"
@@ -61,7 +61,7 @@ fi
 OWNER_PASSWORD="$(./tools/secure/generate_random_string.sh 16)"
 export OWNER_PASSWORD
 echo "Initializing database..."
-if docker-compose --file=docker-compose.yml run --rm createdb; then 
+if docker-compose --file=docker-compose.yml run --rm createdb; then
   echo "Database ready."
 else
   echo "Failed to initialize database!"

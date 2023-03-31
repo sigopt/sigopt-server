@@ -10,10 +10,12 @@ shift
 RESOURCE="$1"
 shift
 
+# shellcheck disable=SC2317
 function file {
   [ -f "$RESOURCE" ]
 }
 
+# shellcheck disable=SC2317
 function url {
   curl -fL --cacert artifacts/tls/root-ca.crt "$@" "$RESOURCE"
 }

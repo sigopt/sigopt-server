@@ -93,7 +93,7 @@ DISCLAIMERS_BY_FILETYPE = {filetype: generate_disclaimer(filetype) for filetype 
 
 def file_has_disclaimer(filename, filetype, verbose=False):
   if verbose:
-    print(f"Checking: {filename}")
+    print(f"Checking: {filename}")  # noqa: T001
   with open(filename) as fp:
     to_check = []
     line = next(fp)
@@ -131,7 +131,7 @@ def check_all(directory, verbose=False):
 
 def fix_in_place(filename, filetype, verbose):
   if verbose:
-    print(f"Fixing {filename}")
+    print(f"Fixing {filename}")  # noqa: T001
 
   disclaimer = DISCLAIMERS_BY_FILETYPE[filetype]
   with open(filename, "r+") as fp:
@@ -153,10 +153,10 @@ def fix_all(filenames, verbose=False):
     try:
       fix_in_place(filename, filetype, verbose=verbose)
     except Exception as e:
-      print(f"failed to fix {filename}: {e}")
+      print(f"failed to fix {filename}: {e}")  # noqa: T001
       failed_to_fix.append(filename)
     if not file_has_disclaimer(filename, filetype):
-      print(f"fix did not work for {filename}")
+      print(f"fix did not work for {filename}")  # noqa: T001
       failed_to_fix.append(filename)
   return failed_to_fix
 
@@ -174,8 +174,10 @@ if __name__ == "__main__":
   if args.fix_in_place:
     missing = fix_all(missing, verbose=args.verbose)
   if missing:
-    print("\nThe following files failed the copyright + license check:\n\t" + "\n\t".join(f for f in missing))
+    print(  # noqa: T001
+      "\nThe following files failed the copyright + license check:\n\t" + "\n\t".join(f for f in missing)
+    )
     sys.exit(1)
   else:
     if args.verbose:
-      print("\nAll files have disclaimer")
+      print("\nAll files have disclaimer")  # noqa: T001

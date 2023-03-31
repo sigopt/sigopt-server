@@ -274,21 +274,10 @@ Setup automatic pre-commit linter:
 make setup-pre-commit
 ```
 
-Lint all javascript/React code:
+Run the pre-commit linter manually on staged files:
 
 ```bash
-# without fixes
-make eslint-nofix
-
-# attempt to fix
-make eslint
-```
-
-Lint everything else:
-
-```bash
-# attempts to fix errors
-./lint
+pre-commit run
 ```
 
 # Dead code

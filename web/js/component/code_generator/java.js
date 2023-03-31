@@ -225,7 +225,7 @@ export class JavaApiCallCodeGen extends ApiCallCodeGen {
         {this.props.showHeader && (
           <Highlight
             language={this.props.language}
-            code={this.props.header(this.props)}
+            code={`${this.props.header(this.props)}\n`}
           />
         )}
         <EnclosedBlock
