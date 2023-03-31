@@ -210,20 +210,6 @@ commands:
       count:
         type: integer
         default: 1
-  run-sigoptlite-test:
-    steps:
-      - checkout
-      - install-python-libraries
-      - run:
-          command: ./pp pytest -rw sigoptlite/sigoptlitetest/ --durations 5 --junitxml=junit-results/sigoptlite-tests/junit.xml
-          environment:
-            OMP_NUM_THREADS: "1"
-            OPENBLAS_NUM_THREADS: "1"
-            MKL_NUM_THREADS: "1"
-            VECLIB_MAXIMUM_THREADS: "1"
-            NUMEXPR_NUM_THREADS: "1"
-      - store_test_results:
-          path: junit-results
   store-junit-test-results:
     steps:
       - store_test_results:
@@ -520,10 +506,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-zigopt-test
-  sigoptlite-unit:
-    executor: sigopt-python-only
-    steps:
-      - run-sigoptlite-test
   black:
     executor: sigopt-python-only
     resource_class: small
@@ -635,7 +617,6 @@ workflows:
       - service-integration
       - worker-health
       - web-integration
-      - sigoptlite-unit
       - check-node-dependencies:
           requires:
             - checkout-code
