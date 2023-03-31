@@ -316,7 +316,6 @@ jobs:
       - run: git reflog expire --expire=now --all
       - run: git repack -ad
       - run: git prune
-      - run: rm -rf .git/objects/*
       - persist_to_workspace:
           root: /root
           paths:
