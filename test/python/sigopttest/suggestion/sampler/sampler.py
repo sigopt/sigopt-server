@@ -11,7 +11,6 @@ from scipy import stats
 
 from zigopt.experiment.model import Experiment, ExperimentParameterProxy
 from zigopt.experiment.segmenter import ExperimentParameterSegmenter
-from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.math.initialization import get_low_discrepancy_stencil_length_from_experiment
 from zigopt.math.interval import ClosedInterval, LeftOpenInterval, OpenInterval, RightOpenInterval
 from zigopt.observation.model import Observation
@@ -29,6 +28,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Prior,
 )
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
+from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.sampler.categorical import CategoricalOnlySampler
 from zigopt.suggestion.sampler.grid import GridSampler
 from zigopt.suggestion.sampler.lhc import LatinHypercubeSampler
