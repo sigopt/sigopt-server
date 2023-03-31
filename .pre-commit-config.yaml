@@ -67,6 +67,7 @@ repos:
     hooks:
       - id: prettier
         additional_dependencies:
+          - "@babel/preset-env"
           - "@babel/plugin-proposal-class-properties"
           - import-sort-style-renke@6.0.0
           - prettier@2.8.6
