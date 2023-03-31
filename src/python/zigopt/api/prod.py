@@ -19,6 +19,9 @@ class ProdApp(Flask):
   ServiceBag = ApiServiceBag
   RequestLocalServiceBag = ApiRequestLocalServiceBag
 
+  def handle_validation_errors(self, e):
+    return BadParamError(e.msg).get_error_response()
+
   def __init__(self, profiler, tracer, config_broker):
     super().__init__(__name__)
     logging.getLogger("Chris Test").error("ProdApp init")
@@ -29,9 +32,6 @@ class ProdApp(Flask):
 
     config_broker.log_configs()
 
-    def handle_validation_errors(e):
-      return BadParamError(e.msg).get_error_response()
-
     self.global_services = self.ServiceBag(config_broker, is_qworker=False)
     self.request_local_services_factory = self.RequestLocalServiceBag
 
@@ -39,14 +39,14 @@ class ProdApp(Flask):
 
     logging.getLogger("Chris Test").error("About to register error handlers")
 
-    self.register_error_handler(ValidationError, handle_validation_errors)
-    self.register_error_handler(InvalidKeyError, handle_validation_errors)
+    self.register_error_handler(ValidationError, self.handle_validation_errors)
+    self.register_error_handler(InvalidKeyError, self.handle_validation_errors)
 
     initialize_base_blueprint(self)
     self.register_blueprint(initialize_v1_blueprint(self), url_prefix="/v1")
 
-    self.register_error_handler(ValidationError, handle_validation_errors)
-    self.register_error_handler(InvalidKeyError, handle_validation_errors)
+    self.register_error_handler(ValidationError, self.handle_validation_errors)
+    self.register_error_handler(InvalidKeyError, self.handle_validation_errors)
 
     logging.getLogger("Chris Test").error("Registered error handlers %s", self.error_handler_spec)
 
