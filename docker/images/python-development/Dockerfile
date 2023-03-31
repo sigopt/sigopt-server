@@ -53,7 +53,7 @@ COPY Pipfile.lock /sigopt-server/Pipfile.lock
 
 RUN set -ex \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
-  ; pipenv install --dev --ignore-pipfile --python="${PYTHON_MAJOR}.${PYTHON_MINOR}" \
+  ; pipenv install --dev --ignore-pipfile \
   ; pipenv --clear \
   ; :
 
