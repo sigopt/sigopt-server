@@ -42,9 +42,6 @@ computetest:
 auxtest:
 	@./pp pytest -rw --durations=5 test/python/testaux
 
-litetest:
-	@cd sigoptlite && make test
-
 sort-imports:
 	@./tools/lint/python/isort_lint.sh --fix
 
