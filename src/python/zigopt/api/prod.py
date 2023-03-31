@@ -1,11 +1,9 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-import logging
-
 from flask import Flask
 
-from zigopt.api.errors import InvalidKeyError, ValidationError
+from zigopt.api.errors import SigoptValidationError
 from zigopt.api.request import Request
 from zigopt.api.routes import initialize_blueprint as initialize_base_blueprint
 from zigopt.api.routes import log_requests
@@ -24,7 +22,6 @@ class ProdApp(Flask):
 
   def __init__(self, profiler, tracer, config_broker):
     super().__init__(__name__)
-    logging.getLogger("Chris Test").error("ProdApp init")
     self.request_class = Request
     self.profiler = profiler
     self.tracer = tracer
@@ -36,19 +33,10 @@ class ProdApp(Flask):
     self.request_local_services_factory = self.RequestLocalServiceBag
 
     log_requests(self)
-
-    logging.getLogger("Chris Test").error("About to register error handlers")
-
-    self.register_error_handler(ValidationError, self.handle_validation_errors)
-    self.register_error_handler(InvalidKeyError, self.handle_validation_errors)
-
     initialize_base_blueprint(self)
     self.register_blueprint(initialize_v1_blueprint(self), url_prefix="/v1")
 
-    self.register_error_handler(ValidationError, self.handle_validation_errors)
-    self.register_error_handler(InvalidKeyError, self.handle_validation_errors)
-
-    logging.getLogger("Chris Test").error("Registered error handlers %s", self.error_handler_spec)
+    self.register_error_handler(SigoptValidationError, self.handle_validation_errors)
 
   def make_default_options_response(self):
     return success_response({})

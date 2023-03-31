@@ -9,7 +9,7 @@ from http import HTTPStatus
 from flask import request as _request
 
 from zigopt.common import *
-from zigopt.api.errors import ValidationError
+from zigopt.api.errors import SigoptValidationError
 from zigopt.api.request import RequestProxy, validate_api_input
 from zigopt.handlers.base.handler import Handler
 from zigopt.json.builder import JsonBuilder, MissingFieldError
@@ -88,7 +88,7 @@ def handler_registry(app):
         return e.get_error_response()
       except AssertionError:
         raise
-      except ValidationError:
+      except SigoptValidationError:
         raise
       except Exception as e:
         logging.getLogger("Chris Test").error("In the generalized Except block")
