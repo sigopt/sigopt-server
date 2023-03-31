@@ -6,9 +6,9 @@ import json
 
 
 class SigoptValidationError(Exception):
-  def __init__(self):
+  def __init__(self, msg="Validation error"):
     super().__init__()
-    self.msg = "Validation error"
+    self.msg = msg
 
 
 class MissingParamError(SigoptValidationError):
