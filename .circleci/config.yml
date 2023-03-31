@@ -307,17 +307,13 @@ jobs:
           paths:
             - .ssh
             - project
-  pre-commit:
-    machine:
-      image: *ubuntu-executor-image
-    resource_class: medium
+  pylint:
+    executor: sigopt-python-only
+    resource_class: small
     steps:
       - attach
-      - run: pyenv global 3.10.6
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: pre-commit validate-config
-      - run: SKIP=detect-aws-credentials pre-commit run --all-files
-      - run: git diff
+      - install-python-libraries
+      - run: pylint -rn -sn
   check-integration-test-inits:
     executor: sigopt-lite
     steps:
@@ -608,11 +604,7 @@ workflows:
   main:
     jobs:
       - checkout-code
-      - pre-commit:
-          requires:
-            - checkout-code
-            - compile-protobuf
-            - setup-web
+      - pylint
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
