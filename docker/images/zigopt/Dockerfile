@@ -49,6 +49,7 @@ RUN set -ex \
 WORKDIR /sigopt-server
 
 COPY Pipfile.lock /sigopt-server/Pipfile.lock
+ENV PIPENV_VENV_IN_PROJECT "1"
 RUN set -ex \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
   ; pipenv install --ignore-pipfile \

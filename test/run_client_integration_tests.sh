@@ -14,6 +14,7 @@ git fetch --all --tags --prune
 git checkout "$SIGOPT_PYTHON_GIT_REFERENCE"
 pip install .'[dev]'
 
+export PIPENV_VENV_IN_PROJECT="1"
 (
   cd ..
   pipenv install --dev --ignore-pipfile

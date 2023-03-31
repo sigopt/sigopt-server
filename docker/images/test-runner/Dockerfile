@@ -105,6 +105,7 @@ RUN : \
 WORKDIR /sigopt-server
 
 COPY Pipfile.lock /sigopt-server/Pipfile.lock
+ENV PIPENV_VENV_IN_PROJECT "1"
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \

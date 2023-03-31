@@ -50,6 +50,7 @@ RUN set -ex \
   ; :
 
 COPY Pipfile.lock /sigopt-server/Pipfile.lock
+ENV PIPENV_VENV_IN_PROJECT "1"
 
 RUN set -ex \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
@@ -60,6 +61,7 @@ RUN set -ex \
 ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
+  ; python -c 'import lxml, numpy' \
   ; python -c 'import inotify, lxml, numpy' \
   ; :
 
