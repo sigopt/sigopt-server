@@ -16,7 +16,7 @@ pip install .'[dev]'
 
 (
   cd ..
-  pipenv install --dev
+  pipenv install --dev --system
 )
 
 pip install .

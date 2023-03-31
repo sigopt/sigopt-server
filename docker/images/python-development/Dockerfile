@@ -64,14 +64,14 @@ RUN set -ex \
       pkg-config=0.29-* \
       >/dev/null \
   ; apt-mark auto gcc libxml2-dev pkg-config \
-  ; pipenv install --dev \
+  ; pipenv install --dev --system \
   ; pipenv --clear \
   ; apt-get autoremove -yqq >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
 RUN set -ex \
-  ; python -c 'import lxml' \
+  ; python -c 'import inotify, lxml, numpy' \
   ; :
 
 COPY docker/images/python-development/bin /usr/local/bin
