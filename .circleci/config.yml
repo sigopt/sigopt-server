@@ -23,7 +23,8 @@ commands:
             git submodule update
   install-python-libraries:
     steps:
-      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pip install pipenv
+      - run: pipenv install --dev
   update-docker-cli:
     steps:
       - run: sudo mkdir -p /etc/apt/keyrings
@@ -314,7 +315,8 @@ jobs:
     steps:
       - attach
       - run: pyenv global 3.10.6
-      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: pip install pipenv
+      - run: pipenv install --dev
       - run: pre-commit validate-config
       - run: pre-commit run --all-files eslint
       - run: pre-commit run --all-files hadolint-docker

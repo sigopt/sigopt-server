@@ -41,22 +41,6 @@ RUN set -ex \
 
 WORKDIR /sigopt-server
 
-COPY requirements.txt /sigopt-server/requirements.txt
-RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      gcc=4:8.3.* \
-      libc6-dev=2.* \
-      libssl-dev=1.1.* \
-      >/dev/null \
-  ; apt-mark auto gcc libc6-dev libssl-dev \
-  ; pip install --no-cache-dir --upgrade \
-      -r requirements.txt \
-      cryptography \
-  ; apt-get autoremove -yqq >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
@@ -68,17 +52,20 @@ RUN set -ex \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
-COPY requirements-dev.txt /sigopt-server/requirements-dev.txt
-COPY requirements-linux.txt /sigopt-server/requirements-linux.txt
+COPY Pipfile.lock /sigopt-server/Pipfile.lock
+
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       gcc=4:8.3.* \
+      libc6-dev=2.* \
+      libssl-dev=1.1.* \
       libxml2-dev=2.9.* \
       pkg-config=0.29-* \
       >/dev/null \
   ; apt-mark auto gcc libxml2-dev pkg-config \
-  ; pip install --no-cache-dir --upgrade -r requirements-dev.txt -r requirements-linux.txt \
+  ; pipenv install --dev \
+  ; pipenv --clear \
   ; apt-get autoremove -yqq >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :

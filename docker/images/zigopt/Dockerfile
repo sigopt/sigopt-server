@@ -48,9 +48,11 @@ RUN set -ex \
 
 WORKDIR /sigopt-server
 
-COPY requirements.txt /sigopt-server/requirements.txt
+COPY Pipfile.lock /sigopt-server/Pipfile.lock
 RUN set -ex \
-  ; pip install --no-cache-dir -r requirements.txt \
+  ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
+  ; pipenv install \
+  ; pipenv --clear \
   ; :
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/

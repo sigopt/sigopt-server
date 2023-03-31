@@ -351,7 +351,7 @@ services:
     volumes:
       - *rootca-volume
       - *sigopt-config-volume
-      - ./requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
+      - ./Pipfile.lock:/sigopt-server/Pipfile.lock:ro
       - ./test:/sigopt-server/test:ro
       - ./pytest.ini:/sigopt-server/pytest.ini:ro
 

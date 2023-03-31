@@ -16,7 +16,7 @@ pip install .'[dev]'
 
 (
   cd ..
-  pip install -r requirements-dev.txt
+  pipenv install --dev
 )
 
 pip install .

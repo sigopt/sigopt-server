@@ -12,7 +12,6 @@ import time
 from subprocess import Popen, TimeoutExpired
 
 # pylint: disable=import-error
-# NOTE: inotify is a Linux library that we don't want to add to requirements-dev.txt for now
 from inotify.adapters import InotifyTree
 
 

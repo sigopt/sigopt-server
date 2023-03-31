@@ -72,10 +72,8 @@ js-requirements:
 	@NODE_ENV=development yarn install
 
 python-requirements:
-	@pip install --upgrade pip==22.1.2
-	@pip install --upgrade -r requirements.txt
-	@pip install --upgrade -r requirements-dev.txt
-	@pip uninstall -y pytest-rerunfailures
+	@pip install --upgrade pipenv
+	@pipenv install --dev
 
 playwright-install: python-requirements
 	@playwright install chromium
