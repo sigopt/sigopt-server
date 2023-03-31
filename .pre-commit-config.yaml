@@ -76,6 +76,7 @@ repos:
           - import-sort-style-renke@6.0.0
           - prettier@2.8.6
           - prettier-plugin-import-sort@0.0.7
+        exclude: "^Pipfile.lock$"
   - repo: https://github.com/koalaman/shellcheck-precommit.git
     rev: "v0.9.0"
     hooks:
