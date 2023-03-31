@@ -1,5 +1,5 @@
 ci:
-  skip: [detect-aws-credentials, pylint]
+  skip: [detect-aws-credentials, eslint, hadolint-docker, pylint, shellcheck]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v4.4.0

@@ -316,7 +316,10 @@ jobs:
       - run: pyenv global 3.10.6
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: pre-commit validate-config
-      - run: SKIP=detect-aws-credentials pre-commit run --all-files
+      - run: pre-commit run --all-files eslint
+      - run: pre-commit run --all-files hadolint-docker
+      - run: pre-commit run --all-files pylint
+      - run: pre-commit run --all-files shellcheck
       - run: git diff
   check-integration-test-inits:
     executor: sigopt-lite
@@ -545,15 +548,6 @@ jobs:
       - checkout
       - run: grep flake8 requirements-dev.txt | xargs pip install
       - run: ./tools/lint/python/flake8_print.sh
-  python-pylint:
-    executor: sigopt-python-only
-    resource_class: small
-    parallelism: 8
-    steps:
-      - checkout
-      - attach
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: circleci tests glob "**/*.py" | circleci tests split | _NO_PARSE_ARGS=x xargs ./tools/lint/python/pylint.sh
   python-custom-lint:
     executor: sigopt-python-only
     resource_class: small
