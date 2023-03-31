@@ -24,7 +24,7 @@ commands:
   install-python-libraries:
     steps:
       - run: pip install pipenv
-      - run: pipenv install --dev --python=3.10
+      - run: pipenv install --deploy --dev --python=3.10
   update-docker-cli:
     steps:
       - run: sudo mkdir -p /etc/apt/keyrings
@@ -315,7 +315,7 @@ jobs:
     steps:
       - attach
       - run: pip install pipenv
-      - run: pipenv install --dev --python=3.10
+      - run: pipenv install --deploy --dev --python=3.10
       - run: pipenv run pre-commit validate-config
       - run: pipenv run pre-commit run --all-files eslint
       - run: pipenv run pre-commit run --all-files hadolint-docker
