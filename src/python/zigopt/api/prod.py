@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import logging
+
 from flask import Flask
 
 from zigopt.api.errors import InvalidKeyError, ValidationError
@@ -34,6 +36,8 @@ class ProdApp(Flask):
 
     log_requests(self)
 
+    logging.getLogger("Chris Test").info("About to register error handlers")
+
     self.register_error_handler(ValidationError, handle_validation_errors)
     self.register_error_handler(InvalidKeyError, handle_validation_errors)
 
@@ -42,6 +46,8 @@ class ProdApp(Flask):
 
     self.register_error_handler(ValidationError, handle_validation_errors)
     self.register_error_handler(InvalidKeyError, handle_validation_errors)
+
+    logging.getLogger("Chris Test").info("Registered error handlers %s", self.error_handler_spec)
 
   def make_default_options_response(self):
     return success_response({})
