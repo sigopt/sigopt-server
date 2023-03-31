@@ -585,7 +585,6 @@ jobs:
       - checkout
       - run: grep numpy requirements.txt | xargs pip install
       - run: ./tools/lint/common/eof_lint.sh
->>>>>>> origin/main
   disclaimers-lint:
     executor: sigopt-python-only
     steps:
