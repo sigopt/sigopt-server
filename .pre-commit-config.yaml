@@ -40,6 +40,7 @@ repos:
         additional_dependencies:
           - flake8-print==4.0.0
         entry: ./pp flake8
+        args: [--config=setup.cfg]
   - repo: https://github.com/hadolint/hadolint.git
     rev: "v2.12.1-beta"
     hooks:
