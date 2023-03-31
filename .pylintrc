@@ -1,0 +1,19 @@
+[MAIN]
+ignore=get-pip.py
+ignore-patterns=.*_pb2.py
+reports=n
+extension-pkg-allow-list=lxml.etree
+
+[FORMAT]
+indent-string='  '
+max-line-length=120
+
+[MISCELLANEOUS]
+notes=FIXME,XXX
+
+[TYPECHECK]
+ignored-modules=google.protobuf
+
+[MESSAGES CONTROL]
+disable=abstract-class-instantiated, abstract-method, anomalous-unicode-escape-in-string, broad-except, cell-var-from-loop, duplicate-code, global-statement, invalid-name, locally-disabled, missing-docstring, no-value-for-parameter, pointless-string-statement, redefined-outer-name, superfluous-parens, too-few-public-methods, too-many-ancestors, too-many-arguments, too-many-branches, too-many-instance-attributes, too-many-lines, too-many-locals, too-many-nested-blocks, too-many-public-methods, too-many-return-statements, too-many-statements, unused-argument, unused-wildcard-import, wildcard-import, wrong-import-position, wrong-import-order, no-member, len-as-condition, no-else-raise, no-else-return, useless-super-delegation, arguments-differ, keyword-arg-before-vararg, consider-using-ternary, unsubscriptable-object, raising-format-tuple, invalid-unary-operand-type, ungrouped-imports, useless-object-inheritance, wrong-import-order, import-outside-toplevel, invalid-sequence-index, too-many-boolean-expressions, unsupported-assignment-operation, assignment-from-no-return, unsupported-membership-test, consider-using-with, unspecified-encoding, consider-using-f-string, missing-timeout, use-dict-literal, use-list-literal, unnecessary-lambda-assignment, use-implicit-booleaness-not-comparison, consider-using-generator, redundant-u-string-prefix, no-name-in-module
+enable=missing-final-newline
