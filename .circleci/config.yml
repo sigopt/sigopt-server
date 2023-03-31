@@ -604,7 +604,10 @@ workflows:
   main:
     jobs:
       - checkout-code
-      - pylint
+      - pylint:
+          requires:
+            - checkout-code
+            - compile-protobuf
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
