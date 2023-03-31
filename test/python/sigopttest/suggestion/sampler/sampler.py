@@ -11,6 +11,7 @@ from scipy import stats
 
 from zigopt.experiment.model import Experiment, ExperimentParameterProxy
 from zigopt.experiment.segmenter import ExperimentParameterSegmenter
+from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.math.initialization import get_low_discrepancy_stencil_length_from_experiment
 from zigopt.math.interval import ClosedInterval, LeftOpenInterval, OpenInterval, RightOpenInterval
 from zigopt.observation.model import Observation
@@ -58,6 +59,7 @@ class TestSuggestSampler(object):
       ),
       experiment_parameter_segmenter=segmenter,
       observation_service=Mock(all_data=Mock(return_value=observations)),
+      sc_adapter=SCAdapter(Mock()),
     )
 
   def suggestion_to_observation(self, experiment, suggestion, id_num=None):
