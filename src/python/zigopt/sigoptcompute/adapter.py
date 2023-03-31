@@ -44,6 +44,7 @@ from libsigopt.views.rest.gp_ei_categorical import GpEiCategoricalView
 from libsigopt.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
 from libsigopt.views.rest.gp_next_points_categorical import GpNextPointsCategorical
 from libsigopt.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.views.rest.random_search_next_points import RandomSearchNextPoints
 from libsigopt.views.rest.search_next_points import SearchNextPoints
 from libsigopt.views.rest.spe_next_points import SPENextPoints
 from libsigopt.views.rest.spe_search_next_points import SPESearchNextPoints
