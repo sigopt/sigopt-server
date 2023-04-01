@@ -24,7 +24,6 @@ commands:
   install-python-libraries:
     steps:
       - run: pip install pipenv
-      - run: pyenv global 3.10.6
       - run: pipenv install --deploy --dev --python=3.10
   update-docker-cli:
     steps:
