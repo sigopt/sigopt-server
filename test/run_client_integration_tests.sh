@@ -8,18 +8,19 @@ set -o pipefail
 SIGOPT_PYTHON_GIT_REFERENCE=${1:-'main'}
 echo "sigopt-python: $SIGOPT_PYTHON_GIT_REFERENCE"
 
+export PIPENV_VENV_IN_PROJECT="1"
+PATH="/sigopt-server/.venv/bin:$PATH"
+
 git clone https://github.com/sigopt/sigopt-python.git
 cd sigopt-python
 git fetch --all --tags --prune
 git checkout "$SIGOPT_PYTHON_GIT_REFERENCE"
-pip install .'[dev]'
+pipenv install '.[dev]'
 
-export PIPENV_VENV_IN_PROJECT="1"
 (
   cd ..
   pipenv install --dev --ignore-pipfile
 )
-PATH="/sigopt-server/.venv/bin:$PATH"
 
 pip install .
 
