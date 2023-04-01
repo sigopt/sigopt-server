@@ -28,11 +28,11 @@ class TestValidateExperimentJsonForCreate(object):
     with pytest.raises(InvalidValueError) as e:
       invalid_experiment["name"] = SHORT_NAME
       validate_experiment_json_dict_for_create(invalid_experiment)
-    assert "greater than" in str(e.msg)
+    assert "greater than" in str(e.value)
     with pytest.raises(InvalidValueError) as e:
       invalid_experiment["name"] = LONG_NAME
       validate_experiment_json_dict_for_create(invalid_experiment)
-    assert "less than" in str(e.msg)
+    assert "less than" in str(e.value)
 
   def test_invalid_metric_name(self, valid_experiment):
     invalid_experiment = copy.deepcopy(valid_experiment)

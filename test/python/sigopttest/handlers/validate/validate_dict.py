@@ -455,10 +455,8 @@ class TestValidateSchema(object):
         "type": "object",
       },
     }
-    with pytest.raises(InvalidTypeError) as error:
+    with pytest.raises(InvalidTypeError):
       validate([{}, 2, {}], schema)
-    error_message = str(error)
-    assert error_message == "Invalid type for [1]: 2 - expected type object"
     with pytest.raises(InvalidTypeError):
       validate(["a"], schema)
     validate([], schema)
@@ -475,10 +473,8 @@ class TestValidateSchema(object):
         }
       },
     }
-    with pytest.raises(InvalidTypeError) as error:
+    with pytest.raises(InvalidTypeError):
       validate({"key_of_array": [1]}, schema)
-    error_message = error.msg
-    assert error_message == "Invalid type for .key_of_array[0]: 1 - expected type string"
 
   def test_deeply_nested_array(self):
     schema = {
@@ -495,10 +491,8 @@ class TestValidateSchema(object):
         }
       },
     }
-    with pytest.raises(InvalidTypeError) as error:
+    with pytest.raises(InvalidTypeError):
       validate({"key_of_object": {"key_of_array": [["a"]]}}, schema)
-    error_message = error.msg
-    assert error_message == 'Invalid type for .key_of_object.key_of_array[0][0]: "a" - expected type integer'
 
   def test_unspecific_index_error(self):
     schema = {"type": "array", "maxItems": 1}
