@@ -24,6 +24,7 @@ commands:
   install-python-libraries:
     steps:
       - run: pip install pipenv
+      - run: pyenv global 3.10.6
       - run: pipenv install --deploy --dev --python=3.10
   update-docker-cli:
     steps:
@@ -314,6 +315,7 @@ jobs:
     resource_class: medium
     steps:
       - attach
+      - run: pyenv global 3.10.6
       - run: pip install pipenv
       - run: pipenv install --deploy --dev --python=3.10
       - run: pipenv run pre-commit validate-config
