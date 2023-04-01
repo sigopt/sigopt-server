@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 
+from zigopt.api.errors import InvalidValueError
 from zigopt.conditionals.from_json import set_conditional_from_json, set_experiment_conditionals_list_from_json
-from zigopt.net.errors import BadParamError, InvalidValueError
+from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional, ExperimentMeta
 
 

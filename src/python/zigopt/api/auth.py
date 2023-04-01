@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.api.errors import MissingParamError
 from zigopt.api.ratelimit import api_token_rate_limit, login_rate_limit, password_reset_rate_limit
 from zigopt.api.request import validate_api_input_string
 from zigopt.authentication.login import authenticate_login, authenticate_password_reset_code
@@ -15,7 +16,7 @@ from zigopt.authorization.signup_link import SignupLinkAuthorization
 from zigopt.authorization.user import UserAuthorization, UserLoginAuthorization
 from zigopt.handlers.validate.base import validate_email
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
-from zigopt.net.errors import BadParamError, ForbiddenError, MissingParamError, UnauthorizedError
+from zigopt.net.errors import BadParamError, ForbiddenError, UnauthorizedError
 from zigopt.net.responses import TokenStatus
 
 

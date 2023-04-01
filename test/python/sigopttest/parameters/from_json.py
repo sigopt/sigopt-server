@@ -4,7 +4,7 @@
 import pytest
 from mock import Mock
 
-from zigopt.net.errors import BadParamError, InvalidKeyError, InvalidTypeError, InvalidValueError
+from zigopt.api.errors import InvalidKeyError, InvalidTypeError, InvalidValueError, SigoptValidationError
 from zigopt.parameters.from_json import (
   set_categorical_values_from_json,
   set_parameter_conditions_from_json,
@@ -96,7 +96,7 @@ class TestSetConditionsFromJson(object):
     ],
   )
   def test_condition_name_with_no_value(self, parameter, invalid_parameter_json, conditionals_map):
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       set_parameter_conditions_from_json(parameter, invalid_parameter_json, conditionals_map)
 
 
@@ -157,7 +157,7 @@ class TestSetCategoricalValuesFromJson(object):
     ],
   )
   def test_too_few_categorical_values(self, categorical_parameter, invalid_parameter_json):
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       set_categorical_values_from_json(categorical_parameter, invalid_parameter_json)
 
   @pytest.mark.parametrize(
@@ -222,7 +222,7 @@ class TestSetPriorFromJson(object):
     assert double_parameter.prior.normal_prior.scale == 1
 
     parameter_json = dict(prior=dict(name=ParameterPriorNames.NORMAL, mean=0, scale=-1))
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       set_prior_from_json(double_parameter, parameter_json)
 
   def test_set_beta_prior_from_json(self, double_parameter):
@@ -232,5 +232,5 @@ class TestSetPriorFromJson(object):
     assert double_parameter.prior.beta_prior.shape_b == 2
 
     parameter_json = dict(prior=dict(name=ParameterPriorNames.BETA, shape_a=0, shape_b=2))
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       set_prior_from_json(double_parameter, parameter_json)

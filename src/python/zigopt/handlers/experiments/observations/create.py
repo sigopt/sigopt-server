@@ -4,6 +4,7 @@
 """Handler and validation for client-reported experiment observations."""
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
+from zigopt.api.errors import InvalidKeyError
 from zigopt.common.sigopt_datetime import current_datetime, datetime_to_seconds
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.experiments.base import ExperimentHandler
@@ -11,7 +12,7 @@ from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.handlers.validate.observation import validate_observation_json_dict_for_create
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.json.builder import ObservationJsonBuilder, PaginationJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError, InvalidKeyError
+from zigopt.net.errors import BadParamError, ForbiddenError
 from zigopt.observation.data import create_observation_data
 from zigopt.observation.from_json import set_observation_data_assignments_task_from_json
 from zigopt.observation.model import Observation

@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.api.errors import InvalidKeyError, InvalidValueError
 from zigopt.experiment.constant import (
   ALL_PARAMETER_PRIOR_NAMES,
   EXPERIMENT_PARAMETER_NAME_TO_TYPE,
@@ -12,7 +13,7 @@ from zigopt.experiment.model import ExperimentMetaProxy, ExperimentParameterProx
 from zigopt.handlers.validate.assignments import get_assignment
 from zigopt.handlers.validate.experiment import validate_categorical_value, validate_parameter_name
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
-from zigopt.net.errors import BadParamError, InvalidKeyError, InvalidValueError
+from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_CATEGORICAL,
   PARAMETER_DOUBLE,

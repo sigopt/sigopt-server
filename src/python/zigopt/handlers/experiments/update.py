@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
+from zigopt.api.errors import InvalidValueError, MissingJsonKeyError
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.experiment.constant import (
   EXPERIMENT_PARAMETER_TYPE_TO_NAME,
@@ -24,7 +25,7 @@ from zigopt.handlers.validate.validate_dict import (
   get_with_validation,
   key_present,
 )
-from zigopt.net.errors import BadParamError, InvalidValueError, MissingJsonKeyError, NotFoundError
+from zigopt.net.errors import BadParamError, NotFoundError
 from zigopt.parameters.from_json import (
   set_bounds_from_json,
   set_categorical_value_from_json,

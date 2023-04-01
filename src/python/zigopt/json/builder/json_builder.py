@@ -4,6 +4,7 @@
 from typing import Any, Callable, Optional, Sequence
 
 from zigopt.common import *
+from zigopt.api.errors import InvalidTypeError  # type: ignore
 from zigopt.common.lists import filter_keys, map_dict
 from zigopt.handlers.validate.validate_dict import (
   IOValidatorInterface,
@@ -11,7 +12,6 @@ from zigopt.handlers.validate.validate_dict import (
   ValidationType,
   validate_type,
 )
-from zigopt.net.errors import InvalidTypeError  # type: ignore
 
 
 class JsonBuilderError(Exception):

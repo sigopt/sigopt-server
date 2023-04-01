@@ -8,9 +8,10 @@ import uuid
 from flask import Request as RequestBase
 
 from zigopt.common import *
+from zigopt.api.errors import MissingParamError
 from zigopt.api.paging import deserialize_paging_marker
 from zigopt.handlers.validate.validate_dict import ValidationType, validate_type
-from zigopt.net.errors import BadParamError, MissingParamError, RequestError
+from zigopt.net.errors import BadParamError, RequestError
 from zigopt.pagination.paging import PagingRequest, SortRequest
 
 
