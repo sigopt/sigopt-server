@@ -15,7 +15,7 @@ git clone https://github.com/sigopt/sigopt-python.git
 cd sigopt-python
 git fetch --all --tags --prune
 git checkout "$SIGOPT_PYTHON_GIT_REFERENCE"
-pipenv install '.[dev]'
+pipenv install './[dev]'
 
 (
   cd ..
