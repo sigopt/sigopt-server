@@ -19,7 +19,6 @@ from zigopt.api.errors import (
   InvalidTypeError,
   InvalidValueError,
   MissingJsonKeyError,
-  RequestError,
   SigoptValidationError,
 )
 from zigopt.common.numbers import is_integer, is_integer_valued_number, is_number
@@ -587,7 +586,7 @@ def get_path_string(path: Sequence[int | str]) -> str:
   return "".join(strings)
 
 
-def process_error(e: ValidationError) -> RequestError:
+def process_error(e: ValidationError) -> SigoptValidationError | NotImplementedError:
   if e.validator == "additionalProperties" and e.validator_value is False:
     unknown_keys = re.findall(r"u?'(\w+)',?", e.message)
     unknown_keys_str = ", ".join([f"`{p}`" for p in unknown_keys])
