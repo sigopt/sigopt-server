@@ -10,6 +10,9 @@ class SigoptValidationError(Exception):
     super().__init__()
     self.msg = msg
 
+  def __str__(self):
+    return self.msg
+
 
 class MissingParamError(SigoptValidationError):
   def __init__(self, param, msg=None):
