@@ -8,20 +8,11 @@ set -o pipefail
 SIGOPT_PYTHON_GIT_REFERENCE=${1:-'main'}
 echo "sigopt-python: $SIGOPT_PYTHON_GIT_REFERENCE"
 
-export PIPENV_VENV_IN_PROJECT="1"
-PATH="/sigopt-server/.venv/bin:$PATH"
-
 git clone https://github.com/sigopt/sigopt-python.git
 cd sigopt-python
 git fetch --all --tags --prune
 git checkout "$SIGOPT_PYTHON_GIT_REFERENCE"
-
-(
-  cd ..
-  pipenv install --quiet './sigopt-python[dev]'
-  pipenv install --quiet --dev --ignore-pipfile
-  pipenv install --quiet './sigopt-python'
-)
+pip install '.[dev]'
 
 apt-get update && apt-get -y install default-jre
 hyperopt-mongo-worker --mongo=mongodb:27017/foo_db --poll-interval=0.1 --max-consecutive-failures=100000 &>/dev/null &
