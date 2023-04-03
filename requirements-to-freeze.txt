@@ -14,7 +14,7 @@ git+http://github.com/sigopt/libsigopt@main
 greenlet==2.0.1
 gunicorn==19.10.0
 hiredis==1.0.0  # Grants a performance improvement to redis
-jsonschema==3.0.1
+jsonschema==4.17.3
 mako==1.2.2
 numpy==1.22.4
 pg8000==1.15.2

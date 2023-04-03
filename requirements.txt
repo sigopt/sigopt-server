@@ -16,7 +16,7 @@ itsdangerous==2.1.2
 Jinja2==3.1.2
 jmespath==1.0.1
 joblib==1.2.0
-jsonschema==3.0.1
+jsonschema==4.17.3
 libsigopt @ git+http://github.com/sigopt/libsigopt@dfa027b5a769689390972563a6fd42bf0afdab6c
 Mako==1.2.2
 MarkupSafe==2.1.2
