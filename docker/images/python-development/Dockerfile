@@ -61,7 +61,6 @@ RUN set -ex \
 ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
-  ; python -c 'import lxml, numpy' \
   ; python -c 'import inotify, lxml, numpy' \
   ; :
 
