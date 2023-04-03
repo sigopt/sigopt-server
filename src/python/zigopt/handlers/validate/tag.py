@@ -4,8 +4,8 @@
 import copy
 from typing import Any, Callable
 
+from zigopt.api.validate_schema import validate
 from zigopt.handlers.validate.color import color_hex_schema
-from zigopt.handlers.validate.validate_dict import validate
 from zigopt.tag.model import Tag  # type: ignore
 
 
