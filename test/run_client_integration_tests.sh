@@ -18,9 +18,9 @@ git checkout "$SIGOPT_PYTHON_GIT_REFERENCE"
 
 (
   cd ..
-  pipenv install './sigopt-python[dev]'
-  pipenv install --dev --ignore-pipfile
-  pipenv install './sigopt-python'
+  pipenv install --quiet './sigopt-python[dev]'
+  pipenv install --quiet --dev --ignore-pipfile
+  pipenv install --quiet './sigopt-python'
 )
 
 apt-get update && apt-get -y install default-jre
