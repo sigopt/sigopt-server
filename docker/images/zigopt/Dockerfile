@@ -48,10 +48,15 @@ RUN set -ex \
 
 WORKDIR /sigopt-server
 
-COPY requirements.txt /sigopt-server/requirements.txt
+COPY Pipfile.lock /sigopt-server/Pipfile.lock
+ENV PIPENV_VENV_IN_PROJECT "1"
 RUN set -ex \
-  ; pip install --no-cache-dir -r requirements.txt \
+  ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
+  ; pipenv install --quiet --ignore-pipfile \
+  ; pipenv --clear \
   ; :
+
+ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
 COPY --from=protobuf /sigopt-server/src/python/zigopt/ /sigopt-server/src/python/zigopt/
