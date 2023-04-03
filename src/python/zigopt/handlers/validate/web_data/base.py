@@ -5,7 +5,8 @@ from collections import defaultdict
 from copy import deepcopy
 
 from zigopt.common import *
-from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation, validate
+from zigopt.api.validate_schema import validate
+from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.handlers.validate.web_data.ag_run_view import ag_run_view_schema
 from zigopt.handlers.validate.web_data.run_view import run_view_schema
 from zigopt.net.errors import BadParamError
