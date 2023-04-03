@@ -32,11 +32,13 @@ COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.j
 RUN ./scripts/compile/generate_routes.sh config/defaults.json
 
 
-FROM ubuntu:focal-20221130
+FROM ubuntu:jammy-20230308 AS test-runner-base
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND noninteractive
+
+ENV LANG en_us.UTF-8
 
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
@@ -44,38 +46,24 @@ RUN set -ex \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
+ARG PYTHON_MAJOR
+ARG PYTHON_MINOR
 RUN : \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      build-essential=12.* \
+      build-essential=* \
       ca-certificates=* \
       curl=7.* \
-      git=1:2.* \
-      libbz2-dev=1.0.* \
-      libc-bin=2.* \
-      libc6=2.* \
-      libexpat1-dev=2.2.* \
-      libffi-dev=3.* \
-      libgdbm-dev=1.18.* \
-      libgomp1=10.* \
-      liblzma-dev=5.2.* \
-      libncursesw5-dev=6.* \
-      libreadline-dev=8.* \
-      libsqlite3-dev=3.* \
-      libssl-dev=1.1.* \
-      libssl1.1=1.1.* \
-      libxml2=2.9.* \
-      lxde=10  \
-      make=4.2.* \
-      netbase=6.* \
-      pkg-config=0.29* \
-      sqlite3=3.* \
+      git=* \
+      lxde=* \
+      pkg-config=* \
+      python-is-python3=* \
+      python3-dev="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
+      python3-minimal="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
+      python3-pip=* \
       unzip=6.* \
-      uuid-dev=2.* \
-      x11vnc=0.9.* \
-      xvfb=2:1.20.* \
-      xz-utils=5.2.* \
-      zlib1g-dev=1:1.2.* \
+      x11vnc=* \
+      xvfb=* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
@@ -84,22 +72,6 @@ ARG PROTOBUF_VERSION
 COPY tools/protobuf/install.sh /install_protobuf.sh
 RUN set -ex \
   ; /install_protobuf.sh "$PROTOBUF_VERSION" \
-  ; :
-
-ARG PYTHON_MAJOR
-ARG PYTHON_MINOR
-ARG PYTHON_PATCH
-ENV PYTHON_VERSION "${PYTHON_MAJOR}.${PYTHON_MINOR}.${PYTHON_PATCH}"
-ENV PYTHON_TAR_URL "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
-RUN : \
-  ; curl -fSsL "$PYTHON_TAR_URL" | tar -xzf - --strip-components=1 \
-  ; ./configure --with-ensurepip=install >/dev/null \
-  ; make CFLAGS="-w" --silent --jobs=4 install >/dev/null \
-  ; ln -s python3 /usr/local/bin/python \
-  ; ln -s pip3 /usr/local/bin/pip \
-  ; ldconfig \
-  ; python --version \
-  ; pip --version \
   ; :
 
 WORKDIR /sigopt-server
@@ -178,6 +150,9 @@ RUN : \
   ; install /tmp/chromedriver/chromedriver /usr/local/bin/chromedriver \
   ; rm -r /tmp/chromedriver \
   ; :
+
+
+FROM test-runner-base
 
 COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /sigopt-server/artifacts/web/routes/
 
