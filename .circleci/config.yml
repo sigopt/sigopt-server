@@ -146,7 +146,7 @@ commands:
           ./ci/compose_test.sh "<< parameters.test_path >>" \
             --count=<< parameters.count >> \
             $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" \
-              | grep -l 'def test_' | circleci tests split --split-by=timings) \
+              | xargs grep -l 'def test_' | circleci tests split --split-by=timings) \
             << parameters.extra_test_args >>
     parameters:
       count:
