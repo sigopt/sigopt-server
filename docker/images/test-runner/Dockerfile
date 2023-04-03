@@ -38,13 +38,13 @@ SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ENV LANG en_us.UTF-8
-
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get upgrade -yqq >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
+
+ENV LANG C
 
 ARG PYTHON_MAJOR
 ARG PYTHON_MINOR
