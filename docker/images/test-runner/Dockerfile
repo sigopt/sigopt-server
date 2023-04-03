@@ -44,10 +44,9 @@ RUN set -ex \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
-ENV LANG en_us.UTF-8
-RUN set -ex \
-  ; locale-gen \
-  ; :
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 ARG PYTHON_MAJOR
 ARG PYTHON_MINOR
