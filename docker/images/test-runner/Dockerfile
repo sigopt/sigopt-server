@@ -52,6 +52,7 @@ RUN : \
       ca-certificates=* \
       curl=7.* \
       python3-minimal="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
+      python3-pip=* \
       unzip=6.* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
