@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # Copyright © 2023 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
 set -e
-set -o pipefail
+# no_pipefail
 
 export NODE_DOMAIN=server
 export NODE_OPTIONS="--max-old-space-size=2048"

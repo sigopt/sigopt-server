@@ -11,7 +11,7 @@ required_directives = [
   ("set -e", ("set +e", "# no_set_e")),
   ("set -o pipefail", ("set +o pipefail", "# no_pipefail")),
   # TODO(SN-1144): #! line needs to be on first line, but this isn't enforced as part of the linter
-  ("#!/usr/bin/env bash", ()),
+  ("#!/usr/bin/env bash", ("#!/usr/bin/env sh",)),
 ]
 
 
