@@ -162,7 +162,7 @@ commands:
     steps:
       - checkout
       - docker-test-setup
-      - run: ./ci/compose.sh build --progress=plain web-server
+      - run: ./ci/compose.sh build --progress=plain test-runner web-server
       - integration-test-setup
       - start-web-server
       - run: mkdir -p screenshots/failure
@@ -188,7 +188,7 @@ commands:
     steps:
       - checkout
       - docker-test-setup
-      - run: ./ci/compose.sh build --progress=plain web-server
+      - run: ./ci/compose.sh build --progress=plain test-runner web-server
       - integration-test-setup
       - start-web-server
       - run-parallel-integration-tests:
@@ -425,6 +425,7 @@ jobs:
       - install-node
   browser-integration:
     executor: sigopt-browser-integration
+    parallelism: 2
     steps:
       - run-browser-test:
           test_path: ""
@@ -469,7 +470,7 @@ jobs:
       - validate-openapi-docs
   v1-integration:
     executor: sigopt-integration
-    parallelism: 2
+    parallelism: 3
     steps:
       - run-integration-test:
           test_path: /v1
