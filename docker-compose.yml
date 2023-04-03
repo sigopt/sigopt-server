@@ -350,7 +350,7 @@ services:
       - ALLOW_SLOW=1
     volumes:
       - *rootca-volume
-      - .:/sigopt-server:ro
+      - .:/sigopt-server
       - sigopt-python:/sigopt-server/sigopt-python
 
   mongodb:
