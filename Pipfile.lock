@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e3e0d1bfc3368d3e128dd0a94e7d9657afe2899a6b6ed8f0cf52c5c597ff09bb"
+            "sha256": "00f2e9eba4df48dcaf96a30e7c576c82f966ef5ca1af272dd3e77a3d573e3bea"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -384,7 +384,7 @@
         },
         "libsigopt": {
             "git": "http://github.com/sigopt/libsigopt",
-            "ref": "4cebba6a4a476c983d029b9aa1d373ca71057a04"
+            "ref": "c5c9d0d912718f36e20bbe9960aad802950e87c9"
         },
         "mako": {
             "hashes": [
