@@ -80,7 +80,12 @@ export default ({
     externals: [
       ...serverExternals,
       nodeExternals({
-        allowlist: [/\.(css|less)$/u, "got", /@sindresorhus\/.*/u],
+        allowlist: [
+          /\.(css|less)$/u,
+          "got",
+          /@sindresorhus\/.*/u,
+          "p-cancelable",
+        ],
       }),
     ],
     plugins: _.filter([
