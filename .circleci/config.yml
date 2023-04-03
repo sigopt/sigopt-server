@@ -142,7 +142,12 @@ commands:
         type: string
   run-parallel-integration-tests:
     steps:
-      - run: ./ci/compose_test.sh "<< parameters.test_path >>" --count=<< parameters.count >> $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" | circleci tests split --split-by=timings) << parameters.extra_test_args >>
+      - run: |
+          ./ci/compose_test.sh "<< parameters.test_path >>" \
+            --count=<< parameters.count >> \
+            $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" \
+              | xargs grep -l 'def test_' | circleci tests split --split-by=timings) \
+            << parameters.extra_test_args >>
     parameters:
       count:
         type: integer
@@ -162,7 +167,7 @@ commands:
     steps:
       - checkout
       - docker-test-setup
-      - run: ./ci/compose.sh build --progress=plain web-server
+      - run: ./ci/compose.sh build --progress=plain test-runner web-server
       - integration-test-setup
       - start-web-server
       - run: mkdir -p screenshots/failure
@@ -188,7 +193,7 @@ commands:
     steps:
       - checkout
       - docker-test-setup
-      - run: ./ci/compose.sh build --progress=plain web-server
+      - run: ./ci/compose.sh build --progress=plain test-runner web-server
       - integration-test-setup
       - start-web-server
       - run-parallel-integration-tests:
@@ -425,6 +430,7 @@ jobs:
       - install-node
   browser-integration:
     executor: sigopt-browser-integration
+    parallelism: 2
     steps:
       - run-browser-test:
           test_path: ""
@@ -469,7 +475,7 @@ jobs:
       - validate-openapi-docs
   v1-integration:
     executor: sigopt-integration
-    parallelism: 2
+    parallelism: 3
     steps:
       - run-integration-test:
           test_path: /v1
