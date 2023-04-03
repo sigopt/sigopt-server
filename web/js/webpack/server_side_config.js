@@ -80,7 +80,7 @@ export default ({
     externals: [
       ...serverExternals,
       nodeExternals({
-        allowlist: [/\.(css|less)$/u, "got"],
+        allowlist: [/\.(css|less)$/u, "got", /@sindresorhus\/.*/u],
       }),
     ],
     plugins: _.filter([
