@@ -7,8 +7,8 @@ from typing import Any, Optional
 from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-module
 
 from zigopt.common import *
+from zigopt.api.validate_schema import validate
 from zigopt.experiment.model import Experiment  # type: ignore
-from zigopt.handlers.validate.validate_dict import validate
 from zigopt.net.errors import BadParamError  # type: ignore
 from zigopt.protobuf.dict import dict_to_protobuf_struct, is_protobuf_struct, protobuf_struct_to_dict  # type: ignore
 

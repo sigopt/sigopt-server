@@ -5,7 +5,7 @@ import copy
 from typing import Any
 
 from zigopt.common import *
-from zigopt.handlers.validate.validate_dict import validate
+from zigopt.api.validate_schema import validate
 from zigopt.handlers.validate.values import base_values_schema
 
 

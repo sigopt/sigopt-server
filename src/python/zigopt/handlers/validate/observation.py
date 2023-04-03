@@ -7,12 +7,12 @@ from typing import Any
 
 from zigopt.common import *
 from zigopt.api.errors import MissingJsonKeyError
+from zigopt.api.validate_schema import validate
 from zigopt.experiment.model import Experiment  # type: ignore
 from zigopt.handlers.validate.validate_dict import (
   ValidationType,
   get_opt_with_validation,
   key_present,
-  validate,
   validate_mutually_exclusive_properties,
 )
 from zigopt.handlers.validate.values import base_values_schema
