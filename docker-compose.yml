@@ -350,10 +350,7 @@ services:
       - ALLOW_SLOW=1
     volumes:
       - *rootca-volume
-      - *sigopt-config-volume
-      - ./Pipfile.lock:/sigopt-server/Pipfile.lock:ro
-      - ./test:/sigopt-server/test:ro
-      - ./pytest.ini:/sigopt-server/pytest.ini:ro
+      - .:/sigopt-server:ro
 
   mongodb:
     image: "mongo:${MONGODB_VERSION}"
