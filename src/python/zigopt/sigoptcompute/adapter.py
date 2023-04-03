@@ -247,11 +247,13 @@ class SCAdapter(Service):
     view_input = {
       "domain_info": self.generate_domain_info(experiment, only_active_categorical_values=True),
       "num_to_sample": num_to_suggest,
+      "task_options": [t.cost for t in experiment.tasks],
       "tag": self.supplement_tag_with_experiment_id(tag, experiment),
     }
     response = self.call_sigoptcompute(RandomSearchNextPoints, view_input)
     suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
-    return self._make_suggestion_datas(experiment, suggested_points)
+    task_costs = (float(cost) for cost in response["task_costs"]) if experiment.is_multitask else None
+    return self._make_suggestion_datas(experiment, suggested_points, task_costs)
 
   def gp_ei_categorical(
     self,
