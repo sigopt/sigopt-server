@@ -32,7 +32,7 @@ COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.j
 RUN ./scripts/compile/generate_routes.sh config/defaults.json
 
 
-FROM ubuntu:jammy-20230308
+FROM ubuntu:jammy-20230308 AS test-runner-base
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
@@ -140,6 +140,9 @@ RUN : \
   ; install /tmp/chromedriver/chromedriver /usr/local/bin/chromedriver \
   ; rm -r /tmp/chromedriver \
   ; :
+
+
+FROM test-runner-base
 
 COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /sigopt-server/artifacts/web/routes/
 
