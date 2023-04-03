@@ -77,7 +77,12 @@ export default ({
     },
     devtool: "eval-cheap-module-source-map",
     target: `node${nodeVersion}`,
-    externals: [...serverExternals, nodeExternals()],
+    externals: [
+      ...serverExternals,
+      nodeExternals({
+        allowlist: [/\.(css|less)$/u],
+      }),
+    ],
     plugins: _.filter([
       development ? new webpack.HotModuleReplacementPlugin() : null,
       new webpack.DefinePlugin({
