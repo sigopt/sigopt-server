@@ -5,6 +5,7 @@
  */
 
 import _ from "underscore";
+import nodeExternals from "webpack-node-externals";
 import path from "path";
 import webpack from "webpack";
 
@@ -76,7 +77,7 @@ export default ({
     },
     devtool: "eval-cheap-module-source-map",
     target: `node${nodeVersion}`,
-    externals: serverExternals,
+    externals: [...serverExternals, nodeExternals()],
     plugins: _.filter([
       development ? new webpack.HotModuleReplacementPlugin() : null,
       new webpack.DefinePlugin({
