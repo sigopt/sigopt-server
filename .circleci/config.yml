@@ -142,7 +142,12 @@ commands:
         type: string
   run-parallel-integration-tests:
     steps:
-      - run: ./ci/compose_test.sh "<< parameters.test_path >>" --count=<< parameters.count >> $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" | circleci tests split --split-by=timings) << parameters.extra_test_args >>
+      - run: |
+          ./ci/compose_test.sh "<< parameters.test_path >>" \
+            --count=<< parameters.count >> \
+            $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" \
+              | grep -Ev '/__init__.py$' | circleci tests split --split-by=timings) \
+            << parameters.extra_test_args >>
     parameters:
       count:
         type: integer
