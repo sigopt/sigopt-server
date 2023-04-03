@@ -51,6 +51,7 @@ RUN : \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       ca-certificates=* \
       curl=7.* \
+      git=* \
       python3-dev="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
       python3-minimal="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
       python3-pip=* \
