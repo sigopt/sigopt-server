@@ -4,13 +4,13 @@
 import pytest
 
 from zigopt.api.errors import InvalidTypeError, InvalidValueError, MissingJsonKeyError, SigoptValidationError
+from zigopt.api.validate_schema import validate
 from zigopt.handlers.validate.validate_dict import (
   Base64InputValidator,
   Base64OutputValidator,
   ValidationType,
   get_with_validation,
   key_present,
-  validate,
   validate_mutually_exclusive_properties,
   validate_type,
 )
