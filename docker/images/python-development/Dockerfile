@@ -31,60 +31,37 @@ RUN set -ex \
   ; /install_protobuf.sh "$PROTOBUF_VERSION" \
   ; :
 
-RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      libxml2=2.9.* \
-      >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
 WORKDIR /sigopt-server
 
-COPY requirements.txt /sigopt-server/requirements.txt
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       gcc=4:8.3.* \
+      git=1:2.20.* \
       libc6-dev=2.* \
       libssl-dev=1.1.* \
-      >/dev/null \
-  ; apt-mark auto gcc libc6-dev libssl-dev \
-  ; pip install --no-cache-dir --upgrade \
-      -r requirements.txt \
-      cryptography \
-  ; apt-get autoremove -yqq >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
-RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      make=4.2.* \
-      libxml2=2.9.* \
-      sqlite3=3.27.* \
-      git=1:2.20.* \
-      >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
-COPY requirements-dev.txt /sigopt-server/requirements-dev.txt
-COPY requirements-linux.txt /sigopt-server/requirements-linux.txt
-RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      gcc=4:8.3.* \
       libxml2-dev=2.9.* \
+      libxml2=2.9.* \
+      make=4.2.* \
       pkg-config=0.29-* \
+      sqlite3=3.27.* \
       >/dev/null \
-  ; apt-mark auto gcc libxml2-dev pkg-config \
-  ; pip install --no-cache-dir --upgrade -r requirements-dev.txt -r requirements-linux.txt \
-  ; apt-get autoremove -yqq >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
+COPY Pipfile.lock /sigopt-server/Pipfile.lock
+ENV PIPENV_VENV_IN_PROJECT "1"
+
 RUN set -ex \
-  ; python -c 'import lxml' \
+  ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
+  ; pipenv install --quiet --dev --ignore-pipfile \
+  ; pipenv --clear \
+  ; :
+
+ENV PATH "/sigopt-server/.venv/bin:$PATH"
+
+RUN set -ex \
+  ; python -c 'import inotify, lxml, numpy' \
   ; :
 
 COPY docker/images/python-development/bin /usr/local/bin

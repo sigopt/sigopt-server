@@ -104,8 +104,8 @@ RUN : \
 
 WORKDIR /sigopt-server
 
-COPY requirements.txt /sigopt-server/requirements.txt
-COPY requirements-dev.txt /sigopt-server/requirements-dev.txt
+COPY Pipfile.lock /sigopt-server/Pipfile.lock
+ENV PIPENV_VENV_IN_PROJECT "1"
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
@@ -113,10 +113,14 @@ RUN set -ex \
       libxml2-dev=2.9.* \
       >/dev/null \
   ; apt-mark auto build-essential libxml2-dev libxmlsec1-dev \
-  ; pip install --no-cache-dir --upgrade -r requirements.txt -r requirements-dev.txt \
+  ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
+  ; pipenv install --quiet --dev --ignore-pipfile \
+  ; pipenv --clear \
   ; apt-get autoremove -yqq \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
+
+ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
   ; python -c 'import lxml' \

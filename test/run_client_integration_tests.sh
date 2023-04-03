@@ -12,14 +12,8 @@ git clone https://github.com/sigopt/sigopt-python.git
 cd sigopt-python
 git fetch --all --tags --prune
 git checkout "$SIGOPT_PYTHON_GIT_REFERENCE"
-pip install .'[dev]'
-
-(
-  cd ..
-  pip install -r requirements-dev.txt
-)
-
-pip install .
+pip install '.[dev]'
+touch pytest.ini
 
 apt-get update && apt-get -y install default-jre
 hyperopt-mongo-worker --mongo=mongodb:27017/foo_db --poll-interval=0.1 --max-consecutive-failures=100000 &>/dev/null &

@@ -350,10 +350,8 @@ services:
       - ALLOW_SLOW=1
     volumes:
       - *rootca-volume
-      - *sigopt-config-volume
-      - ./requirements-dev.txt:/sigopt-server/requirements-dev.txt:ro
-      - ./test:/sigopt-server/test:ro
-      - ./pytest.ini:/sigopt-server/pytest.ini:ro
+      - .:/sigopt-server
+      - sigopt-python:/sigopt-server/sigopt-python
 
   mongodb:
     image: "mongo:${MONGODB_VERSION}"
@@ -366,3 +364,4 @@ volumes:
   pg-data: {}
   pg-sock: {}
   redis-run: {}
+  sigopt-python: {}
