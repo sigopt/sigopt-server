@@ -18,7 +18,7 @@ jmespath==1.0.1
 joblib==1.2.0
 jsonschema==3.0.1
 libsigopt @ git+http://github.com/sigopt/libsigopt@dfa027b5a769689390972563a6fd42bf0afdab6c
-Mako==1.2.2
+Mako==1.2.4
 MarkupSafe==2.1.2
 numpy==1.22.4
 pg8000==1.15.2

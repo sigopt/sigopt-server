@@ -15,7 +15,7 @@ greenlet==2.0.1
 gunicorn==19.10.0
 hiredis==1.0.0  # Grants a performance improvement to redis
 jsonschema==3.0.1
-mako==1.2.2
+mako==1.2.4
 numpy==1.22.4
 pg8000==1.15.2
 protobuf==3.20.2
