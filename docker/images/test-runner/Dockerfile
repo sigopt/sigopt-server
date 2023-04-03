@@ -52,6 +52,7 @@ RUN : \
       ca-certificates=* \
       curl=7.* \
       git=* \
+      pkg-config=* \
       python3-dev="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
       python3-minimal="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
       python3-pip=* \
