@@ -28,6 +28,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Prior,
 )
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
+from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.sampler.categorical import CategoricalOnlySampler
 from zigopt.suggestion.sampler.grid import GridSampler
 from zigopt.suggestion.sampler.lhc import LatinHypercubeSampler
@@ -58,6 +59,7 @@ class TestSuggestSampler(object):
       ),
       experiment_parameter_segmenter=segmenter,
       observation_service=Mock(all_data=Mock(return_value=observations)),
+      sc_adapter=SCAdapter(Mock()),
     )
 
   def suggestion_to_observation(self, experiment, suggestion, id_num=None):

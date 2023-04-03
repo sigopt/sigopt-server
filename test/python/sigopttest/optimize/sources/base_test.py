@@ -27,7 +27,10 @@ from sigopttest.base.utils import partial_opt_args
 class UnitTestBase(object):
   @pytest.fixture
   def services(self):
-    return mock.Mock(config_broker=ConfigBroker.from_configs({}))
+    return mock.Mock(
+      config_broker=ConfigBroker.from_configs({}),
+      sc_adapter=SCAdapter(mock.Mock()),
+    )
 
   @pytest.fixture
   def experiment(self):

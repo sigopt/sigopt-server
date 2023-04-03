@@ -40,13 +40,14 @@ from libsigopt.aux.constant import (
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
-from libsigopt.compute.views.rest.gp_ei_categorical import GpEiCategoricalView
-from libsigopt.compute.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
-from libsigopt.compute.views.rest.gp_next_points_categorical import GpNextPointsCategorical
-from libsigopt.compute.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
-from libsigopt.compute.views.rest.search_next_points import SearchNextPoints
-from libsigopt.compute.views.rest.spe_next_points import SPENextPoints
-from libsigopt.compute.views.rest.spe_search_next_points import SPESearchNextPoints
+from libsigopt.views.rest.gp_ei_categorical import GpEiCategoricalView
+from libsigopt.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
+from libsigopt.views.rest.gp_next_points_categorical import GpNextPointsCategorical
+from libsigopt.views.rest.multisolution_best_assignments import MultisolutionBestAssignments
+from libsigopt.views.rest.random_search_next_points import RandomSearchNextPoints
+from libsigopt.views.rest.search_next_points import SearchNextPoints
+from libsigopt.views.rest.spe_next_points import SPENextPoints
+from libsigopt.views.rest.spe_search_next_points import SPESearchNextPoints
 
 
 #: Maximum ``num_to_sample`` (= ``q``) to request from libsigopt.compute when using the CL-max heuristic.
@@ -236,6 +237,23 @@ class SCAdapter(Service):
     response = self.call_sigoptcompute(MultisolutionBestAssignments, view_input)
     best_indices = [int(i) for i in response["best_indices"] if i is not None]
     return best_indices
+
+  def random_search_next_points(
+    self,
+    experiment,
+    num_to_suggest,
+    tag=None,
+  ):
+    view_input = {
+      "domain_info": self.generate_domain_info(experiment, only_active_categorical_values=True),
+      "num_to_sample": num_to_suggest,
+      "task_options": [t.cost for t in experiment.tasks],
+      "tag": self.supplement_tag_with_experiment_id(tag, experiment),
+    }
+    response = self.call_sigoptcompute(RandomSearchNextPoints, view_input)
+    suggested_points = [[float(coord) for coord in point] for point in response["points_to_sample"]]
+    task_costs = (float(cost) for cost in response["task_costs"]) if experiment.is_multitask else None
+    return self._make_suggestion_datas(experiment, suggested_points, task_costs)
 
   def gp_ei_categorical(
     self,
