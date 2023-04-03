@@ -51,6 +51,7 @@ ARG PYTHON_MINOR
 RUN : \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      build-essential=* \
       ca-certificates=* \
       curl=7.* \
       git=* \
