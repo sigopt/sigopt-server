@@ -41,7 +41,7 @@ COPY .babelrc /sigopt-server/
 COPY web /sigopt-server/web
 
 
-FROM node-build AS client-artifacts
+FROM node-modules AS client-artifacts
 
 COPY scripts/compile/minify_js.sh /sigopt-server/scripts/compile/minify_js.sh
 
