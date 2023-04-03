@@ -351,6 +351,7 @@ services:
     volumes:
       - *rootca-volume
       - .:/sigopt-server:ro
+      - sigopt-python:/sigopt-server/sigopt-python
 
   mongodb:
     image: "mongo:${MONGODB_VERSION}"
@@ -363,3 +364,4 @@ volumes:
   pg-data: {}
   pg-sock: {}
   redis-run: {}
+  sigopt-python: {}
