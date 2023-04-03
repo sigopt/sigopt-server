@@ -73,6 +73,8 @@ function start_bg_services {
 
 function start_fg_services {
   if [ ${#FOREGROUND_SERVICES[@]} -gt 0 ]; then
+    echo "Building docker images..."
+    ./scripts/launch/compose.sh build --progress=quiet "${FOREGROUND_SERVICES[@]}"
     ./scripts/launch/compose.sh up -d "${FOREGROUND_SERVICES[@]}"
     ./scripts/launch/compose.sh logs -f "${FOREGROUND_SERVICES[@]}"
   fi
