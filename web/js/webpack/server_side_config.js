@@ -25,8 +25,10 @@ export const serverExternals = [
     bootstrap: NULL_JS,
     scriptjs: NULL_JS,
     "utils-copy": NULL_JS,
-    // express cannot be bundled without emitting warnings
+    // these cannot be bundled without emitting warnings
+    "@aws-sdk/client-s3": 'require("@aws-sdk/client-s3")',
     express: 'require("express")',
+    keyv: 'require("keyv")',
   },
 ];
 
