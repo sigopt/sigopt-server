@@ -9,9 +9,6 @@ from zigopt.db.column import *
 from zigopt.protobuf.gen.test.message_pb2 import Child, Parent
 
 
-# customlint: disable=AccidentalFormatStringRule
-
-
 Base = declarative_base()
 
 

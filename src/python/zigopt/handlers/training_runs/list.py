@@ -26,8 +26,6 @@ from zigopt.training_run.constant import NON_OPTIMIZED_SUGGESTION_TYPES
 from zigopt.training_run.model import TrainingRun
 
 
-# customlint: disable=AccidentalFormatStringRule
-
 Filter = ImmutableStruct("Filter", ["field", "operator", "casted_value"])
 
 

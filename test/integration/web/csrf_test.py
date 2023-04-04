@@ -24,7 +24,6 @@ class TestCsrf(WebBase):
     self.check_csrf(any_connection, "/push_session")
     self.check_csrf(any_connection, "/pop_session")
 
-  # customlint: disable=AccidentalFormatStringRule
   @pytest.mark.parametrize(
     "url",
     [

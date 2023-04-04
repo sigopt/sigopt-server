@@ -160,9 +160,6 @@ class RedisKeyService(Service):
     return self._RedisKey(f"rate-limit{self.DIVIDER}{rate_limit_type}{self.DIVIDER}{time}{self.DIVIDER}{identifier}")
 
 
-# customlint: disable=AccidentalFormatStringRule
-
-
 class RedisService(Service):
   logger_name = "sigopt.redis"
   SHORT_TIMEOUT = 1.0  # in seconds

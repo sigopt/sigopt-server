@@ -8,7 +8,7 @@ from typing import Optional as _Optional
 import pytz
 
 
-# customlint: disable=AvoidDatetimeNowRule
+# sigoptlint: disable=AvoidDatetimeNowRule
 
 
 def default_timezone() -> datetime.tzinfo:

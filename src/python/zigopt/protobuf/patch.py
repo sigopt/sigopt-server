@@ -4,7 +4,7 @@
 from zigopt.protobuf.lib import GetFieldOrNone, GetOneofValueOrNone, SetFieldIfNotNone
 
 
-# customlint: disable=ProtobufMethodsRule
+# sigoptlint: disable=ProtobufMethodsRule
 def patch_protobuf_class(Message):
   def _copy_protobuf(self):
     copy = self.__class__()

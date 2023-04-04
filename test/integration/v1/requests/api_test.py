@@ -19,7 +19,6 @@ def request(method, path, **kwargs):
   return requests.request(method, path, **kwargs)
 
 
-# customlint: disable=AccidentalFormatStringRule
 class TestApiBase(V1Base):
   @pytest.fixture(autouse=True)
   def ensure_api(self, api):

@@ -105,7 +105,6 @@ class SuggestionBrokerTestBase(ServiceBase):
     services.experiment_service.insert(experiment)
     return experiment
 
-  # customlint: disable=AccidentalFormatStringRule
   @pytest.fixture(params=[None, "", "{}", '{"foo": "bar"}', "invalid{}json"])
   def processed_suggestion_meta(self, request):
     meta = ProcessedSuggestionMeta()

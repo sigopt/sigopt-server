@@ -8,7 +8,6 @@ import pytest
 from zigopt.net.responses import dump_json
 
 
-# customlint: disable=AccidentalFormatStringRule
 def test_dump_json_whitesapace():
   assert dump_json({}) == "{}\n"
   assert dump_json({"a": 1}) == '{\n  "a": 1\n}\n'

@@ -11,7 +11,6 @@ from zigopt.api import request
 from zigopt.net.errors import BadParamError
 
 
-# customlint: disable=AccidentalFormatStringRule
 class TestJsonHandling(object):
 
   """Test json loading (i.e., from client requests) handles duplicates correctly."""
