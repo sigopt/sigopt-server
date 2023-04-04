@@ -5,7 +5,6 @@
  */
 
 import _ from "underscore";
-import nodeExternals from "webpack-node-externals";
 import path from "path";
 import webpack from "webpack";
 
@@ -26,6 +25,8 @@ export const serverExternals = [
     bootstrap: NULL_JS,
     scriptjs: NULL_JS,
     "utils-copy": NULL_JS,
+    // express cannot be bundled without emitting warnings
+    express: 'require("express")',
   },
 ];
 
@@ -77,17 +78,7 @@ export default ({
     },
     devtool: "eval-cheap-module-source-map",
     target: `node${nodeVersion}`,
-    externals: [
-      ...serverExternals,
-      nodeExternals({
-        allowlist: [
-          /\.(css|less)$/u,
-          "got",
-          /@sindresorhus\/.*/u,
-          "p-cancelable",
-        ],
-      }),
-    ],
+    externals: serverExternals,
     plugins: _.filter([
       development ? new webpack.HotModuleReplacementPlugin() : null,
       new webpack.DefinePlugin({

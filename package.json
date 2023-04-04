@@ -83,8 +83,7 @@
     "webpack-manifest-plugin": "4",
     "winston": "^3.2.1",
     "winston-syslog": "^2.1.0",
-    "yaml": "^2.2.1",
-    "webpack-node-externals": "^3.0.0"
+    "yaml": "^2.2.1"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.1",
@@ -117,7 +116,8 @@
     "recast": "^0.19.1",
     "sinon": "^2.3.8",
     "webpack-deadcode-plugin": "^0.1.17",
-    "webpack-dev-server": "^4.5.0"
+    "webpack-dev-server": "^4.5.0",
+    "webpack-node-externals": "^3.0.0"
   },
   "importSort": {
     ".js": {
