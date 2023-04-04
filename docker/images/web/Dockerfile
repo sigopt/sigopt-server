@@ -30,8 +30,10 @@ RUN set -ex \
 
 COPY package.json /sigopt-server/package.json
 RUN set -ex \
+  ; apk add --no-cache python3~=3.10 \
   ; yarn install --production --silent \
   ; yarn cache clean \
+  ; apk del python3 \
   ; :
 
 
