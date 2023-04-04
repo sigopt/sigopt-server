@@ -108,8 +108,12 @@ repos:
         args: [--fix-in-place]
         language: python
         types_or:
+          - dockerfile
+          - javascript
+          - less
           - markdown
           - python
+          - shell
       - id: custom-bash-lint
         name: custom-bash-lint
         entry: tools/lint/bash/custom_lint.py
