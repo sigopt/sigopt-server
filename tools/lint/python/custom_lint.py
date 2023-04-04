@@ -327,12 +327,12 @@ def prepare_all_lint_node_rules(source, filename):
     SafeYieldRule(),
     SetComparisonRule(),
     TrailingCommaRule(),
+    NoImportLibsigoptComputeRule(),
   ]
   if os.path.split(filename)[:3] == ["src", "python", "zigopt"]:
     rules.extend(
       [
         AvoidDatetimeNowRule(),
-        NoImportLibsigoptComputeRule(),
       ]
     )
   return rules
