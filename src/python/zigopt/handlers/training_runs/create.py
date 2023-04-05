@@ -10,10 +10,11 @@ from zigopt.handlers.training_runs.parser import TrainingRunRequestParams, Train
 from zigopt.handlers.validate.training_run import validate_assignments_meta
 from zigopt.json.builder import PaginationJsonBuilder, TrainingRunJsonBuilder
 from zigopt.net.errors import BadParamError
-from libsigopt.aux.errors import MissingParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun
+
+from libsigopt.aux.errors import MissingParamError
 
 
 MAX_RUNS_BATCH_CREATE_COUNT = 10000
