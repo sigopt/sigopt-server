@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
-from zigopt.api.errors import MissingParamError
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.users.base import UserHandler
 from zigopt.handlers.validate.user import validate_user_email, validate_user_name, validate_user_password
@@ -12,6 +11,8 @@ from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.json.builder import UserJsonBuilder
 from zigopt.net.errors import BadParamError, ForbiddenError, NotFoundError
 from zigopt.user.model import do_password_hash_work_factor_update, password_matches
+
+from libsigopt.aux.errors import MissingParamError
 
 
 class UsersUpdateHandler(UserHandler):

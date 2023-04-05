@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
-from zigopt.api.errors import InvalidKeyError, InvalidValueError
 from zigopt.experiment.constant import (
   ALL_PARAMETER_PRIOR_NAMES,
   EXPERIMENT_PARAMETER_NAME_TO_TYPE,
@@ -24,6 +23,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.sigoptcompute.constant import MINIMUM_DOMAIN_EDGE_LENGTH
 
 from libsigopt.aux.constant import ParameterPriorNames
+from libsigopt.aux.errors import InvalidKeyError, InvalidValueError
 
 
 class GridError(BadParamError):

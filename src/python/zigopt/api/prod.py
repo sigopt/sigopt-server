@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 from flask import Flask
 
-from zigopt.api.errors import SigoptValidationError
 from zigopt.api.request import Request
 from zigopt.api.routes import initialize_blueprint as initialize_base_blueprint
 from zigopt.api.routes import log_requests
@@ -11,6 +10,8 @@ from zigopt.api.v1.routes import initialize_blueprint as initialize_v1_blueprint
 from zigopt.net.errors import BadParamError
 from zigopt.net.responses import success_response
 from zigopt.services.api import ApiRequestLocalServiceBag, ApiServiceBag
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class ProdApp(Flask):

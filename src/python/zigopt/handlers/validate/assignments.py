@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any
 
-from zigopt.api.errors import InvalidValueError
 from zigopt.experiment.constraints import human_readable_constraint  # type: ignore
 from zigopt.experiment.model import Experiment, ExperimentParameterProxy  # type: ignore
 from zigopt.handlers.validate.validate_dict import ValidationType, validate_type
@@ -11,6 +10,7 @@ from zigopt.net.errors import BadParamError, ServerError  # type: ignore
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConstraint, ExperimentParameter  # type: ignore
 
 from libsigopt.aux.constant import ConstraintType  # type: ignore
+from libsigopt.aux.errors import InvalidValueError
 
 
 def get_assignment(param: ExperimentParameter, assignment: float | str) -> float | str:

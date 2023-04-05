@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 
-from zigopt.api.errors import InvalidTypeError
 from zigopt.experiment.model import Experiment
 from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
@@ -14,6 +13,8 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Task,
 )
 from zigopt.suggestion.from_json import build_suggestion_data_from_json
+
+from libsigopt.aux.errors import InvalidTypeError
 
 
 class TestBuildSuggestionData(object):

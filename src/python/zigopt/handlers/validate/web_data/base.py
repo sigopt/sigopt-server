@@ -5,13 +5,14 @@ from collections import defaultdict
 from copy import deepcopy
 
 from zigopt.common import *
-from zigopt.api.validate_schema import validate
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.handlers.validate.web_data.ag_run_view import ag_run_view_schema
 from zigopt.handlers.validate.web_data.run_view import run_view_schema
 from zigopt.net.errors import BadParamError
 from zigopt.web_data.lib import validate_web_data_dict
 from zigopt.web_data.model import MAX_DISPLAY_NAME_LENGTH, web_data_types_by_resource
+
+from libsigopt.aux.validate_schema import validate
 
 
 parent_resource_types = list(web_data_types_by_resource.keys())

@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
-from zigopt.api.errors import InvalidValueError, MissingJsonKeyError
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.experiment.constant import (
   EXPERIMENT_PARAMETER_TYPE_TO_NAME,
@@ -38,6 +37,8 @@ from zigopt.parameters.from_json import (
 )
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta, ExperimentMetric
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+
+from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
 
 
 class ExperimentsUpdateHandler(ExperimentHandler):

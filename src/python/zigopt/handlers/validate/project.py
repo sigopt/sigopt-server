@@ -4,9 +4,10 @@
 import copy
 from typing import Any, Callable
 
-from zigopt.api.validate_schema import validate
 from zigopt.handlers.validate.validate_dict import ID_STRING_PATTERN
 from zigopt.project.model import MAX_ID_LENGTH, MAX_NAME_LENGTH  # type: ignore
+
+from libsigopt.aux.validate_schema import validate
 
 
 PROJECT_ID_SCHEMA = {

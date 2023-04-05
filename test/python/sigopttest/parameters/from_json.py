@@ -4,7 +4,6 @@
 import pytest
 from mock import Mock
 
-from zigopt.api.errors import InvalidKeyError, InvalidTypeError, InvalidValueError, MissingJsonKeyError
 from zigopt.net.errors import BadParamError
 from zigopt.parameters.from_json import (
   set_categorical_values_from_json,
@@ -20,6 +19,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 )
 
 from libsigopt.aux.constant import ParameterPriorNames
+from libsigopt.aux.errors import InvalidKeyError, InvalidTypeError, InvalidValueError, MissingJsonKeyError
 
 
 class TestSetConditionsFromJson(object):

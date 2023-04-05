@@ -2,12 +2,13 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
-from zigopt.api.errors import MissingJsonKeyError
 from zigopt.handlers.aiexperiments.base import AiExperimentHandler
 from zigopt.handlers.experiments.base import BUDGET_KEY
 from zigopt.handlers.experiments.update import ExperimentsUpdateHandler
 from zigopt.handlers.validate.aiexperiment import validate_ai_experiment_json_dict_for_update
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
+
+from libsigopt.aux.errors import MissingJsonKeyError
 
 
 class AiExperimentsUpdateHandler(AiExperimentHandler, ExperimentsUpdateHandler):

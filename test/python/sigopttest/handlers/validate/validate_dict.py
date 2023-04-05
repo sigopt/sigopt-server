@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 
-from zigopt.api.errors import InvalidTypeError, MissingJsonKeyError, SigoptValidationError
 from zigopt.handlers.validate.validate_dict import (
   Base64InputValidator,
   Base64OutputValidator,
@@ -14,6 +13,8 @@ from zigopt.handlers.validate.validate_dict import (
   validate_type,
 )
 from zigopt.protobuf.gen.color.color_pb2 import Color
+
+from libsigopt.aux.errors import InvalidTypeError, MissingJsonKeyError, SigoptValidationError
 
 
 class TestValidateType(object):

@@ -1,11 +1,12 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from zigopt.api.errors import InvalidValueError
 from zigopt.handlers.validate.experiment import validate_conditional_value
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.net.errors import BadParamError
 from zigopt.parameters.from_json import set_parameter_name_from_json
+
+from libsigopt.aux.errors import InvalidValueError
 
 
 def set_experiment_conditionals_list_from_json(experiment_meta, experiment_json):

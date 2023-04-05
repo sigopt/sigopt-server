@@ -9,12 +9,13 @@ from http import HTTPStatus
 from flask import request as _request
 
 from zigopt.common import *
-from zigopt.api.errors import SigoptValidationError
 from zigopt.api.request import RequestProxy, validate_api_input
 from zigopt.handlers.base.handler import Handler
 from zigopt.json.builder import JsonBuilder, MissingFieldError
 from zigopt.net.errors import BadParamError, InvalidMethodError, RequestError, ServerError
 from zigopt.net.responses import success_response
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 def handler_registry(app):

@@ -4,7 +4,6 @@
 """Handler and validation for client-reported experiment observations."""
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
-from zigopt.api.errors import InvalidKeyError
 from zigopt.common.sigopt_datetime import current_datetime, datetime_to_seconds
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.experiments.base import ExperimentHandler
@@ -18,6 +17,8 @@ from zigopt.observation.from_json import set_observation_data_assignments_task_f
 from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+
+from libsigopt.aux.errors import InvalidKeyError
 
 
 DEFAULT_MAX_OBSERVATIONS_CREATE_COUNT = 2500

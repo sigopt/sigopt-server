@@ -12,7 +12,6 @@ from typing import Any, Callable, Optional, Sequence
 from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-module
 
 from zigopt.common import *
-from zigopt.api.errors import InvalidTypeError, MissingJsonKeyError, SigoptValidationError
 from zigopt.common.numbers import is_integer, is_integer_valued_number, is_number
 from zigopt.protobuf.dict import (
   dict_to_protobuf,
@@ -23,6 +22,8 @@ from zigopt.protobuf.dict import (
 )
 from zigopt.protobuf.gen.color.color_pb2 import Color  # type: ignore
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import SysMetadata  # type: ignore
+
+from libsigopt.aux.errors import InvalidTypeError, MissingJsonKeyError, SigoptValidationError
 
 
 ID_STRING_PATTERN = r"^[a-z0-9\-_\.]+$"

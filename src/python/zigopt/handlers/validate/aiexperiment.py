@@ -4,8 +4,9 @@
 import copy
 from typing import Any
 
-from zigopt.api.validate_schema import validate
 from zigopt.handlers.validate.experiment import experiment_create_schema, experiment_update_schema
+
+from libsigopt.aux.validate_schema import validate
 
 
 ai_experiment_create_schema: dict[str, Any] = copy.deepcopy(experiment_create_schema)
