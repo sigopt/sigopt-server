@@ -427,7 +427,7 @@
         },
         "libsigopt": {
             "git": "http://github.com/sigopt/libsigopt",
-            "ref": "c5c9d0d912718f36e20bbe9960aad802950e87c9"
+            "ref": "2f3e0425dcbd1bea6adcec109d83e37e7d7b8e01"
         },
         "mako": {
             "hashes": [
