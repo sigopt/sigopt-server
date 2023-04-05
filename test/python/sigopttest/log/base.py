@@ -150,7 +150,6 @@ class TestSyslogFormatter(object):
     assert self.as_json(SyslogFormatter().format(mock_record))["status"] == 404
 
   def test_json_message(self, mock_record):
-    # customlint: disable=AccidentalFormatStringRule
     mock_record.getMessage.return_value = '{"key":"value"}'
     assert self.as_json(SyslogFormatter().format(mock_record))["message"] == '{"key":"value"}'
 

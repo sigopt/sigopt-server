@@ -6,7 +6,7 @@ from google.protobuf.message import Message
 from zigopt.common import *
 
 
-# customlint: disable=ProtobufMethodsRule
+# sigoptlint: disable=ProtobufMethodsRule
 
 
 def CopyFrom(base, other):

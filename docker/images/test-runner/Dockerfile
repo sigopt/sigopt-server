@@ -130,7 +130,7 @@ ENV MKL_NUM_THREADS 1
 ENV VECLIB_MAXIMUM_THREADS 1
 ENV NUMEXPR_NUM_THREADS 1
 
-ENV CHROMEDRIVER_VERSION "111.0.5563.41"
+ENV CHROMEDRIVER_VERSION "112.0.5615.28"
 
 RUN : \
   ; apt-get update -yqq >/dev/null \
@@ -141,7 +141,7 @@ RUN : \
   ; echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      google-chrome-stable=111.* \
+      google-chrome-stable=112.* \
       unzip=6.* \
   ; rm -rf /var/lib/apt/lists/* \
   ; curl -fSsL -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \

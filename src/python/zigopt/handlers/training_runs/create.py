@@ -17,8 +17,6 @@ from zigopt.training_run.model import TrainingRun
 
 MAX_RUNS_BATCH_CREATE_COUNT = 10000
 
-# customlint: disable=AccidentalFormatStringRule
-
 
 def get_default_max_batch_runs(services):
   return services.config_broker.get(

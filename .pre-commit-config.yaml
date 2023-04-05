@@ -24,6 +24,15 @@ repos:
       - id: no-commit-to-branch
         args: [--branch=main]
       - id: trailing-whitespace
+  - repo: https://github.com/sigopt/sigopt-tools.git
+    rev: "v0.0.2"
+    hooks:
+      - id: copyright-license-disclaimer
+        args: ["--license=Apache License 2.0", "--owner=Intel Corporation"]
+      - id: sigoptlint-python
+        args:
+          - --include=AvoidDatetimeNowRule,GeneratorExpressionRule,NoImportLibsigoptComputeRule,ProtobufMethodsRule,SafeIteratorRule,SafeYieldRule
+      - id: sigoptlint-shell
   - repo: https://github.com/PyCQA/bandit.git
     rev: "1.7.5"
     hooks:
@@ -101,28 +110,3 @@ repos:
         language: system
         types: [python]
         args: [-rn, -sn]
-      - id: apply-copyright-notice
-        name: Apply the copyright notice
-        description: This hook applies the copyright notice and license disclaimer to all files.
-        entry: tools/lint/common/check_copyright_and_license_disclaimers.py
-        args: [--fix-in-place]
-        language: python
-        types_or:
-          - dockerfile
-          - javascript
-          - less
-          - markdown
-          - python
-          - shell
-      - id: custom-bash-lint
-        name: custom-bash-lint
-        entry: tools/lint/bash/custom_lint.py
-        language: python
-        types: [shell]
-      - id: custom-python-lint
-        name: custom-python-lint
-        entry: ./pp tools/lint/python/custom_lint.py
-        language: python
-        additional_dependencies:
-          - numpy
-        types: [python]

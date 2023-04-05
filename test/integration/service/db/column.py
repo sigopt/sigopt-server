@@ -37,7 +37,6 @@ MAP_FIELDS = [
   "importance_maps",
 ]
 
-# customlint: disable=AccidentalFormatStringRule
 FIELDS_WITH_VALUES = [
   # Format is (field_name, json_name, sample_value, sample_json_value)
   # Existing keys with new values

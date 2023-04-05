@@ -46,6 +46,7 @@ DEFAULTS.update(
       "formatMessage",
       "funcName",
       "levelno",
+      "lineno",
       "longrepr",
       "msecs",
       "pathname",

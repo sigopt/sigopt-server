@@ -11,7 +11,6 @@ from integration.base import RaisesHttpError
 from integration.web.test_base import WebBase
 
 
-# customlint: disable=AccidentalFormatStringRule
 class TestOrganizations(WebBase):
   @pytest.fixture
   def organization_id(self, login_state):

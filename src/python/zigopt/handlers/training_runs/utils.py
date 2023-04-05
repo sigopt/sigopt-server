@@ -7,9 +7,6 @@ from zigopt.common import generator_to_safe_iterator, is_mapping
 from zigopt.db.column import adapt_for_jsonb
 
 
-# customlint: disable=AccidentalFormatStringRule
-
-
 @generator_to_safe_iterator
 def get_json_paths_and_values(merge_objects, attribute, value):
   """
