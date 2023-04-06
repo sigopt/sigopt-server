@@ -23,7 +23,6 @@ from zigopt.sigoptcompute.constant import (
   DEFAULT_QEI_RERANKING_MAX_OPEN_SUGGESTIONS,
   DEFAULT_QEI_RERANKING_MAX_POINTS_TO_EVALUATE,
 )
-from zigopt.sigoptcompute.errors import SigoptComputeError
 from zigopt.suggestion.unprocessed.model import SuggestionDataProxy
 
 from libsigopt.aux.adapter_info_containers import DomainInfo, GPModelInfo, MetricsInfo, PointsContainer
@@ -40,6 +39,7 @@ from libsigopt.aux.constant import (
   QUANTIZED_EXPERIMENT_PARAMETER_NAME,
   ParameterPriorNames,
 )
+from libsigopt.aux.errors import SigoptComputeError
 from libsigopt.views.rest.gp_ei_categorical import GpEiCategoricalView
 from libsigopt.views.rest.gp_hyper_opt_multimetric import GpHyperOptMultimetricView
 from libsigopt.views.rest.gp_next_points_categorical import GpNextPointsCategorical

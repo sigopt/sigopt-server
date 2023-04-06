@@ -4,9 +4,9 @@
 from zigopt.common import is_number, max_option, remove_nones
 from zigopt.experiment.util import get_experiment_default_metric_name
 from zigopt.services.base import Service
-from zigopt.sigoptcompute.errors import SigoptComputeError
 
 from libsigopt.aux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
+from libsigopt.aux.errors import SigoptComputeError
 from libsigopt.aux.multimetric import find_pareto_frontier_observations_for_maximization
 
 

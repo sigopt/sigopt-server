@@ -16,7 +16,7 @@ class TestIntegerExperiments(V1Base):
   @pytest.mark.skip(
     reason=(
       "Need to change this test because 1. we should not be testing that we raise an internal server error 2."
-      " switching to using queues in integration tests means SigoptComputeError cannot be exposed throught"
+      " switching to using queues in integration tests means SigoptComputeError cannot be exposed through"
       " the API"
     )
   )
