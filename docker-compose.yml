@@ -316,6 +316,7 @@ services:
       - MINIO_ROOT_PASSWORD
     volumes:
       - minio-data:/var/lib/minio/data
+      - minio-config:/root/.minio
     command:
       - "server"
       - "/var/lib/minio/data"
@@ -359,6 +360,7 @@ services:
     container_name: "mongodb"
 
 volumes:
+  minio-config: {}
   minio-data: {}
   pg-data: {}
   pg-sock: {}
