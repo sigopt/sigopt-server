@@ -4,7 +4,7 @@
 import pytest
 
 from zigopt.experiment.model import Experiment
-from zigopt.net.errors import BadParamError, InvalidTypeError
+from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_DOUBLE,
   Bounds,
@@ -13,6 +13,8 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Task,
 )
 from zigopt.suggestion.from_json import build_suggestion_data_from_json
+
+from libsigopt.aux.errors import InvalidTypeError
 
 
 class TestBuildSuggestionData(object):

@@ -24,7 +24,7 @@ from zigopt.handlers.validate.validate_dict import (
   get_with_validation,
   key_present,
 )
-from zigopt.net.errors import BadParamError, InvalidValueError, MissingJsonKeyError, NotFoundError
+from zigopt.net.errors import BadParamError, NotFoundError
 from zigopt.parameters.from_json import (
   set_bounds_from_json,
   set_categorical_value_from_json,
@@ -37,6 +37,8 @@ from zigopt.parameters.from_json import (
 )
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta, ExperimentMetric
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+
+from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
 
 
 class ExperimentsUpdateHandler(ExperimentHandler):

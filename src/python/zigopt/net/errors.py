@@ -7,7 +7,6 @@ Several of these alias HTTP status codes:
 http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
 """
-import json
 from http import HTTPStatus
 
 from flask import request
@@ -67,55 +66,6 @@ class BadParamError(RequestError):
 class ConflictingDataError(RequestError):
   def __init__(self, msg):
     super().__init__(msg, HTTPStatus.CONFLICT)
-
-
-class MissingParamError(BadParamError):
-  def __init__(self, param, msg=None):
-    if not msg:
-      msg = f"Missing required param: {param}"
-
-    super().__init__(msg)
-
-
-class MissingJsonKeyError(BadParamError):
-  def __init__(self, param, json_obj):
-    msg = f'Missing required json key "{param}" in: {json.dumps(json_obj)}'
-
-    super().__init__(msg)
-    self.missing_json_key = param
-
-
-# Note: TypeError is a stdlib name
-class InvalidTypeError(BadParamError):
-  def __init__(self, value, expected_type, key=None):
-    try:
-      value_str = json.dumps(value)
-      value_sep = f": {value_str} - "
-    except TypeError:
-      value_sep = ", "
-    if key:
-      msg = f"Invalid type for {key}{value_sep}expected type {str(expected_type)}"
-    else:
-      msg = f"Invalid type{value_sep}expected type {str(expected_type)}"
-
-    super().__init__(msg)
-    self.value = value
-    self.expected_type = expected_type
-
-
-# Note: ValueError is a stdlib name
-class InvalidValueError(BadParamError):
-  def __init__(self, msg):
-    super().__init__(msg)
-
-
-# Note: KeyError is a stdlib name
-class InvalidKeyError(BadParamError):
-  def __init__(self, key, msg=None):
-    if not msg:
-      msg = f"Invalid key: {key}"
-    super().__init__(msg)
-    self.invalid_key = key
 
 
 class ServerError(RequestError):

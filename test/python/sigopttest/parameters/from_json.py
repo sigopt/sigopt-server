@@ -4,7 +4,7 @@
 import pytest
 from mock import Mock
 
-from zigopt.net.errors import BadParamError, InvalidKeyError, InvalidTypeError, InvalidValueError
+from zigopt.net.errors import BadParamError
 from zigopt.parameters.from_json import (
   set_categorical_values_from_json,
   set_parameter_conditions_from_json,
@@ -19,6 +19,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 )
 
 from libsigopt.aux.constant import ParameterPriorNames
+from libsigopt.aux.errors import InvalidKeyError, InvalidTypeError, InvalidValueError, MissingJsonKeyError
 
 
 class TestSetConditionsFromJson(object):
@@ -91,12 +92,21 @@ class TestSetConditionsFromJson(object):
   @pytest.mark.parametrize(
     "invalid_parameter_json",
     [
-      dict(conditions=dict(x=None)),
       dict(conditions=dict(x=[])),
     ],
   )
   def test_condition_name_with_no_value(self, parameter, invalid_parameter_json, conditionals_map):
     with pytest.raises(BadParamError):
+      set_parameter_conditions_from_json(parameter, invalid_parameter_json, conditionals_map)
+
+  @pytest.mark.parametrize(
+    "invalid_parameter_json",
+    [
+      dict(conditions=dict(x=None)),
+    ],
+  )
+  def test_condition_name_with_no_value_invalidtype(self, parameter, invalid_parameter_json, conditionals_map):
+    with pytest.raises(InvalidTypeError):
       set_parameter_conditions_from_json(parameter, invalid_parameter_json, conditionals_map)
 
 
@@ -149,7 +159,6 @@ class TestSetCategoricalValuesFromJson(object):
   @pytest.mark.parametrize(
     "invalid_parameter_json",
     [
-      dict(),
       dict(categorical_values=[]),
       dict(categorical_values=["a"]),
       dict(categorical_values=[dict(name="a")]),
@@ -158,6 +167,16 @@ class TestSetCategoricalValuesFromJson(object):
   )
   def test_too_few_categorical_values(self, categorical_parameter, invalid_parameter_json):
     with pytest.raises(BadParamError):
+      set_categorical_values_from_json(categorical_parameter, invalid_parameter_json)
+
+  @pytest.mark.parametrize(
+    "invalid_parameter_json",
+    [
+      dict(),
+    ],
+  )
+  def test_too_few_categorical_values_missingjsonkey(self, categorical_parameter, invalid_parameter_json):
+    with pytest.raises(MissingJsonKeyError):
       set_categorical_values_from_json(categorical_parameter, invalid_parameter_json)
 
   @pytest.mark.parametrize(

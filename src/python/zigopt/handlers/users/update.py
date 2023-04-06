@@ -9,8 +9,10 @@ from zigopt.handlers.validate.user import validate_user_email, validate_user_nam
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.json.builder import UserJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError, MissingParamError, NotFoundError
+from zigopt.net.errors import BadParamError, ForbiddenError, NotFoundError
 from zigopt.user.model import do_password_hash_work_factor_update, password_matches
+
+from libsigopt.aux.errors import MissingParamError
 
 
 class UsersUpdateHandler(UserHandler):

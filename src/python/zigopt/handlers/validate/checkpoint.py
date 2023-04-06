@@ -5,8 +5,9 @@ import copy
 from typing import Any
 
 from zigopt.common import *
-from zigopt.handlers.validate.validate_dict import validate
 from zigopt.handlers.validate.values import base_values_schema
+
+from libsigopt.aux.validate_schema import validate
 
 
 checkpoint_values_schema: dict[str, Any] = copy.deepcopy(base_values_schema)

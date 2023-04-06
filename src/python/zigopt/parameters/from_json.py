@@ -12,7 +12,7 @@ from zigopt.experiment.model import ExperimentMetaProxy, ExperimentParameterProx
 from zigopt.handlers.validate.assignments import get_assignment
 from zigopt.handlers.validate.experiment import validate_categorical_value, validate_parameter_name
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
-from zigopt.net.errors import BadParamError, InvalidKeyError, InvalidValueError
+from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_CATEGORICAL,
   PARAMETER_DOUBLE,
@@ -23,6 +23,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.sigoptcompute.constant import MINIMUM_DOMAIN_EDGE_LENGTH
 
 from libsigopt.aux.constant import ParameterPriorNames
+from libsigopt.aux.errors import InvalidKeyError, InvalidValueError
 
 
 class GridError(BadParamError):

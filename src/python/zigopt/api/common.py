@@ -14,6 +14,8 @@ from zigopt.json.builder import JsonBuilder, MissingFieldError
 from zigopt.net.errors import BadParamError, InvalidMethodError, RequestError, ServerError
 from zigopt.net.responses import success_response
 
+from libsigopt.aux.errors import SigoptValidationError
+
 
 def handler_registry(app):
   def resolve_builder(builder, fields):
@@ -85,6 +87,8 @@ def handler_registry(app):
         exc_info = sys.exc_info()
         return e.get_error_response()
       except AssertionError:
+        raise
+      except SigoptValidationError:
         raise
       except Exception as e:
         exc_info = sys.exc_info()

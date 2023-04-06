@@ -9,12 +9,12 @@ from zigopt.handlers.validate.validate_dict import (
   ValidationType,
   get_with_validation,
   key_present,
-  validate,
   validate_mutually_exclusive_properties,
   validate_type,
 )
-from zigopt.net.errors import BadParamError, InvalidTypeError, InvalidValueError, MissingJsonKeyError
 from zigopt.protobuf.gen.color.color_pb2 import Color
+
+from libsigopt.aux.errors import InvalidTypeError, MissingJsonKeyError, SigoptValidationError
 
 
 class TestValidateType(object):
@@ -366,7 +366,7 @@ class TestGetWithValidation(object):
   def test_invalid_id(self, data):
     key = "invalid_id"
     value_type = ValidationType.id
-    with pytest.raises(BadParamError):
+    with pytest.raises(InvalidTypeError):
       get_with_validation(data, key, value_type)
 
   @pytest.mark.parametrize(
@@ -428,11 +428,11 @@ class TestValidateMutuallyExclusiveProperties(object):
     validate_mutually_exclusive_properties({"a": 1}, [])
 
   def test_validation_fails(self):
-    with pytest.raises(BadParamError) as error:
+    with pytest.raises(SigoptValidationError) as error:
       validate_mutually_exclusive_properties({"a": 1, "b": 1}, ["a", "b"])
     assert "`a`" in str(error.value) and "`b`" in str(error.value)
 
-    with pytest.raises(BadParamError) as error:
+    with pytest.raises(SigoptValidationError) as error:
       validate_mutually_exclusive_properties({"a": 1, "b": 1, "c": 1}, ["a", "b"])
     assert "`a`" in str(error.value) and "`b`" in str(error.value) and "`c`" not in str(error.value)
 
@@ -445,70 +445,3 @@ class TestValidateMutuallyExclusiveProperties(object):
     with pytest.raises(TypeError) as error:
       key_present("abc", "def")
     assert str(error.value) == "Expected json_obj to be a mapping, received 'str'"
-
-
-class TestValidateSchema(object):
-  def test_validate_simple_array(self):
-    schema = {
-      "type": "array",
-      "items": {
-        "type": "object",
-      },
-    }
-    with pytest.raises(InvalidTypeError) as error:
-      validate([{}, 2, {}], schema)
-    error_message = error.value.args[0]
-    assert error_message == "Invalid type for [1]: 2 - expected type object"
-    with pytest.raises(InvalidTypeError):
-      validate(["a"], schema)
-    validate([], schema)
-
-  def test_simply_nested_array(self):
-    schema = {
-      "type": "object",
-      "properties": {
-        "key_of_array": {
-          "type": "array",
-          "items": {
-            "type": "string",
-          },
-        }
-      },
-    }
-    with pytest.raises(InvalidTypeError) as error:
-      validate({"key_of_array": [1]}, schema)
-    error_message = error.value.args[0]
-    assert error_message == "Invalid type for .key_of_array[0]: 1 - expected type string"
-
-  def test_deeply_nested_array(self):
-    schema = {
-      "type": "object",
-      "properties": {
-        "key_of_object": {
-          "type": "object",
-          "properties": {
-            "key_of_array": {
-              "type": "array",
-              "items": {"type": "array", "items": {"type": "integer"}},
-            }
-          },
-        }
-      },
-    }
-    with pytest.raises(InvalidTypeError) as error:
-      validate({"key_of_object": {"key_of_array": [["a"]]}}, schema)
-    error_message = error.value.args[0]
-    assert error_message == 'Invalid type for .key_of_object.key_of_array[0][0]: "a" - expected type integer'
-
-  def test_unspecific_index_error(self):
-    schema = {"type": "array", "maxItems": 1}
-    with pytest.raises(InvalidValueError):
-      validate([{}, 2, {}], schema)
-
-  def test_nested_unspecific_index_error(self):
-    schema = {
-      "type": "object",
-      "properties": {"key_of_array": {"type": "array", "maxItems": 1}},
-    }
-    with pytest.raises(InvalidValueError):
-      validate({"key_of_array": [{}, 2, {}]}, schema)

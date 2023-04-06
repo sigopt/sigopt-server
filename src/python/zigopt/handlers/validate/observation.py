@@ -11,13 +11,15 @@ from zigopt.handlers.validate.validate_dict import (
   ValidationType,
   get_opt_with_validation,
   key_present,
-  validate,
   validate_mutually_exclusive_properties,
 )
 from zigopt.handlers.validate.values import base_values_schema
-from zigopt.net.errors import BadParamError, MissingJsonKeyError  # type: ignore
+from zigopt.net.errors import BadParamError  # type: ignore
 from zigopt.observation.model import Observation  # type: ignore
 from zigopt.task.from_json import extract_task_from_json  # type: ignore
+
+from libsigopt.aux.errors import MissingJsonKeyError
+from libsigopt.aux.validate_schema import validate
 
 
 observation_values_schema: dict[str, Any] = copy.deepcopy(base_values_schema)
@@ -115,4 +117,5 @@ def validate_observation_json_dict_for_update(
     if not experiment.is_multitask:
       raise BadParamError("Only multitask experiments should have a task present.")
     if json_dict["task"] is not None:
-      extract_task_from_json(experiment, json_dict)  # This will error if the task is unacceptable
+      # This will error if the task is unacceptable
+      extract_task_from_json(experiment, json_dict)

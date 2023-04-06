@@ -11,7 +11,8 @@ from zigopt.handlers.validate.validate_dict import (
   ValidationType,
   validate_type,
 )
-from zigopt.net.errors import InvalidTypeError  # type: ignore
+
+from libsigopt.aux.errors import InvalidTypeError  # type: ignore
 
 
 class JsonBuilderError(Exception):
@@ -119,7 +120,9 @@ def field(
 ):
   def wrap_func(func, value_type=value_type, field_name=field_name, hide=hide):
     if hide is None:
-      hide = lambda self: False
+
+      def hide(self):
+        return False
 
     if field_name is None:
       field_name = func.__name__

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any
 
-from zigopt.handlers.validate.validate_dict import validate
+from libsigopt.aux.validate_schema import validate
 
 
 note_schema = {

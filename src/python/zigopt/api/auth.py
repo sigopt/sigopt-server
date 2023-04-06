@@ -15,8 +15,10 @@ from zigopt.authorization.signup_link import SignupLinkAuthorization
 from zigopt.authorization.user import UserAuthorization, UserLoginAuthorization
 from zigopt.handlers.validate.base import validate_email
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
-from zigopt.net.errors import BadParamError, ForbiddenError, MissingParamError, UnauthorizedError
+from zigopt.net.errors import BadParamError, ForbiddenError, UnauthorizedError
 from zigopt.net.responses import TokenStatus
+
+from libsigopt.aux.errors import MissingParamError
 
 
 def _validate_api_token(token):

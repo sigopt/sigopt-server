@@ -11,12 +11,14 @@ from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.handlers.validate.observation import validate_observation_json_dict_for_create
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.json.builder import ObservationJsonBuilder, PaginationJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError, InvalidKeyError
+from zigopt.net.errors import BadParamError, ForbiddenError
 from zigopt.observation.data import create_observation_data
 from zigopt.observation.from_json import set_observation_data_assignments_task_from_json
 from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+
+from libsigopt.aux.errors import InvalidKeyError
 
 
 DEFAULT_MAX_OBSERVATIONS_CREATE_COUNT = 2500

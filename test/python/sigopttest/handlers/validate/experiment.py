@@ -7,7 +7,8 @@ import copy
 import pytest
 
 from zigopt.handlers.validate.experiment import validate_experiment_json_dict_for_create
-from zigopt.net.errors import InvalidValueError
+
+from libsigopt.aux.errors import InvalidValueError
 
 
 OK_NAME = "name"

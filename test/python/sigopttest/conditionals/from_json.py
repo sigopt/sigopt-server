@@ -4,8 +4,10 @@
 import pytest
 
 from zigopt.conditionals.from_json import set_conditional_from_json, set_experiment_conditionals_list_from_json
-from zigopt.net.errors import BadParamError, InvalidValueError
+from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional, ExperimentMeta
+
+from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
 
 
 class TestSetConditionalFromJson(object):
@@ -24,18 +26,27 @@ class TestSetConditionalFromJson(object):
       set_conditional_from_json(conditional, dict(name="x", values=["1", "1"]))
 
   def test_missing_name(self, conditional):
-    with pytest.raises(BadParamError):
+    with pytest.raises(MissingJsonKeyError):
       set_conditional_from_json(conditional, dict(values=["1", "5", "10"]))
 
   @pytest.mark.parametrize(
     "conditional_json",
     [
       dict(name="x"),
+    ],
+  )
+  def test_too_few_values(self, conditional, conditional_json):
+    with pytest.raises(MissingJsonKeyError):
+      set_conditional_from_json(conditional, conditional_json)
+
+  @pytest.mark.parametrize(
+    "conditional_json",
+    [
       dict(name="x", values=[]),
       dict(name="x", values=["1"]),
     ],
   )
-  def test_too_few_values(self, conditional, conditional_json):
+  def test_too_few_values_bad_param(self, conditional, conditional_json):
     with pytest.raises(BadParamError):
       set_conditional_from_json(conditional, conditional_json)
 

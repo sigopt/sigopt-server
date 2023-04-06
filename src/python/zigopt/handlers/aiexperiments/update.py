@@ -7,7 +7,8 @@ from zigopt.handlers.experiments.base import BUDGET_KEY
 from zigopt.handlers.experiments.update import ExperimentsUpdateHandler
 from zigopt.handlers.validate.aiexperiment import validate_ai_experiment_json_dict_for_update
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
-from zigopt.net.errors import MissingJsonKeyError
+
+from libsigopt.aux.errors import MissingJsonKeyError
 
 
 class AiExperimentsUpdateHandler(AiExperimentHandler, ExperimentsUpdateHandler):

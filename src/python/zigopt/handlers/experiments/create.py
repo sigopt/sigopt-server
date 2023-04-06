@@ -36,7 +36,7 @@ from zigopt.handlers.validate.validate_dict import (
   key_present,
 )
 from zigopt.json.builder import ExperimentJsonBuilder
-from zigopt.net.errors import BadParamError, InvalidValueError, MissingJsonKeyError
+from zigopt.net.errors import BadParamError
 from zigopt.parameters.from_json import set_experiment_parameter_list_from_json
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_DOUBLE,
@@ -52,6 +52,7 @@ from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.suggestion.sampler.grid import GridSampler
 
 from libsigopt.aux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
+from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
 
 
 class BaseExperimentsCreateHandler(Handler):
