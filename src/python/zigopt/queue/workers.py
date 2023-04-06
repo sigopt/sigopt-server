@@ -16,7 +16,8 @@ from zigopt.queue.exceptions import (
   WorkerKilledException,
 )
 from zigopt.queue.message_groups import MessageGroup
-from zigopt.sigoptcompute.errors import SigoptComputeError
+
+from libsigopt.aux.errors import SigoptComputeError
 
 
 # A way for the queue workers to detect that it should stop processing messages and shut down.
