@@ -19,7 +19,7 @@ TEMPLATE_CACHE: dict[frozenset, Template] = {}
 
 def make_template(**kwargs):
   kwargs.setdefault("default_filters", ["h"])
-  cache_key = frozenset([(key, tuple(value) if is_sequence(value) else value) for (key, value) in kwargs.items()])
+  cache_key = frozenset([(key, as_tuple(value)) for (key, value) in kwargs.items()])
   return TEMPLATE_CACHE.setdefault(cache_key, Template(**kwargs))
 
 
