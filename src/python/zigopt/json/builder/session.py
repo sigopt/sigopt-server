@@ -21,7 +21,7 @@ class SessionJsonBuilder(JsonBuilder):
 
   @field(JsonBuilderValidationType())
   def api_token(self) -> Optional[TokenJsonBuilder]:
-    api_token: Optional[Token] = self._session_api_token
+    api_token: Optional[Token] = self._session.api_token
     return napply(api_token, lambda tok: TokenJsonBuilder(tok, self._session.client))
 
   @field(JsonBuilderValidationType())
