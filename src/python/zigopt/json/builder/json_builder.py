@@ -12,7 +12,7 @@ from zigopt.handlers.validate.validate_dict import (
   validate_type,
 )
 
-from libsigopt.aux.errors import InvalidTypeError  # type: ignore
+from libsigopt.aux.errors import InvalidTypeError
 
 
 class JsonBuilderError(Exception):

@@ -20,8 +20,8 @@ from zigopt.protobuf.dict import (
   protobuf_struct_to_dict,
   protobuf_to_dict,
 )
-from zigopt.protobuf.gen.color.color_pb2 import Color  # type: ignore
-from zigopt.protobuf.gen.training_run.training_run_data_pb2 import SysMetadata  # type: ignore
+from zigopt.protobuf.gen.color.color_pb2 import Color
+from zigopt.protobuf.gen.training_run.training_run_data_pb2 import SysMetadata
 
 from libsigopt.aux.errors import InvalidTypeError, MissingJsonKeyError, SigoptValidationError
 

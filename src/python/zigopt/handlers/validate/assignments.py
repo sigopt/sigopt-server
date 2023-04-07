@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any
 
-from zigopt.experiment.constraints import human_readable_constraint  # type: ignore
-from zigopt.experiment.model import Experiment, ExperimentParameterProxy  # type: ignore
+from zigopt.experiment.constraints import human_readable_constraint
+from zigopt.experiment.model import Experiment, ExperimentParameterProxy
 from zigopt.handlers.validate.validate_dict import ValidationType, validate_type
-from zigopt.net.errors import BadParamError, ServerError  # type: ignore
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConstraint, ExperimentParameter  # type: ignore
+from zigopt.net.errors import BadParamError, ServerError
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConstraint, ExperimentParameter
 
-from libsigopt.aux.constant import ConstraintType  # type: ignore
+from libsigopt.aux.constant import ConstraintType
 from libsigopt.aux.errors import InvalidValueError
 
 

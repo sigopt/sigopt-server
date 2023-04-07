@@ -6,8 +6,8 @@ from typing import Optional
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
-from zigopt.web_data.lib import validate_web_data_dict  # type: ignore
-from zigopt.web_data.model import WebData  # type: ignore
+from zigopt.web_data.lib import validate_web_data_dict
+from zigopt.web_data.model import WebData
 
 
 class ProjectResourceIdBuilder(JsonBuilder):

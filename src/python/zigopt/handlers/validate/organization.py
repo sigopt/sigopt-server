@@ -4,8 +4,8 @@
 from typing import Optional
 
 from zigopt.handlers.validate.base import validate_name
-from zigopt.net.errors import BadParamError  # type: ignore
-from zigopt.organization.model import Organization  # type: ignore
+from zigopt.net.errors import BadParamError
+from zigopt.organization.model import Organization
 
 
 def validate_organization_name(name: Optional[str]) -> str:

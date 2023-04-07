@@ -4,8 +4,8 @@
 from typing import Optional
 
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
-from zigopt.protobuf.gen.user.usermeta_pb2 import Usage  # type: ignore
-from zigopt.user.model import User  # type: ignore
+from zigopt.protobuf.gen.user.usermeta_pb2 import Usage
+from zigopt.user.model import User
 
 
 class PlannedUsageJsonBuilder(JsonBuilder):

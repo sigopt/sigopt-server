@@ -7,7 +7,7 @@ from typing import Optional
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
-from zigopt.organization.model import Organization  # type: ignore
+from zigopt.organization.model import Organization
 
 
 class OrganizationJsonBuilder(JsonBuilder):

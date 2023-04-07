@@ -14,7 +14,7 @@ def email_escape(val):
   return html.escape(str(val), quote=True)
 
 
-TEMPLATE_CACHE = {}
+TEMPLATE_CACHE: dict[frozenset, Template] = {}
 
 
 def make_template(**kwargs):

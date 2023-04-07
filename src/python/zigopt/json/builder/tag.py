@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, expose_fields, field
-from zigopt.tag.model import Tag  # type: ignore
+from zigopt.tag.model import Tag
 
 
 class TagJsonBuilder(JsonBuilder):

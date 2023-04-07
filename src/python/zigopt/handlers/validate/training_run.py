@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any, Mapping, Optional
 
-from zigopt.net.errors import BadParamError  # type: ignore
-from zigopt.training_run.constant import TRAINING_RUN_JSON_TO_STATE  # type: ignore
-from zigopt.training_run.model import OPTIMIZED_ASSIGNMENT_SOURCE, TrainingRun  # type: ignore
+from zigopt.net.errors import BadParamError
+from zigopt.training_run.constant import TRAINING_RUN_JSON_TO_STATE
+from zigopt.training_run.model import OPTIMIZED_ASSIGNMENT_SOURCE, TrainingRun
 
 
 MAX_SOURCE_LENGTH = 30

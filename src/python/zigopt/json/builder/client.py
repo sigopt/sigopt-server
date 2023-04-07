@@ -5,7 +5,7 @@ import datetime
 from typing import Optional
 
 from zigopt.common import *
-from zigopt.client.model import Client  # type: ignore
+from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
 
@@ -54,4 +54,4 @@ class ClientJsonBuilder(JsonBuilder):
   def last_activity(
     self,
   ) -> Optional[float]:
-    return napply(self._last_activity, datetime_to_seconds)  # type: ignore
+    return napply(self._last_activity, datetime_to_seconds)

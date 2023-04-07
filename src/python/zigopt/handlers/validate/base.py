@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Optional
 
-from zigopt.net.errors import BadParamError  # type: ignore
-from zigopt.user.model import get_domain_from_email, normalize_email  # type: ignore
+from zigopt.net.errors import BadParamError
+from zigopt.user.model import get_domain_from_email, normalize_email
 
 
 def has_invalid_chars(text: str) -> bool:

@@ -9,9 +9,9 @@ from zigopt.common import *
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.observation import BaseValueJsonBuilder
-from zigopt.project.model import Project  # type: ignore
-from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationValue  # type: ignore
-from zigopt.protobuf.gen.training_run.training_run_data_pb2 import (  # type: ignore
+from zigopt.project.model import Project
+from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationValue
+from zigopt.protobuf.gen.training_run.training_run_data_pb2 import (
   AssignmentsRunMeta,
   AssignmentsSources,
   Dataset,
@@ -20,8 +20,8 @@ from zigopt.protobuf.gen.training_run.training_run_data_pb2 import (  # type: ig
   SysMetadata,
   TrainingRunModel,
 )
-from zigopt.training_run.constant import TRAINING_RUN_STATE_TO_JSON  # type: ignore
-from zigopt.training_run.model import TrainingRun  # type: ignore
+from zigopt.training_run.constant import TRAINING_RUN_STATE_TO_JSON
+from zigopt.training_run.model import TrainingRun
 
 
 class TrainingRunValueJsonBuilder(BaseValueJsonBuilder):
@@ -214,7 +214,7 @@ class TrainingRunJsonBuilder(JsonBuilder):
 
   @field(ValidationType.id_string)
   def project(self) -> Optional[str]:
-    return napply(self._project, lambda p: p.reference_id)  # type: ignore
+    return napply(self._project, lambda p: p.reference_id)
 
   @field(JsonBuilderValidationType())
   def source_code(self) -> SourceCodeJsonBuilder:

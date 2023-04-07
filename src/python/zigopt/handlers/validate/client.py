@@ -1,9 +1,9 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from zigopt.client.model import Client  # type: ignore
+from zigopt.client.model import Client
 from zigopt.handlers.validate.base import validate_name
-from zigopt.net.errors import BadParamError  # type: ignore
+from zigopt.net.errors import BadParamError
 
 
 def validate_client_name(name: str) -> str:

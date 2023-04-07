@@ -4,13 +4,13 @@
 from typing import Optional
 
 from zigopt.common import *
-from zigopt.client.model import Client  # type: ignore
+from zigopt.client.model import Client
 from zigopt.json.builder.client import ClientJsonBuilder
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.user import UserJsonBuilder
-from zigopt.membership.model import Membership  # type: ignore
-from zigopt.permission.model import Permission  # type: ignore
-from zigopt.user.model import User  # type: ignore
+from zigopt.membership.model import Membership
+from zigopt.permission.model import Permission
+from zigopt.user.model import User
 
 
 class BasePermissionJsonBuilder(JsonBuilder):

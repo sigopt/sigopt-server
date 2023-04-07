@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any, Optional
 
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.validate.validate_dict import key_present
-from zigopt.net.errors import BadParamError  # type: ignore
+from zigopt.net.errors import BadParamError
 
 
 def validate_state(state: Optional[str]) -> Optional[str]:

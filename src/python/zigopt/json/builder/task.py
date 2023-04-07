@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import Task  # type: ignore
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import Task
 
 
 class TaskJsonBuilder(JsonBuilder):

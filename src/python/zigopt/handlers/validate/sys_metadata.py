@@ -1,8 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from zigopt.net.errors import BadParamError  # type: ignore
-from zigopt.protobuf.gen.training_run.training_run_data_pb2 import FeatureImportances, SysMetadata  # type: ignore
+from zigopt.net.errors import BadParamError
+from zigopt.protobuf.gen.training_run.training_run_data_pb2 import FeatureImportances, SysMetadata
 
 
 FEATURE_IMPORTANCES_MAX_NUM_FEATURE = 50

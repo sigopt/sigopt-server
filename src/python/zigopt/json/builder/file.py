@@ -5,7 +5,7 @@ from typing import Literal, Mapping, Optional
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import datetime_to_seconds
-from zigopt.file.model import File  # type: ignore
+from zigopt.file.model import File
 from zigopt.json.builder.json_builder import (
   JsonBuilder,
   JsonBuilderValidationType,
@@ -13,7 +13,7 @@ from zigopt.json.builder.json_builder import (
   expose_fields,
   field,
 )
-from zigopt.protobuf.gen.file.filedata_pb2 import FileData  # type: ignore
+from zigopt.protobuf.gen.file.filedata_pb2 import FileData
 
 
 class FileJsonBuilder(JsonBuilder):

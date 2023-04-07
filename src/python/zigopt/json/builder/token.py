@@ -4,10 +4,10 @@
 from typing import Optional
 
 from zigopt.common import *
-from zigopt.client.model import Client  # type: ignore
+from zigopt.client.model import Client
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
-from zigopt.token.model import Token  # type: ignore
-from zigopt.token.token_types import TOKEN_SCOPE_TO_NAME, PermissionType  # type: ignore
+from zigopt.token.model import Token
+from zigopt.token.token_types import TOKEN_SCOPE_TO_NAME, PermissionType
 
 
 class TokenJsonBuilder(JsonBuilder):

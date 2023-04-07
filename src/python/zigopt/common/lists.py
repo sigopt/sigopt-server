@@ -424,7 +424,8 @@ def as_tuple(val: _collectionsabc.Iterable[lists_T] | lists_T) -> tuple[lists_T,
     assert isinstance(val, _collectionsabc.Iterable)
     return tuple(val)
   else:
-    return tuple([val])  # type: ignore
+    assert not isinstance(val, _collectionsabc.Iterable)
+    return tuple([val])
 
 
 def extend_dict(

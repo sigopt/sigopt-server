@@ -4,8 +4,8 @@
 from typing import Optional
 
 from zigopt.common import *
-from zigopt.handlers.validate.assignments import parameter_conditions_satisfied  # type: ignore
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional, ExperimentParameter  # type: ignore
+from zigopt.handlers.validate.assignments import parameter_conditions_satisfied
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional, ExperimentParameter
 
 
 class BaseParamRenderException(Exception):

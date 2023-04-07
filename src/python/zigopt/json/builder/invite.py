@@ -4,17 +4,17 @@
 from typing import Mapping, Optional, Sequence
 
 from zigopt.common import *
-from zigopt.authorization.empty import EmptyAuthorization  # type: ignore
-from zigopt.client.model import Client  # type: ignore
+from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.config.broker import ConfigBroker
-from zigopt.invite.model import Invite  # type: ignore
+from zigopt.invite.model import Invite
 from zigopt.json.builder.invite_base import BaseInviteJsonBuilder
 from zigopt.json.builder.json_builder import JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.pending_permission import PendingPermissionJsonBuilder
-from zigopt.membership.model import MembershipType  # type: ignore
-from zigopt.organization.model import Organization  # type: ignore
-from zigopt.permission.pending.model import PendingPermission  # type: ignore
+from zigopt.membership.model import MembershipType
+from zigopt.organization.model import Organization
+from zigopt.permission.pending.model import PendingPermission
 
 
 class InviteJsonBuilder(BaseInviteJsonBuilder):
@@ -55,11 +55,12 @@ class InviteJsonBuilder(BaseInviteJsonBuilder):
 
   @field(ValidationType.integer)
   def created(self) -> Optional[float]:
-    return napply(self._invite.timestamp, datetime_to_seconds)  # type: ignore
+    return napply(self._invite.timestamp, datetime_to_seconds)
 
   @field(ValidationType.enum(MembershipType))
-  def membership_type(self) -> Optional[MembershipType]:
-    return napply(self._invite.membership_type, lambda i: i.value)  # type: ignore
+  def membership_type(self) -> Optional[str]:
+    membership_type: MembershipType = self._invite.membership_type
+    return napply(membership_type, lambda i: i.value)
 
   @field(ValidationType.id)
   def organization(self) -> int:

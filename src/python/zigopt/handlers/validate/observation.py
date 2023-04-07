@@ -6,7 +6,7 @@ import json
 from typing import Any
 
 from zigopt.common import *
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.validate.validate_dict import (
   ValidationType,
   get_opt_with_validation,
@@ -14,9 +14,9 @@ from zigopt.handlers.validate.validate_dict import (
   validate_mutually_exclusive_properties,
 )
 from zigopt.handlers.validate.values import base_values_schema
-from zigopt.net.errors import BadParamError  # type: ignore
-from zigopt.observation.model import Observation  # type: ignore
-from zigopt.task.from_json import extract_task_from_json  # type: ignore
+from zigopt.net.errors import BadParamError
+from zigopt.observation.model import Observation
+from zigopt.task.from_json import extract_task_from_json
 
 from libsigopt.aux.errors import MissingJsonKeyError
 from libsigopt.aux.validate_schema import validate
