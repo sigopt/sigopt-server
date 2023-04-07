@@ -34,7 +34,7 @@ class SessionJsonBuilder(JsonBuilder):
 
   @field(ValidationType.boolean)
   def needs_password_reset(self) -> bool:
-    user: User = self._session.user
+    user: Optional[User] = self._session.user
     return bool(napply(user, lambda u: u.needs_password_reset))
 
   @field(JsonBuilderValidationType())
