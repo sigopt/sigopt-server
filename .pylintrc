@@ -15,7 +15,6 @@ ignored-modules=google.protobuf
 
 [MESSAGES CONTROL]
 disable=
-  abstract-class-instantiated,
   abstract-method,
   anomalous-unicode-escape-in-string,
   arguments-differ,
