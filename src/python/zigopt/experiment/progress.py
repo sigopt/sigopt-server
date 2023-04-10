@@ -11,7 +11,7 @@ from zigopt.services.base import Service
 from zigopt.training_run.model import TrainingRun
 
 
-class BaseExperimentProgress(object):
+class BaseExperimentProgress:
   builder_cls: object
 
   def __init__(self, experiment):

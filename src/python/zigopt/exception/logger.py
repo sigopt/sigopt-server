@@ -16,7 +16,7 @@ class SoftException(RuntimeError):
   pass
 
 
-class _SoftExceptionHandler(object):
+class _SoftExceptionHandler:
   def __init__(self, handled_exception_type, services, extra):
     self.handled_exception_type = handled_exception_type
     self.services = services

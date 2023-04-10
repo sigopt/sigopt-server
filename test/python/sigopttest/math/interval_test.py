@@ -6,7 +6,7 @@ import numpy
 from zigopt.math.interval import *
 
 
-class TestInterval(object):
+class TestInterval:
   def test_open(self):
     assert 2 in OpenInterval(1, 3)
     assert 4 not in OpenInterval(1, 3)

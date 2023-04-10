@@ -27,7 +27,7 @@ DEFAULT_POOL_RECYCLE_TIME = timedelta(minutes=5).total_seconds()
 _TOLERATED_ERRORS = tuple([DatabaseError, OperationalError])
 
 
-class DatabaseConnection(object):
+class DatabaseConnection:
   def __init__(self, engine, logger_factory=None):
     self.engine = engine
     self._logger_factory = logger_factory or logging
@@ -164,7 +164,7 @@ def sanitize_errors(func):
         e.params = None
       except AssertionError:
         raise
-      except Exception:
+      except Exception:  # pylint: disable=broad-except
         pass
       raise
 

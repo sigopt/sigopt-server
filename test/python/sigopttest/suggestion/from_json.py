@@ -17,7 +17,7 @@ from zigopt.suggestion.from_json import build_suggestion_data_from_json
 from libsigopt.aux.errors import InvalidTypeError
 
 
-class TestBuildSuggestionData(object):
+class TestBuildSuggestionData:
   @pytest.fixture
   def experiment(self):
     return Experiment(

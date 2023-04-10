@@ -5,7 +5,7 @@ from zigopt.common import *
 from zigopt.queue.base import BaseQueueService
 
 
-class DequeueSession(object):
+class DequeueSession:
   def __enter__(self):
     return self
 

@@ -27,7 +27,7 @@ def switch_to_utc(explicit=False):
 BASELINE_EPOCH = dt.datetime(1970, 1, 1, 0, 0, 0, 0, tzinfo=pytz.utc)
 
 
-class TestDefaultTimezone(object):
+class TestDefaultTimezone:
   @pytest.fixture(autouse=True, params=[True, False])
   def initialize_timezone(self, request):
     switch_to_utc(explicit=request.param)
@@ -56,7 +56,7 @@ class TestDefaultTimezone(object):
     )
 
 
-class TestSystemTimezone(object):
+class TestSystemTimezone:
   @pytest.fixture(autouse=True)
   def initialize_timezone(self):
     os.environ["TZ"] = "Etc/GMT+12"

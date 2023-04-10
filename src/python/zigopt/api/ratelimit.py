@@ -14,7 +14,7 @@ EMAIL_IDENTIFIER = "email"
 TOKEN_IDENTIFIER = "token"
 
 
-class _BaseRateLimit(object):
+class _BaseRateLimit:
   def _on_raise(self, services, identifier, identifier_type):
     return None
 

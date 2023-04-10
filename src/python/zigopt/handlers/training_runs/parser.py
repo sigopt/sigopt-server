@@ -33,7 +33,7 @@ MAX_LOG_LENGTH = 1024 + 100
 # This class is used to validate that JSON represents a valid protobuf as we
 # build it, while still retaining that JSON. This is so we can keep track of
 # which fields were set as None, which is not natively tracked by a protobuf object.
-class ProtobufBuilderThatRetainsNones(object):
+class ProtobufBuilderThatRetainsNones:
   def __init__(self, Cls):
     self.Cls = Cls
     self._builder = {}
@@ -52,7 +52,7 @@ class ProtobufBuilderThatRetainsNones(object):
     return dict_to_protobuf(self.Cls, self.json)
 
 
-class TrainingRunRequestParams(object):
+class TrainingRunRequestParams:
   valid_fields = (
     "assignments",
     "assignments_meta",
@@ -93,7 +93,7 @@ class TrainingRunRequestParams(object):
     return self.training_run_data_json.get(json_name, object()) is None
 
 
-class TrainingRunRequestParser(object):
+class TrainingRunRequestParser:
   @generator_to_dict
   def parse_datasets(self, datasets):
     if datasets is None:

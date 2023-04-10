@@ -69,7 +69,7 @@ VISIBLE_SUGGESTION_FIELDS = [
 ids = generate_ids()
 
 
-class BuilderTestBase(object):
+class BuilderTestBase:
   client_id = next(ids)
   organization_id = next(ids)
   user_id = next(ids)

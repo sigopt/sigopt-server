@@ -270,7 +270,7 @@ class UnprocessedSuggestionService(Service):
       self.services.redis_service.remove_from_sorted_set(suggestion_timestamp_key, uuid_value)
     except AssertionError:
       raise
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
       self.services.exception_logger.soft_exception(
         e,
         extra={

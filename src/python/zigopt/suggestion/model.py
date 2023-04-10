@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-class Suggestion(object):
+class Suggestion:
   def __init__(self, processed=None, unprocessed=None, observation=None):
     assert unprocessed is not None, "Suggestion needs an UnprocessedSuggestion"
     self._processed = processed

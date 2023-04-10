@@ -13,7 +13,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 )
 
 
-class _TestParameterJsonBase(object):
+class _TestParameterJsonBase:
   @pytest.fixture
   def categorical_param(self):
     p = ExperimentParameter(

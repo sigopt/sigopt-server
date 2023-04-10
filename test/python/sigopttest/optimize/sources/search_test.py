@@ -11,7 +11,7 @@ from zigopt.optimize.sources.search import SearchOptimizationSource
 from zigopt.optimize.sources.spe import SPEOptimizationSource
 
 
-class TestSearchExperimentProgress(object):
+class TestSearchExperimentProgress:
   @pytest.fixture(
     params=[
       "multisolution",

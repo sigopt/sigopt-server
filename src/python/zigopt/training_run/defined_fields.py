@@ -12,7 +12,7 @@ from zigopt.training_run.field_types import TRAINING_RUN_API_FIELDS, FieldType
 from zigopt.training_run.model import TrainingRun
 
 
-class TrainingRunDefinedFieldsExtractor(object):
+class TrainingRunDefinedFieldsExtractor:
   def __init__(self, services, query, fields_details=None):
     self.services = services
     fields_details = coalesce(fields_details, TRAINING_RUN_API_FIELDS)

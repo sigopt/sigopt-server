@@ -32,7 +32,7 @@ class CustomChromeOptions(webdriver.ChromeOptions):
     return d
 
 
-class SigOptWebDriver(object):
+class SigOptWebDriver:
   def __getattr__(self, name):
     if name.endswith("_by_class_name"):
       warnings.warn(
@@ -94,14 +94,14 @@ class SigOptWebDriver(object):
     self.driver.set_window_size(1200, 8000)
     self.get_path(title_text="")
 
-  def get_path(self, path="", title_text=None, css_selector=None, *args, **kwargs):
+  def get_path(self, path="", title_text=None, css_selector=None, **kwargs):
     if not path.startswith("http"):
       path = self.routes.get_url_base(path) + path
     self.driver.get(path)
     if title_text is not None:
-      navigation_helper.wait_for_title_text(self, title_text, *args, **kwargs)
+      navigation_helper.wait_for_title_text(self, title_text, **kwargs)
     if css_selector is not None:
-      navigation_helper.wait_for_element_by_css_selector(self, css_selector, *args, **kwargs)
+      navigation_helper.wait_for_element_by_css_selector(self, css_selector, **kwargs)
     self.wait_for_page_load()
     return self
 

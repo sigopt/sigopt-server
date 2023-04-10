@@ -22,7 +22,7 @@ from libsigopt.aux.errors import SigoptComputeError
 
 # A way for the queue workers to detect that it should stop processing messages and shut down.
 # Uses signals so that `sudo service workerd-multi stop` works as expected
-class SignalKillPolicy(object):
+class SignalKillPolicy:
   def __init__(self):
     self._should_kill = False
     signal.signal(signal.SIGINT, self._shutdown)
@@ -37,12 +37,12 @@ class SignalKillPolicy(object):
     return self._should_kill
 
 
-class NullKillPolicy(object):
+class NullKillPolicy:
   def should_kill(self):
     return False
 
 
-class QueueMessageHandler(object):
+class QueueMessageHandler:
   def __init__(self, global_services):
     self.global_services = global_services
 
@@ -168,7 +168,7 @@ class QueueWorkers(QueueMessageHandler):
       max_messages_jitter,
       self.global_services.config_broker.get(f"queue.{self.message_group.value}.max_messages_jitter", 0),
     )
-    self.jitter = non_crypto_random.randint(-jitter_bounds, jitter_bounds)
+    self.jitter = non_crypto_random.randint(-jitter_bounds, jitter_bounds)  # pylint: disable=invalid-unary-operand-type
 
     self.message_count = 0
     self.profiler.enable()

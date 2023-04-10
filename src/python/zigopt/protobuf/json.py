@@ -16,7 +16,7 @@ class InvalidPathError(ValueError):
 _NO_ARG = object()
 
 
-class OurEnumDescriptor(object):
+class OurEnumDescriptor:
   def __init__(self, descriptor):
     self.descriptor = descriptor
 

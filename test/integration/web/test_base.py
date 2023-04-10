@@ -20,7 +20,7 @@ from integration.connection import IntegrationTestConnection
 from integration.utils.html import validate_html
 
 
-class WebResponse(object):
+class WebResponse:
   def __init__(self, requests_response):
     self.response = requests_response
     content_type = self.response.headers["content-type"]
@@ -84,7 +84,7 @@ class WebResponse(object):
     return html.escape(value, quote=False) in self.content_html()
 
 
-class WebConnection(object):
+class WebConnection:
   def __init__(self, app_url, email=None, password=None):
     self.app_url = app_url
     self.routes = Routes(self.app_url)
@@ -204,7 +204,7 @@ class WebConnection(object):
     return web_response
 
 
-class ApiConnection(object):
+class ApiConnection:
   def __init__(self, sigopt_connection, client_id, user_id, organization_id=None):
     if client_id is not None and organization_id is None:
       raise Exception("client_id provided without orgainzation_id")
@@ -217,7 +217,7 @@ class ApiConnection(object):
     return getattr(self.conn, name)
 
 
-class LoginState(object):
+class LoginState:
   def __init__(self, email, password, user_id, user_token, client_id, organization_id, client_token):
     self.email = email
     self.password = password
@@ -232,7 +232,7 @@ _routes = None
 
 
 def load_routes():
-  global _routes
+  global _routes  # pylint: disable=global-statement
   if _routes is None:
     try:
       with open("artifacts/web/routes/routes.json") as routes_fp:
@@ -259,7 +259,7 @@ def _static_routes():
   return [r + ("/:rest*" if r.endswith("/:folder") else "") for r in static_routes]
 
 
-class Routes(object):
+class Routes:
   APP_ROUTES = _app_routes()
   STATIC_ROUTES = _static_routes()
   ALL_ROUTES = APP_ROUTES + STATIC_ROUTES
