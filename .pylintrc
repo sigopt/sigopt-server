@@ -17,7 +17,6 @@ ignored-modules=google.protobuf
 disable=
   abstract-class-instantiated,
   abstract-method,
-  anomalous-unicode-escape-in-string,
   arguments-differ,
   assignment-from-no-return,
   broad-except,
