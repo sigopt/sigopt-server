@@ -72,7 +72,5 @@ disable=
   useless-object-inheritance,
   useless-super-delegation,
   wildcard-import,
-  wrong-import-order,
-  wrong-import-order,
   wrong-import-position
 enable=missing-final-newline
