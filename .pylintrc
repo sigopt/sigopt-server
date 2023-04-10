@@ -65,7 +65,6 @@ disable=
   unsupported-assignment-operation,
   unsupported-membership-test,
   unused-argument,
-  unused-wildcard-import,
   use-dict-literal,
   use-implicit-booleaness-not-comparison,
   use-list-literal,
