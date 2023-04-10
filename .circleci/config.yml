@@ -145,7 +145,7 @@ commands:
       - run: |
           ./ci/compose_test.sh "<< parameters.test_path >>" \
             --count=512 \
-            test/integration/v1/requests/parsing_test.py \
+            test/integration/v1/requests/parsing_test.py::TestRequestParsing::test_json_integer_dos_not_found \
             << parameters.extra_test_args >>
     parameters:
       count:
