@@ -17,13 +17,10 @@ ignored-modules=google.protobuf
 disable=
   abstract-method,
   arguments-differ,
-  cell-var-from-loop,
   consider-using-with,
   duplicate-code,
-  global-statement,
   import-outside-toplevel,
   invalid-name,
-  invalid-unary-operand-type,
   keyword-arg-before-vararg,
   missing-docstring,
   missing-timeout,
