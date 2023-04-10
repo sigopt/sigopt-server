@@ -36,7 +36,6 @@ disable=
   len-as-condition,
   locally-disabled,
   missing-docstring,
-  missing-timeout,
   no-else-raise,
   no-else-return,
   no-member,
