@@ -1,4 +1,7 @@
 {
+  "address": {
+    "api_url": "http://localhost:5000"
+  },
   "extends": "test.json",
   "model": {
     "random_padding_suggestions": 0
