@@ -46,7 +46,6 @@ disable=
   redefined-outer-name,
   redundant-u-string-prefix,
   superfluous-parens,
-  too-few-public-methods,
   too-many-ancestors,
   too-many-arguments,
   too-many-boolean-expressions,
