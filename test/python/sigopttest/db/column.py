@@ -18,7 +18,7 @@ class Model(Base):
   protobuf_column = ProtobufColumn(Parent)
 
 
-class TestDbColumn(object):
+class TestDbColumn:
   def access_path(self, path):
     clause = Model.protobuf_column
     for item in path:

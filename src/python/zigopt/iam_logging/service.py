@@ -8,7 +8,7 @@ from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.services.base import Service
 
 
-class IamEvent(object):
+class IamEvent:
   ORGANIZATION_CREATE = "OrganizationCreate"
   ORGANIZATION_DELETE = "OrganizationDelete"
   ORGANIZATION_UPDATE = "OrganizationUpdate"
@@ -70,7 +70,7 @@ _LOG_IN_EVENTS = {
 _REQUESTOR_EVENTS = ALL_IAM_EVENTS - _NO_REQUESTOR_EVENTS - _LOG_IN_EVENTS
 
 
-class IamResponseStatus(object):
+class IamResponseStatus:
   SUCCESS = "success"
   FAILURE = "failure"
 

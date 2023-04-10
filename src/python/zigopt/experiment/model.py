@@ -349,7 +349,7 @@ class Experiment(Base):
 
   @property
   def conditionals_breadth(self):
-    return sum([len(c.values) for c in self.conditionals])
+    return sum(len(c.values) for c in self.conditionals)
 
   @property
   def conditionals_map(self):

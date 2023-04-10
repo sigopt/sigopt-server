@@ -4,7 +4,7 @@
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
-class ScoredSuggestion(object):
+class ScoredSuggestion:
   def __init__(self, suggestion, score):
     assert isinstance(suggestion, UnprocessedSuggestion)
     self.suggestion = suggestion

@@ -16,7 +16,7 @@ class CustomException(Exception):
   pass
 
 
-class TestNextSuggestion(object):
+class TestNextSuggestion:
   @pytest.fixture
   def suggestion_broker(self, services):
     return SuggestionBroker(services)
