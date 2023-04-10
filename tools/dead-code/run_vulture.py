@@ -34,7 +34,6 @@ DEFAULTS.update(
       "zigopt",
       # database
       "autocommit",
-      "autoflush",
       # flask
       "make_default_options_response",
       "request_class",
@@ -55,7 +54,6 @@ DEFAULTS.update(
       # smtp
       "content_manager",
       "handle_DATA",
-      "mail_settings",
       # sqlalchemy
       "process_*_param",
       # tests
