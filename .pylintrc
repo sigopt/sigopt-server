@@ -29,7 +29,6 @@ disable=
   too-many-instance-attributes,
   too-many-nested-blocks,
   too-many-public-methods,
-  too-many-return-statements,
   too-many-statements,
   unnecessary-lambda-assignment,
   unspecified-encoding,
