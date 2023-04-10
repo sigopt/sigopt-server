@@ -66,6 +66,8 @@ DEFAULTS.update(
       # protobuf
       "_options",
       "_serialized_*",
+      "ExperimentParameterType",
+      "MetricObjective",
       "containing_*",
       "google_dot_protobuf_dot_*",
       "hyperparameter_alpha",
