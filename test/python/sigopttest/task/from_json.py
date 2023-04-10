@@ -15,7 +15,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.task.from_json import extract_task_from_json
 
 
-class TestExtractors(object):
+class TestExtractors:
   @pytest.fixture
   def experiment(self):
     return Experiment(

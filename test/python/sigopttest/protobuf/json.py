@@ -13,7 +13,7 @@ def _field_descriptor(field_name):
   return Parent.DESCRIPTOR.fields_by_name[field_name]
 
 
-class TestUtils(object):
+class TestUtils:
   @pytest.fixture
   def message_factory(self):
     factory = SymbolDatabase(pool=google.protobuf.descriptor_pool.Default())

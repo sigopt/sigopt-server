@@ -7,7 +7,7 @@ import pytest
 from zigopt.exception.logger import FullTraceback, _SoftExceptionHandler
 
 
-class TestProcessSoftException(object):
+class TestProcessSoftException:
   @pytest.fixture
   def services(self):
     return mock.Mock()

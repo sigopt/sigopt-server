@@ -54,7 +54,6 @@ disable=
   unused-wildcard-import,
   use-dict-literal,
   use-implicit-booleaness-not-comparison,
-  useless-object-inheritance,
   wildcard-import,
   wrong-import-position
 enable=missing-final-newline

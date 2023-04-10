@@ -58,7 +58,7 @@ class HandlerWithoutObject(Handler):
 
 
 @pytest.mark.parametrize("BaseHandler", [HandlerWithObject, HandlerWithoutObject])
-class TestHandler(object):
+class TestHandler:
   @pytest.fixture
   def services(self):
     return mock.Mock()

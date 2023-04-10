@@ -18,7 +18,7 @@ def set_as_maybe_none(obj, attr, value):
     setattr(obj, attr, value)
 
 
-class TestExperimentJsonBuilder(object):
+class TestExperimentJsonBuilder:
   @pytest.mark.parametrize("metric_name", [None, ""])
   @pytest.mark.parametrize("value_name", [None, ""])
   @pytest.mark.parametrize("num_metrics", [1, 2])

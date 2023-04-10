@@ -9,7 +9,7 @@ from sklearn import datasets
 from zigopt.importance.service import compute_importances
 
 
-class TestImportancesComputation(object):
+class TestImportancesComputation:
   @pytest.mark.parametrize("n_samples", [50, 200, 800])
   @pytest.mark.parametrize("n_features", [3, 10, 60])
   def test_basic_functionalities(self, n_samples, n_features):

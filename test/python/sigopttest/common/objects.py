@@ -7,7 +7,7 @@ from mock import MagicMock, Mock
 from zigopt.common import *
 
 
-class TestObjects(object):
+class TestObjects:
   @pytest.mark.parametrize(
     "obj,instances,result",
     [

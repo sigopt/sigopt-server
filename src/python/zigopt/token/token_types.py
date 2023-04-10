@@ -5,13 +5,13 @@ from zigopt.common import *
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import TokenMeta
 
 
-class PermissionType(object):
+class PermissionType:
   WRITE = "write"
   READ = "read"
   ADMIN = "admin"
 
 
-class TokenType(object):
+class TokenType:
   USER = "user"
   CLIENT_DEV = "client-dev"
   CLIENT_API = "client-api"
