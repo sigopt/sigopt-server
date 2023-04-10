@@ -1,4 +1,3 @@
-_.notify_admins  # unused method (src/python/zigopt/best_practices/service.py:113)
 email_escape  # unused function (src/python/zigopt/email/model.py:13)
 _.delete_by_invite_ids  # unused method (src/python/zigopt/invite/service.py:77)
 _.interior  # unused method (src/python/zigopt/math/interval.py:21)

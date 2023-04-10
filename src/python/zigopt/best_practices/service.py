@@ -109,18 +109,3 @@ class BestPracticesService(Service):
 
     if experiment.conditionals and not experiment.dimension <= MAX_DIMENSION_WITH_CONDITIONALS:
       yield f"{CONDITIONALS_REASON} has more than {MAX_DIMENSION_WITH_CONDITIONALS} parameters"
-
-  def notify_admins(self, auth, error_message, experiment, **kwargs):
-    # Note: error_message can be a message or an array
-    if self.services.config_broker.get("features.bestPractices", False):
-      if "organization_id" not in kwargs:
-        kwargs["organization_id"] = auth and auth.current_client and auth.current_client.organization_id
-
-      if "user_id" not in kwargs:
-        kwargs["user_id"] = auth and auth.current_user and auth.current_user.id
-
-      if "client_id" not in kwargs:
-        kwargs["client_id"] = auth and auth.current_client and auth.current_client.id
-
-      if "experiment_id" not in kwargs:
-        kwargs["experiment_id"] = experiment and experiment.id
