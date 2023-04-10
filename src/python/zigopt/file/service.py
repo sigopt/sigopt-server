@@ -10,9 +10,6 @@ from zigopt.services.base import Service
 
 
 class FileService(Service):
-  def __init__(self, services):
-    super().__init__(services)
-
   @property
   def enabled(self):
     return self.services.config_broker.get("user_uploads.s3.enabled", False)
