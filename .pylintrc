@@ -17,7 +17,6 @@ ignored-modules=google.protobuf
 disable=
   abstract-method,
   arguments-differ,
-  assignment-from-no-return,
   duplicate-code,
   import-outside-toplevel,
   invalid-name,
