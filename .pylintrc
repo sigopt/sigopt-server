@@ -19,7 +19,6 @@ disable=
   arguments-differ,
   assignment-from-no-return,
   cell-var-from-loop,
-  consider-using-generator,
   consider-using-with,
   duplicate-code,
   global-statement,
