@@ -12,6 +12,7 @@ from vulture.core import Vulture
 DEFAULTS.update(
   {
     "exclude": [
+      ".venv/",
       "node_modules/",
       "scratch/",
       "src/python/zigopt/db/all_models.py",
