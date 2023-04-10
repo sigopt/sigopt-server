@@ -254,7 +254,7 @@ class RedisService(Service):
         )
       except AssertionError:
         raise
-      except Exception:
+      except Exception:  # pylint: disable=broad-except
         self.redis = None
         self.blocking_conn_redis = None
         self.logger.warning(

@@ -30,9 +30,6 @@ class AiExperimentTrainingRunsCreateHandler(
 
   make_suggestion_meta_from_json = SuggestionsCreateHandler.make_suggestion_meta_from_json
 
-  def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
-
   def maybe_create_observation_from_data(self, assignments, values, failed):
     now = datetime_to_seconds(current_datetime())
     try:
