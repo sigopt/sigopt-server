@@ -20,7 +20,6 @@ disable=
   duplicate-code,
   invalid-name,
   missing-docstring,
-  no-member,
   pointless-string-statement,
   too-few-public-methods,
   too-many-ancestors,
