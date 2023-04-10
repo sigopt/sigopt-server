@@ -62,7 +62,6 @@ disable=
   unnecessary-lambda-assignment,
   unspecified-encoding,
   unsubscriptable-object,
-  unsupported-assignment-operation,
   unsupported-membership-test,
   unused-argument,
   unused-wildcard-import,
