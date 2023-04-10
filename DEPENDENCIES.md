@@ -8,8 +8,8 @@ SPDX-License-Identifier: Apache License 2.0
 
 Our scripts use the latest version of Bash.
 The API requires Python 3.10 and the website requires Node 18.
-Python dependencies are listed in the files: `requirements.txt`, `requirements-dev.txt`.
-Node dependencies are listed in `yarn.lock`.
+Python dependencies are listed in `Pipfile` and frozen in `Pipfile.lock`.
+Node dependencies are listed in `package.json` and frozen in `yarn.lock`.
 
 We store data in the following:
 
