@@ -8,8 +8,12 @@ SPDX-License-Identifier: Apache License 2.0
 
 Sigopt-Server is an open-source tool for managing adaptive experiments, especially for hyperparameter optimization. It uses algorithms to determine the best spots in parameter space for metric optimization, and includes web visualizations so you can improve your models. For more information you can [read about our service offering](https://sigopt.com/). Our documentation is [here](https://docs.sigopt.com/)
 
+# Installation
+
+All you need to get started with SigOpt Server is Docker, Docker Compose and Git. We recommend that you get the latest version of each, and you will need at least Docker Compose version 2.6.1. Instructions are provided below for installing SigOpt Server on Debian, Ubuntu and OSX.
+
 <details>
-<summary>Installation (Ubuntu) </summary>
+<summary>Installation (Debian and Ubuntu)</summary>
 
 From a default ubuntu install. We have tested this on Ubuntu 22.04 Jammy from a clean AWS image. If you are an another variant of Linux you can proceed at your own risk, adapting as you go.
 
