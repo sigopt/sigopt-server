@@ -11,7 +11,7 @@ from zigopt.suggestion.processed.model import ProcessedSuggestion
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
-class _TestSuggestionBase(object):
+class _TestSuggestionBase:
   @pytest.fixture(params=[True, False])
   def observation(self, request):
     if request.param:

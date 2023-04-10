@@ -1,10 +1,11 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# pylint: disable=import-outside-toplevel
 import time
 
 
-class Profiler(object):
+class Profiler:
   def __init__(self):
     import cProfile
     import tracemalloc
@@ -46,7 +47,7 @@ class Profiler(object):
       pass
 
 
-class NullProfiler(object):
+class NullProfiler:
   def enable(self):
     pass
 

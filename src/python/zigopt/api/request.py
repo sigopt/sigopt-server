@@ -60,8 +60,7 @@ def object_pairs_hook_raise_on_duplicates(ordered_pairs):
 
 
 class InvalidJsonValue(BadParamError):
-  def __init__(self, value_str):
-    super().__init__(value_str)
+  pass
 
 
 def parse_constant(constant):
@@ -101,7 +100,7 @@ def as_json(string, encoding="utf-8"):
     raise BadParamError(f"Error parsing json: {e}") from e
 
 
-class RequestProxy(object):
+class RequestProxy:
   """
     Exposes a limited subset of Flask request endpoints, so that
     Handler implementations do not depend directly on Flask.

@@ -16,7 +16,7 @@ PagingRequest = ImmutableStruct("PagingRequest", ("limit", "before", "after"))
 INF = float("inf")
 
 
-class Pager(object):
+class Pager:
   """
     This class handles all the logic for paginating queries. Given a result set
     and a (limit, before, after) tuple, it returns the corresponding page

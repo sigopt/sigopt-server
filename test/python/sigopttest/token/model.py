@@ -7,7 +7,7 @@ from zigopt.token.model import Token
 from zigopt.token.token_types import *
 
 
-class TestToken(object):
+class TestToken:
   def test_default_token_object(self):
     token = Token(token_type=TokenType.CLIENT_API)
     assert is_likely_random_string(token.token)

@@ -45,7 +45,7 @@ def GetOneofValueOrNone(underlying, name):
   return None
 
 
-class BaseProxyClass(object):
+class BaseProxyClass:
   # Used to avoid cirucular import caused by is_protobuf and Proxy
   pass
 

@@ -7,7 +7,7 @@ from zigopt.protobuf.lib import CopyFrom
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
-class SuggestionSampler(object):
+class SuggestionSampler:
   source = None
 
   def __init__(self, services, experiment, optimization_args):

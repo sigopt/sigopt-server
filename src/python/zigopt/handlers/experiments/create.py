@@ -162,14 +162,7 @@ class BaseExperimentsCreateHandler(Handler):
     base_source = source_class_from_experiment_meta(
       experiment.experiment_meta,
     )(self.services, experiment)
-    hyperparameters = base_source.construct_initial_hyperparameters()
-    if hyperparameters:
-      self.services.aux_service.persist_hyperparameters(
-        experiment=experiment,
-        source_name=base_source.name,
-        hyperparameters=hyperparameters,
-        current_aux_date_updated=current_datetime(),
-      )
+    base_source.construct_initial_hyperparameters()
 
   @classmethod
   def get_runs_only(cls, json_dict):

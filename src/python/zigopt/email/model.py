@@ -55,7 +55,7 @@ def create_mako_email(
   )
 
 
-class HtmlEmail(object):
+class HtmlEmail:
   # bypass_list_management means that the email will be sent even if the user has unsubscribed.
   # This should be used only for necessary, user-initiated emails, such as a password reset
   def __init__(self, to, subject, body_html, from_address, bypass_list_management=False):

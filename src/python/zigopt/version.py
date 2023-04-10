@@ -19,6 +19,6 @@ def log_version():
       version = f"git:{git_hash}"
     except AssertionError:
       raise
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
       logger.exception("unknown git-hash")
   logger.info(version)

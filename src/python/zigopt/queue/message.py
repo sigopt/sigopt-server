@@ -5,7 +5,7 @@ from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
 
 
-class BaseMessageBody(object):
+class BaseMessageBody:
   @classmethod
   def from_args(cls, *args, **kwargs):
     raise NotImplementedError()
@@ -48,7 +48,7 @@ class ProtobufMessageBody(BaseMessageBody):
     return cls(pb)
 
 
-class QueueMessage(object):
+class QueueMessage:
   def __init__(self, message_type, message_body):
     assert isinstance(message_body, BaseMessageBody)
     self.message_type = message_type
@@ -63,7 +63,7 @@ class QueueMessage(object):
     return self.message_body.content
 
 
-class ReceivedMessage(object):
+class ReceivedMessage:
   def __init__(self, queue_message, handle, enqueue_time, group_key=None):
     assert isinstance(queue_message, QueueMessage)
     self.queue_message = queue_message

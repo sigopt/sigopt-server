@@ -40,7 +40,7 @@ class InvalidFieldError(JsonBuilderError):
     self.type_error = type_error
 
 
-class BaseFieldResolver(object):
+class BaseFieldResolver:
   def __init__(self, field_name: str, value_type: IOValidatorInterface):
     self.field_name = field_name
     self.value_type = value_type.get_output_validator()
@@ -93,7 +93,7 @@ class ExposedFieldResolver(BaseFieldResolver):
     return True
 
 
-class FieldExposer(object):
+class FieldExposer:
   def __init__(
     self,
     func: Callable[[], Any],
@@ -146,13 +146,13 @@ def expose_fields(
   return wrap_func
 
 
-class BuilderDetails(object):
+class BuilderDetails:
   def __init__(self, object_type: str, field_dict: dict[str, BaseFieldResolver]):
     self.object_type = object_type
     self.field_dict = field_dict
 
 
-class JsonBuilder(object):
+class JsonBuilder:
   builder: BuilderDetails
 
   def __new__(cls, *args, **kwargs):

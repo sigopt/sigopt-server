@@ -406,7 +406,7 @@ class ProjectsTrainingRunsBatchCreateHandler(ProjectsTrainingRunsCreateHandler):
           description: "Unexpected Error"
     """
 
-  class DummyRequest(object):
+  class DummyRequest:
     def __init__(self, params):
       self._params = params
 

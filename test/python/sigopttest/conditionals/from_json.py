@@ -10,7 +10,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditio
 from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
 
 
-class TestSetConditionalFromJson(object):
+class TestSetConditionalFromJson:
   @pytest.fixture
   def conditional(self):
     return ExperimentConditional()
@@ -51,7 +51,7 @@ class TestSetConditionalFromJson(object):
       set_conditional_from_json(conditional, conditional_json)
 
 
-class TestSetConditionalsListFromJson(object):
+class TestSetConditionalsListFromJson:
   @pytest.fixture
   def experiment_meta(self):
     return ExperimentMeta()

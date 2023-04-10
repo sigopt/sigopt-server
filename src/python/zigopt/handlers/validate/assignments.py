@@ -60,7 +60,7 @@ def parameter_conditions_satisfied(parameter: ExperimentParameter, assignments_m
 
 def constraint_satisfied(constraint: ExperimentConstraint, assignments_map: dict[str, Any]) -> None:
   try:
-    lhs = sum([term.coeff * assignments_map[term.name] for term in constraint.terms])
+    lhs = sum(term.coeff * assignments_map[term.name] for term in constraint.terms)
   except KeyError as e:
     raise BadParamError(f"Term {e.args[0]} is present in constraints, but no assignment was provided") from e
 

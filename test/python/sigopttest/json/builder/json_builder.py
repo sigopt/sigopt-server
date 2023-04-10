@@ -131,7 +131,7 @@ def integer_check(value):
   assert is_integer(value)
 
 
-class TestFieldsDecorator(object):
+class TestFieldsDecorator:
   @pytest.fixture
   def field_test_object(self):
     return FieldTestObject()
@@ -176,7 +176,7 @@ class TestFieldsDecorator(object):
       field_test_object.resolve_fields(["object", "not_a_field"])
 
 
-class TestJsonBuilder(object):
+class TestJsonBuilder:
   @pytest.mark.parametrize(
     "field,input_value,expected_value,checker",
     [
