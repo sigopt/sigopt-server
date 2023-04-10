@@ -125,7 +125,9 @@ class TestOptimization(V1Base):
           random_padding_suggestions,
         )[0]
         assert highest_ranked.uuid_value == s_uuid
+        # pylint: disable=cell-var-from-loop
         available_suggestions.pop(find_index(available_suggestions, lambda x: x.uuid_value == s_uuid))
+        # pylint: enable=cell-var-from-loop
 
   def test_first_suggestion(
     self,

@@ -297,7 +297,7 @@ def set_parameter_conditions_from_json(parameter, parameter_json, conditionals_m
     values_json = values_json if is_sequence(values_json) else [values_json]
     values = []
     for value_json in values_json:
-      conditional_value = find(conditional.values, lambda c: c.name == value_json)
+      conditional_value = find(conditional.values, lambda c: c.name == value_json)  # pylint: disable=cell-var-from-loop
       if conditional_value is None:
         raise BadParamError(
           f"Conditional {condition.name} on parameter {parameter.name} attempted to use non-existent value {value_json}"
