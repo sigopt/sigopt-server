@@ -128,12 +128,6 @@ services:
       default:
         aliases:
           - api-server.ninja
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 512M
-          pids: 64
     read_only: true
     healthcheck:
       test:
