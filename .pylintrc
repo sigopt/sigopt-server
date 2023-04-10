@@ -59,7 +59,6 @@ disable=
   unnecessary-lambda-assignment,
   unspecified-encoding,
   unsubscriptable-object,
-  unsupported-assignment-operation,
   unused-argument,
   unused-wildcard-import,
   use-dict-literal,
