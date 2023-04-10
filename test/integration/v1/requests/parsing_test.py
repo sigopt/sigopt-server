@@ -21,7 +21,7 @@ class TestRequestParsing(V1Base):
     pass
 
   def test_json_integer_dos_not_found(self, api_url):
-    response = request("POST", f"{api_url}/", data="9" * 4000000)
+    response = request("POST", f"{api_url}/", data="9" * 8000000)
     assert response.status_code == HTTPStatus.NOT_FOUND
 
   def test_json_integer_dos_bad_request(self, api_url):
