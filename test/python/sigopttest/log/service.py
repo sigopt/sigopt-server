@@ -14,7 +14,7 @@ from sigopttest.base.log import LogCapturer
 # pylint: disable=unbalanced-tuple-unpacking
 
 
-class TestLoggingService(object):
+class TestLoggingService:
   @pytest.fixture
   def services(self):
     return mock.Mock()

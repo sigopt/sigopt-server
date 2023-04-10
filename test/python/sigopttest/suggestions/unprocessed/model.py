@@ -17,7 +17,7 @@ class BoundType(Enum):
   test_MAX = auto()
 
 
-class TestIsValid(object):
+class TestIsValid:
   @pytest.fixture
   def parameters(self):
     return [

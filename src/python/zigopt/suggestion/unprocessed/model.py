@@ -67,7 +67,7 @@ def source_to_string(source):
 
 
 class UnprocessedSuggestion(Base):
-  class Source(object):
+  class Source:
     LATIN_HYPERCUBE = 1
     USER_CREATED = 2
     GRID = 3

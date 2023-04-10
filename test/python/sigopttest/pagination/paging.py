@@ -23,7 +23,7 @@ def Request(*, limit=None, before=None, after=None):
   return PagingRequest(limit=limit, before=before, after=after)
 
 
-class TestPager(object):
+class TestPager:
   @pytest.fixture(params=[0, 1, 2, 5, 10, 100])
   def items(self, request):
     return [None] + list(reversed(range(request.param)))

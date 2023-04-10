@@ -55,7 +55,7 @@ class _FlaskThread(threading.Thread):
     self.server.run(host="0.0.0.0", port=self.port)
 
 
-class _MailController(object):
+class _MailController:
   logger = logging.getLogger("sigopt.smtp_server.controller")
 
   def __init__(self):

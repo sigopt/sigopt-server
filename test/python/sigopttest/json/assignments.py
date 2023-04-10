@@ -17,7 +17,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 )
 
 
-class _TestAssignmentsJsonBase(object):
+class _TestAssignmentsJsonBase:
   @pytest.fixture
   def categorical_param(self):
     p = ExperimentParameter(
@@ -227,7 +227,7 @@ class TestAssignmentsJsonWithConditionals(_TestAssignmentsJsonBase):
       )
 
 
-class TestRenderConditionalValue(object):
+class TestRenderConditionalValue:
   @pytest.fixture
   def conditional(self):
     conditional = ExperimentConditional(

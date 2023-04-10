@@ -13,7 +13,7 @@ class CapturingHandler(logging.StreamHandler):
     self.log_records.append(record)
 
 
-class LogCapturer(object):
+class LogCapturer:
   def __init__(self, logger_name):
     self.logger_name = logger_name
     self._log_records = []

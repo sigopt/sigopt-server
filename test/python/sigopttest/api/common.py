@@ -11,7 +11,7 @@ from zigopt.api import request
 from zigopt.net.errors import BadParamError
 
 
-class TestJsonHandling(object):
+class TestJsonHandling:
 
   """Test json loading (i.e., from client requests) handles duplicates correctly."""
 

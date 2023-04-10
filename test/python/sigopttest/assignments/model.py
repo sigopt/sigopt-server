@@ -16,7 +16,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 
 
-class TestGetAssignmentsWithConditionals(object):
+class TestGetAssignmentsWithConditionals:
   @pytest.fixture
   def experiment_no_conditionals(self):
     return Mock(

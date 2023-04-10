@@ -19,8 +19,6 @@ disable=
   arguments-differ,
   assignment-from-no-return,
   cell-var-from-loop,
-  consider-using-f-string,
-  consider-using-generator,
   duplicate-code,
   global-statement,
   import-outside-toplevel,
@@ -55,7 +53,6 @@ disable=
   unused-wildcard-import,
   use-dict-literal,
   use-implicit-booleaness-not-comparison,
-  useless-object-inheritance,
   wildcard-import,
   wrong-import-position
 enable=missing-final-newline
