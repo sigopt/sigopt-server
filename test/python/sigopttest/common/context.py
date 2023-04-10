@@ -9,7 +9,7 @@ from zigopt.common import *
 from zigopt.common.context import MultiContext
 
 
-class ContextTestClass(object):
+class ContextTestClass:
   def __init__(self, enter=None, exit_=None):
     self.enter = enter or Mock()
     self.exit = exit_ or Mock()

@@ -40,7 +40,7 @@ class BaseExperimentsListHandler(Handler):
     ),
   )
 
-  class QueryArgs(object):
+  class QueryArgs:
     def __init__(self, query, Field, use_having, ascending):
       self.query = query
       self.Field = Field

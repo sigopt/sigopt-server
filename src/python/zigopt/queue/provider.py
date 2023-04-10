@@ -1,12 +1,12 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-class QueueProviderType(object):
+class QueueProviderType:
   REDIS_OPTIMIZE = "redis-optimize"
   REDIS_MESSAGE = "redis-message"
 
 
-class QueueProvider(object):
+class QueueProvider:
   # Implemented by subclasses
   def __init__(self, services, queue_name):
     self.services = services

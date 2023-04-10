@@ -8,7 +8,7 @@ from zigopt.common import *
 from zigopt.protobuf.gen.test.message_pb2 import Parent
 
 
-class TestLists(object):
+class TestLists:
   def test_flatten(self):
     assert flatten([]) == []
     assert flatten([[]]) == []

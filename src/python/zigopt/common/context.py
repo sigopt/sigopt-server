@@ -7,7 +7,7 @@ from typing import Sequence
 from zigopt.common.lists import safe_iterator
 
 
-class EmptyContext(object):
+class EmptyContext:
   """
     Empty context manager, does nothing. Use like
 

@@ -8,7 +8,7 @@ import requests
 from sigopt.exception import ApiException
 
 
-class RaisesHttpError(object):
+class RaisesHttpError:
   def __init__(self, *status_codes):
     for code in status_codes:
       assert isinstance(code, HTTPStatus)
@@ -27,7 +27,7 @@ class RaisesHttpError(object):
     return ret
 
 
-class RaisesApiException(object):
+class RaisesApiException:
   def __init__(self, *status_codes):
     for code in status_codes:
       assert isinstance(code, HTTPStatus)
@@ -46,7 +46,7 @@ class RaisesApiException(object):
     return ret
 
 
-class BaseTest(object):
+class BaseTest:
   @classmethod
   def get_api_url(cls, config_broker):
     return config_broker["address.api_url"]

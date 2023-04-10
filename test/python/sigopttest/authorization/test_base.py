@@ -75,7 +75,7 @@ def dummy_find_membership_by_user_and_organization(*memberships):
   return find_function
 
 
-class _TestAuthorizationCore(object):
+class _TestAuthorizationCore:
   ids = iter(generate_ids())
   organization = Mock(
     id=next(ids),
