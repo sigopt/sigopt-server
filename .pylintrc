@@ -69,7 +69,6 @@ disable=
   use-dict-literal,
   use-implicit-booleaness-not-comparison,
   use-list-literal,
-  useless-object-inheritance,
   useless-super-delegation,
   wildcard-import,
   wrong-import-order,
