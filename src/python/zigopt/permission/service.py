@@ -106,24 +106,6 @@ class PermissionService(Service):
     )
     return meta
 
-  def migrate_client(self, permission, new_client_id):
-    old_client_id = permission.client_id
-    client_permissions = self.find_by_client_id(new_client_id)
-    new_client = self.services.client_service.find_by_id(new_client_id)
-
-    user_already_exists = any(p.user_id == permission.user_id for p in client_permissions)
-    if not user_already_exists:
-      self.services.membership_service.create_if_not_exists(
-        user_id=permission.user_id,
-        organization_id=new_client.organization_id,
-      )
-      permission.client_id = new_client.id
-      permission.organization_id = new_client.organization_id
-      self.services.database_service.upsert(permission)
-
-    # Delete the old permission if it still exists
-    self.delete_by_client_and_user(old_client_id, permission.user_id)
-
   def upsert(self, client, user, can_admin, can_write, can_read, requestor, role_for_logging):
     membership = self.services.membership_service.find_by_user_and_organization(
       user_id=user.id,
