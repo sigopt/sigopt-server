@@ -18,7 +18,6 @@ disable=
   abstract-method,
   arguments-differ,
   assignment-from-no-return,
-  broad-except,
   cell-var-from-loop,
   consider-using-f-string,
   consider-using-generator,

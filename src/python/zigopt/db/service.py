@@ -164,7 +164,7 @@ def sanitize_errors(func):
         e.params = None
       except AssertionError:
         raise
-      except Exception:
+      except Exception:  # pylint: disable=broad-except
         pass
       raise
 

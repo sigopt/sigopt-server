@@ -90,7 +90,7 @@ def handler_registry(app):
         raise
       except SigoptValidationError:
         raise
-      except Exception as e:
+      except Exception as e:  # pylint: disable=broad-except
         exc_info = sys.exc_info()
         user = handler and handler.auth and handler.auth.current_user
         client = handler and handler.auth and handler.auth.current_client
