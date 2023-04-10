@@ -68,6 +68,7 @@ DEFAULTS.update(
       "_serialized_*",
       "containing_*",
       "google_dot_protobuf_dot_*",
+      "hyperparameter_alpha",
       "zigopt_dot_protobuf_dot_gen_dot_*",
     ],
     "paths": ["."],
