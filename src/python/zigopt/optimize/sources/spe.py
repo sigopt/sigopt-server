@@ -15,9 +15,6 @@ class SPEOptimizationSource(OptimizationSource):
   hyperparameter_type = NullHyperparameters
   name = "spe"
 
-  def __init__(self, services, experiment):
-    super().__init__(services, experiment)
-
   def get_suggestions(self, optimization_args, limit=None):
     if optimization_args.observation_count - optimization_args.failure_count < SUCCESS_OBSERVATIONS_FOR_SPE_NEXT_POINTS:
       return []

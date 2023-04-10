@@ -24,7 +24,7 @@ from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 from sigopttest.base.utils import partial_opt_args
 
 
-class UnitTestBase(object):
+class UnitTestBase:
   @pytest.fixture
   def services(self):
     return mock.Mock(

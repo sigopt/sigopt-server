@@ -10,7 +10,7 @@ from zigopt.experiment.model import Experiment
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 
 
-class TestBestPracticesService(object):
+class TestBestPracticesService:
   @pytest.fixture(scope="session")
   def best_practices_service(self):
     services = Mock()

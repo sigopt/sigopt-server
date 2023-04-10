@@ -14,7 +14,7 @@ from zigopt.common import remove_nones
 from zigopt.log.base import JsonFormatter, SyslogFormatter
 
 
-class TestJsonFormatter(object):
+class TestJsonFormatter:
   @pytest.fixture
   @freeze_time("1989-08-12", tz_offset=0)
   def record(self):
@@ -81,7 +81,7 @@ class TestJsonFormatter(object):
     assert record_json["traceId"] == trace_id
 
 
-class TestSyslogFormatter(object):
+class TestSyslogFormatter:
   @pytest.fixture
   @freeze_time("1989-08-12", tz_offset=0)
   def record(self):

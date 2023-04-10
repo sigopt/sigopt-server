@@ -23,7 +23,7 @@ from sigopttest.base.utils import partial_opt_args
 from sigopttest.optimize.sources.base_test import UnitTestBase
 
 
-class TestAllCategoricalValueCombos(object):
+class TestAllCategoricalValueCombos:
   valid_param_names = ["param1", "param2", "param3"]
   param_data = {
     "parameters": [

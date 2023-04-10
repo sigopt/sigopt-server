@@ -32,7 +32,7 @@ class CustomChromeOptions(webdriver.ChromeOptions):
     return d
 
 
-class SigOptWebDriver(object):
+class SigOptWebDriver:
   def __getattr__(self, name):
     if name.endswith("_by_class_name"):
       warnings.warn(

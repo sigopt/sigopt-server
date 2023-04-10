@@ -11,7 +11,7 @@ from zigopt.suggestion.sampler.categorical import CategoricalOnlySampler
 from sigopttest.base.utils import partial_opt_args
 
 
-class TestCategoricalOnlySampler(object):
+class TestCategoricalOnlySampler:
   @pytest.fixture
   def experiment(self):
     meta = ExperimentMeta()

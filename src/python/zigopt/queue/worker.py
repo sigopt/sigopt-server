@@ -13,7 +13,7 @@ def log_message_content(message_content):
   return base64.b64encode(message_content).decode("ascii")
 
 
-class QueueWorker(object):
+class QueueWorker:
   # To be defined by subclasses
   # MESSAGE_TYPE: string (from zigopt.queue.message_types:MessageType)
   # MessageBody: subclass of zigopt.queue.message:BaseMessageBody

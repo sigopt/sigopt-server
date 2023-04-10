@@ -16,7 +16,7 @@ SHORT_NAME = ""
 LONG_NAME = "name" * 100
 
 
-class TestValidateExperimentJsonForCreate(object):
+class TestValidateExperimentJsonForCreate:
   @pytest.fixture
   def valid_experiment(self):
     return {"name": OK_NAME, "type": "offline", "metrics": [{"name": OK_NAME}], "parameters": [{"name": OK_NAME}]}

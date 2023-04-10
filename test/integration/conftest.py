@@ -225,7 +225,7 @@ def base_inbox(email_server, email_enabled, base_email_url, config_broker, wait_
   enabled = email_enabled
   base_url = base_email_url
 
-  class EmailInbox(object):
+  class EmailInbox:
     def reset(self):
       if enabled:
         requests.post(f"{base_url}/reset", timeout=5).raise_for_status()

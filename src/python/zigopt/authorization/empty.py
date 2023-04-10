@@ -4,7 +4,7 @@
 from zigopt.common import *
 
 
-class EmptyAuthorization(object):
+class EmptyAuthorization:
   @property
   def current_client(self):
     return None

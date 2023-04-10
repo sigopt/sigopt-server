@@ -32,7 +32,7 @@ def ImmutableStruct(name, args, defaults=None):
   assert defaults is None or len(defaults) == len(fields)
   underlying_cls = collections.namedtuple(name, fields, defaults=defaults)
 
-  class StructClass(object):
+  class StructClass:
     def __init__(self, *args, **kwargs):
       underlying = underlying_cls(*args, **kwargs)
       assert isinstance(underlying, tuple)
