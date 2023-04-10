@@ -23,7 +23,7 @@ from integration.connection import IntegrationTestConnection
 from integration.utils.emails import extract_verify_code
 
 
-class Connection(object):
+class Connection:
   def __init__(
     self, sigopt_connection, client_id, organization_id, user_id=None, email=None, password=None, development=False
   ):

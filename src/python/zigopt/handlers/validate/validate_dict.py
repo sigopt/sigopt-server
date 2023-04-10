@@ -30,7 +30,7 @@ ID_STRING_PATTERN = r"^[a-z0-9\-_\.]+$"
 ID_STRING_RE = re.compile(ID_STRING_PATTERN)
 
 
-class IOValidatorInterface(object):
+class IOValidatorInterface:
   def get_input_validator(self) -> "TypeValidatorBase":
     raise NotImplementedError()
 
@@ -319,7 +319,7 @@ def is_json(v: Any) -> bool:
     return False
 
 
-class PrimitiveValidationType(object):
+class PrimitiveValidationType:
   object = TypeValidator("object", is_mapping)
   array = TypeValidator("array", is_sequence, list)
   string = TypeValidator("string", is_string, str)

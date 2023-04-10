@@ -7,7 +7,7 @@ from zigopt.experiment.model import Experiment, ExperimentParameterProxy
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 
 
-class TestValidAssignmentCategorical(object):
+class TestValidAssignmentCategorical:
   @pytest.fixture
   def parameter(self):
     parameter = ExperimentParameter(
@@ -31,7 +31,7 @@ class TestValidAssignmentCategorical(object):
     assert parameter.valid_assignment(assignment) is False
 
 
-class TestValidAssignmentNumerical(object):
+class TestValidAssignmentNumerical:
   @pytest.fixture(params=[PARAMETER_DOUBLE, PARAMETER_INT])
   def parameter(self, request):
     parameter = ExperimentParameter(
@@ -51,7 +51,7 @@ class TestValidAssignmentNumerical(object):
     assert parameter.valid_assignment(assignment) is False
 
 
-class TestExperimentModel(object):
+class TestExperimentModel:
   def test_conditionals_breadth_empty(self):
     meta = ExperimentMeta()
     experiment = Experiment(experiment_meta=meta)
@@ -108,7 +108,7 @@ class TestExperimentModel(object):
     assert experiment.is_search is True
 
 
-class TestMetricThresholds(object):
+class TestMetricThresholds:
   @pytest.mark.parametrize("threshold_1", [None, 0.0, 4.5])
   def test_access_metric_thresholds_no_multimetric(self, threshold_1):
     e = Experiment(
@@ -187,7 +187,7 @@ class TestMetricThresholds(object):
     assert e.metric_thresholds == [threshold_1, threshold_2, threshold_3]
 
 
-class TestModelConstrainedExperimentProperties(object):
+class TestModelConstrainedExperimentProperties:
   def test_model_constrained_experiment_properties(self):
     dim = 10
     n_constrained_doubles = 5

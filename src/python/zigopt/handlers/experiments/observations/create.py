@@ -31,7 +31,7 @@ def get_default_max_observations(services):
   )
 
 
-class CreatesObservationsMixin(object):
+class CreatesObservationsMixin:
   def observation_from_json(
     self,
     json_dict,

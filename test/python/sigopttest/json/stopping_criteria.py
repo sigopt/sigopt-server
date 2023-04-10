@@ -6,7 +6,7 @@ import pytest
 from zigopt.json.builder import StoppingCriteriaJsonBuilder
 
 
-class TestStoppingCriteriaJsonBuilder(object):
+class TestStoppingCriteriaJsonBuilder:
   @pytest.mark.parametrize(
     "possible_stagnation,observation_budget_reached",
     [

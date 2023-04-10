@@ -16,7 +16,7 @@ class FieldType(Enum):
   protobuf_map_of_object = 5
 
 
-class FieldDetails(object):
+class FieldDetails:
   type = None
 
   def __init__(self, api_name, column_accessor, api_type, readable_name=None, sortable=False):

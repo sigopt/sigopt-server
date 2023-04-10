@@ -9,7 +9,7 @@ from integration.request import IntegrationTestRequestor
 from integration.v1.constants import ALL_META
 
 
-class WithExperiment(object):
+class WithExperiment:
   def __init__(self, conn, experiment):
     self.conn = conn
     self.experiment = experiment
@@ -24,7 +24,7 @@ class WithExperiment(object):
     pass
 
 
-class Proxy(object):
+class Proxy:
   def __init__(self, underlying):
     self.underlying = underlying
 
@@ -69,7 +69,7 @@ class ExperimentsWrapper(Proxy):
     return ExperimentWrapper(self.underlying(*args, **kwargs))
 
 
-class IntegrationTestConnection(object):
+class IntegrationTestConnection:
   def __init__(self, api_url, api, client_token=None, user_token=None, development=False):
     self.api_url = api_url
     self.user_token = user_token

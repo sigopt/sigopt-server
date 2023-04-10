@@ -22,7 +22,7 @@ from libsigopt.aux.constant import ParameterPriorNames
 from libsigopt.aux.errors import InvalidKeyError, InvalidTypeError, InvalidValueError, MissingJsonKeyError
 
 
-class TestSetConditionsFromJson(object):
+class TestSetConditionsFromJson:
   @pytest.fixture(
     params=[
       PARAMETER_DOUBLE,
@@ -110,7 +110,7 @@ class TestSetConditionsFromJson(object):
       set_parameter_conditions_from_json(parameter, invalid_parameter_json, conditionals_map)
 
 
-class TestSetCategoricalValuesFromJson(object):
+class TestSetCategoricalValuesFromJson:
   @pytest.fixture
   def categorical_parameter(self):
     return ExperimentParameter(
@@ -204,7 +204,7 @@ class TestSetCategoricalValuesFromJson(object):
     self.assert_expected_parameter(categorical_parameter)
 
 
-class TestSetPriorFromJson(object):
+class TestSetPriorFromJson:
   @pytest.fixture
   def double_parameter(self):
     return ExperimentParameter(

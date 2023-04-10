@@ -28,7 +28,7 @@ CONFIG = {
 }
 
 
-class TestDatabaseConnectionService(object):
+class TestDatabaseConnectionService:
   @pytest.fixture
   def services(self):
     services = mock.Mock()

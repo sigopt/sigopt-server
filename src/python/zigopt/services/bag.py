@@ -4,7 +4,7 @@
 from zigopt.common import *
 
 
-class ServiceBag(object):
+class ServiceBag:
   """
     A top-level container for all of our services. A service bag should be passed
     around where needed to grant access to these services. This gives us
@@ -23,7 +23,7 @@ class ServiceBag(object):
     pass
 
 
-class RequestLocalServiceBag(object):
+class RequestLocalServiceBag:
   """
     A service bag that is local to a request. These should be cheap to create/destroy, and
     as such they hand off most of their work to a ServiceBag instance that is shared across
