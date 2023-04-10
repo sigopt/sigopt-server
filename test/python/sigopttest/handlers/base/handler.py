@@ -177,7 +177,7 @@ class TestHandler(object):
       def find_objects(self):
         return {"object": object()}
 
-      def can_act_on_objects(self, requested_permission, objects):
+      def can_act_on_objects(self, requested_permission, objects):  # pylint: disable=useless-parent-delegation
         return super().can_act_on_objects(requested_permission, objects)
 
     handler = ChildHandler(services, req)
@@ -199,7 +199,7 @@ class TestHandler(object):
           },
         )
 
-      def can_act_on_objects(self, requested_permission, objects):
+      def can_act_on_objects(self, requested_permission, objects):  # pylint: disable=useless-parent-delegation
         return super().can_act_on_objects(requested_permission, objects)
 
     handler = ChildHandler(services, req)
@@ -213,10 +213,10 @@ class TestHandler(object):
         super().__init__(services, request)
         self.object = None
 
-      def find_objects(self):
+      def find_objects(self):  # pylint: disable=useless-parent-delegation
         super().find_objects()
 
-      def can_act_on_objects(self, requested_permission, objects):
+      def can_act_on_objects(self, requested_permission, objects):  # pylint: disable=useless-parent-delegation
         return super().can_act_on_objects(requested_permission, objects)
 
     handler = ChildHandler(services, req)

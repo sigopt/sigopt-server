@@ -71,9 +71,6 @@ class ObservationDataJsonBuilder(JsonBuilder):
 class ObservationJsonBuilder(ObservationDataJsonBuilder):
   object_name = "observation"
 
-  def __init__(self, experiment: Experiment, observation: Observation):
-    super().__init__(experiment, observation)
-
   @field(ValidationType.integer)
   def created(self) -> int:
     return self._observation.timestamp
