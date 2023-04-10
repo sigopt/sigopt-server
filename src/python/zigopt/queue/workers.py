@@ -169,7 +169,7 @@ class QueueWorkers(QueueMessageHandler):
       max_messages_jitter,
       self.global_services.config_broker.get(f"queue.{self.message_group.value}.max_messages_jitter", 0),
     )
-    self.jitter = non_crypto_random.randint(-jitter_bounds, jitter_bounds)
+    self.jitter = non_crypto_random.randint(-jitter_bounds, jitter_bounds)  # pylint: disable=invalid-unary-operand-type
 
     self.message_count = 0
     self.profiler.enable()

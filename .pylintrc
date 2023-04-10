@@ -22,7 +22,6 @@ disable=
   duplicate-code,
   import-outside-toplevel,
   invalid-name,
-  invalid-unary-operand-type,
   keyword-arg-before-vararg,
   missing-docstring,
   missing-timeout,
