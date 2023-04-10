@@ -18,9 +18,6 @@ class Interval(namedtuple("BaseInterval", ("min", "max")), metaclass=ABCMeta):
   def closure(self):
     return ClosedInterval(self.min, self.max)
 
-  def interior(self):
-    return OpenInterval(self.min, self.max)
-
   # overridden for ClosedInterval
   def __nonzero__(self):
     return self.min < self.max
