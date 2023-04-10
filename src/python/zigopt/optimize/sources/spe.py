@@ -61,7 +61,7 @@ class SPEOptimizationSource(OptimizationSource):
     return [ScoredSuggestion(s, s.generated_time) for s in suggestions]
 
   def construct_initial_hyperparameters(self):
-    return None
+    pass
 
   def should_execute_hyper_opt(self, num_successful_observations):
     return False

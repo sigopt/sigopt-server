@@ -73,7 +73,7 @@ class CategoricalOptimizationSource(OptimizationSource):
     return self.experiment.is_multitask
 
   def construct_initial_hyperparameters(self):
-    return None
+    pass
 
   def default_hyperparameter_dict(self, optimization_args):
     mm_hyperparameter_dicts = []
