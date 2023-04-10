@@ -27,7 +27,6 @@ disable=
   consider-using-ternary,
   consider-using-with,
   duplicate-code,
-  global-statement,
   import-outside-toplevel,
   invalid-name,
   invalid-sequence-index,
