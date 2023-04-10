@@ -18,5 +18,5 @@ class AiExperimentHandler(ExperimentHandler):
       raise NotFoundError(f"The AiExperiment {self.experiment_id} does not exist")
     return objs
 
-  def can_act_on_objects(self, requested_permission, objects):
+  def can_act_on_objects(self, requested_permission, objects):  # pylint: disable=useless-parent-delegation
     return super().can_act_on_objects(requested_permission, objects)
