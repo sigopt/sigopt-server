@@ -10,7 +10,7 @@ Sigopt-Server is an open-source tool for managing adaptive experiments, especial
 
 # Installation
 
-All you need to get started with SigOpt Server is Docker, Docker Compose and Git. We recommend that you get the latest version of each, and you will need at least Docker Compose version 2.6.1. Instructions are provided below for installing SigOpt Server on Debian, Ubuntu and OSX.
+All you need to get started with SigOpt Server is Docker, Docker Compose and Git. We recommend that you get the latest version of each, and you will need at least Docker version 1.6.0 and Docker Compose version 2.6.1. Instructions are provided below for installing SigOpt Server on Debian, Ubuntu and OSX.
 
 <details>
 <summary>Installation (Debian and Ubuntu)</summary>
