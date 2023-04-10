@@ -22,7 +22,6 @@ disable=
   assignment-from-no-return,
   broad-except,
   cell-var-from-loop,
-  consider-using-f-string,
   consider-using-generator,
   consider-using-ternary,
   consider-using-with,
