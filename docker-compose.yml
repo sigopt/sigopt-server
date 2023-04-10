@@ -79,6 +79,10 @@ services:
       args:
         - NGINX_VERSION
     restart: on-failure:5
+    command:
+      - nginx-debug
+      - -g
+      - "daemon off;"
     volumes:
       - ./artifacts/tls:/etc/ssl/sigopt:ro
     tmpfs:
