@@ -53,7 +53,7 @@ def get_watchers(file_changed_event, stop_event, directories):
 def event_loop(file_changed_event, command, initial_run):
   batch_wait_time = 0.1
   if initial_run:
-    process = Popen(command, start_new_session=True)
+    process = Popen(command, start_new_session=True)  # pylint: disable=consider-using-with
   else:
     process = None
   while True:
@@ -76,7 +76,7 @@ def event_loop(file_changed_event, command, initial_run):
             process.wait()
     time.sleep(batch_wait_time)
     file_changed_event.clear()
-    process = Popen(command, start_new_session=True)
+    process = Popen(command, start_new_session=True)  # pylint: disable=consider-using-with
 
 
 def main(args):

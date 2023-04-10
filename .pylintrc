@@ -17,13 +17,8 @@ ignored-modules=google.protobuf
 disable=
   abstract-method,
   arguments-differ,
-  assignment-from-no-return,
-  cell-var-from-loop,
-  consider-using-with,
   duplicate-code,
-  import-outside-toplevel,
   invalid-name,
-  invalid-unary-operand-type,
   missing-docstring,
   missing-timeout,
   no-else-raise,
@@ -52,6 +47,5 @@ disable=
   unused-wildcard-import,
   use-dict-literal,
   use-implicit-booleaness-not-comparison,
-  wildcard-import,
-  wrong-import-position
+  wildcard-import
 enable=missing-final-newline

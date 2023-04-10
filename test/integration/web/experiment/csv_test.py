@@ -123,7 +123,9 @@ class TestExperiment(ExperimentWebBase):
         assert float(line[1]) == float(observation.assignments["b"])
         assert line[2] == str(observation.assignments["c"])
         for i, metric in enumerate(e.metrics, start=2):
+          # pylint: disable=cell-var-from-loop
           matching_value = find(observation.values, lambda v: v.name == metric.name)
+          # pylint: enable=cell-var-from-loop
           assert_equal_even_if_none(line[2 * i - 1], matching_value and matching_value.value)
           assert_equal_even_if_none(line[2 * i], matching_value and matching_value.value_stddev)
         if task_names:
