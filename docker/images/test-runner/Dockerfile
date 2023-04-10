@@ -4,34 +4,6 @@
 ARG NODE_MAJOR
 
 
-FROM node:${NODE_MAJOR} AS test-routes
-
-# hadolint ignore=DL3016
-RUN set -ex \
-  ; npm install -g npm yarn --force \
-  ; rm -rf /root/.npm \
-  ; npm cache clean --force \
-  ; :
-
-WORKDIR /sigopt-server
-
-COPY package.json /sigopt-server/package.json
-COPY yarn.lock /sigopt-server/yarn.lock
-
-RUN set -ex \
-  ; yarn install --production --silent \
-  ; yarn cache clean \
-  ; :
-
-COPY web /sigopt-server/web
-COPY config/defaults.json /sigopt-server/config/defaults.json
-COPY scripts/compile/generate_routes.sh /sigopt-server/scripts/compile/generate_routes.sh
-COPY .babelrc /sigopt-server/.babelrc
-COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.js
-
-RUN ./scripts/compile/generate_routes.sh config/defaults.json
-
-
 FROM ubuntu:jammy-20230308 AS test-runner-base
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
@@ -153,8 +125,6 @@ RUN : \
 
 
 FROM test-runner-base
-
-COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /sigopt-server/artifacts/web/routes/
 
 COPY docker/images/test-runner/start-x11vnc.sh /start-x11vnc.sh
 COPY docker/images/test-runner/entrypoint.py /entrypoint.py
