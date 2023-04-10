@@ -6,9 +6,6 @@ from zigopt.services.base import Service
 
 
 class BaseEmailService(Service):
-  def __init__(self, services):
-    super().__init__(services)
-
   def should_send(self, email):
     internal_email_domains = self.services.config_broker.get("email.additional_internal_domains", [])
     return bool(

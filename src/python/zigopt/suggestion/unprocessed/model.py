@@ -16,14 +16,10 @@ from zigopt.protobuf.proxy import Proxy
 
 
 class SuggestionDataProxy(HasAssignmentsMap):
-  def __init__(self, underlying):
-    super().__init__(underlying)
+  pass
 
 
 class SuggestionMetaProxy(Proxy):
-  def __init__(self, underlying):
-    super().__init__(underlying)
-
   @property
   def suggestion_data(self):
     real_suggestion_data = self.underlying.suggestion_data or (SuggestionData())

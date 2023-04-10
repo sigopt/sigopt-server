@@ -61,8 +61,7 @@ def object_pairs_hook_raise_on_duplicates(ordered_pairs):
 
 
 class InvalidJsonValue(BadParamError):
-  def __init__(self, value_str):
-    super().__init__(value_str)
+  pass
 
 
 def parse_constant(constant):
