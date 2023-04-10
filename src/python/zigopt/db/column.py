@@ -378,9 +378,9 @@ class ProtobufColumn(sqlalchemy.Column):
 
   _constructor = sqlalchemy.Column
 
-  def __init__(self, cls, proxy=None, *args, **kwargs):
+  def __init__(self, cls, proxy=None, **kwargs):
     message_factory = google.protobuf.symbol_database.Default()
-    super().__init__(type_=_ProtobufColumnType(cls.DESCRIPTOR, message_factory, proxy=proxy), *args, **kwargs)
+    super().__init__(type_=_ProtobufColumnType(cls.DESCRIPTOR, message_factory, proxy=proxy), **kwargs)
     self._cls = cls
     self._proxy = proxy
 

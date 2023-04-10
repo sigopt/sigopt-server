@@ -25,10 +25,10 @@ class Client(Base):
   client_meta = ProtobufColumn(ClientMeta, name="client_meta_json")
   organization_id = Column(BigInteger, ForeignKey("organizations.id"), nullable=False)
 
-  def __init__(self, organization_id, client_meta=None, *args, **kwargs):
+  def __init__(self, organization_id, client_meta=None, **kwargs):
     if client_meta is None:
       client_meta = Client.client_meta.default_value()
-    super().__init__(organization_id=organization_id, client_meta=client_meta, *args, **kwargs)
+    super().__init__(organization_id=organization_id, client_meta=client_meta, **kwargs)
 
   @validates("client_meta")
   def validator(self, key, meta):

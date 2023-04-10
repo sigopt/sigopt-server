@@ -59,16 +59,11 @@ class Permission(Base):
     nullable=False,
   )
 
-  def __init__(self, user_id, client_id, organization_id, permission_meta=None, *args, **kwargs):
+  def __init__(self, user_id, client_id, organization_id, permission_meta=None, **kwargs):
     if permission_meta is None:
       permission_meta = Permission.permission_meta.default_value()
     super().__init__(
-      user_id=user_id,
-      client_id=client_id,
-      organization_id=organization_id,
-      permission_meta=permission_meta,
-      *args,
-      **kwargs
+      user_id=user_id, client_id=client_id, organization_id=organization_id, permission_meta=permission_meta, **kwargs
     )
 
   @validates("permission_meta")

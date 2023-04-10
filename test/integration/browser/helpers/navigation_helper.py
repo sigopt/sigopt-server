@@ -57,7 +57,7 @@ def find_and_send_keys(driver, element_text=None, css_selector=None, keys=None, 
   return element
 
 
-def find_clickable(driver, element_text=None, css_selector=None, *args, **kwargs):
+def find_clickable(driver, *, element_text=None, css_selector=None, **kwargs):
   if css_selector:
     element = driver.find_element_by_css_selector(css_selector)
   elif element_text:
@@ -66,7 +66,7 @@ def find_clickable(driver, element_text=None, css_selector=None, *args, **kwargs
     raise ErrorInTest("No text given to search for")
 
   try:
-    _wait_for_clickable(driver, element=element, *args, **kwargs)
+    _wait_for_clickable(driver, element=element, **kwargs)
   except TimeoutErrorInTest as e:
     if css_selector:
       raise ErrorInTest(f"Element described by `{css_selector}` was not clickable in {e.time} seconds") from e
@@ -120,8 +120,8 @@ def find_element_by_text(driver, element_text, partial_match=False):
   return driver.find_element_by_xpath(Matcher.text_in_element(element_text, partial_match))
 
 
-def wait_for_element_by_text(driver, element_text, partial_match=False, *args, **kwargs):
-  return driver.wait_for_element_by_xpath(Matcher.text_in_element(element_text, partial_match), *args, **kwargs)
+def wait_for_element_by_text(driver, element_text, partial_match=False, **kwargs):
+  return driver.wait_for_element_by_xpath(Matcher.text_in_element(element_text, partial_match), **kwargs)
 
 
 def set_select_option(element, option_text):
