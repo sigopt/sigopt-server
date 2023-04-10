@@ -63,7 +63,6 @@ disable=
   unspecified-encoding,
   unsubscriptable-object,
   unsupported-assignment-operation,
-  unsupported-membership-test,
   unused-argument,
   unused-wildcard-import,
   use-dict-literal,
