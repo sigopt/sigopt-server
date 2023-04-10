@@ -85,8 +85,7 @@ class ProjectService(Service):
       self.services.database_service.rollback_session()
       if 'duplicate key value violates unique constraint "projects_client_id_reference_id_key"' in str(ie):
         raise ProjectExistsException(project.reference_id) from ie
-      else:
-        raise
+      raise
     return project
 
   def update(self, client_id, reference_id, name=None, data=None, deleted=None):

@@ -53,11 +53,8 @@ class SuggestionBroker(BaseBroker):
 
     if not experiment.can_generate_fallback_suggestions:
       raise CouldNotProcessSuggestionError()
-    else:
-      # fallback to random to minimize user API errors
-      return self.fallback_suggestion(
-        experiment, processed_suggestion_meta, source=fallback_source, automatic=automatic
-      )
+    # fallback to random to minimize user API errors
+    return self.fallback_suggestion(experiment, processed_suggestion_meta, source=fallback_source, automatic=automatic)
 
   def process_suggestion(self, experiment, unprocessed_suggestion, processed_suggestion_meta, **process_kwargs):
     return self.services.unprocessed_suggestion_service.process(

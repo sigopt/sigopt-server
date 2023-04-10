@@ -464,8 +464,7 @@ class BaseExperimentsCreateHandler(Handler):
           raise InvalidValueError(f"Constraint cannot be defined on a grid parameter {name}")
         if name in constraint_var_set:
           raise InvalidValueError(f"Duplicate variable name: {name}")
-        else:
-          constraint_var_set.add(name)
+        constraint_var_set.add(name)
 
         term_lst.append(Term(coeff=coeff, name=name))
       constraint_lst.append(ExperimentConstraint(type=constraint_type, terms=term_lst, rhs=rhs))

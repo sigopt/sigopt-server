@@ -27,11 +27,10 @@ def set_observation_data_assignments_task_from_json(
   if suggestion_json is None and assignments_json is None:
     if experiment.is_multitask:
       raise BadParamError("Either `suggestion` or `assignments`+`task` must be provided when creating an observation")
-    else:
-      raise BadParamError("Must provide values for one of `suggestion` or `assignments`")
-  elif suggestion_json is not None and assignments_json is not None:
+    raise BadParamError("Must provide values for one of `suggestion` or `assignments`")
+  if suggestion_json is not None and assignments_json is not None:
     raise BadParamError("Cannot provide values for both `suggestion` and `assignments`")
-  elif suggestion_json is not None and assignments_json is None:
+  if suggestion_json is not None and assignments_json is None:
     if task_field_present:
       raise BadParamError("Cannot provide/update `task` when `suggestion` is provided")
     set_observation_suggestion_from_json(observation_data, observation, suggestion_json, experiment, suggestion)
@@ -104,17 +103,17 @@ def update_observation_data_assignments_task_from_json(
   if update is SuggestionAssignmentUpdates.BOTH:
     if suggestion_json is None and assignments_json is None:
       raise BadParamError("Cannot provide null for both `suggestion` and `assignments`")
-    elif suggestion_json is not None and assignments_json is not None:
+    if suggestion_json is not None and assignments_json is not None:
       raise BadParamError("Cannot set values for both `suggestion` and `assignments`")
   elif update is SuggestionAssignmentUpdates.SUGGESTION_ONLY:
     if observation.has_suggestion and suggestion_json is None:
       raise BadParamError("Cannot provide null for `suggestion` without providing `assignments`")
-    elif not observation.has_suggestion and suggestion_json is not None:
+    if not observation.has_suggestion and suggestion_json is not None:
       raise BadParamError("Cannot provide `suggestion` without providing null for `assignments`")
   elif update is SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY:
     if not observation.has_suggestion and assignments_json is None:
       raise BadParamError("Cannot provide null for `assignments` without providing `suggestion`")
-    elif observation.has_suggestion and assignments_json is not None:
+    if observation.has_suggestion and assignments_json is not None:
       raise BadParamError("Cannot provide `assignments` without providing null not `suggestion`")
 
   task_field_present = "task" in json_dict
@@ -124,7 +123,7 @@ def update_observation_data_assignments_task_from_json(
       if assignments_json is None and json_dict["task"] is not None:
         if suggestion_json is None and observation_has_processed_suggestion:
           raise BadParamError("Cannot provide `task` for observation update for observation with associated suggestion")
-        elif suggestion_json is not None:
+        if suggestion_json is not None:
           raise BadParamError("Cannot provide `task` when updating observation to change associated suggestion")
     else:
       if observation_has_processed_suggestion and suggestion_json is None and assignments_json is not None:

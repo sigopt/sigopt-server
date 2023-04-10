@@ -42,7 +42,7 @@ def validate_metric_names(values, experiment):
         "value names should match experiment metric names. Names should not be specified for unnamed metrics."
       )
     # NOTE: allow legacy of submitting unnamed metrics, whether or not experiment-metric name exists
-    elif len(names) == 1 and len(non_empty_names) == 0 and len(experiment_metrics) <= 1:
+    if len(names) == 1 and len(non_empty_names) == 0 and len(experiment_metrics) <= 1:
       pass
     elif experiment_metrics and not experiment_metrics.issubset(names):
       raise BadParamError(f"values must have metric names defined in experiment: {experiment_metrics}")
@@ -56,8 +56,7 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
   if (experiment_metrics and len(experiment_metrics) != len(values)) or not experiment_metrics and len(values) != 1:
     if experiment.has_user_defined_metric:
       raise BadParamError("The number of observation values and experiment metrics must be equal.")
-    else:
-      raise BadParamError("Experiments without a defined `metrics` do not support multiple values.")
+    raise BadParamError("Experiments without a defined `metrics` do not support multiple values.")
   validate_metric_names(values, experiment)
   old_values_by_name = to_map_by_key(coalesce(old_values, []), key=lambda v: v.name)
   for v in values:

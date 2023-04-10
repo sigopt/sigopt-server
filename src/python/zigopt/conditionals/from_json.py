@@ -59,5 +59,5 @@ def set_conditional_values_from_json(conditional, conditional_json):
 
   if not conditional.values:
     raise BadParamError(f"No values provided for conditional {conditional.name}")
-  elif len(conditional.values) < 2:
+  if len(conditional.values) < 2:
     raise BadParamError(f"Conditional {conditional.name} must have at least 2 values")

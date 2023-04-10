@@ -445,13 +445,12 @@ class ExperimentsUpdateHandler(ExperimentHandler):
         raise BadParamError(
           f"`default_value` for parameter {param.name} is invalid - must be a valid categorical value."
         )
-      elif param.is_grid:
+      if param.is_grid:
         raise BadParamError(f"`default_value` for parameter {param.name} is invalid - must be a valid grid value.")
-      else:
-        raise BadParamError(
-          f"`default_value` for parameter {param.name} is invalid"
-          f" - must be between {param.bounds.minimum} and {param.bounds.maximum}"
-        )
+      raise BadParamError(
+        f"`default_value` for parameter {param.name} is invalid"
+        f" - must be between {param.bounds.minimum} and {param.bounds.maximum}"
+      )
 
   def update_param(self, parameter, parameter_json, experiment_type):
     if "type" in parameter_json:

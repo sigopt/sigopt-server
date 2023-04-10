@@ -49,6 +49,5 @@ class TagService(Service):
       self.services.database_service.rollback_session()
       if f'duplicate key value violates unique constraint "{Tag.UNIQUE_NAME_INDEX_NAME}"' in str(ie):
         raise TagExistsException(tag.name) from ie
-      else:
-        raise
+      raise
     return tag

@@ -55,8 +55,7 @@ def object_pairs_hook_raise_on_duplicates(ordered_pairs):
     value = validate_api_input(value)
     if key in output_dict:
       raise BadParamError(f"Duplicate key value in JSON document: {key}")
-    else:
-      output_dict[key] = value
+    output_dict[key] = value
   return output_dict
 
 
