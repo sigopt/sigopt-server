@@ -44,7 +44,6 @@ disable=
   pointless-string-statement,
   raising-format-tuple,
   redefined-outer-name,
-  redundant-u-string-prefix,
   superfluous-parens,
   too-few-public-methods,
   too-many-ancestors,
