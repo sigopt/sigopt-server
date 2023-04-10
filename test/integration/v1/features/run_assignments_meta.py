@@ -34,7 +34,6 @@ VALID_COMBOS = [
 class TestTrainingRunsAssignmentsMeta(V1Base, TrainingRunTestMixin):
   @pytest.mark.parametrize("assignments, assignments_meta, assignments_sources", VALID_COMBOS)
   def test_basic_create(self, connection, project, assignments, assignments_meta, assignments_sources):
-
     run = (
       connection.clients(connection.client_id)
       .projects(project.id)
@@ -57,7 +56,6 @@ class TestTrainingRunsAssignmentsMeta(V1Base, TrainingRunTestMixin):
 
   @pytest.mark.parametrize("assignments, assignments_meta, assignments_sources", VALID_COMBOS)
   def test_basic_updates(self, connection, project, assignments, assignments_meta, assignments_sources):
-
     created_run = (
       connection.clients(connection.client_id)
       .projects(project.id)

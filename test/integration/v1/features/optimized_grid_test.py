@@ -32,6 +32,7 @@ BAD_GRID_PARAMS = [
 
 BASIC_GRID_PARAM = dict(name="grid_param", type="int", grid=[1, 2, 3])
 
+
 # Note: API sorts grid values so we can't compare them directly
 def compare_and_validate_grid_params(param, api_param):
   assert api_param.name == param["name"]

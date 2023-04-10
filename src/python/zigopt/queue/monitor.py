@@ -36,7 +36,7 @@ class QueueMonitor(Service):
       queue_messages,
       self.services.queue_message_grouper.group_key_for_queue_message,
     )
-    for (group_key, queue_message_batch) in queue_messages_by_group_key.items():
+    for group_key, queue_message_batch in queue_messages_by_group_key.items():
       with self.services.exception_logger.tolerate_exceptions(
         Exception, {"experiment_id": experiment and experiment.id}
       ):

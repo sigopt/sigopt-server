@@ -50,7 +50,7 @@ class TrainingRunDefinedFieldsExtractor(object):
     if selectables:
       counts = coalesce(counts, [0] * len(names))
       assert len(counts) == len(names)
-      for (name, count) in zip(names, counts):
+      for name, count in zip(names, counts):
         yield name, count
 
   @generator_to_list

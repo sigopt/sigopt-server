@@ -16,7 +16,6 @@ class MetricImportancesDetailHandler(ExperimentHandler):
   required_permissions = READ
 
   def importance_for_parameter_and_metric(self, experiment, parameter, metric):
-
     if len(experiment.all_parameters) <= 1:
       return 1
 
@@ -30,7 +29,6 @@ class MetricImportancesDetailHandler(ExperimentHandler):
     return None if is_nan(importance) else importance
 
   def handle(self):
-
     data = []
     # NOTE: this expects that importances/service is also using all_metrics
     metrics = sorted(self.experiment.all_metrics, key=lambda m: m.name)

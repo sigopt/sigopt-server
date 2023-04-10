@@ -39,7 +39,6 @@ class TestExperimentCacheCount(ExperimentServiceTestBase):
     experiment2 = deepcopy(experiment)
 
     with patch.object(services.redis_service, "increment", wraps=services.redis_service.increment) as increment_mock:
-
       services.experiment_service.insert(experiment)
       services.experiment_service.incr_count_by_organization_id_for_billing(
         experiment,

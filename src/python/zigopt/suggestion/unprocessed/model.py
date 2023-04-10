@@ -157,7 +157,7 @@ class UnprocessedSuggestion(Base):
 
   def is_valid(self, experiment):
     # TODO(SN-1126): what does validity mean for conditionals?
-    for (name, assignment) in self.get_assignments(experiment).items():
+    for name, assignment in self.get_assignments(experiment).items():
       parameter = experiment.all_parameters_map.get(name)
       if not parameter:
         if not experiment.conditionals_map.get(name):

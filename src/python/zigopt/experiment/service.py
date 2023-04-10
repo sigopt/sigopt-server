@@ -193,7 +193,7 @@ class ExperimentService(Service):
 
   def update_meta(self, experiment_id, params):
     meta_clause = Experiment.experiment_meta
-    for (attribute, value) in params.items():
+    for attribute, value in params.items():
       json_path = unwind_json_path(attribute)
       meta_clause = jsonb_set(meta_clause, JsonPath(*json_path), value)
     meta_clause = jsonb_strip_nulls(meta_clause)

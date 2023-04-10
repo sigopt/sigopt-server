@@ -105,7 +105,6 @@ class ImportancesService(Service):
     # Iterate through the metrics and calculate importances separately for each one
     # NOTE: this expects that metric_importances/detail is also using all_metrics
     for i, m in enumerate(experiment.all_metrics):
-
       metric_values = [values[i] for values in metric_values_per_obs]
       feature_importances = compute_importances(features, metric_values)
       feature_importances_map = {p.name: fi for p, fi in zip(experiment.all_parameters, feature_importances)}

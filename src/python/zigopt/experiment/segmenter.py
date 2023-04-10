@@ -54,7 +54,7 @@ class ExperimentParameterSegmenter(Service):
 
   def prune_intervals(self, experiment, with_assignments_maps, intervals):
     for has_assignments_map in with_assignments_maps:
-      for (name, assignment) in has_assignments_map.get_assignments(experiment).items():
+      for name, assignment in has_assignments_map.get_assignments(experiment).items():
         remaining_intervals = intervals.get(name, [])
         to_remove = find(remaining_intervals, lambda i: assignment in i)
         if to_remove:

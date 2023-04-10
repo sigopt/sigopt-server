@@ -11,7 +11,6 @@ from integration.service.test_base import ServiceBase
 
 
 class TestRedisKeyService(ServiceBase):
-
   ARGS = {
     "divider": ":",
     "experiment_id": "1",

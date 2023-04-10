@@ -395,7 +395,6 @@ class BaseExperimentsCreateHandler(Handler):
 
   @classmethod
   def get_constraints_from_json(cls, json_dict, parameters):
-
     constraints = get_opt_with_validation(
       json_dict,
       "linear_constraints",

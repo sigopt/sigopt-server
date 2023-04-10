@@ -17,6 +17,7 @@ LOOKBACK_FACTOR = 5
 # The number of best results to consider for measuring stagnation, rather than just the top result
 NUM_TOP_RESULTS_TO_CHECK = 5
 
+
 # TODO(RTL-104): Be more intelligent regarding how multisolution is handled when it exists
 class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
   authenticator = api_token_authentication

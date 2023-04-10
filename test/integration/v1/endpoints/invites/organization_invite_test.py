@@ -431,7 +431,7 @@ class TestUpdate(OrganizationInviteTestBase):
     member_invite,
     another_client,
   ):
-    for (role, old_role) in [
+    for role, old_role in [
       (READ_ONLY_ROLE, NO_ROLE),
       (USER_ROLE, READ_ONLY_ROLE),
       (ADMIN_ROLE, USER_ROLE),
