@@ -30,7 +30,6 @@ disable=
   global-statement,
   import-outside-toplevel,
   invalid-name,
-  invalid-sequence-index,
   invalid-unary-operand-type,
   keyword-arg-before-vararg,
   len-as-condition,
