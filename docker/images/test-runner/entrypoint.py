@@ -14,7 +14,7 @@ DISPLAY_NUM = os.environ["DISPLAY_NUM"]
 GEOMETRY = os.environ["GEOMETRY"]
 
 with open("/dev/null", "w") as devnull:
-  xvfb = subprocess.Popen(
+  with subprocess.Popen(
     [
       "xvfb-run",
       f"--server-num={DISPLAY_NUM}",
@@ -25,17 +25,13 @@ with open("/dev/null", "w") as devnull:
     ],
     stdout=devnull,
     preexec_fn=os.setpgrp,
-  )
+  ) as xvfb:
+    with subprocess.Popen(["/start-x11vnc.sh"], stdout=devnull, stderr=devnull, preexec_fn=os.setpgrp) as x11vnc:
+      with subprocess.Popen(sys.argv[1:]) as main:
+        signal.signal(signal.SIGINT, lambda *_: main.send_signal(signal.SIGINT))
+        return_code = main.wait()
 
-  x11vnc = subprocess.Popen(["/start-x11vnc.sh"], stdout=devnull, stderr=devnull, preexec_fn=os.setpgrp)
-
-  main = subprocess.Popen(sys.argv[1:])
-  signal.signal(signal.SIGINT, lambda *_: main.send_signal(signal.SIGINT))
-  return_code = main.wait()
-
-  for proc in (xvfb, x11vnc):
-    proc.kill()
-  for proc in (xvfb, x11vnc):
-    proc.wait()
+      for proc in (xvfb, x11vnc):
+        proc.kill()
 
   sys.exit(return_code)
