@@ -19,7 +19,6 @@ disable=
   arguments-differ,
   duplicate-code,
   invalid-name,
-  keyword-arg-before-vararg,
   missing-docstring,
   missing-timeout,
   no-else-raise,
