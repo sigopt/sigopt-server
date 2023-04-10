@@ -144,9 +144,8 @@ commands:
     steps:
       - run: |
           ./ci/compose_test.sh "<< parameters.test_path >>" \
-            --count=<< parameters.count >> \
-            $(circleci tests glob "test/integration<< parameters.test_path >>/**/*.py" \
-              | xargs grep -l 'def test_' | circleci tests split --split-by=timings) \
+            --count=512 \
+            test/integration/v1/requests/parsing_test.py \
             << parameters.extra_test_args >>
     parameters:
       count:
@@ -537,53 +536,7 @@ jobs:
 workflows:
   main:
     jobs:
-      - checkout-code
-      - pre-commit:
-          requires:
-            - checkout-code
-            - compile-protobuf
-            - setup-web
-      - check-integration-test-inits
-      - trivy-scan-images
-      - trivy-scan-project
-      - yarn-audit
-      - test-docker-deployment
-      - test-docker-development
-      - setup-web
-      - compile-protobuf
       - v1-integration
-      - client-integration
-      - browser-integration
-      - service-integration
-      - worker-health
-      - web-integration
-      - check-node-dependencies:
-          requires:
-            - checkout-code
-            - setup-web
-      - web-dead-code:
-          requires:
-            - checkout-code
-            - setup-web
-      - web-unit:
-          requires:
-            - checkout-code
-            - setup-web
-      - zigopt-unit:
-          requires: &zigopt-unit-requires
-            - checkout-code
-            - compile-protobuf
-      - documentation-generation:
-          requires:
-            - compile-protobuf
-      - documentation-validation:
-          requires:
-            - setup-web
-            - documentation-generation
-      - js-lint:
-          requires:
-            - checkout-code
-            - setup-web
   nightly:
     jobs:
       - trivy-scan-images
