@@ -17,7 +17,6 @@ ignored-modules=google.protobuf
 disable=
   abstract-method,
   arguments-differ,
-  consider-using-with,
   duplicate-code,
   import-outside-toplevel,
   invalid-name,
@@ -50,6 +49,5 @@ disable=
   unused-wildcard-import,
   use-dict-literal,
   use-implicit-booleaness-not-comparison,
-  wildcard-import,
-  wrong-import-position
+  wildcard-import
 enable=missing-final-newline
