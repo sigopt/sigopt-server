@@ -18,7 +18,6 @@ disable=
   abstract-method,
   arguments-differ,
   duplicate-code,
-  import-outside-toplevel,
   invalid-name,
   keyword-arg-before-vararg,
   missing-docstring,
