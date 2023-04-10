@@ -233,7 +233,7 @@ _routes = None
 
 
 def load_routes():
-  global _routes
+  global _routes  # pylint: disable=global-statement
   if _routes is None:
     try:
       with open("artifacts/web/routes/routes.json") as routes_fp:
