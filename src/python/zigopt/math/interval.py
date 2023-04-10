@@ -38,9 +38,6 @@ class Interval(namedtuple("BaseInterval", ("min", "max")), metaclass=ABCMeta):
   def length(self):
     return self.max - self.min
 
-  def is_inside(self, value):
-    return value in self
-
   def is_valid(self):
     return self.max >= self.min
 
