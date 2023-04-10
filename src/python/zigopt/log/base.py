@@ -70,7 +70,7 @@ class JsonFormatter(logging.Formatter):
 
       try:
         log_data["requestParamsStr"] = json.dumps(request.sanitized_params())
-      except Exception as e:
+      except Exception as e:  # pylint: disable=broad-except
         if "json" in str(e).lower():
           log_data["requestParamsInvalidJSON"] = True
         else:
