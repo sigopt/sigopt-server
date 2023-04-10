@@ -91,12 +91,6 @@ services:
     ports:
       - "127.0.0.1:4443:4443" # web app (and api via /api)
       - "127.0.0.1:9000:9000" # minio
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 64M
-          pids: 2
     read_only: true
     healthcheck:
       test: ["CMD", "test", "-f", "/var/run/nginx/nginx.pid"]
