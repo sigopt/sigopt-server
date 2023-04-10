@@ -8,7 +8,7 @@ from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionMeta
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
-class OptimizationSource(object):
+class OptimizationSource:
   """
     Base class for OptimizationSources. OptimizerService talks to multiple
     OptimizationSources and then collects their results and picks the best

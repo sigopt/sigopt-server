@@ -15,6 +15,6 @@ class FindElementErrorInTest(ErrorInTest):
     msg_text = no_such_element_exception.msg
     try:
       error_message = json.loads(msg_text)["errorMessage"]
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
       error_message = msg_text
     super().__init__(error_message)

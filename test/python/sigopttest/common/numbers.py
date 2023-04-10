@@ -14,7 +14,7 @@ from zigopt.common.numbers import *
 LONG_NUMBER = 100000000000000000000000
 
 
-class TestNumbers(object):
+class TestNumbers:
   def test_is_boolean(self):
     assert is_boolean(True) is True
     assert is_boolean(False) is True
@@ -110,7 +110,7 @@ class TestNumbers(object):
     assert is_number(math.inf) is False
 
 
-class TestIsNaN(object):
+class TestIsNaN:
   """
     Usually in unit tests we would check assert is_nan(test) is False or is True, but here we sometimes get
     False or numpy.bool_(False), which are harder to compare. We're using assert is_nan(test) and assert not

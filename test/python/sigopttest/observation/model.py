@@ -17,7 +17,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData, ObservationValue
 
 
-class TestParameters(object):
+class TestParameters:
   @pytest.fixture
   def experiment(self):
     experiment_meta = ExperimentMeta()
@@ -118,7 +118,7 @@ class TestParameters(object):
     # pylint: enable=pointless-statement
 
 
-class TestInMetricThresholds(object):
+class TestInMetricThresholds:
   @pytest.fixture
   def comparison(self, request):
     metric_1, metric_2 = request.param

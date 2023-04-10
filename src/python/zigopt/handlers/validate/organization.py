@@ -11,5 +11,5 @@ from zigopt.organization.model import Organization  # type: ignore
 def validate_organization_name(name: Optional[str]) -> str:
   name = validate_name(name)
   if len(name) >= Organization.NAME_MAX_LENGTH:
-    raise BadParamError("Name must be fewer than %s characters" % Organization.NAME_MAX_LENGTH)
+    raise BadParamError(f"Name must be fewer than {Organization.NAME_MAX_LENGTH} characters")
   return name
