@@ -8,7 +8,7 @@ from zigopt.experiment.model import Experiment
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 
 
-class TestConvertToUnconditionedExperiment(object):
+class TestConvertToUnconditionedExperiment:
   @pytest.fixture
   def experiment(self):
     return Experiment(

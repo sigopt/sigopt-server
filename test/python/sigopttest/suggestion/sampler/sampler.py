@@ -39,7 +39,7 @@ from sigopttest.base.config_broker import StrictAccessConfigBroker
 from sigopttest.base.utils import partial_opt_args
 
 
-class TestSuggestSampler(object):
+class TestSuggestSampler:
   @pytest.fixture
   def segmenter(self):
     return ExperimentParameterSegmenter(Mock())

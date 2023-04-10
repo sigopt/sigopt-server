@@ -101,7 +101,7 @@ def as_json(string, encoding="utf-8"):
     raise BadParamError(f"Error parsing json: {e}") from e
 
 
-class RequestProxy(object):
+class RequestProxy:
   """
     Exposes a limited subset of Flask request endpoints, so that
     Handler implementations do not depend directly on Flask.

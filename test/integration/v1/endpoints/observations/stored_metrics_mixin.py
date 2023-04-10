@@ -8,7 +8,7 @@ import pytest
 from zigopt.experiment.constant import MetricStrategyNames
 
 
-class StoredMetricsMixin(object):
+class StoredMetricsMixin:
   @pytest.fixture
   def optimized_metric_name(self):
     return "optimized-metric"

@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-class Tracer(object):
+class Tracer:
   def ignore_transaction(self):
     raise NotImplementedError
 

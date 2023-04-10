@@ -162,7 +162,7 @@ def wait_for_url(driver, url, *args, **kwargs):
 
 
 def wait_for_title_text(driver, title_text, *args, **kwargs):
-  class our_title_contains(object):
+  class our_title_contains:
     def __init__(self, title):
       self.title = title
 

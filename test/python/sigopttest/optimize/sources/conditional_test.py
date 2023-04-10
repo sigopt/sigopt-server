@@ -14,7 +14,7 @@ from sigopttest.base.utils import partial_opt_args
 from sigopttest.optimize.sources.base_test import UnitTestBase
 
 
-class TestExperimentProgress(object):
+class TestExperimentProgress:
   def test_hyper_opt_dimension(self):
     json_dict = dict(
       name="conditional-hp-test",

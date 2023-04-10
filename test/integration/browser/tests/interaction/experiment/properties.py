@@ -17,7 +17,7 @@ from integration.v1.constants import DEFAULT_AI_EXPERIMENT_META
 
 class TestProperties(ExperimentBrowserTest):
   def editing(self, driver, experiment):
-    class _Editing(object):
+    class _Editing:
       @classmethod
       def __enter__(cls):
         self.navigate_to_experiment_page(driver, experiment, "Properties", "/properties")

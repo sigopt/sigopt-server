@@ -8,7 +8,7 @@ from zigopt.observation.model import *
 from zigopt.optimize.args import *
 
 
-class TestOptimizationArgs(object):
+class TestOptimizationArgs:
   def make_args(self, ids):
     return OptimizationArgs(
       source=None,

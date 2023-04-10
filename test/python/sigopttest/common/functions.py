@@ -6,7 +6,7 @@ import pytest
 from zigopt.common import *
 
 
-class TestFunctions(object):
+class TestFunctions:
   @pytest.mark.parametrize("value", [1, None, (2, 3, 4), "hello"])
   def test_identity(self, value):
     assert identity(value) is value

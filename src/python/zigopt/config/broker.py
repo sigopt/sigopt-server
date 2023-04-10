@@ -25,7 +25,7 @@ DEFAULT_SIGOPT_CONFIG_DIR = "./config"
 SIGOPT_CONFIG_DIR_ENV_KEY = "sigopt_server_config_dir"
 
 
-class ConfigBroker(object):
+class ConfigBroker:
   def __init__(self, sources: Sequence["ConfigBrokerSource"]):
     error_message = (
       "Sources must be a list of ConfigBrokerSources. Hint: you might want one of the ConfigBroker.from_* classmethods"
@@ -110,7 +110,7 @@ class ConfigBroker(object):
     self.mutable_source.reset()
 
 
-class ConfigBrokerImpl(object):
+class ConfigBrokerImpl:
   def __init__(self, sources):
     self.sources = sources
 

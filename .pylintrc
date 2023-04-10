@@ -18,10 +18,7 @@ disable=
   abstract-method,
   arguments-differ,
   assignment-from-no-return,
-  broad-except,
   cell-var-from-loop,
-  consider-using-f-string,
-  consider-using-generator,
   consider-using-with,
   duplicate-code,
   global-statement,
@@ -56,6 +53,5 @@ disable=
   unused-argument,
   unused-wildcard-import,
   use-dict-literal,
-  use-implicit-booleaness-not-comparison,
-  useless-object-inheritance
+  use-implicit-booleaness-not-comparison
 enable=missing-final-newline

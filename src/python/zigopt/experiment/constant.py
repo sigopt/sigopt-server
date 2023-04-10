@@ -52,7 +52,7 @@ METRIC_OBJECTIVE_NAME_TO_TYPE, METRIC_OBJECTIVE_TYPE_TO_NAME = generate_constant
 ALL_METRIC_OBJECTIVE_NAMES = list(METRIC_OBJECTIVE_NAME_TO_TYPE.keys())
 
 
-class MetricStrategyNames(object):
+class MetricStrategyNames:
   OPTIMIZE = "optimize"
   STORE = "store"
   CONSTRAINT = "constraint"

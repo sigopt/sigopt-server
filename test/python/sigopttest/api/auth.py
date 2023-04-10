@@ -56,7 +56,7 @@ def dummy_find_user_by_id(*users):
   return find_function
 
 
-class _TestAuthCore(object):
+class _TestAuthCore:
   ids = iter(generate_ids())
   organization = Mock(id=next(ids))
   client = Mock(id=next(ids), organization_id=organization.id, deleted=False)

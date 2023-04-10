@@ -13,7 +13,7 @@ from libsigopt.aux.constant import MULTISOLUTION_TOP_OBSERVATIONS_FRACTION
 from libsigopt.aux.errors import SigoptComputeError
 
 
-class TestExperimentBestObservationService(object):
+class TestExperimentBestObservationService:
   def create_mock_from_list(self, input_list):
     if input_list:
       return [

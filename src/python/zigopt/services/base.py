@@ -4,7 +4,7 @@
 import warnings
 
 
-class Service(object):
+class Service:
   """
     Base class for all services.
     """

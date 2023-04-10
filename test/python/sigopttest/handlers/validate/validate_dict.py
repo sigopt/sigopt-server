@@ -17,7 +17,7 @@ from zigopt.protobuf.gen.color.color_pb2 import Color
 from libsigopt.aux.errors import InvalidTypeError, MissingJsonKeyError, SigoptValidationError
 
 
-class TestValidateType(object):
+class TestValidateType:
   def check_valid_validator(self, validator, value, expected):
     assert validate_type(value, validator) == expected
 
@@ -272,7 +272,7 @@ class TestValidateType(object):
     self.check_valid_validator(ValidationType.color_hex.get_input_validator(), color_obj, color_hex)
 
 
-class TestGetWithValidation(object):
+class TestGetWithValidation:
   @pytest.fixture
   def data(self):
     return {
@@ -406,7 +406,7 @@ class TestGetWithValidation(object):
     assert str(value_type) == string
 
 
-class TestValidateMutuallyExclusiveProperties(object):
+class TestValidateMutuallyExclusiveProperties:
   def test_only_validate_objects(self):
     with pytest.raises(InvalidTypeError):
       validate_mutually_exclusive_properties([], ["a", "b"])
