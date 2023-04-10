@@ -474,7 +474,6 @@ jobs:
       - validate-openapi-docs
   v1-integration:
     executor: sigopt-integration
-    parallelism: 3
     steps:
       - run-integration-test:
           test_path: /v1
