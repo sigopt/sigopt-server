@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 # Used to return a special status from a `can_act_on_X` check.
 # Falsy so that this will lead to a denied authorization
-class AuthorizationDenied(object):
+class AuthorizationDenied:
   def __init__(self, name):
     self.name = name
 

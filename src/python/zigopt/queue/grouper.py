@@ -8,7 +8,7 @@ from zigopt.services.base import Service
 DIVIDER = ":"
 
 
-class MessageGrouper(object):
+class MessageGrouper:
   def validate_unpersisted_deserialized_message(self, deserialized_message, group_key):
     self.parse_group_key(group_key)
     self.apply_to_deserialized_message(deserialized_message.copy_protobuf(), group_key)

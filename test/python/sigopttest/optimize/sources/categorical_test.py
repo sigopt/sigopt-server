@@ -14,7 +14,7 @@ from libsigopt.aux.constant import (
 )
 
 
-class TestExperimentProgress(object):
+class TestExperimentProgress:
   def test_hyper_opt_dimension(self):
     json_dict = {
       "name": "test",

@@ -84,7 +84,7 @@ class RedisKeyService(Service):
   DIVIDER = ":"
   QUEUE_TRACKING_PREFIX = "tracking"
 
-  class _RedisKey(object):
+  class _RedisKey:
     def __init__(self, key_value):
       assert is_string(key_value)
       self.key_value = key_value

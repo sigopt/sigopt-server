@@ -27,7 +27,7 @@ def token_value(seed_value, name):
   return random_string() if seed_value is None else hex(hash((seed_value, name)))[2:]
 
 
-class AuthProvider(object):
+class AuthProvider:
   def __init__(self, config_broker, db_connection, api_url, services):
     self.api_url = api_url
     self.config_broker = config_broker

@@ -85,7 +85,7 @@ class SyslogFormatter(JsonFormatter):
     return f"Python: {json_message}"
 
 
-class SensitiveFilter(object):
+class SensitiveFilter:
   def filter(self, record):
     return 0 if record.name.startswith("sigopt.rawsql") else 1
 

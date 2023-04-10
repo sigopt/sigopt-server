@@ -4,7 +4,7 @@
 from zigopt.common import *
 
 
-class OptimizationArgs(object):
+class OptimizationArgs:
   def __init__(
     self,
     source,

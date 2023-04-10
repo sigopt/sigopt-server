@@ -7,7 +7,7 @@ from typing import Any
 from zigopt.common import *
 
 
-class _NotAvailableClass(object):
+class _NotAvailableClass:
   def __repr__(self) -> str:
     return "NotAvailable"
 
@@ -15,7 +15,7 @@ class _NotAvailableClass(object):
 _NOT_AVAILABLE = _NotAvailableClass()
 
 
-class ConfigBrokerSource(object):
+class ConfigBrokerSource:
   supports_types = True
 
   def _split_name(self, name: str) -> list[str]:

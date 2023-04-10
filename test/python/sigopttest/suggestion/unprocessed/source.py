@@ -6,7 +6,7 @@ import re
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion, source_to_string
 
 
-class TestSerializeUnprocessedSources(object):
+class TestSerializeUnprocessedSources:
   def test_serialize_unprocessed_sources(self):
     patt = re.compile(r"^__[a-z_]+__$")
     sources = [

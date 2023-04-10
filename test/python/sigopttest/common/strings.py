@@ -8,7 +8,7 @@ import numpy
 from zigopt.common.strings import *
 
 
-class TestStrings(object):
+class TestStrings:
   def test_is_string(self):
     assert is_string("") is True
     assert is_string("3") is True

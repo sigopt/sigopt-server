@@ -8,7 +8,7 @@ from zigopt.math.initialization import get_low_discrepancy_stencil_length_from_e
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 
 
-class TestGetLowDiscrepancyStencilLength(object):
+class TestGetLowDiscrepancyStencilLength:
   @pytest.fixture
   def parameters(self):
     parameters = [ExperimentParameter(param_type=PARAMETER_DOUBLE)] * 10

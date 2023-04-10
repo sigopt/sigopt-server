@@ -30,7 +30,7 @@ from integration.enhanced_info_objects import (
 
 
 # pylint: disable=protected-access
-class EnhancedInfoConnection(object):
+class EnhancedInfoConnection:
   def __init__(self, client_token, headers=None, requestor=None):
     these_headers = {
       "Content-Type": "application/json",
