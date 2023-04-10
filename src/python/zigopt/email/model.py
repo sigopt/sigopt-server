@@ -1,17 +1,12 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-import html
 import os
 
 from mako.template import Template
 
 from zigopt.common import *
 from zigopt.brand.constant import EMAIL_MAKO_TEMPLATE_FILE
-
-
-def email_escape(val):
-  return html.escape(str(val), quote=True)
 
 
 TEMPLATE_CACHE = {}
