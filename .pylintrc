@@ -34,7 +34,6 @@ disable=
   invalid-unary-operand-type,
   keyword-arg-before-vararg,
   len-as-condition,
-  locally-disabled,
   missing-docstring,
   missing-timeout,
   no-else-raise,
