@@ -29,7 +29,7 @@ from zigopt.training_run.model import TrainingRun
 Filter = ImmutableStruct("Filter", ["field", "operator", "casted_value"])
 
 
-class Cast(object):
+class Cast:
   def __init__(self, sql_cast_func, validation_type, python_cast_func=identity):
     self.sql_cast_func = sql_cast_func
     self.validation_type = validation_type
@@ -66,7 +66,7 @@ STRING_TO_OPERATOR_DICT = {
 }
 
 
-class Field(object):
+class Field:
   def __init__(self, name):
     self.name = name
     self._parts = tuple(name.split("."))

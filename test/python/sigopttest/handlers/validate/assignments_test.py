@@ -10,7 +10,7 @@ from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta, ParameterCondition
 
 
-class TestParameterConditionsSatisfied(object):
+class TestParameterConditionsSatisfied:
   @pytest.fixture(
     params=[
       None,
@@ -85,7 +85,7 @@ class TestParameterConditionsSatisfied(object):
 
 # Note: Mocking the 'name' attribute does not work as expected
 # See https://bradmontgomery.net/blog/how-world-do-you-mock-name-attribute/
-class TestValidateAssingmentsMap(object):
+class TestValidateAssingmentsMap:
   @pytest.fixture
   def experiment(self):
     meta = ExperimentMeta()
@@ -165,7 +165,7 @@ class TestValidateAssingmentsMap(object):
       validate_assignments_map(assignments, experiment_with_conditionals)
 
 
-class TestValidateAssignmentsMapConstraints(object):
+class TestValidateAssignmentsMapConstraints:
   @pytest.fixture
   def experiment(self):
     meta = ExperimentMeta()

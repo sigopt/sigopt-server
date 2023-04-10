@@ -12,7 +12,7 @@ def get_low_discrepancy_stencil_length_from_experiment(experiment):
     experiment.all_parameters,
     lambda p: p.is_categorical,
   )
-  num_categories = sum([len(p.active_categorical_values) for p in categorical_parameters])
+  num_categories = sum(len(p.active_categorical_values) for p in categorical_parameters)
   stencil_length = max(num_categories, 1) * len(numeric_parameters)
 
   stencil_length += experiment.parallel_bandwidth - 1

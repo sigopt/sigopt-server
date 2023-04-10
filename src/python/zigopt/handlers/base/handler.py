@@ -70,7 +70,7 @@ _DEFAULT_FOUND_OBJECT_KEY = "__default_handler_find_objects"
 _DEFAULT_FOUND_OBJECT_VALUE = object()
 
 
-class Handler(object):
+class Handler:
   """
     Base class for API endpoint handlers.
     To implement API endpoints, fill in the methods and class variables to enable the desired functionality.

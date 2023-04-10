@@ -6,7 +6,7 @@ import pytest
 from zigopt.note.model import Note, NoteType, ProjectNote
 
 
-class TestNote(object):
+class TestNote:
   def assert_base_attrs(self, note):
     assert note.contents is None
     assert note.created_by is None

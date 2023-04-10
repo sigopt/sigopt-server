@@ -10,7 +10,7 @@ from zigopt.config.source import ConfigBrokerValueNotAvailableException
 # pylint: disable=pointless-statement
 
 
-class TestConfigBroker(object):
+class TestConfigBroker:
   def make_broker(self, sources):
     impl = ConfigBrokerImpl(sources=sources)
     broker = ConfigBroker.from_configs([])

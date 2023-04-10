@@ -5,7 +5,7 @@
 import time
 
 
-class Profiler(object):
+class Profiler:
   def __init__(self):
     import cProfile
     import tracemalloc
@@ -47,7 +47,7 @@ class Profiler(object):
       pass
 
 
-class NullProfiler(object):
+class NullProfiler:
   def enable(self):
     pass
 

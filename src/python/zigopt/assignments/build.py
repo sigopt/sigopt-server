@@ -11,7 +11,9 @@ def set_assignments_map_from_json(has_assignments_map, assignments_json, experim
     for (name, assignment_json) in assignments_json.items():
       if name in experiment.conditionals_map:
         conditional = experiment.conditionals_map[name]
+        # pylint: disable=cell-var-from-loop
         conditional_value = find(conditional.values, lambda c: c.name == assignment_json)
+        # pylint: enable=cell-var-from-loop
         if conditional_value is None:
           raise BadParamError(f"Invalid assignment {assignment_json} for conditional {conditional.name}")
         has_assignments_map.assignments_map[conditional.name] = conditional_value.enum_index

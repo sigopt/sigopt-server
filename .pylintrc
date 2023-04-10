@@ -18,14 +18,9 @@ disable=
   abstract-method,
   arguments-differ,
   assignment-from-no-return,
-  cell-var-from-loop,
-  consider-using-f-string,
-  consider-using-generator,
   consider-using-with,
   duplicate-code,
-  global-statement,
   invalid-name,
-  invalid-unary-operand-type,
   keyword-arg-before-vararg,
   missing-docstring,
   missing-timeout,
@@ -55,7 +50,6 @@ disable=
   unused-wildcard-import,
   use-dict-literal,
   use-implicit-booleaness-not-comparison,
-  useless-object-inheritance,
   wildcard-import,
   wrong-import-position
 enable=missing-final-newline

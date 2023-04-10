@@ -6,7 +6,7 @@ from pprint import pformat
 from sqlalchemy.ext.declarative import declarative_base
 
 
-class SQLAPrintMixin(object):
+class SQLAPrintMixin:
   def __str__(self):
     return pformat(self._asdict())
 
