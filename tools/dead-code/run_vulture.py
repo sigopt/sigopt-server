@@ -69,6 +69,7 @@ DEFAULTS.update(
       "containing_*",
       "google_dot_protobuf_dot_*",
       "hyperparameter_alpha",
+      "hyperparameter_tikhonov",
       "zigopt_dot_protobuf_dot_gen_dot_*",
     ],
     "paths": ["."],

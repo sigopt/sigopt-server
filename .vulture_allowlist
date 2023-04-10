@@ -1,5 +1,4 @@
 _.delete_by_invite_ids  # unused method (src/python/zigopt/invite/service.py:77)
-_.hyperparameter_tikhonov  # unused attribute (src/python/zigopt/optimize/sources/categorical.py:178)
 _.delete_by_invite_ids  # unused method (src/python/zigopt/permission/pending/service.py:65)
 _.migrate_client  # unused method (src/python/zigopt/permission/service.py:109)
 ExperimentParameterType  # unused variable (src/python/zigopt/protobuf/gen/experiment/experimentmeta_pb2.py:56)
