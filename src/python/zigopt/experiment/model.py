@@ -62,7 +62,7 @@ class ExperimentParameterProxy(Proxy):
       if assignment not in self.grid_values:
         return False
     else:
-      if not (self.bounds.minimum <= assignment <= self.bounds.maximum):
+      if not self.bounds.minimum <= assignment <= self.bounds.maximum:
         return False
     return True
 

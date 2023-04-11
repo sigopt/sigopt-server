@@ -23,7 +23,6 @@ disable=
   no-member,
   pointless-string-statement,
   redefined-outer-name,
-  superfluous-parens,
   too-few-public-methods,
   too-many-ancestors,
   too-many-arguments,
