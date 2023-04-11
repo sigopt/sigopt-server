@@ -29,7 +29,7 @@ assert not (set(m for m, _ in ALLOWED_METHODS) & set(BLOCKED_METHODS))
 
 
 def request(method, path):
-  return requests.request(method, path, verify=os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True))
+  return requests.request(method, path, verify=os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True), timeout=5)
 
 
 class TestHTTPMethods(WebBase):

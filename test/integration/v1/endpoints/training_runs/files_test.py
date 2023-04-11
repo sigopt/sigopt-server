@@ -137,7 +137,9 @@ class TestRunFiles(V1Base):
       )
     )
     upload_info = file_info.upload
-    response = requests.request(upload_info.method, upload_info.url, headers=upload_info.headers, data=contents)
+    response = requests.request(
+      upload_info.method, upload_info.url, headers=upload_info.headers, data=contents, timeout=10
+    )
     response.raise_for_status()
     updated_run = connection.training_runs(training_run.id).fetch()
     assert updated_run.files == [file_info.id]
@@ -148,7 +150,7 @@ class TestRunFiles(V1Base):
     assert file_obj.content_md5 == b64_md5
     assert file_obj.content_type == content_type
     download_info = file_obj.download
-    response = requests.get(download_info.url)
+    response = requests.get(download_info.url, timeout=5)
     response.raise_for_status()
     assert response.content.decode("utf-8") == contents
 

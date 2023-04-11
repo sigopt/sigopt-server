@@ -68,7 +68,7 @@ class TestGuestWebCreate(GuestWebTestBase):
   def cookie_testing_enabled(self, app_url, config_broker):
     if not config_broker.get("web.enable_decrypt_cookie_endpoint", False):
       pytest.skip()
-    resp = requests.get(f"{app_url}/cookie", verify=False)
+    resp = requests.get(f"{app_url}/cookie", verify=False, timeout=5)
     if resp.status_code == HTTPStatus.NOT_FOUND:
       raise Exception(
         "The cookie decryption endpoint is not enabled (you might need to add the environment variable"
@@ -95,14 +95,14 @@ class TestGuestWebCreate(GuestWebTestBase):
 
       response1 = logged_in_web_connection.get(experiment_guest_url)
       cookie1 = response1.response.headers["Set-Cookie"]
-      cookie1_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie1}, verify=False).json()
+      cookie1_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie1}, verify=False, timeout=5).json()
       assert cookie1_contents["loginState"]["clientId"] is None
       assert cookie1_contents["loginState"]["organizationId"] is None
       assert cookie1_contents["loginState"]["apiToken"] == experiment_guest_token
 
       response2 = logged_in_web_connection.get(second_guest_url)
       cookie2 = response2.response.headers["Set-Cookie"]
-      cookie2_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie2}, verify=False).json()
+      cookie2_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie2}, verify=False, timeout=5).json()
       assert cookie2_contents["loginState"]["clientId"] is None
       assert cookie2_contents["loginState"]["organizationId"] is None
       assert cookie2_contents["loginState"]["apiToken"] == second_guest_token

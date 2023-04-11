@@ -42,7 +42,7 @@ def wait_for_url(url, proc=None, seconds=10, raise_for_status=False):
   def waiter():
     if proc and proc.poll() is not None:
       raise Exception(f"{url} failed on startup!")
-    response = requests.head(url, verify=os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True))
+    response = requests.head(url, verify=os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True), timeout=5)
     if raise_for_status:
       response.raise_for_status()
 
@@ -228,10 +228,10 @@ def base_inbox(email_server, email_enabled, base_email_url, config_broker, wait_
   class EmailInbox:
     def reset(self):
       if enabled:
-        requests.post(f"{base_url}/reset").raise_for_status()
+        requests.post(f"{base_url}/reset", timeout=5).raise_for_status()
 
     def _list_email_messages(self, email):
-      response = requests.get(f"{base_url}/message/{email}/list")
+      response = requests.get(f"{base_url}/message/{email}/list", timeout=5)
       response.raise_for_status()
       return [email_message.get("message") or {} for email_message in response.json()]
 

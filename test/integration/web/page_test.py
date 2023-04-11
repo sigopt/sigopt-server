@@ -27,7 +27,7 @@ class TestPages(WebBase):
   def test_health(self, config_broker, web):
     del web
     app_url = self.get_app_url(config_broker)
-    response = requests.get(f"{app_url}/nhealth", verify=os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True))
+    response = requests.get(f"{app_url}/nhealth", verify=os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True), timeout=5)
     assert response.status_code == 200
     assert response.text.strip() == "healthy"
 
