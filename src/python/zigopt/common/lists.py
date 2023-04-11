@@ -126,7 +126,7 @@ def compact(
   if is_mapping(lis):
     assert isinstance(lis, _collectionsabc.Mapping)
     return compact_map(lis)
-  elif isinstance(lis, list | tuple):
+  if isinstance(lis, list | tuple):
     return compact_sequence(lis, type(lis))
   raise ValueError(f"Invalid type for compact: {type(lis)}")
 
@@ -154,10 +154,10 @@ def remove_nones(
   if is_mapping(lis):
     assert isinstance(lis, _collectionsabc.Mapping)
     return remove_nones_mapping(lis)
-  elif is_set(lis):
+  if is_set(lis):
     assert isinstance(lis, _collectionsabc.Set)
     return remove_nones_set(lis)
-  elif isinstance(lis, list | tuple):
+  if isinstance(lis, list | tuple):
     return remove_nones_sequence(lis, type(lis))
   raise ValueError(f"Invalid type for remove_nones: {type(lis)}")
 
@@ -333,9 +333,8 @@ def max_option(
   try:
     if key == Sentinel.NO_ARG:
       return max(lis)  # type: ignore
-    else:
-      assert not isinstance(key, Sentinel)
-      return max(lis, key=key)
+    assert not isinstance(key, Sentinel)
+    return max(lis, key=key)
   except ValueError:
     return None
 
@@ -349,9 +348,8 @@ def min_option(
   try:
     if key == Sentinel.NO_ARG:
       return min(lis)  # type: ignore
-    else:
-      assert not isinstance(key, Sentinel)
-      return min(lis, key=key)
+    assert not isinstance(key, Sentinel)
+    return min(lis, key=key)
   except ValueError:
     return None
 
@@ -423,8 +421,7 @@ def as_tuple(val: _collectionsabc.Iterable[lists_T] | lists_T) -> tuple[lists_T,
   if is_iterable(val):
     assert isinstance(val, _collectionsabc.Iterable)
     return tuple(val)
-  else:
-    return tuple([val])  # type: ignore
+  return tuple([val])  # type: ignore
 
 
 def extend_dict(

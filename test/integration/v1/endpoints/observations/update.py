@@ -61,7 +61,7 @@ class TestUpdateObservations(V1Base):
   def observation(self, request, observation_from_suggestion, observation_from_assignments):
     if request.param == "suggestion":
       return observation_from_suggestion
-    elif request.param == "assignments":
+    if request.param == "assignments":
       return observation_from_assignments
     return None
 

@@ -38,8 +38,7 @@ class QueryPager(Service):
     def having(q, clause):
       if use_having:
         return q.having(clause)
-      else:
-        return q.filter(clause)
+      return q.filter(clause)
 
     def marker_to_rhs(marker):
       if len(Fields) != len(marker.symbols):

@@ -10,11 +10,11 @@ def authenticate_token(services, token):
   token_obj = services.token_service.find_by_token(token, include_expired=True)
   if token_obj is None:
     return authentication_result()
-  elif token_obj.expired:
+  if token_obj.expired:
     raise ForbiddenError("Your API token has expired.", token_status=TokenStatus.EXPIRED)
-  elif token_obj.is_client_token:
+  if token_obj.is_client_token:
     return authenticate_client_token(services, token_obj)
-  elif token_obj.is_user_token:
+  if token_obj.is_user_token:
     return authenticate_user_token(services, token_obj)
   raise TypeError("Token is of invalid type")
 

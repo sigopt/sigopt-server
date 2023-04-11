@@ -16,8 +16,7 @@ class ClientService(Service):
     if current_client and current_client.id == client_id:
       if not include_deleted and current_client.deleted:
         return None
-      else:
-        return current_client
+      return current_client
     return self.services.database_service.one_or_none(
       self._include_deleted_clause(
         include_deleted,
@@ -33,8 +32,7 @@ class ClientService(Service):
           self.services.database_service.query(Client).filter(Client.id.in_(client_ids)),
         ),
       )
-    else:
-      return []
+    return []
 
   def find_by_organization_id(self, organization_id, include_deleted=False):
     return self.services.database_service.all(
@@ -52,26 +50,24 @@ class ClientService(Service):
           self.services.database_service.query(Client).filter(Client.organization_id.in_(organization_ids)),
         ),
       )
-    else:
-      return []
+    return []
 
   def find_by_ids_or_organization_ids(self, client_ids, organization_ids, include_deleted=False):
     if not organization_ids:
       return self.find_by_ids(client_ids, include_deleted)
-    elif not client_ids:
+    if not client_ids:
       return self.find_by_organization_ids(organization_ids, include_deleted)
-    else:
-      return self.services.database_service.all(
-        self._include_deleted_clause(
-          include_deleted,
-          self.services.database_service.query(Client).filter(
-            or_(
-              Client.id.in_(client_ids),
-              Client.organization_id.in_(organization_ids),
-            )
-          ),
-        )
+    return self.services.database_service.all(
+      self._include_deleted_clause(
+        include_deleted,
+        self.services.database_service.query(Client).filter(
+          or_(
+            Client.id.in_(client_ids),
+            Client.organization_id.in_(organization_ids),
+          )
+        ),
       )
+    )
 
   def count_by_organization_id(self, organization_id, include_deleted=False):
     return self.services.database_service.count(

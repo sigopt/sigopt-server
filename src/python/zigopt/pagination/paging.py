@@ -180,11 +180,9 @@ class Pager:
         marker = build_marker_from_field_values(get_field_values_from_result(extra_item))
         if start_from_before:
           return [], self._sanitize_marker(self._increment_marker(marker)), None
-        else:
-          return [], None, self._sanitize_marker(self._decrement_marker(marker))
-      else:
-        return [], None, None
-    elif limit is not None:
+        return [], None, self._sanitize_marker(self._decrement_marker(marker))
+      return [], None, None
+    if limit is not None:
       results = results[:limit] if start_from_before else tail(results, limit)
 
     if results:

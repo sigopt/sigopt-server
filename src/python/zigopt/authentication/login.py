@@ -61,8 +61,7 @@ def authenticate_password_reset_code(services, email, password_reset_code):
   ):
     if unix_timestamp() - user.password_reset_timestamp < PASSWORD_RESET_EXPIRY_IN_SECONDS:
       return authentication_result(user=user, authenticated_from_email_link=True)
-    else:
-      raise UnauthorizedError("Expired password_reset_code")
+    raise UnauthorizedError("Expired password_reset_code")
   raise BadParamError("Invalid email/password_reset_code")
 
 
@@ -93,7 +92,7 @@ def authenticate_login(services, email, password, code):
       if can_auth_with_password:
         if password is not None:
           return authenticate_password(services, user, password)
-        elif code is not None:
+        if code is not None:
           return authenticate_email_code(user, code)
   except RequestError as request_error:
     error = request_error

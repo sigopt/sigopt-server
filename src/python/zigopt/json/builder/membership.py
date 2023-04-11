@@ -24,8 +24,7 @@ class MembershipJsonBuilder(JsonBuilder):
   def organization(self) -> Optional[OrganizationJsonBuilder]:
     if self._organization is not None:
       return OrganizationJsonBuilder(self._organization)
-    else:
-      return None
+    return None
 
   @field(ValidationType.enum(MembershipType))
   def type(self) -> Optional[str]:

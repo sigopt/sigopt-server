@@ -338,9 +338,8 @@ class TestAuth(V1Base):
   def guest_token_connection(self, request, connection, development_connection):
     if request.param == "production":
       return connection
-    else:
-      assert request.param == "development"
-      return development_connection
+    assert request.param == "development"
+    return development_connection
 
   @pytest.fixture
   @unsafe_generator

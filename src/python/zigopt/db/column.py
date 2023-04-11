@@ -272,11 +272,11 @@ class _ProtobufColumnType(TypeDecorator):
         # NOTE: This implementation is taken from `operate` in `sqlalchemy.sql.type_api`
         o = default_comparator.operator_lookup[operator.__name__]
         return o[0](with_default, operator, *(other + o[1:]), **kwargs)
-      elif operator in OPERATORS_REQUIRING_CAST:
+      if operator in OPERATORS_REQUIRING_CAST:
         raise ValueError(
           f"It is unsafe to compare fields with {operator_name} - cast values using `as_X` before comparing."
         )
-      elif operator not in OPERATORS_FORBIDDING_DEFAULTS:
+      if operator not in OPERATORS_FORBIDDING_DEFAULTS:
         # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
         # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
         # operator. If you are adding a new operator here, think about whether it makes sense for the protobuf default
@@ -330,10 +330,9 @@ class _ProtobufColumnType(TypeDecorator):
         # pylint: enable=protected-access
       ):
         return self._real_getitem(key, with_default=True)
-      else:
-        # Fallback to regular JSONB
-        operator, right_expr, _ = self._setup_getitem(key)
-        return self.operate(operator, right_expr, result_type=JSONB)
+      # Fallback to regular JSONB
+      operator, right_expr, _ = self._setup_getitem(key)
+      return self.operate(operator, right_expr, result_type=JSONB)
 
     def protobuf_getattr(self, key):
       field_descriptor = self._get_field_descriptor(key)

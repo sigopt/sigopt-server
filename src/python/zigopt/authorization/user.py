@@ -69,8 +69,7 @@ class UserAuthorization(EmptyAuthorization):
           return True
         p = self._permission(services, client_id)
         return self.compare_permissions(p, requested_permission)
-      else:
-        return self._no_membership_status(services)
+      return self._no_membership_status(services)
     return False
 
   def can_act_on_organization(self, services, requested_permission, organization):
@@ -80,7 +79,7 @@ class UserAuthorization(EmptyAuthorization):
         return self._no_membership_status(services)
       if requested_permission == READ:
         return True
-      elif requested_permission in (WRITE, ADMIN):
+      if requested_permission in (WRITE, ADMIN):
         return membership.is_owner
     return False
 
@@ -99,8 +98,7 @@ class UserAuthorization(EmptyAuthorization):
 
         if p.can_see_experiments_by_others or self._current_user.id == owner_id_for_artifacts:
           return self.compare_permissions(p, requested_permission)
-      else:
-        return self._no_membership_status(services)
+      return self._no_membership_status(services)
     return False
 
   def can_act_on_token(self, services, requested_permission, token):
@@ -114,9 +112,9 @@ class UserAuthorization(EmptyAuthorization):
   def compare_permissions(self, current_permission, requested_permission):
     if requested_permission == READ:
       return bool(current_permission and current_permission.can_read)
-    elif requested_permission == WRITE:
+    if requested_permission == WRITE:
       return bool(current_permission and current_permission.can_write)
-    elif requested_permission == ADMIN:
+    if requested_permission == ADMIN:
       return bool(current_permission and current_permission.can_admin)
     return False
 
@@ -130,8 +128,7 @@ class UserAuthorization(EmptyAuthorization):
           assert self.scoped_membership.user_id == self.current_user.id
           if self.scoped_membership.organization_id == organization.id:
             return self.scoped_membership
-          else:
-            return None
+          return None
         return services.membership_service.find_by_user_and_organization(
           user_id=self.current_user.id,
           organization_id=organization.id,
@@ -144,8 +141,7 @@ class UserAuthorization(EmptyAuthorization):
         assert self.scoped_permission.user_id == self.current_user.id
         if self.scoped_permission.client_id == client_id:
           return self.scoped_permission
-        else:
-          return None
+        return None
       return services.permission_service.find_by_client_and_user(client_id=client_id, user_id=self.current_user.id)
     return None
 
