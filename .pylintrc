@@ -22,7 +22,6 @@ disable=
   missing-docstring,
   no-member,
   pointless-string-statement,
-  raising-format-tuple,
   redefined-outer-name,
   superfluous-parens,
   too-few-public-methods,
