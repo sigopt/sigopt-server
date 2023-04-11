@@ -98,8 +98,7 @@ class UnprocessedSuggestionService(Service):
           ),
         )
       )
-    else:
-      return []
+    return []
 
   def find_by_id(self, suggestion_id, include_deleted=False):
     return list_get(self.find_by_ids([suggestion_id], include_deleted), 0)

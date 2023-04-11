@@ -16,13 +16,12 @@ class ObservationDataProxy(HasAssignmentsMap, BaseHasMeasurementsProxy):
   def sorted_measurements(self):
     if self.reported_failure:
       return []
-    elif self.values:
+    if self.values:
       for v in self.values:
         if v.name == "":
           v.ClearField("name")
       return sorted(self.values, key=lambda val: val.name)
-    else:
-      return [(ObservationValue(value=None, value_var=None))]
+    return [(ObservationValue(value=None, value_var=None))]
 
 
 class Observation(Base):
@@ -109,10 +108,9 @@ class Observation(Base):
       return True
     if metric.is_maximized:
       return metric_value >= metric.threshold
-    elif metric.is_minimized:
+    if metric.is_minimized:
       return metric_value <= metric.threshold
-    else:
-      raise Exception("Unknown objective found while checking if observation is within metric thresholds")
+    raise Exception("Unknown objective found while checking if observation is within metric thresholds")
 
   def within_metric_thresholds(self, experiment):
     return all(self._within_metric_threshold(metric, experiment) for metric in experiment.all_metrics)

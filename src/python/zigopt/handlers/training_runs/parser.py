@@ -178,8 +178,7 @@ class TrainingRunRequestParser:
   def get_opt_or_explicitly_null(self, params, key, validation_type):
     if key in params:
       return coalesce(get_opt_with_validation(params, key, validation_type), EXPLICITLY_NULL)
-    else:
-      return None
+    return None
 
   def parse_params(self, request):
     training_run_data = ProtobufBuilderThatRetainsNones(TrainingRunData)

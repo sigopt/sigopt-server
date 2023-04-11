@@ -37,9 +37,9 @@ class ClientAuthorization(EmptyAuthorization):
     )
     if requested_permission == READ:
       return allowed_to_read
-    elif requested_permission == WRITE:
+    if requested_permission == WRITE:
       return allowed_to_read and self._guest_can_write
-    elif requested_permission == ADMIN:
+    if requested_permission == ADMIN:
       return False
     return False
 
@@ -52,7 +52,7 @@ class ClientAuthorization(EmptyAuthorization):
     )
     if requested_permission == READ:
       return allowed_to_read
-    elif requested_permission in (WRITE, ADMIN):
+    if requested_permission in (WRITE, ADMIN):
       return False
     return False
 

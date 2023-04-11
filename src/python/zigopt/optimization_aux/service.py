@@ -35,13 +35,12 @@ class BaseAuxService(Service):
     interpretable_hyperparameter_string = protobuf.SerializeToString()
     if hyperparameter_string_as_stored == interpretable_hyperparameter_string:
       return protobuf, None
-    else:
-      inconsistency = {
-        "Stored data column": hyperparameter_string_as_stored,
-        "Interpreted data column": interpretable_hyperparameter_string,
-        "Hyperparameter type": hyperparameter_type,
-      }
-      return None, inconsistency
+    inconsistency = {
+      "Stored data column": hyperparameter_string_as_stored,
+      "Interpreted data column": interpretable_hyperparameter_string,
+      "Hyperparameter type": hyperparameter_type,
+    }
+    return None, inconsistency
 
   def get_hyperparameters_from_aux(self, experiment, hyperparameter_type, optimization_aux):
     serialized_hyperparameters = optimization_aux and optimization_aux.data_column

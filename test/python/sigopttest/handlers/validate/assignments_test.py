@@ -109,7 +109,7 @@ class TestValidateAssingmentsMap:
   def any_experiment(self, request, experiment, experiment_with_conditionals):
     if request.param == "default":
       return experiment
-    elif request.param == "conditionals":
+    if request.param == "conditionals":
       return experiment_with_conditionals
     return None
 

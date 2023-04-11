@@ -21,7 +21,7 @@ def dummy_find_client_by_id(*clients):
       if client.id == client_id:
         if not client.deleted:
           return client
-        elif include_deleted:
+        if include_deleted:
           return client
     return None
 
@@ -34,10 +34,9 @@ def dummy_find_token_by_token_value(*tokens):
       if t.token == token:
         if not t.expired:
           return t
-        elif include_expired:
+        if include_expired:
           return t
-        else:
-          return None
+        return None
     return None
 
   return find_function
@@ -49,7 +48,7 @@ def dummy_find_user_by_id(*users):
       if user.id == user_id:
         if not user.deleted:
           return user
-        elif include_deleted:
+        if include_deleted:
           return user
     return None
 

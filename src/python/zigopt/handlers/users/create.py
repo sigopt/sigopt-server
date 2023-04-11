@@ -167,8 +167,7 @@ class BaseUsersCreateHandler(Handler):
     if claimable_invite:
       if self.services.invite_service.invite_is_valid(claimable_invite):
         return claimable_invite
-      else:
-        raise ForbiddenError("This invite is no longer valid.")
+      raise ForbiddenError("This invite is no longer valid.")
     if invite_code and claimable_invite is None:
       provided_invite = self.services.invite_service.find_by_code(invite_code)
       if provided_invite is not None and email != provided_invite.email:

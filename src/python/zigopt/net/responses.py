@@ -27,8 +27,7 @@ def success_response(body):
   headers = get_response_headers(request)
   if body is None:
     return ("", HTTPStatus.NO_CONTENT.value, headers)
-  else:
-    return (dump_json(body), HTTPStatus.OK.value, headers)
+  return (dump_json(body), HTTPStatus.OK.value, headers)
 
 
 # Prevent JSON from being incorrectly interpreted as HTML. This is not strictly necessary but

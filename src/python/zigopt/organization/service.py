@@ -39,8 +39,7 @@ class OrganizationService(Service):
           self.services.database_service.query(Organization).filter(Organization.id.in_(organization_ids)),
         ),
       )
-    else:
-      return []
+    return []
 
   def _include_deleted_clause(self, include_deleted, q):
     if not include_deleted:

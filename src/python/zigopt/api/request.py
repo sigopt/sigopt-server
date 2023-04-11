@@ -261,8 +261,7 @@ class Request(RequestBase):
     value = self.optional_param(name)
     if value is not None:
       return value
-    else:
-      raise MissingParamError(name)
+    raise MissingParamError(name)
 
   def optional_int_param(self, name):
     assert self.method in ("GET", "DELETE"), "Must use get_with_validation for non-query arguments"
@@ -322,7 +321,7 @@ class Request(RequestBase):
   def string_to_bool(self, value):
     if value == "1" or value.lower() == "true":
       return True
-    elif value == "0" or value.lower() == "false":
+    if value == "0" or value.lower() == "false":
       return False
     raise BadParamError("Invalid boolean value: " + value)
 
@@ -330,15 +329,14 @@ class Request(RequestBase):
     def _sanitized_params(params):
       if is_sequence(params):
         return [_sanitized_params(p) for p in params]
-      elif is_mapping(params):
+      if is_mapping(params):
         return dict(
           (
             (key, _sanitized_params(value) if key not in self.sensitive_params else "*****")
             for (key, value) in params.items()
           )
         )
-      else:
-        return params
+      return params
 
     return _sanitized_params(self.params())
 
@@ -354,10 +352,8 @@ class Request(RequestBase):
       if k in sensitive_headers:
         if v is None or v == "":
           return "*"
-        else:
-          return "*****"
-      else:
-        return v
+        return "*****"
+      return v
 
     return dict((k, sanitize_value(k, v)) for (k, v) in self.headers.items())
 

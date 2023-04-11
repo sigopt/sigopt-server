@@ -71,8 +71,7 @@ def field_descriptor_to_scalar_descriptor(field_descriptor):
   python_type = next_descriptor_for_field_descriptor(field_descriptor)
   if field_descriptor.has_default_value:
     return lambda: python_type(field_descriptor.default_value)
-  else:
-    return python_type
+  return python_type
 
 
 def get_json_key(descriptor, key, json=False):
@@ -151,33 +150,28 @@ def emit_json_with_descriptor(value, descriptor):
   if is_array:
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
     return [emit_json_with_descriptor(v, next_descriptor) for v in value]
-  else:
-    if isinstance(descriptor, Descriptor):
-      if is_protobuf_struct_descriptor(descriptor):
-        if is_mapping(value):
-          return value
-      elif is_protobuf(value):
-        return protobuf_to_dict(value)
-      raise ValueError(f"Invalid value for protobuf descriptor {descriptor.full_name}: {value}")
-    if isinstance(descriptor, FieldDescriptor):
-      if IsMapEntry(descriptor):
-        if is_mapping(value):
-          value_field = descriptor.message_type.fields_by_name["value"]
-          next_descriptor = next_descriptor_for_field_descriptor(value_field)
-          return map_dict(lambda v: emit_json_with_descriptor(v, next_descriptor), value)
-        else:
-          raise ValueError(f"Unknown map type: {type(value)}")
-      elif is_valid_field_descriptor_for_value(value, descriptor, is_emit=True):
-        return protobuf_to_dict(value) if is_protobuf(value) else value
-      else:
-        raise ValueError(f"Invalid value for field descriptor {descriptor.full_name}: {value}")
-    elif isinstance(descriptor, OurEnumDescriptor):
-      return descriptor.serialize(value)
-    else:
-      if is_valid_scalar_descriptor_for_value(value, descriptor):
+  if isinstance(descriptor, Descriptor):
+    if is_protobuf_struct_descriptor(descriptor):
+      if is_mapping(value):
         return value
-      else:
-        raise ValueError(f"Invalid value for scalar descriptor {descriptor}: {value}")
+    elif is_protobuf(value):
+      return protobuf_to_dict(value)
+    raise ValueError(f"Invalid value for protobuf descriptor {descriptor.full_name}: {value}")
+  if isinstance(descriptor, FieldDescriptor):
+    if IsMapEntry(descriptor):
+      if is_mapping(value):
+        value_field = descriptor.message_type.fields_by_name["value"]
+        next_descriptor = next_descriptor_for_field_descriptor(value_field)
+        return map_dict(lambda v: emit_json_with_descriptor(v, next_descriptor), value)
+      raise ValueError(f"Unknown map type: {type(value)}")
+    if is_valid_field_descriptor_for_value(value, descriptor, is_emit=True):
+      return protobuf_to_dict(value) if is_protobuf(value) else value
+    raise ValueError(f"Invalid value for field descriptor {descriptor.full_name}: {value}")
+  if isinstance(descriptor, OurEnumDescriptor):
+    return descriptor.serialize(value)
+  if is_valid_scalar_descriptor_for_value(value, descriptor):
+    return value
+  raise ValueError(f"Invalid value for scalar descriptor {descriptor}: {value}")
 
 
 def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknown_fields):
@@ -185,36 +179,29 @@ def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknow
   if is_array:
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
     return [parse_json_with_descriptor(v, next_descriptor, message_factory, ignore_unknown_fields) for v in value]
-  else:
-    if isinstance(descriptor, Descriptor):
+  if isinstance(descriptor, Descriptor):
+    if is_mapping(value):
+      Cls = message_factory.GetPrototype(descriptor)
+      return dict_to_protobuf(Cls, value, ignore_unknown_fields=ignore_unknown_fields)
+    raise ValueError(f"Invalid value for protobuf descriptor {descriptor.full_name}: {value}")
+  if isinstance(descriptor, FieldDescriptor):
+    if IsMapEntry(descriptor):
       if is_mapping(value):
-        Cls = message_factory.GetPrototype(descriptor)
+        value_field = descriptor.message_type.fields_by_name["value"]
+        next_descriptor = next_descriptor_for_field_descriptor(value_field)
+        return map_dict(
+          lambda v: parse_json_with_descriptor(v, next_descriptor, message_factory, ignore_unknown_fields),
+          value,
+        )
+      raise ValueError(f"Invalid value for map descriptor {descriptor.full_name}: {value}")
+    if is_valid_field_descriptor_for_value(value, descriptor, is_emit=False):
+      if is_mapping(value):
+        Cls = message_factory.GetPrototype(descriptor.message_type)
         return dict_to_protobuf(Cls, value, ignore_unknown_fields=ignore_unknown_fields)
-      else:
-        raise ValueError(f"Invalid value for protobuf descriptor {descriptor.full_name}: {value}")
-    elif isinstance(descriptor, FieldDescriptor):
-      if IsMapEntry(descriptor):
-        if is_mapping(value):
-          value_field = descriptor.message_type.fields_by_name["value"]
-          next_descriptor = next_descriptor_for_field_descriptor(value_field)
-          return map_dict(
-            lambda v: parse_json_with_descriptor(v, next_descriptor, message_factory, ignore_unknown_fields),
-            value,
-          )
-        else:
-          raise ValueError(f"Invalid value for map descriptor {descriptor.full_name}: {value}")
-      elif is_valid_field_descriptor_for_value(value, descriptor, is_emit=False):
-        if is_mapping(value):
-          Cls = message_factory.GetPrototype(descriptor.message_type)
-          return dict_to_protobuf(Cls, value, ignore_unknown_fields=ignore_unknown_fields)
-        else:
-          return value
-      else:
-        raise ValueError(f"Invalid value for field descriptor {descriptor.full_name}: {value}")
-    elif isinstance(descriptor, OurEnumDescriptor):
-      return descriptor(value)
-    else:
-      if is_valid_scalar_descriptor_for_value(value, descriptor):
-        return value
-      else:
-        raise ValueError(f"Invalid value for scalar descriptor {descriptor}: {value}")
+      return value
+    raise ValueError(f"Invalid value for field descriptor {descriptor.full_name}: {value}")
+  if isinstance(descriptor, OurEnumDescriptor):
+    return descriptor(value)
+  if is_valid_scalar_descriptor_for_value(value, descriptor):
+    return value
+  raise ValueError(f"Invalid value for scalar descriptor {descriptor}: {value}")

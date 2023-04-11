@@ -96,8 +96,7 @@ class ProcessedSuggestionService(Service):
           ),
         )
       )
-    else:
-      return []
+    return []
 
   def insert(self, processed_suggestion):
     try:
@@ -142,16 +141,14 @@ class ProcessedSuggestionService(Service):
     if isinstance(include_deleted, DeleteClause):
       if include_deleted == DeleteClause.ALL:
         return q
-      elif include_deleted == DeleteClause.DELETED:
+      if include_deleted == DeleteClause.DELETED:
         return q.filter(ProcessedSuggestion.deleted.is_(True))
-      else:
-        assert include_deleted == DeleteClause.NOT_DELETED
-        return q.filter(ProcessedSuggestion.deleted.isnot(True))
-    else:
-      assert is_boolean(include_deleted)
-      if include_deleted:
-        return q
+      assert include_deleted == DeleteClause.NOT_DELETED
       return q.filter(ProcessedSuggestion.deleted.isnot(True))
+    assert is_boolean(include_deleted)
+    if include_deleted:
+      return q
+    return q.filter(ProcessedSuggestion.deleted.isnot(True))
 
   def upsert_suggestion(self, suggestion):
     self.services.database_service.upsert(suggestion)

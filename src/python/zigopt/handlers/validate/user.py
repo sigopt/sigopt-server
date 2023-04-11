@@ -14,8 +14,7 @@ def validate_user_name(name: Optional[str]) -> str:
     if len(name) >= User.NAME_MAX_LENGTH:
       raise BadParamError(f"Name must be fewer than {User.NAME_MAX_LENGTH} characters")
     return name
-  else:
-    raise BadParamError("User name is required")
+  raise BadParamError("User name is required")
 
 
 def validate_user_email(email: Optional[str]) -> str:

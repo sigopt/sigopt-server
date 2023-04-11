@@ -130,26 +130,25 @@ class InviteService(Service):
         inviter=inviter,
         inviter_membership=inviter_membership,
       )
-    else:
-      assert invitee_intended_membership_type == MembershipType.member
-      # NOTE: An non-owner invite with 0 pending permissions is not valid, because we must confirm that
-      # the inviter has permission to administer all the clients on the invite. If there are 0 pending
-      # permissions then we will skip important checks
-      # TODO(SN-1106): At this time there is no distinction between the authorization required to
-      # invite a user to a client and that required to invite them to an org.
-      # Organization owners may want to prevent their admins from creating new memberships
-      if pending_permissions:
-        return all(
-          self._inviter_has_permission_to_invite_to_client(
-            organization_id=pending_permission.organization_id,
-            client_id=pending_permission.client_id,
-            inviter=inviter,
-            inviter_membership=inviter_membership,
-            inviter_permission=inviter_permissions_by_client.get(pending_permission.client_id),
-          )
-          for pending_permission in pending_permissions
+    assert invitee_intended_membership_type == MembershipType.member
+    # NOTE: An non-owner invite with 0 pending permissions is not valid, because we must confirm that
+    # the inviter has permission to administer all the clients on the invite. If there are 0 pending
+    # permissions then we will skip important checks
+    # TODO(SN-1106): At this time there is no distinction between the authorization required to
+    # invite a user to a client and that required to invite them to an org.
+    # Organization owners may want to prevent their admins from creating new memberships
+    if pending_permissions:
+      return all(
+        self._inviter_has_permission_to_invite_to_client(
+          organization_id=pending_permission.organization_id,
+          client_id=pending_permission.client_id,
+          inviter=inviter,
+          inviter_membership=inviter_membership,
+          inviter_permission=inviter_permissions_by_client.get(pending_permission.client_id),
         )
-      return False
+        for pending_permission in pending_permissions
+      )
+    return False
 
   def _inviter_has_permission_to_invite_to_client(
     self,

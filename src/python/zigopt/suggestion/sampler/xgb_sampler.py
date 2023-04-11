@@ -46,8 +46,7 @@ class PriorDistribution:
       a = numpy.log10(a)
     if self.flip:
       return 1 - self.distribution.cdf(-a)
-    else:
-      return self.distribution.cdf(a)
+    return self.distribution.cdf(a)
 
 
 class XGBSampler(SuggestionSampler):

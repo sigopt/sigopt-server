@@ -124,8 +124,7 @@ class DictConfigBrokerSource(ConfigBrokerSource):
       value = base_dict.get(parts[-1], default)
       self._raise_on_not_available(value)
       return (did_contain, value)
-    else:
-      return (False, None)
+    return (False, None)
 
   def _raise_on_not_available(self, value: Any) -> None:
     if value is _NOT_AVAILABLE:

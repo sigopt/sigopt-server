@@ -27,11 +27,11 @@ def permission_to_role(permission):
 
   if permission.can_read and permission.can_write and permission.can_admin:
     return ADMIN_ROLE
-  elif permission.can_read and permission.can_write and not permission.can_admin:
+  if permission.can_read and permission.can_write and not permission.can_admin:
     return USER_ROLE
-  elif permission.can_read and not permission.can_write and not permission.can_admin:
+  if permission.can_read and not permission.can_write and not permission.can_admin:
     return READ_ONLY_ROLE
-  elif not permission.can_read and not permission.can_write and not permission.can_admin:
+  if not permission.can_read and not permission.can_write and not permission.can_admin:
     return NO_ROLE
 
   raise ConflictingDataError(f"This permission set is not supported: {permission}")

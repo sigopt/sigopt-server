@@ -61,7 +61,7 @@ class Token(Base):
   def default_ttl_seconds(token_type, can_renew):
     if token_type == TokenType.GUEST:
       return GUEST_TOKEN_EXPIRY_SECONDS
-    elif token_type == TokenType.USER:
+    if token_type == TokenType.USER:
       # TODO(SN-999): why is default for USER tokens to never expire? Seems wrong but
       # probably doesn't matter since all USER tokens are now temporary which explicitly set ttl_seconds
       # so we never need to check the default
@@ -72,7 +72,7 @@ class Token(Base):
   def ttl_seconds(self):
     if self.is_userless_client_token:
       return None
-    elif self.meta.lasts_forever:
+    if self.meta.lasts_forever:
       return None
     return coalesce(
       self.meta.GetFieldOrNone("ttl_seconds"),

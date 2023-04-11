@@ -159,11 +159,10 @@ class PermissionService(Service):
       )
 
       return permission
-    else:
-      raise ValueError(
-        "Cannot create a permission without both a user and a client."
-        f" User: {user and user.id}, client: {client and client.id}"
-      )
+    raise ValueError(
+      "Cannot create a permission without both a user and a client."
+      f" User: {user and user.id}, client: {client and client.id}"
+    )
 
   def upsert_from_role(self, invite_role, client, user, requestor):
     if invite_role == ADMIN_ROLE:
@@ -176,7 +175,7 @@ class PermissionService(Service):
         requestor=requestor,
         role_for_logging=invite_role,
       )
-    elif invite_role == USER_ROLE:
+    if invite_role == USER_ROLE:
       return self.upsert(
         client,
         user,
@@ -186,7 +185,7 @@ class PermissionService(Service):
         requestor=requestor,
         role_for_logging=invite_role,
       )
-    elif invite_role == READ_ONLY_ROLE:
+    if invite_role == READ_ONLY_ROLE:
       return self.upsert(
         client,
         user,
@@ -196,8 +195,7 @@ class PermissionService(Service):
         requestor=requestor,
         role_for_logging=invite_role,
       )
-    else:
-      raise Exception(f"Unrecognized invite role: {invite_role}\n")
+    raise Exception(f"Unrecognized invite role: {invite_role}\n")
 
   def update_meta(self, permission, meta):
     permission.permission_meta = meta

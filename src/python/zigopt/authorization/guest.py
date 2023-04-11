@@ -99,8 +99,7 @@ class GuestAuthorization(EmptyAuthorization):
           self._client_token.guest_experiment_id
           and self._client_token.guest_experiment_id == training_run.experiment_id
         )
-      else:
-        return self._client_token.guest_training_run_id and self._client_token.guest_training_run_id == training_run.id
+      return self._client_token.guest_training_run_id and self._client_token.guest_training_run_id == training_run.id
     return False
 
   @readonly

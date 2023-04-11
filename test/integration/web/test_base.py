@@ -168,8 +168,7 @@ class WebConnection:
       next_resp = self._request("get", location, **kwargs)
       next_resp.history = [resp] + resp.history
       return next_resp
-    else:
-      return resp
+    return resp
 
   def post(self, url, data=None, hide_csrf=False, raise_for_status=True, **kwargs):
     data = data or {}
