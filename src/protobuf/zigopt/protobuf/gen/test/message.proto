@@ -28,13 +28,3 @@ message Child {
   optional string name = 2 [json_name='name'];
   optional Child recursive = 3 [json_name='recursive'];
 }
-
-message InvalidDuplicateName {
-  optional double v1 = 1;
-  optional double v2 = 2 [json_name='v1'];
-}
-
-message InvalidDuplicateJsonName {
-  optional double v1 = 1 [json_name='c'];
-  optional double v2 = 2 [json_name='c'];
-}
