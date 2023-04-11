@@ -303,7 +303,7 @@ def as_grouped_dict(
     try:
       ret_map.setdefault(key_val, []).append(l)
     except TypeError as e:
-      raise TypeError("Unhashable object of type %s: %r", type(key_val), key_val) from e
+      raise TypeError(f"Unhashable object of type {type(key_val)}: {key_val!r}") from e
   return ret_map
 
 
@@ -320,7 +320,7 @@ def to_map_by_key(
     try:
       r[key_val] = l
     except TypeError as e:
-      raise TypeError("Unhashable object of type %s: %r", type(key_val), key_val) from e
+      raise TypeError(f"Unhashable object of type {type(key_val)}: {key_val!r}") from e
   return r
 
 
