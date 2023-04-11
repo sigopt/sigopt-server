@@ -21,8 +21,6 @@ disable=
   invalid-name,
   missing-docstring,
   no-member,
-  no-value-for-parameter,
-  raising-format-tuple,
   redefined-outer-name,
   superfluous-parens,
   too-few-public-methods,

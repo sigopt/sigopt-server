@@ -286,7 +286,7 @@ class _ProtobufColumnType(TypeDecorator):
       return super().operate(operator, *other, **kwargs)
 
     def _real_getitem(self, key, with_default):
-      operator, right_expr, _ = self._setup_getitem(key)
+      operator, right_expr, _ = self._setup_getitem(key)  # pylint: disable=no-value-for-parameter
       try:
         if self._is_terminal_descriptor(self._descriptor):
           raise KeyError(key)
@@ -331,7 +331,7 @@ class _ProtobufColumnType(TypeDecorator):
       ):
         return self._real_getitem(key, with_default=True)
       # Fallback to regular JSONB
-      operator, right_expr, _ = self._setup_getitem(key)
+      operator, right_expr, _ = self._setup_getitem(key)  # pylint: disable=no-value-for-parameter
       return self.operate(operator, right_expr, result_type=JSONB)
 
     def protobuf_getattr(self, key):
