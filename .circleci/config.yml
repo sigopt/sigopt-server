@@ -47,7 +47,7 @@ commands:
           command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
   compile-protobuf:
     steps:
-      - run: sudo apt-get update -yqq && sudo apt-get install -yqq --no-install-recommends --no-install-suggests libprotobuf-dev protobuf-compiler
+      - run: source .env && ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
       - run: ./tools/protobuf/compile.sh
       - persist_to_workspace:
           root: /home/circleci
