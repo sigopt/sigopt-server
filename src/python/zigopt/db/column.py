@@ -80,7 +80,7 @@ class jsonb_set(FunctionElement):
   name = "jsonb_set"
 
   def __init__(self, *args):
-    if not (3 <= len(args) <= 4):
+    if not 3 <= len(args) <= 4:
       raise ValueError(f"jsonb_set takes either 3 or 4 arguments, {len(args)} given")
     super().__init__(*args)
 
