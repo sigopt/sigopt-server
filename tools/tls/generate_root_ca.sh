@@ -29,7 +29,7 @@ OU = Engineering
 CN = $CN
 EOF
 
-"${EDITOR:-vim}" "$CONFIG"
+"${EDITOR:-vi}" "$CONFIG"
 
 mkdir -p "$TLS_PATH"
 
