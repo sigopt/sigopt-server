@@ -322,7 +322,8 @@ jobs:
       - run: pyenv global 3.10.6
       - run: pip install pipenv
       - run: pipenv install --quiet --deploy --dev --python=3.10
-      - compile-protobuf
+      - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
+      - run: pipenv run ./tools/protobuf/compile.sh
       - run: pipenv run pre-commit validate-config
       - run: pipenv run pre-commit run --all-files eslint
       - run: pipenv run pre-commit run --all-files hadolint-docker
