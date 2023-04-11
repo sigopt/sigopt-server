@@ -44,7 +44,7 @@ DNS.1 = $CN
 DNS.2 = *.$CN
 EOF
 
-"${EDITOR:-vim}" "$CONFIG"
+"${EDITOR:-vi}" "$CONFIG"
 
 mkdir -p "$TLS_PATH"
 
