@@ -1,11 +1,12 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+"""Constants for ``sigopt-server`` invite-role components."""
+
 from zigopt.net.errors import ConflictingDataError
 from zigopt.protobuf.gen.permission.permissionmeta_pb2 import PermissionMeta
 
 
-"""Constants for ``sigopt-server`` invite-role components."""
 ADMIN_ROLE = "admin"
 USER_ROLE = "user"
 READ_ONLY_ROLE = "read-only"
