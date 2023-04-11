@@ -159,7 +159,7 @@ def emit_json_with_descriptor(value, descriptor):
       elif is_protobuf(value):
         return protobuf_to_dict(value)
       raise ValueError(f"Invalid value for protobuf descriptor {descriptor.full_name}: {value}")
-    elif isinstance(descriptor, FieldDescriptor):
+    if isinstance(descriptor, FieldDescriptor):
       if IsMapEntry(descriptor):
         if is_mapping(value):
           value_field = descriptor.message_type.fields_by_name["value"]

@@ -34,10 +34,9 @@ def find_and_click(driver, element_text=None, css_selector=None, repeat=1, **kwa
     except StaleElementReferenceException as e:
       if css_selector:
         raise ErrorInTest(f"Element described by `{css_selector}` is stale after {i} clicks") from e
-      elif element_text:
+      if element_text:
         raise ErrorInTest(f"Element with text `{element_text}` is stale after {i} clicks") from e
-      else:
-        raise
+      raise
 
   return element
 
@@ -70,10 +69,9 @@ def find_clickable(driver, *, element_text=None, css_selector=None, **kwargs):
   except TimeoutErrorInTest as e:
     if css_selector:
       raise ErrorInTest(f"Element described by `{css_selector}` was not clickable in {e.time} seconds") from e
-    elif element_text:
+    if element_text:
       raise ErrorInTest(f"Element with text `{element_text}` was not clickable in {e.time} seconds") from e
-    else:
-      raise
+    raise
 
   return element
 
@@ -140,7 +138,7 @@ def wait_while_present(driver, element_text=None, css_selector=None, **kwargs):
   except TimeoutErrorInTest as e:
     if element_text is not None:
       raise ErrorInTest(f"Element with text `{element_text}` was still present in {e.time} seconds") from e
-    elif css_selector is not None:
+    if css_selector is not None:
       raise ErrorInTest(f"Element described by `{css_selector}` was still present in {e.time} seconds") from e
     raise
 

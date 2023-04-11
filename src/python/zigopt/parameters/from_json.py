@@ -50,7 +50,7 @@ def set_experiment_parameter_list_from_json(experiment_meta, experiment_json, us
     set_experiment_parameter_from_json(parameter, parameter_json, experiment_meta.experiment_type, conditionals_map)
     if parameter.name in seen_names:
       raise InvalidValueError(f"Duplicate parameter name: {parameter.name}")
-    elif parameter.name in conditionals_map:
+    if parameter.name in conditionals_map:
       raise InvalidValueError(f"Cannot have parameter and conditional both named {parameter.name}")
     seen_names.add(parameter.name)
 
@@ -113,7 +113,7 @@ def set_bounds_from_json(parameter, parameter_json, experiment_type):
 
   if parameter.bounds.maximum < parameter.bounds.minimum:
     raise BadParamError("Invalid bounds: max must be greater than min")
-  elif parameter.bounds.maximum - parameter.bounds.minimum < MINIMUM_DOMAIN_EDGE_LENGTH:
+  if parameter.bounds.maximum - parameter.bounds.minimum < MINIMUM_DOMAIN_EDGE_LENGTH:
     raise BadParamError(
       f"Invalid bounds: {parameter.bounds} does not exceed min length: {MINIMUM_DOMAIN_EDGE_LENGTH}",
     )
@@ -183,12 +183,11 @@ def set_categorical_values_from_json(parameter, parameter_json):
 
     if categorical_value.name in seen_names:
       raise InvalidValueError(f"Duplicate categorical value name: {categorical_value.name}")
-    else:
-      seen_names.add(categorical_value.name)
+    seen_names.add(categorical_value.name)
 
   if not parameter.all_categorical_values:
     raise BadParamError(f"No categorical values provided for categorical parameter {parameter.name}")
-  elif len(parameter.all_categorical_values) == 1:
+  if len(parameter.all_categorical_values) == 1:
     raise BadParamError(f"Categorical parameter {parameter.name} should have at least 2 categorical values.")
 
 

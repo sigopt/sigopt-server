@@ -209,7 +209,7 @@ class Handler:
           ),
           token_status=TokenStatus.INVALID_PERMISSIONS,
         ) from e
-      elif authorization_status is AuthorizationDenied.NEEDS_EMAIL_VERIFICATION:
+      if authorization_status is AuthorizationDenied.NEEDS_EMAIL_VERIFICATION:
         raise NotFoundError(
           (
             "The requested resource could not be found."
@@ -217,8 +217,7 @@ class Handler:
           ),
           token_status=TokenStatus.NEEDS_EMAIL_VERIFICATION,
         ) from e
-      else:
-        raise NotFoundError() from e
+      raise NotFoundError() from e
     return objects
 
   def _validate_found_objects(self, objects):
