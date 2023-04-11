@@ -76,7 +76,7 @@ class jsonb_strip_nulls(GenericFunction):
   type = JSONB
 
 
-class jsonb_set(FunctionElement):
+class jsonb_set(FunctionElement):  # pylint: disable=too-many-ancestors
   name = "jsonb_set"
 
   def __init__(self, *args):
@@ -194,7 +194,7 @@ class _ProtobufColumnType(TypeDecorator):
 
   # pylint: enable=invalid-overridden-method
 
-  class Comparator(JSONB.Comparator):
+  class Comparator(JSONB.Comparator):  # pylint: disable=too-many-ancestors
     def __init__(self, descriptor, message_factory, with_default, *args, **kwargs):
       super().__init__(*args, **kwargs)
       self._descriptor = descriptor
@@ -363,7 +363,7 @@ class ImpliedUTCDateTime(TypeDecorator):
     return self.process_bind_param(value, dialect)
 
 
-class ProtobufColumn(sqlalchemy.Column):
+class ProtobufColumn(sqlalchemy.Column):  # pylint: disable=too-many-ancestors
   """
     ProtobufColumn is intended to make protobuf objects that are stored as JSONB
     blobs queryable inside SQL by extending the protobuf API to SQL operations. The goal
