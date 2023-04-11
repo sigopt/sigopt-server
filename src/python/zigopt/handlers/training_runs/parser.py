@@ -106,7 +106,7 @@ class TrainingRunRequestParser:
   def parse_logs(self, logs):
     if logs is None:
       return
-    for (typ, log_dict) in logs.items():
+    for typ, log_dict in logs.items():
       log = ProtobufBuilderThatRetainsNones(Log)
       content = get_with_validation(log_dict, "content", ValidationType.string)
       if content and len(content) > MAX_LOG_LENGTH:

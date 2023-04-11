@@ -5,7 +5,7 @@ from typing import Optional
 
 from zigopt.common import *
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMetric  # type: ignore
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMetric
 
 
 class MetricImportancesJsonBuilder(JsonBuilder):

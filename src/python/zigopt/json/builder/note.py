@@ -5,8 +5,8 @@ from typing import Optional
 
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
-from zigopt.note.model import Note  # type: ignore
-from zigopt.project.model import Project  # type: ignore
+from zigopt.note.model import Note
+from zigopt.project.model import Project
 
 
 class BaseNoteJsonBuilder(JsonBuilder):

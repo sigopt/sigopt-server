@@ -8,7 +8,7 @@ from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-modu
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
-from zigopt.project.model import Project  # type: ignore
+from zigopt.project.model import Project
 
 
 class ProjectJsonBuilder(JsonBuilder):

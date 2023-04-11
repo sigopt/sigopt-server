@@ -4,8 +4,8 @@
 from typing import Optional
 
 from zigopt.handlers.validate.base import validate_email, validate_name
-from zigopt.net.errors import BadParamError  # type: ignore
-from zigopt.user.model import User  # type: ignore
+from zigopt.net.errors import BadParamError
+from zigopt.user.model import User
 
 
 def validate_user_name(name: Optional[str]) -> str:

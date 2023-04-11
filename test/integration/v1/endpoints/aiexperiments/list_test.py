@@ -83,7 +83,7 @@ class TestListAiExperiments(ExperimentsTestBase):
       .create(**DEFAULT_AI_EXPERIMENT_META)
     )
     date = current_datetime()
-    for (e, updated) in [
+    for e, updated in [
       (e1, date + timedelta(minutes=1)),
       (e2, date),
     ]:

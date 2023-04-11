@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Optional
 
-from zigopt.membership.model import MembershipType  # type: ignore
-from zigopt.net.errors import BadParamError  # type: ignore
+from zigopt.membership.model import MembershipType
+from zigopt.net.errors import BadParamError
 
 
 def validate_membership_type(membership_type: Optional[str]) -> Optional[MembershipType]:

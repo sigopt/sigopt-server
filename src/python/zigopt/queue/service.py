@@ -34,7 +34,7 @@ class QueueService(BaseQueueService):
 
   def _enqueue_batch(self, queue_messages, group_key, enqueue_time, message_score):
     if self.enabled:
-      for (provider, queue_message_batch) in as_grouped_dict(
+      for provider, queue_message_batch in as_grouped_dict(
         queue_messages,
         lambda m: self.get_provider_from_message_type(m.message_type),
       ).items():

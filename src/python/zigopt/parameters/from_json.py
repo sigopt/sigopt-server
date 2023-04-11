@@ -280,7 +280,7 @@ def set_parameter_conditions_from_json(parameter, parameter_json, conditionals_m
   if not conditions_json:
     return
 
-  for (name_json, values_json) in conditions_json.items():
+  for name_json, values_json in conditions_json.items():
     condition = parameter.conditions.add()
     condition.name = name_json
     try:

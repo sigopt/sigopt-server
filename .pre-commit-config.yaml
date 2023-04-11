@@ -43,7 +43,7 @@ repos:
     rev: sigopt-22.10.0
     hooks:
       - id: black
-        args: [--experimental-string-processing]
+        args: [--preview]
   - repo: https://github.com/PyCQA/flake8.git
     rev: "6.0.0"
     hooks:
@@ -65,6 +65,7 @@ repos:
     rev: "v1.2.0"
     hooks:
       - id: mypy
+        entry: ./pp mypy
         additional_dependencies:
           - types-mock==5.0.0.6
           - types-protobuf==3.20.4

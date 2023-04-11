@@ -150,7 +150,6 @@ class QueueWorkers(QueueMessageHandler):
     wait_time_seconds,
     exit_if_no_messages,
   ):
-
     while True:
       self._check_stop_conditions(base_max_messages=max_messages)
       self.message_count += message_count_increment

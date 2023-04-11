@@ -6,13 +6,13 @@ from typing import Optional
 from numpy import sqrt
 
 from zigopt.common import *
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.experiment.model import Experiment
 from zigopt.json.assignments import assignments_json
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.task import TaskJsonBuilder
 from zigopt.json.client_provided_data import client_provided_data_json
-from zigopt.observation.model import Observation  # type: ignore
-from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationValue  # type: ignore
+from zigopt.observation.model import Observation
+from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationValue
 
 
 class BaseValueJsonBuilder(JsonBuilder):

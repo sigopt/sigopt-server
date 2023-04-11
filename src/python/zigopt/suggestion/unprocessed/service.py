@@ -201,7 +201,7 @@ class UnprocessedSuggestionService(Service):
     timestamp = timestamp or unix_timestamp(with_microseconds=True)
     expiry = timedelta(days=31)
 
-    for (source, suggestions) in suggestions_by_source.items():
+    for source, suggestions in suggestions_by_source.items():
       self.services.redis_service.add_to_set(sources_key, source)
       self.services.redis_service.set_expire(sources_key, expiry)
       suggestion_protobuf_key = self.services.redis_key_service.create_suggestion_protobuf_key(experiment_id, source)

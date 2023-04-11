@@ -4,21 +4,21 @@
 from typing import Any, Literal, Optional
 
 from zigopt.common import *
-from zigopt.authorization.empty import EmptyAuthorization  # type: ignore
+from zigopt.authorization.empty import EmptyAuthorization
 from zigopt.common.sigopt_datetime import datetime_to_seconds
-from zigopt.experiment.constant import (  # type: ignore
+from zigopt.experiment.constant import (
   EXPERIMENT_TYPE_TO_NAME,
   METRIC_OBJECTIVE_TYPE_TO_NAME,
   METRIC_STRATEGY_TYPE_TO_NAME,
 )
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.experiment.model import Experiment
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.observation import ObservationJsonBuilder
 from zigopt.json.builder.parameter import ExperimentParameterJsonBuilder
 from zigopt.json.builder.task import TaskJsonBuilder
 from zigopt.json.client_provided_data import client_provided_data_json
-from zigopt.project.model import Project  # type: ignore
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (  # type: ignore
+from zigopt.project.model import Project
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentConditional,
   ExperimentConstraint,
   ExperimentMetric,
@@ -251,7 +251,7 @@ class ExperimentJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def project(self) -> Optional[str]:
-    return napply(self._project, lambda p: p.reference_id)  # type: ignore
+    return napply(self._project, lambda p: p.reference_id)
 
   @field(ValidationType.string)
   def state(self) -> Literal["active", "deleted"]:

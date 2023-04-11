@@ -4,13 +4,13 @@
 from typing import Optional
 
 from zigopt.common import *
-from zigopt.authorization.empty import EmptyAuthorization  # type: ignore
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.experiment.model import Experiment
 from zigopt.json.assignments import assignments_json
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.task import TaskJsonBuilder
 from zigopt.json.client_provided_data import client_provided_data_json
-from zigopt.suggestion.model import Suggestion  # type: ignore
+from zigopt.suggestion.model import Suggestion
 
 
 class SuggestionJsonBuilder(JsonBuilder):

@@ -4,8 +4,8 @@
 from typing import Sequence
 
 from zigopt.common import *
-from zigopt.experiment.model import Experiment  # type: ignore
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional  # type: ignore
+from zigopt.experiment.model import Experiment
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional
 
 
 def conditions_json(conditions: Sequence[ExperimentConditional], experiment: Experiment) -> dict[str, list]:

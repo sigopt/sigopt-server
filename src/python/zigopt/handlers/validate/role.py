@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Optional
 
-from zigopt.invite.constant import ALL_ROLES, NO_ROLE  # type: ignore
-from zigopt.net.errors import BadParamError  # type: ignore
+from zigopt.invite.constant import ALL_ROLES, NO_ROLE
+from zigopt.net.errors import BadParamError
 
 
 def validate_role(role: Optional[str]) -> Optional[str]:

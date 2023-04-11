@@ -1,12 +1,11 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.experiment.model import Experiment
 from zigopt.json.render import conditionally_render_param_value, render_conditional_value
 
 
 def assignments_json(experiment: Experiment, assignments_dict: dict[str, float]) -> dict[str, int | float | str | None]:
-
   parameters_map = experiment.all_parameters_including_deleted_map
   conditionals_map = experiment.conditionals_map
 

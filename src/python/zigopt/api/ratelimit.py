@@ -68,6 +68,7 @@ class _LoginRateLimit(_BaseRateLimit):
 
 login_rate_limit = _LoginRateLimit()
 
+
 # NOTE: intentionally use same rate limit key as LOGIN_RATE_LIMIT, since they're both password-checking related
 class _PasswordResetRateLimit(_LoginRateLimit):
   def _get_identifier(self, services, identifying_object):

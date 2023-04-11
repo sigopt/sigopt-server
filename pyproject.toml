@@ -1,10 +1,7 @@
 title = 'SigOpt Server'
 
 [tool.mypy]
-exclude = 'src/'
-follow_imports = 'skip'
-
-disable_error_code = 'name-defined,var-annotated'
+disable_error_code = 'attr-defined,valid-type'
 
 [tool.black]
 line-length = 120

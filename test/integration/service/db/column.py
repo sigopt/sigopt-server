@@ -63,6 +63,7 @@ INT_KEYS = [
   "unused_int64_key_for_testing",  # int64,
 ]
 
+
 # pylint: disable=attribute-defined-outside-init
 class TestProtobufColumn(DatabaseServiceBase):
   def empty_experiment(self, database_service):

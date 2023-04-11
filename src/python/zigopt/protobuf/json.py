@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
-from google.protobuf.json_format import _IsMapEntry as IsMapEntry  # type: ignore
+from google.protobuf.json_format import _IsMapEntry as IsMapEntry
 
 from zigopt.common import *
 from zigopt.protobuf.dict import dict_to_protobuf, is_protobuf_struct_descriptor, protobuf_to_dict

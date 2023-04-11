@@ -6,9 +6,9 @@ from typing import Optional, Sequence
 from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-module
 
 from zigopt.common import *
-from zigopt.checkpoint.model import Checkpoint  # type: ignore
+from zigopt.checkpoint.model import Checkpoint
 from zigopt.common.sigopt_datetime import datetime_to_seconds
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.experiment.model import Experiment
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.observation import ValueJsonBuilder
 
@@ -30,7 +30,7 @@ class CheckpointJsonBuilder(JsonBuilder):
 
   @field(ValidationType.integer)
   def created(self) -> Optional[float]:
-    return napply(self._checkpoint.created, datetime_to_seconds)  # type: ignore
+    return napply(self._checkpoint.created, datetime_to_seconds)
 
   @field(ValidationType.arrayOf(JsonBuilderValidationType()))
   def values(self) -> Sequence[ValueJsonBuilder]:

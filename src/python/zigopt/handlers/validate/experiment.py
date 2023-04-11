@@ -4,19 +4,19 @@
 import copy
 from typing import Any, Optional
 
-from zigopt.experiment.constant import (  # type: ignore
+from zigopt.experiment.constant import (
   ALL_METRIC_OBJECTIVE_NAMES,
   ALL_METRIC_STRATEGY_NAMES,
   EXPERIMENT_NAME_TO_TYPE,
   METRIC_OBJECTIVE_NAME_TO_TYPE,
   METRIC_STRATEGY_NAME_TO_TYPE,
 )
-from zigopt.experiment.model import Experiment  # type: ignore
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.validate.base import validate_name
 from zigopt.handlers.validate.project import PROJECT_ID_SCHEMA as _PROJECT_ID_SCHEMA
-from zigopt.net.errors import BadParamError  # type: ignore
+from zigopt.net.errors import BadParamError
 
-from libsigopt.aux.constant import ConstraintType  # type: ignore
+from libsigopt.aux.constant import ConstraintType
 from libsigopt.aux.validate_schema import validate
 
 

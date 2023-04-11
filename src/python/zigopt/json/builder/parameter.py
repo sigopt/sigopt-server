@@ -4,7 +4,7 @@
 from typing import Optional
 
 from zigopt.common import *
-from zigopt.experiment.constant import (  # type: ignore
+from zigopt.experiment.constant import (
   DOUBLE_EXPERIMENT_PARAMETER_NAME,
   EXPERIMENT_PARAMETER_TYPE_TO_NAME,
   PARAMETER_TRANSFORMATION_TYPE_TO_NAME,
@@ -12,14 +12,14 @@ from zigopt.experiment.constant import (  # type: ignore
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.conditions import conditions_json
 from zigopt.json.render import render_param_value
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (  # type: ignore
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Bounds,
   ExperimentCategoricalValue,
   ExperimentParameter,
   Prior,
 )
 
-from libsigopt.aux.constant import ParameterPriorNames  # type: ignore
+from libsigopt.aux.constant import ParameterPriorNames
 
 
 class BoundsJsonBuilder(JsonBuilder):
@@ -141,9 +141,8 @@ class ExperimentParameterJsonBuilder(JsonBuilder):
 
   @field(ValidationType.assignment)
   def default_value(self) -> Optional[int | float | str]:
-    return napply(  # type: ignore
-      self._param.GetFieldOrNone("replacement_value_if_missing"), lambda rep: render_param_value(self._param, rep)
-    )
+    replacement_value: Optional[float] = self._param.GetFieldOrNone("replacement_value_if_missing")
+    return napply(replacement_value, lambda rep: render_param_value(self._param, rep))
 
   def hide_grid(self):
     return not self._param.grid_values

@@ -12,7 +12,7 @@ from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-modu
 def _validate_class(fields: Sequence[FieldDescriptor]) -> None:
   seen_names = set([])
   for field in fields:
-    serialize_name = field.json_name or field.name  # type: ignore
+    serialize_name = field.json_name or field.name
     if serialize_name in seen_names:
       raise ValueError(f"Unserializeable Protobuf message: duplicate name {serialize_name}")
     seen_names.add(serialize_name)

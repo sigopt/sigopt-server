@@ -8,7 +8,7 @@ from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
 class SuggestionSampler:
-  source = None
+  source: int
 
   def __init__(self, services, experiment, optimization_args):
     self.services = services

@@ -9,6 +9,8 @@ from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationT
 from zigopt.json.builder.token import TokenJsonBuilder
 from zigopt.json.builder.user import UserJsonBuilder
 from zigopt.json.session import Session
+from zigopt.token.model import Token
+from zigopt.user.model import User
 
 
 class SessionJsonBuilder(JsonBuilder):
@@ -18,12 +20,13 @@ class SessionJsonBuilder(JsonBuilder):
     self._session = session
 
   @field(JsonBuilderValidationType())
-  def api_token(self) -> Optional[str]:
-    return napply(self._session.api_token, lambda tok: TokenJsonBuilder(tok, self._session.client))  # type: ignore
+  def api_token(self) -> Optional[TokenJsonBuilder]:
+    api_token: Optional[Token] = self._session.api_token
+    return napply(api_token, lambda tok: TokenJsonBuilder(tok, self._session.client))
 
   @field(JsonBuilderValidationType())
   def client(self) -> Optional[ClientJsonBuilder]:
-    return napply(self._session.client, ClientJsonBuilder)  # type: ignore
+    return napply(self._session.client, ClientJsonBuilder)
 
   @field(ValidationType.string)
   def code(self) -> str:
@@ -31,7 +34,8 @@ class SessionJsonBuilder(JsonBuilder):
 
   @field(ValidationType.boolean)
   def needs_password_reset(self) -> bool:
-    return bool(napply(self._session.user, lambda u: u.needs_password_reset))  # type: ignore
+    user: Optional[User] = self._session.user
+    return bool(napply(user, lambda u: u.needs_password_reset))
 
   @field(JsonBuilderValidationType())
   def user(self) -> Optional[UserJsonBuilder]:

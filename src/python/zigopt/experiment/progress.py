@@ -119,7 +119,6 @@ class ExperimentProgressService(Service):
             [e.id for e in experiments_eligible_for_best],
           )
         for optimized_metric_index, exp_list in experiments_by_optimized_index.items():
-
           # Tricky query using window functions to compute max value
           # https://www.postgresql.org/docs/9.5/static/tutorial-window.html
           # http://docs.sqlalchemy.org/en/latest/core/tutorial.html#window-functions

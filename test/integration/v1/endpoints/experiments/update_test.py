@@ -588,7 +588,6 @@ class TestUpdateExperiments(ExperimentsTestBase):
       self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_one_optimized_one_stored_raises(self, services, connection):
-
     metrics = [{"name": "optimized"}, {"name": "stored", "strategy": MetricStrategyNames.STORE}]
     with connection.create_any_experiment(metrics=metrics) as e:
       new_metrics = deepcopy(metrics)

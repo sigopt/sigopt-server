@@ -8,7 +8,7 @@ from zigopt.net.errors import BadParamError
 
 def set_assignments_map_from_json(has_assignments_map, assignments_json, experiment):
   if assignments_json:
-    for (name, assignment_json) in assignments_json.items():
+    for name, assignment_json in assignments_json.items():
       if name in experiment.conditionals_map:
         conditional = experiment.conditionals_map[name]
         # pylint: disable=cell-var-from-loop
@@ -26,7 +26,7 @@ def set_assignments_map_from_json(has_assignments_map, assignments_json, experim
 
 
 def set_assignments_map_from_dict(has_assignments_map, assignments_map):
-  for (name, assignment) in assignments_map.items():
+  for name, assignment in assignments_map.items():
     has_assignments_map.assignments_map[name] = assignment
 
 

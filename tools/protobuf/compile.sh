@@ -29,8 +29,3 @@ find src/protobuf/zigopt/protobuf/gen -name '*.proto' -print0 | xargs -0 \
   -I=src/protobuf \
   -I=/usr/local/include \
   --python_out=src/python
-
-find src/python/zigopt/protobuf/gen -name '*.py' | while read -r file; do
-  sed -i'.protobak' '1s/^/# type: ignore\n/' "$file"
-  rm "$file.protobak"
-done
