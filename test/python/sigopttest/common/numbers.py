@@ -22,8 +22,8 @@ class TestNumbers:
     assert is_boolean(int("3")) is False
     assert is_boolean(0) is False
     assert is_boolean(LONG_NUMBER) is False
-    assert is_boolean(numpy.int32()) is False
-    assert is_boolean(numpy.int64()) is False
+    assert is_boolean(numpy.int32(1)) is False
+    assert is_boolean(numpy.int64(1)) is False
     assert is_boolean([]) is False
     assert is_boolean([2]) is False
     assert is_boolean({1: 2}) is False
@@ -31,8 +31,8 @@ class TestNumbers:
     assert is_boolean(4.0) is False
     assert is_boolean("3") is False
     assert is_boolean(3.14) is False
-    assert is_boolean(numpy.float32()) is False
-    assert is_boolean(numpy.float64()) is False
+    assert is_boolean(numpy.float32(1.0)) is False
+    assert is_boolean(numpy.float64(1.0)) is False
     assert is_boolean(numpy.nan) is False
     assert is_boolean(numpy.inf) is False
     assert is_boolean(math.nan) is False
@@ -42,8 +42,8 @@ class TestNumbers:
     assert is_integer(int("3")) is True
     assert is_integer(0) is True
     assert is_integer(LONG_NUMBER) is True
-    assert is_integer(numpy.int32()) is True
-    assert is_integer(numpy.int64()) is True
+    assert is_integer(numpy.int32(1)) is True
+    assert is_integer(numpy.int64(1)) is True
 
     assert is_integer([]) is False
     assert is_integer([2]) is False
@@ -54,8 +54,8 @@ class TestNumbers:
     assert is_integer(4.0) is False
     assert is_integer("3") is False
     assert is_integer(3.14) is False
-    assert is_integer(numpy.float32()) is False
-    assert is_integer(numpy.float64()) is False
+    assert is_integer(numpy.float32(1.0)) is False
+    assert is_integer(numpy.float64(1.0)) is False
     assert is_integer(numpy.nan) is False
     assert is_integer(numpy.inf) is False
     assert is_integer(math.nan) is False
@@ -65,8 +65,8 @@ class TestNumbers:
     assert is_integer_valued_number(int("3")) is True
     assert is_integer_valued_number(0) is True
     assert is_integer_valued_number(LONG_NUMBER) is True
-    assert is_integer_valued_number(numpy.int32()) is True
-    assert is_integer_valued_number(numpy.int64()) is True
+    assert is_integer_valued_number(numpy.int32(1)) is True
+    assert is_integer_valued_number(numpy.int64(1)) is True
     assert is_integer_valued_number(4.0) is True
     assert is_integer_valued_number(numpy.float32(0.0)) is True
     assert is_integer_valued_number(numpy.float64(0.0)) is True
@@ -92,10 +92,10 @@ class TestNumbers:
     assert is_number(LONG_NUMBER) is True
     assert is_number(4.0) is True
     assert is_number(3.14) is True
-    assert is_number(numpy.int32()) is True
-    assert is_number(numpy.int64()) is True
-    assert is_number(numpy.float32()) is True
-    assert is_number(numpy.float64()) is True
+    assert is_number(numpy.int32(1)) is True
+    assert is_number(numpy.int64(1)) is True
+    assert is_number(numpy.float32(1.0)) is True
+    assert is_number(numpy.float64(1.0)) is True
 
     assert is_number([]) is False
     assert is_number([2]) is False
