@@ -12,10 +12,9 @@ def value_var_from_json(json_dict, experiment, default=None):
   if "value_stddev" in json_dict:
     value_stddev = get_opt_with_validation(json_dict, "value_stddev", ValidationType.number)
     return None if value_stddev is None else value_stddev * value_stddev
-  elif "value_var" in json_dict:
+  if "value_var" in json_dict:
     return get_opt_with_validation(json_dict, "value_var", ValidationType.number)
-  else:
-    return default
+  return default
 
 
 def value_from_json(json_dict, default=None):

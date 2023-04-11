@@ -30,8 +30,7 @@ class ClientInviteTestBase(InviteTestBase):
   def invite_email(self, connection, client_id, email, role, old_role=None):
     if old_role:
       return connection.clients(client_id).invites().create(email=email, role=role, old_role=old_role)
-    else:
-      return connection.clients(client_id).invites().create(email=email, role=role)
+    return connection.clients(client_id).invites().create(email=email, role=role)
 
   def uninvite(self, connection, client_id, invitee):
     connection.clients(client_id).invites().delete(email=invitee.email)

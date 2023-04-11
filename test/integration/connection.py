@@ -151,8 +151,7 @@ class IntegrationTestConnection:
       development = False
     if client_id and not development:
       return self.clients(client_id).experiments().create(**data)
-    else:
-      return self.as_client_only().experiments().create(**data)
+    return self.as_client_only().experiments().create(**data)
 
   def create_experiment_as(self, client_id):
     data = {

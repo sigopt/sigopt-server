@@ -277,23 +277,21 @@ def validate_metric_name(name: Optional[str]) -> str:
 def validate_metric_objective(objective: Optional[str]) -> Optional[int]:
   if objective in ALL_METRIC_OBJECTIVE_NAMES:
     return METRIC_OBJECTIVE_NAME_TO_TYPE[objective]
-  elif objective is None:
+  if objective is None:
     return None
-  else:
-    raise BadParamError(
-      f"Unrecognized objective type: {objective} (If provided, must be one of {tuple(ALL_METRIC_OBJECTIVE_NAMES)})"
-    )
+  raise BadParamError(
+    f"Unrecognized objective type: {objective} (If provided, must be one of {tuple(ALL_METRIC_OBJECTIVE_NAMES)})"
+  )
 
 
 def validate_metric_strategy(strategy: Optional[str]) -> Optional[int]:
   if strategy in ALL_METRIC_STRATEGY_NAMES:
     return METRIC_STRATEGY_NAME_TO_TYPE[strategy]
-  elif strategy is None:
+  if strategy is None:
     return None
-  else:
-    raise BadParamError(
-      f"Unrecognized strategy: {strategy}. If provided, must be one of {tuple(ALL_METRIC_STRATEGY_NAMES)}"
-    )
+  raise BadParamError(
+    f"Unrecognized strategy: {strategy}. If provided, must be one of {tuple(ALL_METRIC_STRATEGY_NAMES)}"
+  )
 
 
 def validate_categorical_value(name: Optional[str]) -> str:

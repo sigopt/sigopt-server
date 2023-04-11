@@ -24,8 +24,7 @@ class PendingPermissionService(Service):
       return self.services.database_service.all(
         self.services.database_service.query(PendingPermission).filter(PendingPermission.invite_id.in_(invite_ids))
       )
-    else:
-      return []
+    return []
 
   def count_by_invite_id(self, invite_id):
     return self.services.database_service.count(

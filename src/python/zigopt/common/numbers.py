@@ -19,10 +19,9 @@ def is_integer(num: _Any) -> bool:
     """
   if is_boolean(num):
     return False
-  elif isinstance(num, _numbers.Integral):
+  if isinstance(num, _numbers.Integral):
     return True
-  else:
-    return False
+  return False
 
 
 def is_integer_valued_number(num: _Any) -> bool:
@@ -44,7 +43,6 @@ def is_nan(x: _Any) -> bool:
     """
   if isinstance(x, float):
     return _numpy.isnan(x)
-  elif isinstance(x, _collectionsabc.Iterable):
+  if isinstance(x, _collectionsabc.Iterable):
     raise TypeError("zigopt.common.numbers.is_nan does not support iterables")
-  else:
-    return False
+  return False

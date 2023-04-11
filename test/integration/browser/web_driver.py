@@ -49,8 +49,7 @@ class SigOptWebDriver:
           raise FindElementErrorInTest(e) from e
 
       return safety_wrapper
-    else:
-      return func
+    return func
 
   def __init__(self, driver_name, app_url, config_broker, headless=False):
     self.driver_name = driver_name

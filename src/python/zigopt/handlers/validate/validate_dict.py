@@ -499,8 +499,7 @@ def validate_type(value: Any, value_type: TypeValidatorBase, key: Optional[str] 
     """
   if value_type.is_instance(value):
     return value_type.transform(value)
-  else:
-    raise InvalidTypeError(value, value_type, key=key)
+  raise InvalidTypeError(value, value_type, key=key)
 
 
 def key_present(json_obj: dict[str, Any], key: str) -> bool:

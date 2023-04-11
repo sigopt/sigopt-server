@@ -78,13 +78,12 @@ class TokenService(Service):
     existing = [token for token in self.find_by_client_and_user(client_id, user_id) if token.development == development]
     if existing:
       return existing[0]
-    else:
-      token_type = TokenType.CLIENT_DEV if development else TokenType.CLIENT_API
-      meta = self._make_meta(session_expiration=None, token_type=token_type, can_renew=False)
-      meta.creating_user_id = user_id
-      new = Token(token_type=token_type, user_id=user_id, client_id=client_id, meta=meta)
-      self.services.database_service.insert(new)
-      return new
+    token_type = TokenType.CLIENT_DEV if development else TokenType.CLIENT_API
+    meta = self._make_meta(session_expiration=None, token_type=token_type, can_renew=False)
+    meta.creating_user_id = user_id
+    new = Token(token_type=token_type, user_id=user_id, client_id=client_id, meta=meta)
+    self.services.database_service.insert(new)
+    return new
 
   def get_or_create_role_token(self, client_id, user_id):
     return self._get_or_create_role_token(client_id, user_id, development=False)
@@ -192,8 +191,7 @@ class TokenService(Service):
       meta.date_renewed = now
       token.meta = meta
       return token
-    else:
-      return None
+    return None
 
   def rotate_token(self, token):
     token_string = random_string()
@@ -205,8 +203,7 @@ class TokenService(Service):
     if updated:
       token.token = token_string
       return token
-    else:
-      return None
+    return None
 
   def update_meta(self, token, meta):
     self.services.database_service.update_one(

@@ -53,18 +53,18 @@ class TestListExperiments(ExperimentsTestBase):
   def fetcher(self, request, connection):
     if request.param == "client":
       return lambda *args, **kwargs: connection.clients(connection.client_id).experiments().fetch(*args, **kwargs)
-    elif request.param == "user":
+    if request.param == "user":
       return lambda *args, **kwargs: connection.users(connection.user_id).experiments().fetch(*args, **kwargs)
-    elif request.param == "client-sort":
+    if request.param == "client-sort":
 
       def r(*args, **kwargs):
         kwargs["sort"] = kwargs.get("sort", EXPERIMENT_RECENCY)
         return connection.clients(connection.client_id).experiments().fetch(*args, **kwargs)
 
       return r
-    elif request.param == "user-sort":
+    if request.param == "user-sort":
 
-      def r(*args, **kwargs):
+      def r(*args, **kwargs):  # pylint: disable=function-redefined
         kwargs["sort"] = kwargs.get("sort", EXPERIMENT_RECENCY)
         return connection.users(connection.user_id).experiments().fetch(*args, **kwargs)
 

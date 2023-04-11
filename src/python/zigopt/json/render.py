@@ -34,14 +34,12 @@ def render_param_value(parameter: ExperimentParameter, assignment: float) -> int
       categorical_assignment = parameter.all_categorical_values_map_by_index.get(assignment)
       if categorical_assignment:
         return categorical_assignment.name
-      else:
-        raise ParamRenderException(f"Unknown categorical assignment, enum_index: {assignment}", parameter, assignment)
-    elif parameter.is_integer:
+      raise ParamRenderException(f"Unknown categorical assignment, enum_index: {assignment}", parameter, assignment)
+    if parameter.is_integer:
       return int(assignment)
-    elif parameter.is_double:
+    if parameter.is_double:
       return assignment
-    else:
-      raise ParamRenderException("Unknown parameter type", parameter, assignment)
+    raise ParamRenderException("Unknown parameter type", parameter, assignment)
   except ParamRenderException as e:
     raise ParamRenderException(
       f"Exception rendering assignment for parameter {parameter.name}: {e}", parameter, assignment
@@ -52,10 +50,9 @@ def render_conditional_value(conditional: ExperimentConditional, assignment: flo
   value = find(conditional.values, lambda c: c.enum_index == assignment)
   if value:
     return value.name
-  else:
-    raise ConditionalParamRenderException(
-      f"Conditional {conditional.name} attempting to render unknown value {assignment}", conditional, assignment
-    )
+  raise ConditionalParamRenderException(
+    f"Conditional {conditional.name} attempting to render unknown value {assignment}", conditional, assignment
+  )
 
 
 def conditionally_render_param_value(
@@ -63,5 +60,4 @@ def conditionally_render_param_value(
 ) -> Optional[int | float | str]:
   if parameter_conditions_satisfied(parameter, assignments_dict):
     return render_param_value(parameter, assignment)
-  else:
-    return None
+  return None

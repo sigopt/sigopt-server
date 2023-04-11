@@ -86,14 +86,13 @@ class DatabaseConnection:
     def _sanitized_params(params_to_log):
       if is_sequence(params_to_log):
         return [_sanitized_params(p) for p in params_to_log]
-      elif is_mapping(params_to_log):
+      if is_mapping(params_to_log):
         # a hacky way to avoid logging authentication tokens to the prod machines. could this be done better?
         return {
           key: _sanitized_params(value) if not is_likely_random_string(value) else "****"
           for key, value in params_to_log.items()
         }
-      else:
-        return params_to_log
+      return params_to_log
 
     return _sanitized_params(params)
 

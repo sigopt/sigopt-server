@@ -120,5 +120,4 @@ class AiExperimentsUpdateHandler(AiExperimentHandler, ExperimentsUpdateHandler):
     assert runs_only
     if BUDGET_KEY in json_dict:
       return BUDGET_KEY, get_opt_with_validation(json_dict, BUDGET_KEY, ValidationType.positive_integer)
-    else:
-      raise MissingJsonKeyError(BUDGET_KEY, json_dict)
+    raise MissingJsonKeyError(BUDGET_KEY, json_dict)

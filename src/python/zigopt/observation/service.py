@@ -212,8 +212,7 @@ class ObservationService(Service):
   def _include_deleted_clause(self, deleted, q):
     if deleted is DeleteClause.NOT_DELETED:
       return q.filter(~Observation.data.deleted.as_boolean())
-    elif deleted is DeleteClause.DELETED:
+    if deleted is DeleteClause.DELETED:
       return q.filter(Observation.data.deleted.as_boolean())
-    else:
-      assert deleted is DeleteClause.ALL
-      return q
+    assert deleted is DeleteClause.ALL
+    return q

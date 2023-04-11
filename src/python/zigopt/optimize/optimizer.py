@@ -137,12 +137,11 @@ class OptimizerService(Service):
   ):
     if experiment.conditionals:
       return ConditionalOptimizationSource(self.services, experiment)
-    elif self.should_use_spe(experiment, num_observations):
+    if self.should_use_spe(experiment, num_observations):
       return SPEOptimizationSource(self.services, experiment)
-    elif experiment.is_search or experiment.num_solutions > 1:
+    if experiment.is_search or experiment.num_solutions > 1:
       return SearchOptimizationSource(self.services, experiment)
-    else:
-      return CategoricalOptimizationSource(self.services, experiment)
+    return CategoricalOptimizationSource(self.services, experiment)
 
   def exclude_duplicate_suggestions(self, optimization_args, suggestions, experiment):
     tol = 0

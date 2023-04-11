@@ -208,12 +208,11 @@ class CategoricalOptimizationSource(OptimizationSource):
     hyper_opt_dimension = self.hyper_opt_dimension
     if hyper_opt_dimension <= 10:
       return 5
-    elif hyper_opt_dimension <= 25:
+    if hyper_opt_dimension <= 25:
       return 3
-    elif hyper_opt_dimension <= 35:
+    if hyper_opt_dimension <= 35:
       return 2
-    else:
-      return 1
+    return 1
 
   """
   For this optimization source, the categorical hyperparameters are computed, stored and used in future computations.

@@ -208,25 +208,22 @@ def _do_api_token_authentication(services, request, token, mandatory):
             client_token=token_obj,
             current_membership=membership,
           )
-        else:
-          assert permission is not None
-          return OrganizationMemberAuthorization.construct_from_user_authorization(
-            user_authorization=user_authorization,
-            current_client=client,
-            client_token=token_obj,
-            current_membership=membership,
-            current_permission=permission,
-          )
+        assert permission is not None
+        return OrganizationMemberAuthorization.construct_from_user_authorization(
+          user_authorization=user_authorization,
+          current_client=client,
+          client_token=token_obj,
+          current_membership=membership,
+          current_permission=permission,
+        )
       assert user is None and permission is None and membership is None
       if token_obj.all_experiments:
         return ClientAuthorization(current_client=client, client_token=token_obj)
       if token_obj.guest_can_read:
         return GuestAuthorization(current_client=client, client_token=token_obj)
-      else:
-        return SignupLinkAuthorization(current_client=client, client_token=token_obj)
-    else:
-      if user is not None:
-        return user_authorization
+      return SignupLinkAuthorization(current_client=client, client_token=token_obj)
+    if user is not None:
+      return user_authorization
 
     raise ForbiddenError(
       "This endpoint requires a valid API token. " + helpful_msg(services),

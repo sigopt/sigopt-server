@@ -28,8 +28,7 @@ class UserService(Service):
           include_deleted, self.services.database_service.query(User).filter(User.id.in_(user_ids))
         )
       )
-    else:
-      return []
+    return []
 
   def find_by_email(self, email, include_deleted=False):
     return self.services.database_service.one_or_none(

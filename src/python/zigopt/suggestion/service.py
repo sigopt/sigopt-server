@@ -84,11 +84,10 @@ class SuggestionService(Service):
   def _include_deleted_clause(self, deleted, q):
     if deleted is DeleteClause.NOT_DELETED:
       return q.filter(ProcessedSuggestion.deleted.isnot(True))
-    elif deleted is DeleteClause.DELETED:
+    if deleted is DeleteClause.DELETED:
       return q.filter(ProcessedSuggestion.deleted.is_(True))
-    else:
-      assert deleted is DeleteClause.ALL
-      return q
+    assert deleted is DeleteClause.ALL
+    return q
 
   def get_suggestions_set_observations(self, objects):
     suggestions = [

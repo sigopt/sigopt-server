@@ -13,10 +13,9 @@ from libsigopt.aux.constant import DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
 def source_class_from_experiment_meta(experiment_meta):
   if experiment_meta.conditionals:
     return ConditionalOptimizationSource
-  elif len(experiment_meta.all_parameters_sorted) >= DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS:
+  if len(experiment_meta.all_parameters_sorted) >= DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS:
     return SPEOptimizationSource
-  else:
-    return CategoricalOptimizationSource
+  return CategoricalOptimizationSource
 
 
 def group_metric_strategies_from_json(metric_list_json):
