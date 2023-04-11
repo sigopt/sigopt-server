@@ -20,7 +20,6 @@ disable=
   duplicate-code,
   invalid-name,
   missing-docstring,
-  missing-timeout,
   no-else-raise,
   no-else-return,
   no-member,

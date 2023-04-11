@@ -13,9 +13,9 @@ from zigopt.common import *
 from integration.v1.test_base import V1Base
 
 
-def request(method, path, **kwargs):
+def request(method, path, timeout=5, **kwargs):
   kwargs.setdefault("verify", os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True))
-  return requests.request(method, path, **kwargs)
+  return requests.request(method, path, timeout=timeout, **kwargs)
 
 
 class TestOrganizationTrainingRun(V1Base):
