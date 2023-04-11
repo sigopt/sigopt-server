@@ -217,7 +217,6 @@ class CategoricalOptimizationSource(OptimizationSource):
     """
         For this optimization source, the categorical hyperparameters are computed,
         stored and used in future computations.
-        This is in contrast to the structure of the old lion object.
         """
     if self.should_force_default_hyperparameters(optimization_args, optimization_args.old_hyperparameters):
       hyperparameter_dict = self.default_hyperparameter_dict(optimization_args)
