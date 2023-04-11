@@ -171,15 +171,15 @@ class TestSyslogFormatter:
     mock_record.request.method = "GET"
     mock_record.request.path = "/v1/experiments"
     mock_record.request.sanitized_params.return_value = {"password": "***"}
-    json = self.as_json(SyslogFormatter().format(mock_record))
-    assert json["requestId"] == request_id
-    assert json["traceId"] == trace_id
-    assert json["requestMethod"] == "GET"
-    assert json["requestURI"] == "/v1/experiments"
-    assert json["requestParamsStr"] == '{"password": "***"}'
+    log = self.as_json(SyslogFormatter().format(mock_record))
+    assert log["requestId"] == request_id
+    assert log["traceId"] == trace_id
+    assert log["requestMethod"] == "GET"
+    assert log["requestURI"] == "/v1/experiments"
+    assert log["requestParamsStr"] == '{"password": "***"}'
 
   def test_params_invalid_json(self, mock_record):
     mock_record.request.sanitized_params.side_effect = ValueError("Invalid JSON")
-    json = self.as_json(SyslogFormatter().format(mock_record))
-    assert json.get("requestParamsStr") is None
-    assert json["requestParamsInvalidJSON"] is True
+    log = self.as_json(SyslogFormatter().format(mock_record))
+    assert log.get("requestParamsStr") is None
+    assert log["requestParamsInvalidJSON"] is True

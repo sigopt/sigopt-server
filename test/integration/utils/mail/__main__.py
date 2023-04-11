@@ -7,8 +7,8 @@ import logging
 from integration.utils.mail.smtp import smtp_server
 
 
-def main(args):
-  smtp_server(args.send_port, args.receive_port, args.verbose)
+def main(parsed_args):
+  smtp_server(parsed_args.send_port, parsed_args.receive_port, parsed_args.verbose)
 
 
 if __name__ == "__main__":

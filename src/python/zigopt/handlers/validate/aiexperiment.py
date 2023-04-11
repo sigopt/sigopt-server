@@ -22,8 +22,8 @@ for key in (
   ai_experiment_update_schema["properties"].pop(key, None)
 
 # disallow shorthand metric names
-for schema in (ai_experiment_create_schema, ai_experiment_update_schema):
-  schema["properties"]["metrics"]["items"]["type"] = ["object"]
+for _schema in (ai_experiment_create_schema, ai_experiment_update_schema):
+  _schema["properties"]["metrics"]["items"]["type"] = ["object"]
 
 
 def validate_ai_experiment_json_dict_for_create(json_dict: dict[str, Any]) -> None:

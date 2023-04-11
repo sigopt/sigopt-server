@@ -17,12 +17,18 @@ WORKER_CLASSES = [
 ]
 
 WORKER_CLASSES_BY_MESSAGE_TYPE = {}
-for WorkerClass in WORKER_CLASSES:
-  assert WorkerClass.MESSAGE_TYPE not in WORKER_CLASSES_BY_MESSAGE_TYPE, (
-    f"Worker class {WorkerClass.__name__} has a conflicting message type with"
-    f" {WORKER_CLASSES_BY_MESSAGE_TYPE[WorkerClass.MESSAGE_TYPE].__name__}: {WorkerClass.MessageType}"
-  )
-  WORKER_CLASSES_BY_MESSAGE_TYPE[WorkerClass.MESSAGE_TYPE] = WorkerClass
+
+
+def assign_worker_classes_by_message_type():
+  for WorkerClass in WORKER_CLASSES:
+    assert WorkerClass.MESSAGE_TYPE not in WORKER_CLASSES_BY_MESSAGE_TYPE, (
+      f"Worker class {WorkerClass.__name__} has a conflicting message type with"
+      f" {WORKER_CLASSES_BY_MESSAGE_TYPE[WorkerClass.MESSAGE_TYPE].__name__}: {WorkerClass.MessageType}"
+    )
+    WORKER_CLASSES_BY_MESSAGE_TYPE[WorkerClass.MESSAGE_TYPE] = WorkerClass
+
+
+assign_worker_classes_by_message_type()
 
 
 class MessageRouter(Service):

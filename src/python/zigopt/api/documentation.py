@@ -44,7 +44,7 @@ def _default_app():
   return SwaggerApp(config_broker)
 
 
-if __name__ == "__main__":
+def main():
   base_logger_setup()
 
   app = _default_app()
@@ -56,3 +56,7 @@ if __name__ == "__main__":
     logging.getLogger("sigopt.python").info("OpenAPI file open %s", path)
     write_documentation(file, app)
     logging.getLogger("sigopt.python").info("Completed write to file %s", path)
+
+
+if __name__ == "__main__":
+  main()

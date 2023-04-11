@@ -504,7 +504,7 @@ def parse_args():
   return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
   the_args = parse_args()
 
   config_file = the_args.config_file
@@ -527,3 +527,7 @@ if __name__ == "__main__":
       initialize_data=the_args.initialize_data,
       echo=True,
     )
+
+
+if __name__ == "__main__":
+  main()
