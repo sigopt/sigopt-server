@@ -1,4 +1,5 @@
 [MAIN]
+ignore-patterns=.*_pb2.py
 reports=n
 extension-pkg-allow-list=lxml.etree
 
