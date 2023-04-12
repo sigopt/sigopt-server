@@ -5,7 +5,12 @@ import datetime
 
 from zigopt.common import *
 from zigopt.client.model import Client
-from zigopt.common.sigopt_datetime import current_datetime, datetime_to_seconds, get_month_interval, unix_timestamp
+from zigopt.common.sigopt_datetime import (
+  current_datetime,
+  datetime_to_seconds,
+  get_month_interval,
+  unix_timestamp_seconds,
+)
 from zigopt.experiment.model import Experiment
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import ADMIN_ROLE
@@ -95,9 +100,9 @@ class OrganizationService(Service):
     self.services.organization_service.insert(organization)
 
     meta = ClientMeta()
-    meta.date_created = unix_timestamp()
+    meta.date_created = unix_timestamp_seconds()
 
-    meta.client_security.SetFieldIfNotNone(
+    meta.client_security.SetFieldIfNotNone(  # type: ignore
       "allow_users_to_see_experiments_by_others", allow_users_to_see_experiments_by_others
     )
 
