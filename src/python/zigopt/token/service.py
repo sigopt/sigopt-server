@@ -1,8 +1,10 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
-from zigopt.common.sigopt_datetime import unix_timestamp
+from zigopt.common.sigopt_datetime import unix_timestamp_seconds
 from zigopt.db.column import JsonPath, jsonb_set, unwind_json_path
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ, TokenMeta
 from zigopt.services.base import Service
@@ -11,8 +13,8 @@ from zigopt.token.token_types import TokenType
 
 
 class TokenService(Service):
-  def _reject_expired(self, tokens):
-    expired, valid = partition(remove_nones(tokens), lambda t: t.expired)
+  def _reject_expired(self, tokens: Sequence[Token]):
+    expired, valid = partition(remove_nones_sequence(tokens, list), lambda t: t.expired)
     if expired:
       self.delete_tokens(expired)
     return valid
@@ -53,22 +55,19 @@ class TokenService(Service):
       )
     )
 
-  def _make_meta(self, session_expiration, token_type, can_renew):
-    now = unix_timestamp()
+  def _make_meta(self, session_expiration: int | None, token_type, can_renew):
+    now = unix_timestamp_seconds()
     meta = TokenMeta()
     meta.date_created = now
     meta.can_renew = can_renew
-    meta.SetFieldIfNotNone(
+    ttl_options: Sequence[int | None] = [
+      Token.default_ttl_seconds(token_type, can_renew),
+      napply(session_expiration, lambda s: max(s - now, 0)),
+      self.services.config_broker.get("external_authorization.token_ttl_seconds"),
+    ]
+    meta.SetFieldIfNotNone(  # type: ignore
       "ttl_seconds",
-      min_option(
-        remove_nones(
-          [
-            Token.default_ttl_seconds(token_type, can_renew),
-            napply(session_expiration, lambda s: max(s - now, 0)),
-            self.services.config_broker.get("external_authorization.token_ttl_seconds"),
-          ]
-        )
-      ),
+      min_option(remove_nones_sequence(ttl_options, list)),
     )
     return meta
 
@@ -160,7 +159,7 @@ class TokenService(Service):
   def create_temporary_user_token(self, user_id, session_expiration=None):
     if not session_expiration:
       ttl_seconds = self.services.config_broker.get("login_session.idle_timeout_seconds", USER_TOKEN_EXPIRY_SECONDS)
-      session_expiration = unix_timestamp() + ttl_seconds
+      session_expiration = unix_timestamp_seconds() + ttl_seconds
     return self._create_user_token(user_id, session_expiration, can_renew=False)
 
   def _create_user_token(self, user_id, session_expiration, can_renew):
@@ -179,7 +178,7 @@ class TokenService(Service):
     return new
 
   def renew_token(self, token):
-    now = unix_timestamp()
+    now = unix_timestamp_seconds()
     updated = self.services.database_service.update_one_or_none(
       self.services.database_service.query(Token)
       .filter(Token.token == token.token)
