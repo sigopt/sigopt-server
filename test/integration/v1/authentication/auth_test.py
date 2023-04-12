@@ -381,6 +381,7 @@ class TestAuth(V1Base):
 
   @pytest.mark.slow
   def test_experiment_guest_token(self, connection, guest_with_experiment, guest_experiment, attacker):
+    # pylint: disable=too-many-statements
     # Guests cant reshare experiments
     with RaisesApiException(HTTPStatus.FORBIDDEN):
       guest_with_experiment.experiments(guest_experiment.id).tokens().create()

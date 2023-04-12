@@ -115,6 +115,7 @@ from zigopt.handlers.web_data.update import WebDataUpdateHandler
 
 
 def initialize_blueprint(app):
+  # pylint: disable=too-many-statements
   api = ApiBlueprint("api_v1", app)
   register_handler = handler_registry(api)
 
