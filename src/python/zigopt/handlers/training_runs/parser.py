@@ -44,7 +44,9 @@ class ProtobufBuilderThatRetainsNones:
 
   @property
   def json(self):
-    unbuild = lambda builder: builder.json if isinstance(builder, ProtobufBuilderThatRetainsNones) else builder
+    def unbuild(builder):
+      return builder.json if isinstance(builder, ProtobufBuilderThatRetainsNones) else builder
+
     return recursively_map_dict(unbuild, self._builder)
 
   @property
