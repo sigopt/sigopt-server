@@ -167,6 +167,7 @@ def is_null(field):
 
 
 class TestTrainingRunsList(V1Base):
+  # pylint: disable=too-many-public-methods
   @pytest.fixture(autouse=True)
   def setup_project(self, connection, setup):
     del setup

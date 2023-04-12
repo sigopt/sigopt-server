@@ -14,6 +14,7 @@ from zigopt.user.model import get_domain_from_email, normalize_email
 
 
 class InviteService(Service):
+  # pylint: disable=too-many-public-methods
   def create_invite(self, email, organization_id, inviter_id, invite_code, membership_type, invite_id=None):
     return Invite(
       id=invite_id,
