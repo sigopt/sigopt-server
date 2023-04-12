@@ -55,8 +55,12 @@ STRING_TO_OPERATOR_DICT = {
   ">": operator.gt,
   "<=": operator.le,
   "<": operator.lt,
-  "isnull": lambda x: x is None,
+  "isnull": lambda x, y: x.is_(None),
 }
+
+
+def sqlalchemy_operator_contains(x, y):
+  return x.in_(y)
 
 
 class Field:
@@ -141,7 +145,7 @@ class Field:
   def interpret_operator(self, operator_string):
     if self.name == "state":
       if operator_string == OPERATOR_EQ_STRING:
-        return operator.contains
+        return sqlalchemy_operator_contains
       raise BadParamError(f"Only the `{OPERATOR_EQ_STRING}` operator is supported for the `state` field")
     # TODO(SN-1095): Allow comparing to None to find "unset" values?
     # TODO(SN-1096): Do we need to support .has_key?
