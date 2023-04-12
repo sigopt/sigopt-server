@@ -88,6 +88,7 @@ class TrainingRunService(Service):
     return query
 
   def _readable_name(self, field):
+    # pylint: disable=too-many-return-statements
     if "." not in field.name:
       return field.name
     readable_name = (
