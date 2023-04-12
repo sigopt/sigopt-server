@@ -26,7 +26,10 @@ class Profiler:
 
     self.profile.disable()
     self.last_tracemalloc_snapshot = tracemalloc.take_snapshot()
-    self.total_time += time.time() - self.start_time
+    if self.start_time is not None:
+      self.total_time += time.time() - self.start_time
+    else:
+      self.total_time = 0.0
     self.start_time = None
 
   def print_stats(self, *args, **kwargs):
