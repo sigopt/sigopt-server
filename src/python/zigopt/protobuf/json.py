@@ -74,7 +74,9 @@ def field_descriptor_to_scalar_descriptor(field_descriptor):
   return python_type
 
 
-def _get_json_key_from_field_descriptor(descriptor, key, is_array_access):
+def get_json_key_from_field_descriptor(descriptor, key):
+  assert isinstance(descriptor, FieldDescriptor)
+  is_array_access = is_integer(key)
   if is_array_access:
     if descriptor.label != FieldDescriptor.LABEL_REPEATED:
       raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
@@ -97,23 +99,27 @@ def get_json_key(descriptor, key, json=False):
   is_field_descriptor = isinstance(descriptor, FieldDescriptor)
   is_array_access = is_integer(key)
   if is_field_descriptor:
-    return _get_json_key_from_field_descriptor(descriptor, key, is_array_access)
-  if is_array_access:
-    raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
-  for field in descriptor.fields:
-    accessor_name = field.name
-    if json:
-      assert field.json_name
-      accessor_name = field.json_name
-    if accessor_name == key:
-      descriptor = field
-      if descriptor.label != FieldDescriptor.LABEL_REPEATED:
-        if descriptor.type == FieldDescriptor.TYPE_MESSAGE:
-          return descriptor.message_type
-        return field_descriptor_to_scalar_descriptor(descriptor)
-      break
+    descriptor = get_json_key_from_field_descriptor(descriptor, key)
   else:
-    raise InvalidPathError(f"Invalid attribute for {descriptor}: {key}")
+    if is_array_access:
+      raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
+    for field in descriptor.fields:
+      accessor_name = field.name
+      if json:
+        assert field.json_name
+        accessor_name = field.json_name
+      if accessor_name == key:
+        descriptor = field
+        if descriptor.label != FieldDescriptor.LABEL_REPEATED:
+          if descriptor.type == FieldDescriptor.TYPE_MESSAGE:
+            descriptor = descriptor.message_type
+          else:
+            descriptor = field_descriptor_to_scalar_descriptor(descriptor)
+        break
+    else:
+      raise InvalidPathError(f"Invalid attribute for {descriptor}: {key}")
+  assert descriptor is not None
+  return descriptor
 
 
 def _validate_array(value, descriptor, is_emit):
