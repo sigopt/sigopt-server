@@ -13,7 +13,7 @@ import sys
 DISPLAY_NUM = os.environ["DISPLAY_NUM"]
 GEOMETRY = os.environ["GEOMETRY"]
 
-with open("/dev/null", "w") as devnull:
+with open("/dev/null", "w", encoding="utf-8") as devnull:
   with subprocess.Popen(
     [
       "xvfb-run",

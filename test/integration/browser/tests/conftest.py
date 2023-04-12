@@ -65,7 +65,7 @@ def save_console_logs(test, logs):
   sanitized_name = sanitize_test_name_for_path(test.name)
   f = os.path.join(CONSOLE_LOG_DIR, f"{sanitized_name}.txt")
   if logs:
-    with open(f, "w") as outfile:
+    with open(f, "w", encoding="utf-8") as outfile:
       for entry in logs:
         outfile.write(f"{json.dumps(entry)}\n")
 
