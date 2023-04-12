@@ -36,6 +36,7 @@ from zigopt.pagination.query import QueryPager
 from zigopt.permission.pending.service import PendingPermissionService
 from zigopt.permission.service import PermissionService
 from zigopt.project.service import ProjectService
+from zigopt.queue.base import BaseQueueService
 from zigopt.queue.grouper import QueueMessageGrouper
 from zigopt.queue.local import LocalQueueService
 from zigopt.queue.monitor import QueueMonitor
@@ -62,6 +63,9 @@ from zigopt.web_data.service import WebDataService
 
 
 class ApiServiceBag(ServiceBag):
+  queue_service: BaseQueueService
+  s3_user_upload_service: S3UserUploadService | DisabledService
+
   def __init__(self, config_broker, is_qworker):
     self.is_qworker = is_qworker
     super().__init__(config_broker)
