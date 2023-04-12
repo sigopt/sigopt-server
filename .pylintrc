@@ -28,7 +28,6 @@ disable=
   too-many-arguments,
   too-many-branches,
   too-many-instance-attributes,
-  too-many-lines,
   too-many-nested-blocks,
   too-many-public-methods,
   too-many-return-statements,
