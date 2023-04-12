@@ -33,6 +33,7 @@ class CustomChromeOptions(webdriver.ChromeOptions):
 
 
 class SigOptWebDriver:
+  # pylint: disable=too-many-public-methods
   def __getattr__(self, name):
     if name.endswith("_by_class_name"):
       warnings.warn(

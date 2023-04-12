@@ -23,6 +23,7 @@ from integration.v1.test_base import Connection, V1Base
 
 
 class TestAuth(V1Base):
+  # pylint: disable=too-many-public-methods
   @classmethod
   @pytest.fixture(scope="function")
   def client_id(cls, connection):

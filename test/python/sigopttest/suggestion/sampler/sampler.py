@@ -40,6 +40,7 @@ from sigopttest.base.utils import partial_opt_args
 
 
 class TestSuggestSampler:
+  # pylint: disable=too-many-public-methods
   @pytest.fixture
   def segmenter(self):
     return ExperimentParameterSegmenter(Mock())

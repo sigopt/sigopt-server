@@ -9,6 +9,7 @@ from zigopt.protobuf.gen.test.message_pb2 import Parent
 
 
 class TestLists:
+  # pylint: disable=too-many-public-methods
   def test_flatten(self):
     assert flatten([]) == []
     assert flatten([[]]) == []
