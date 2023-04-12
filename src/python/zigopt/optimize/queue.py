@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
 from zigopt.queue.message_types import MessageType
 from zigopt.services.base import Service
@@ -17,7 +19,7 @@ class OptimizeQueueService(Service):
     if self.services.config_broker.get("queue.enabled", True) and self.services.config_broker.get(
       "queue.message_groups.optimization.enabled", True
     ):
-      messages = remove_nones(
+      messages: Sequence = remove_nones_sequence(
         [
           *self._maybe_enqueue_next_points(experiment, force=force),
           *self._maybe_enqueue_optimize(
@@ -26,7 +28,8 @@ class OptimizeQueueService(Service):
             force=force,
           ),
           *self._maybe_enqueue_importances(experiment, num_observations, force=force),
-        ]
+        ],
+        list,
       )
       self.services.queue_monitor.robust_enqueue(messages, experiment)
 
