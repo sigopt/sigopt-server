@@ -76,7 +76,7 @@ def parse_float(float_str):
   return ret
 
 
-def as_json(data: str, encoding: str = "utf-8"):
+def as_json(data: bytes, encoding: str = "utf-8"):
   """Deserialize a str holding a JSON document into a Python dict.
 
     :param string: serialized json data
