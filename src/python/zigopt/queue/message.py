@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from google.protobuf import Message
+
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
 
@@ -24,7 +26,7 @@ class BaseMessageBody:
 
 class ProtobufMessageBody(BaseMessageBody):
   # To be defined by subclasses
-  # PROTOBUF_CLASS: protobuf class
+  PROTOBUF_CLASS: Message
 
   def __init__(self, pb):
     assert isinstance(pb, self.PROTOBUF_CLASS)

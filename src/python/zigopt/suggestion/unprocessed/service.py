@@ -170,6 +170,7 @@ class UnprocessedSuggestionService(Service):
 
       for suggestion_uuid, suggestion_meta_protobuf in suggestions_by_uuid.items():
         generated_time = timestamps_by_uuid.get(suggestion_uuid, None)
+        # pylint: disable=protobuf-undefined-attribute
         unprocessed_suggestions.append(
           UnprocessedSuggestion(
             experiment_id=experiment.id,
@@ -179,6 +180,7 @@ class UnprocessedSuggestionService(Service):
             suggestion_meta=SuggestionMeta.FromString(suggestion_meta_protobuf),
           )
         )
+        # pylint: enable=protobuf-undefined-attribute
     return [s for s in unprocessed_suggestions if s.is_valid(experiment)]
 
   def _truncate_suggestion_length(self, experiment_id, source, num_to_keep):

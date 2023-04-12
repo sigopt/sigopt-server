@@ -214,10 +214,12 @@ class BaseExperimentsCreateHandler(Handler):
       json_dict,
       experiment_meta.all_parameters_unsorted,
     )
-    experiment_meta.SetFieldIfNotNone("num_solutions", num_solutions)
+    experiment_meta.SetFieldIfNotNone("num_solutions", num_solutions)  # pylint: disable=protobuf-undefined-attribute
 
     parallel_bandwidth = cls.get_parallel_bandwidth_from_json(json_dict)
-    experiment_meta.SetFieldIfNotNone("parallel_bandwidth", parallel_bandwidth)
+    experiment_meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
+      "parallel_bandwidth", parallel_bandwidth
+    )
 
     # Set observation budget if present and check to see which features require a budget
     budget_key, budget = cls.get_budget_key_and_value(json_dict, experiment_meta.runs_only)
@@ -254,7 +256,9 @@ class BaseExperimentsCreateHandler(Handler):
         raise BadParamError("Multisolution experiments require exactly one optimized metric")
 
     client_provided_data = cls.get_client_provided_data(json_dict)
-    experiment_meta.SetFieldIfNotNone("client_provided_data", client_provided_data)
+    experiment_meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
+      "client_provided_data", client_provided_data
+    )
 
     if not (has_optimization_metrics or has_constraint_metrics):
       raise BadParamError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")

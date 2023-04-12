@@ -32,6 +32,7 @@ class CheckpointsCreateHandler(TrainingRunHandler):
 
   @generator_to_list
   def _parse_values(self, data):
+    # pylint: disable=protobuf-undefined-attribute
     values = get_with_validation(data, "values", ValidationType.arrayOf(ValidationType.object))
     validate_metric_names(values, self.experiment)
     for value_dict in values:
