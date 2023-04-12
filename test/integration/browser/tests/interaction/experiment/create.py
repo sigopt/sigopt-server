@@ -18,6 +18,7 @@ class TestCreate(ExperimentBrowserTest):
     assert re.search(r"/experiment/\d+", driver.current_url)
 
   def test_create_experiment(self, logged_in_driver, config_broker):
+    # pylint: disable=too-many-locals
     driver = logged_in_driver
     driver.get_path("/experiments/create", title_text="Create Experiment", css_selector=".experiment-creator")
 
@@ -88,6 +89,7 @@ class TestCreate(ExperimentBrowserTest):
 
   @pytest.mark.skipif(True, reason="TODO(SN-1131): works in Firefox not Chrome")
   def test_create_with_conditionals(self, logged_in_driver, api_connection):
+    # pylint: disable=too-many-locals
     driver = logged_in_driver
 
     driver.get_path("/experiments/create", title_text="Create Experiment", css_selector=".experiment-creator")

@@ -292,6 +292,7 @@ class TestList(ExperimentBrowserTest):
       assert other_user.name in title or other_user.name in author
 
   def test_experiment_search_pagination_history(self, api_connection, logged_in_driver):
+    # pylint: disable=too-many-locals
     driver = logged_in_driver
 
     def find_all_by_pagination(target):

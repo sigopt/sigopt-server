@@ -62,6 +62,7 @@ class TestInviteDelete(ServiceBase):
     assert len(invites_to_org2) == 1
 
   def test_delete_stray_invites_by_organization(self, services, normal_user, email, other_email):
+    # pylint: disable=too-many-locals
     claimable_email = email
     stray_email = other_email
 

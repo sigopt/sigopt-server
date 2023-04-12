@@ -231,6 +231,7 @@ def create_db(
   initialize_data=True,
   echo=False,
 ):
+  # pylint: disable=too-many-locals
   if "production" in config_file_name:
     raise Exception("whoa whoa whoa, this is probably a bad idea on the prod database")
 
