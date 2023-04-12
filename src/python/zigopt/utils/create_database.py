@@ -8,6 +8,7 @@
 import argparse
 import logging
 import string
+from typing import Any
 
 import pg8000
 import sqlalchemy
@@ -15,7 +16,7 @@ import sqlalchemy
 import zigopt.db.all_models  # pylint: disable=unused-import
 from zigopt.common import *
 from zigopt.client.model import Client
-from zigopt.common.sigopt_datetime import current_datetime, unix_timestamp
+from zigopt.common.sigopt_datetime import current_datetime, unix_timestamp_seconds
 from zigopt.config.broker import ConfigBroker
 from zigopt.db.declarative import Base
 from zigopt.db.service import DatabaseConnectionService
@@ -64,7 +65,7 @@ logging.getLogger("sigopt.sql").setLevel(logging.WARNING)
 
 def create_user(services, user_def):
   user_meta = UserMeta()
-  user_meta.date_created = unix_timestamp()
+  user_meta.date_created = unix_timestamp_seconds()
   user_meta.has_verified_email = bool(user_def.get("has_verified_email"))
   plaintext_password = user_def.get("password", None)
   hashed_password = (
@@ -91,17 +92,14 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
     assert database in DB_NAME_ALLOW_LIST
 
   # Connect as default superuser
-  conn = pg8000.connect(
-    **remove_nones(
-      {
-        "user": superuser or "postgres",
-        "password": superuser_password,
-        "host": config_broker.get("db.host"),
-        "port": config_broker.get("db.port"),
-        **(config_broker.get_object("db.query") or {}),
-      }
-    )
-  )
+  args: dict[str, Any] = {
+    "user": superuser or "postgres",
+    "password": superuser_password,
+    "host": config_broker.get("db.host"),
+    "port": config_broker.get("db.port"),
+    **(config_broker.get_object("db.query") or {}),
+  }
+  conn = pg8000.connect(**remove_nones(args))
   try:
     conn.autocommit = True
     with conn.cursor() as cursor:
@@ -159,7 +157,7 @@ def create_permission(services, user_id, client_id, permission_meta):
 def make_user_in_client(services, client, name, email, role_type):
   user_meta = UserMeta()
   user_meta.has_verified_email = True
-  user_meta.date_created = unix_timestamp()
+  user_meta.date_created = unix_timestamp_seconds()
   user = User(
     name=name,
     email=email,
@@ -175,7 +173,7 @@ def make_user_in_client(services, client, name, email, role_type):
     permission_meta.can_read = role_type.can_read
     create_permission(services=services, user_id=user.id, client_id=client.id, permission_meta=permission_meta)
     meta = TokenMeta()
-    meta.date_created = unix_timestamp()
+    meta.date_created = unix_timestamp_seconds()
     services.database_service.insert(
       Token(
         token_type=TokenType.USER,
@@ -282,7 +280,7 @@ def create_db(
       client_name = config_broker["clients.client.name"]
       client_id = config_broker["clients.client.id"]
       client_meta = ClientMeta()
-      client_meta.date_created = unix_timestamp()
+      client_meta.date_created = unix_timestamp_seconds()
       client, project = create_client(services, id=client_id, name=client_name, client_meta=client_meta)
       root_engine.execute(f"GRANT UPDATE ON SEQUENCE clients_id_seq TO {username}")
       services.database_service.execute(
@@ -348,7 +346,7 @@ def create_db(
         ),
       )
       meta = TokenMeta()
-      meta.date_created = unix_timestamp()
+      meta.date_created = unix_timestamp_seconds()
       meta.guest_permissions = WRITE
       services.database_service.insert(
         Token(token_type=TokenType.GUEST, client_id=client.id, user_id=None, meta=meta, token="client_token")
@@ -406,7 +404,7 @@ def create_db(
     # Add a non-sigopt client & user for testing
     owner_user_meta = UserMeta()
     owner_user_meta.has_verified_email = True
-    owner_user_meta.date_created = unix_timestamp()
+    owner_user_meta.date_created = unix_timestamp_seconds()
     owner_user = User(
       name="notsigopt",
       email="notsigopt@notsigopt.ninja",
@@ -417,7 +415,7 @@ def create_db(
 
     member_user_meta = UserMeta()
     member_user_meta.has_verified_email = True
-    member_user_meta.date_created = unix_timestamp()
+    member_user_meta.date_created = unix_timestamp_seconds()
     member_user = User(
       name="notsigopt member",
       email="notsigopt_member@notsigopt.ninja",
@@ -428,7 +426,7 @@ def create_db(
 
     client_name = "Not 🔫 SigOpt"
     client_meta = ClientMeta()
-    client_meta.date_created = unix_timestamp()
+    client_meta.date_created = unix_timestamp_seconds()
     client.client_meta = client_meta
     client, project = create_client(
       services,
@@ -450,7 +448,7 @@ def create_db(
     create_permission(services=services, user_id=member_user.id, client_id=client.id, permission_meta=permission_meta)
 
     meta = TokenMeta()
-    meta.date_created = unix_timestamp()
+    meta.date_created = unix_timestamp_seconds()
     services.database_service.insert(
       Token(token_type=TokenType.USER, client_id=None, user_id=owner_user.id, meta=meta, token="fake_user_token")
     )

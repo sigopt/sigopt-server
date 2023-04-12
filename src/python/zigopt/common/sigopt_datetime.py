@@ -55,6 +55,10 @@ def unix_timestamp(with_microseconds: bool = False) -> int | float:
   return datetime_to_seconds(current_datetime(), with_microseconds=with_microseconds)
 
 
+def unix_timestamp_seconds() -> int:
+  return int(datetime_to_seconds(current_datetime()))
+
+
 def get_month_interval(dt: _Optional[datetime.datetime] = None) -> tuple[datetime.datetime, datetime.datetime]:
   if dt is None:
     dt = current_datetime()
