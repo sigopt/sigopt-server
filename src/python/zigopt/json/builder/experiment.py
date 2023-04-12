@@ -99,7 +99,7 @@ class MetricJsonBuilder(JsonBuilder):
 
   @field(ValidationType.number)
   def threshold(self) -> Optional[float]:
-    return self._metric.GetFieldOrNone("threshold")
+    return self._metric.GetFieldOrNone("threshold")  # type: ignore
 
   @field(ValidationType.string)
   def strategy(self) -> str:
