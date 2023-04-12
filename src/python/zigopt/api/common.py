@@ -30,6 +30,7 @@ def handler_registry(app):
     handler_cls.validate_class()
 
     def execute_url_rule(*args, **kwargs):
+      # pylint: disable=too-many-locals
       app.profiler.enable()
       app.tracer.set_transaction_name(route_name)
       services = None

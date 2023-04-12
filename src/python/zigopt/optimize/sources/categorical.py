@@ -160,10 +160,12 @@ class CategoricalOptimizationSource(OptimizationSource):
     for i, metric in enumerate(self.experiment.all_metrics):
       mmhpv = ret.multimetric_hyperparameter_value.add()
       mmhpv.metric_name = str(metric.name)
+      # pylint: disable=protobuf-undefined-attribute
       CopyFrom(
         mmhpv.categorical_hyperparameters,
         self.build_cat_hyperparameter_protobuf_from_dict(hyperparameter_dict[i]).copy_protobuf(),
       )
+      # pylint: enable=protobuf-undefined-attribute
     return ret
 
   def build_cat_hyperparameter_protobuf_from_dict(self, hyperparameter_dict):

@@ -302,6 +302,7 @@ class TestMultisolutionExperiment(MultisolutionExperimentTestBase):
     num_solutions,
     objective,
   ):
+    # pylint: disable=too-many-locals
     meta["num_solutions"] = num_solutions
     meta["metrics"][0]["objective"] = objective
     best_value, worst_value = (-1.0, 1.0) if objective == "minimize" else (1.0, -1.0)
@@ -355,6 +356,7 @@ class TestMultisolutionExperiment(MultisolutionExperimentTestBase):
     meta,
     services,
   ):
+    # pylint: disable=too-many-locals
     num_solutions = 5
     meta["num_solutions"] = num_solutions
     meta["metrics"][0]["objective"] = "maximize"

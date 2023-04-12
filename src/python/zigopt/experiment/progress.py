@@ -80,6 +80,7 @@ class ExperimentProgressService(Service):
       )
 
   def _observation_progress_for_experiments(self, experiments, should_fetch_best, progress_map):
+    # pylint: disable=too-many-locals
     last_observations = {}
     first_observations = {}
     observation_counts = {}

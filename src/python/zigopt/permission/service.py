@@ -97,12 +97,15 @@ class PermissionService(Service):
 
   def set_permission_meta(self, permission, can_admin, can_write, can_read, can_see_experiments_by_others):
     meta = PermissionMeta()
-    meta.can_admin = coalesce(can_admin, permission and permission.can_admin)
-    meta.can_write = coalesce(can_write, permission and permission.can_write)
-    meta.can_read = coalesce(can_read, permission and permission.can_read)
-    meta.can_see_experiments_by_others = coalesce(
-      can_see_experiments_by_others,
-      permission and permission.can_see_experiments_by_others,
+    meta.can_admin = coalesce(can_admin, permission and permission.can_admin) or False
+    meta.can_write = coalesce(can_write, permission and permission.can_write) or False
+    meta.can_read = coalesce(can_read, permission and permission.can_read) or False
+    meta.can_see_experiments_by_others = (
+      coalesce(
+        can_see_experiments_by_others,
+        permission and permission.can_see_experiments_by_others,
+      )
+      or False
     )
     return meta
 

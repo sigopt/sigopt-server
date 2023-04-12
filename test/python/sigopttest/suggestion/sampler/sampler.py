@@ -134,6 +134,7 @@ class TestSuggestSampler:
     return conditional
 
   def test_coverage(self, segmenter):
+    # pylint: disable=too-many-locals
     int_parameter = self.int_parameter(0, 10)
     double_parameter = self.double_parameter(3, 5)
     categorical_parameter = self.categorical_parameter(
@@ -233,6 +234,7 @@ class TestSuggestSampler:
       assert len([c in ClosedInterval(4.5, 5) for c in double_observations]) >= 1
 
   def test_constrained_random_sampler(self, segmenter):
+    # pylint: disable=too-many-locals
     int_parameter_1 = self.int_parameter(0, 10, name="i_1")
     int_parameter_2 = self.int_parameter(10, 20, name="i_2")
     double_parameter_1 = self.double_parameter(30, 40, name="d_1")
@@ -302,6 +304,7 @@ class TestSuggestSampler:
       assert suggestion.get_assignment(double_parameter_1) + suggestion.get_assignment(double_parameter_2) <= 85
 
   def test_integer_constrained_sampler(self, segmenter):
+    # pylint: disable=too-many-locals
     c1 = 70
     c2 = 85
     c3 = 0.5
@@ -819,6 +822,7 @@ class TestSuggestSampler:
       assert suggestion.get_assignment(parameter) in [0, 2]
 
   def test_conditionals(self, segmenter):
+    # pylint: disable=too-many-locals
     conditional_parameter = self.conditional_parameter(
       "x",
       [
@@ -844,7 +848,7 @@ class TestSuggestSampler:
           double_parameter.copy_protobuf(),
           categorical_parameter.copy_protobuf(),
         ],
-        conditionals=[conditional_parameter.copy_protobuf()],
+        conditionals=[conditional_parameter.copy_protobuf()],  # pylint: disable=protobuf-undefined-attribute
       ),
     )
 

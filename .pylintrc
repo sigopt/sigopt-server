@@ -2,6 +2,7 @@
 ignore-patterns=.*_pb2.py
 reports=n
 extension-pkg-allow-list=lxml.etree
+load-plugins=pylint_protobuf
 
 [FORMAT]
 indent-string='  '
@@ -20,13 +21,11 @@ disable=
   duplicate-code,
   invalid-name,
   missing-docstring,
-  no-member,
   pointless-string-statement,
   too-few-public-methods,
   too-many-ancestors,
   too-many-arguments,
   too-many-branches,
-  too-many-locals,
   too-many-nested-blocks,
   too-many-public-methods,
   too-many-return-statements,

@@ -216,6 +216,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
     )
 
   def _generate_response(self, params, client, project, organization):
+    # pylint: disable=too-many-locals
     if client:
       query = self.services.database_service.query(TrainingRun).filter(TrainingRun.client_id == client.id)
       by_organization = False

@@ -16,6 +16,7 @@ from zigopt.queue.worker import QueueWorker
 
 class ExperimentWorker(QueueWorker):
   MESSAGE_GROUP = MessageGroup.OPTIMIZATION
+  MESSAGE_TYPE: str  # defined by MessageType
 
   def get_experiment(self, experiment_id):
     experiment = self.services.experiment_service.find_by_id(experiment_id, include_deleted=True)

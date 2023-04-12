@@ -170,6 +170,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     return self.client
 
   def handle(self, json_dict):
+    # pylint: disable=too-many-locals
     no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
 
     validate_experiment_json_dict_for_update(json_dict)
