@@ -10,13 +10,13 @@ from zigopt.queue.message_types import MessageType
 from zigopt.queue.router import WORKER_CLASSES, MessageRouter
 
 
-@pytest.fixture
-def services():
+@pytest.fixture(name="services")
+def fixture_services():
   return mock.Mock()
 
 
-@pytest.fixture
-def router(services):
+@pytest.fixture(name="router")
+def fixture_router(services):
   return MessageRouter(services)
 
 

@@ -399,7 +399,7 @@ class V1Base(BaseTest):
       validate_observation_json_dict_for_create(o, experiment)
       obs = Observation(experiment_id=experiment.id)
       observation_data = ObservationData()
-      handler = _TestObservationsCreateHandler(self.services, request=None, experiment_id=experiment.id)
+      handler = _TestObservationsCreateHandler(self.services, req=None, experiment_id=experiment.id)
       handler.experiment = experiment
       handler.observation_from_json(
         o,

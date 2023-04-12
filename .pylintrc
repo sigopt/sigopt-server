@@ -22,7 +22,6 @@ disable=
   missing-docstring,
   no-member,
   pointless-string-statement,
-  redefined-outer-name,
   too-few-public-methods,
   too-many-ancestors,
   too-many-arguments,

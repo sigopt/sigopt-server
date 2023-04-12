@@ -46,10 +46,16 @@ TEST_CREATE_FIELDS = [
 ]
 
 PAIRWISE_TEST_CREATE_CASES = []
-for field1, value1 in TEST_CREATE_FIELDS:
-  for field2, value2 in TEST_CREATE_FIELDS:
-    if field1 < field2:
-      PAIRWISE_TEST_CREATE_CASES.append((field1, value1, field2, value2))
+
+
+def create_pairwise_cases():
+  for field1, value1 in TEST_CREATE_FIELDS:
+    for field2, value2 in TEST_CREATE_FIELDS:
+      if field1 < field2:
+        PAIRWISE_TEST_CREATE_CASES.append((field1, value1, field2, value2))
+
+
+create_pairwise_cases()
 
 
 class TestAiExperimentTrainingRuns(AiExperimentsTestBase):

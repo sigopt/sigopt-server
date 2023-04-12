@@ -18,7 +18,7 @@ class BaseMessageBody:
     raise NotImplementedError()
 
   @classmethod
-  def deserialize(cls, string):
+  def deserialize(cls, msg):
     raise NotImplementedError()
 
 
@@ -42,9 +42,9 @@ class ProtobufMessageBody(BaseMessageBody):
     return self._message_pb.SerializeToString()
 
   @classmethod
-  def deserialize(cls, string):
+  def deserialize(cls, msg):
     pb = cls.PROTOBUF_CLASS()
-    pb.ParseFromString(string)
+    pb.ParseFromString(msg)
     return cls(pb)
 
 

@@ -79,7 +79,14 @@ def event_loop(file_changed_event, command, initial_run):
     process = Popen(command, start_new_session=True)  # pylint: disable=consider-using-with
 
 
-def main(args):
+parser = argparse.ArgumentParser()
+parser.add_argument("--dir", action="append", required=True)
+parser.add_argument("--initial-run", action="store_true")
+parser.add_argument("command", nargs=argparse.REMAINDER)
+
+
+def main():
+  args = parser.parse_args()
   file_changed_event = threading.Event()
   stop_event = threading.Event()
   watcher_threads = get_watchers(file_changed_event, stop_event, args.dir)
@@ -95,9 +102,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
-  parser.add_argument("--dir", action="append", required=True)
-  parser.add_argument("--initial-run", action="store_true")
-  parser.add_argument("command", nargs=argparse.REMAINDER)
-  args = parser.parse_args()
-  sys.exit(main(args))
+  sys.exit(main())

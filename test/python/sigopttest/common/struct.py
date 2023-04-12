@@ -17,8 +17,8 @@ point_cls_without_defaults = ImmutableStruct("Point", ["x", "y"])
 point_cls_with_defaults = ImmutableStruct("Point", ["x", "y"], defaults=[5, 6])
 
 
-@pytest.fixture(params=[point_cls_with_defaults, point_cls_without_defaults])
-def point_cls(request):
+@pytest.fixture(name="point_cls", params=[point_cls_with_defaults, point_cls_without_defaults])
+def fixture_point_cls(request):
   return request.param
 
 
