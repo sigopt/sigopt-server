@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Any
+from typing import Any, Mapping
 
 from zigopt.experiment.constraints import human_readable_constraint
 from zigopt.experiment.model import Experiment, ExperimentParameterProxy
@@ -80,7 +80,7 @@ def transformation_satisfied(parameter: ExperimentParameter, assignment: float) 
       raise BadParamError(f"Assignment must be positive for log-transformed parameter {parameter.name}")
 
 
-def validate_assignments_map(assignments_map: dict[str, Any], experiment: Experiment) -> None:
+def validate_assignments_map(assignments_map: Mapping[str, Any], experiment: Experiment) -> None:
   for conditional in experiment.conditionals:
     if conditional.name not in assignments_map:
       raise BadParamError(f'Missing assignment for conditional: "{conditional.name}"')
