@@ -36,7 +36,7 @@ def write_documentation(file_to_write, flask_app):
 
 
 def _default_app():
-  config_file = os.environ.get("sigopt_server_config_file")
+  config_file = os.environ["sigopt_server_config_file"]
   config_broker = ConfigBroker.from_file(config_file)
   configure_loggers(config_broker)
   logging.getLogger("sigopt.python").info("Python version: %s", sys.version)
