@@ -8,6 +8,7 @@ from zigopt.invite.constant import USER_ROLE
 from zigopt.invite.model import Invite
 from zigopt.json.builder.membership import MembershipJsonBuilder
 from zigopt.membership.model import MembershipType
+from zigopt.organization.model import Organization
 from zigopt.permission.pending.model import PendingPermission
 from zigopt.services.base import Service
 from zigopt.user.model import get_domain_from_email, normalize_email
@@ -257,7 +258,7 @@ class InviteService(Service):
     # pylint: disable=too-many-locals
     invite_ids = [invite.id for invite in invites]
     inviters = to_map_by_key(self.services.user_service.find_by_ids([i.inviter for i in invites]), lambda u: u.id)
-    organizations = to_map_by_key(
+    organizations: dict[int, Organization] = to_map_by_key(
       self.services.organization_service.find_by_ids([i.organization_id for i in invites]),
       lambda o: o.id,
     )
@@ -286,7 +287,7 @@ class InviteService(Service):
           request_parameters={
             "user_id": user.id,
             "membership_type": membership.membership_type.value,
-            "organization_id": organization.id,
+            "organization_id": napply(organization, lambda o: o.id),
           },
           response_element=MembershipJsonBuilder.json(membership, organization, user),
           response_status=IamResponseStatus.SUCCESS,
