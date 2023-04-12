@@ -200,7 +200,7 @@ class RedisService(Service):
     socket_path = config.get("socket_path", DEFAULT_REDIS_SOCKET_PATH)
     socket_timeout = config.get("socket_timeout")
     connection_pool = redis.ConnectionPool(
-      connection_class=SigOptUnixDomainSocketConnection,
+      connection_class=SigOptUnixDomainSocketConnection,  # type: ignore
       path=socket_path,
     )
 
@@ -267,48 +267,57 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def get(self, redis_key):
+    assert self.redis is not None
     return self.redis.get(self.services.redis_key_service.get_key_value(redis_key))
 
   @retry_on_failure
   @ensure_redis
   def set(self, redis_key, value, expiry_time=None):
+    assert self.redis is not None
     return self.redis.set(self.services.redis_key_service.get_key_value(redis_key), value=value, ex=expiry_time)
 
   @ensure_redis
   def increment(self, redis_key):
+    assert self.redis is not None
     return self.redis.incr(self.services.redis_key_service.get_key_value(redis_key))
 
   @retry_on_failure
   @ensure_redis
   def set_expire_at(self, redis_key, expire_at):
     assert isinstance(expire_at, datetime.datetime)
+    assert self.redis is not None
     return self.redis.expireat(self.services.redis_key_service.get_key_value(redis_key), expire_at)
 
   @retry_on_failure
   @ensure_redis
   def set_expire(self, redis_key, expire):
     assert isinstance(expire, datetime.timedelta)
+    assert self.redis is not None
     return self.redis.expire(self.services.redis_key_service.get_key_value(redis_key), expire)
 
   @retry_on_failure
   @ensure_redis
   def exists(self, redis_key):
+    assert self.redis is not None
     exists = self.redis.exists(self.services.redis_key_service.get_key_value(redis_key))
     return bool(exists)
 
   @retry_on_failure
   @ensure_redis
   def count_sorted_set(self, redis_key):
+    assert self.redis is not None
     return self.redis.zcard(self.services.redis_key_service.get_key_value(redis_key))
 
   @retry_on_failure
   @ensure_redis
   def count_list(self, redis_key):
+    assert self.redis is not None
     return self.redis.llen(self.services.redis_key_service.get_key_value(redis_key))
 
   @retry_on_failure
   @ensure_redis
   def add_sorted_set_new(self, redis_key, member_score_tuples):
+    assert self.redis is not None
     return self.redis.zadd(
       self.services.redis_key_service.get_key_value(redis_key),
       dict(member_score_tuples),
@@ -319,6 +328,7 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def get_sorted_set_range(self, redis_key, min_index, max_index, reverse=False, withscores=False):
+    assert self.redis is not None
     func = self.redis.zrevrange if reverse else self.redis.zrange
     return func(
       self.services.redis_key_service.get_key_value(redis_key),
@@ -330,6 +340,7 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def remove_from_sorted_set(self, redis_key, *members):
+    assert self.redis is not None
     if members:
       return self.redis.zrem(self.services.redis_key_service.get_key_value(redis_key), *members)
     return None
@@ -346,6 +357,7 @@ class RedisService(Service):
 
   @ensure_redis
   def blocking_pop_min_from_sorted_set(self, redis_keys, timeout=None):
+    assert self.blocking_conn_redis is not None
     timeout = self._validate_timeout(timeout)
     key_values = [self.services.redis_key_service.get_key_value(rkey) for rkey in redis_keys]
     try:
@@ -358,10 +370,12 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def list_push(self, redis_key, *members):
+    assert self.redis is not None
     return self.redis.rpush(self.services.redis_key_service.get_key_value(redis_key), *members)
 
   @ensure_redis
   def blocking_list_pop(self, redis_keys, timeout=None):
+    assert self.blocking_conn_redis is not None
     timeout = self._validate_timeout(timeout)
     key_values = [self.services.redis_key_service.get_key_value(rkey) for rkey in redis_keys]
     return self.blocking_conn_redis.blpop(key_values, timeout=timeout)
@@ -369,6 +383,7 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def add_to_set(self, redis_key, *members):
+    assert self.redis is not None
     return self.redis.sadd(self.services.redis_key_service.get_key_value(redis_key), *members)
 
   @retry_on_failure
@@ -376,11 +391,13 @@ class RedisService(Service):
   def get_set_members(self, redis_key):
     # Redis cautions that SMEMBERS can be I/O intensive, so we iterate through
     # but recognize there may be race conditions that cause duplicate items
+    assert self.redis is not None
     return distinct(list(self.redis.sscan_iter(self.services.redis_key_service.get_key_value(redis_key))))
 
   @retry_on_failure
   @ensure_redis
   def set_hash_fields(self, redis_key, mapping):
+    assert self.redis is not None
     return self.redis.hset(self.services.redis_key_service.get_key_value(redis_key), mapping=mapping)
 
   @retry_on_failure
@@ -388,11 +405,13 @@ class RedisService(Service):
   def get_all_hash_fields(self, redis_key, length_hint=None):
     # length_hint does NOT affect number of items returned, and can be None
     # but can help speed things up under the hood if set reasonably
+    assert self.redis is not None
     return dict(self.redis.hscan_iter(self.services.redis_key_service.get_key_value(redis_key), count=length_hint))
 
   @retry_on_failure
   @ensure_redis
   def get_time(self, with_microseconds=False):
+    assert self.redis is not None
     seconds, microseconds = self.redis.time()
     if with_microseconds:
       MICROSECONDS_PER_SECOND = 1e6
@@ -402,13 +421,16 @@ class RedisService(Service):
   @retry_on_failure
   @ensure_redis
   def remove_from_hash(self, redis_key, *fields):
+    assert self.redis is not None
     return self.redis.hdel(self.services.redis_key_service.get_key_value(redis_key), *fields)
 
   @retry_on_failure
   def delete(self, redis_key):
+    assert self.redis is not None
     return self.redis.delete(self.services.redis_key_service.get_key_value(redis_key))
 
   @retry_on_failure
   @ensure_redis
   def dangerously_purge_database(self):
+    assert self.redis is not None
     return self.redis.flushall()
