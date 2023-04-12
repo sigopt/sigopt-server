@@ -16,6 +16,7 @@ class BaseRedisQueueProvider(QueueProvider):
     Uses Redis to reprioritize messages, if applicable
     """
 
+  redis_key_prefix: str
   test_key_prefix = "test"
 
   def __init__(self, services, queue_name, wait_time_seconds=None):

@@ -848,7 +848,7 @@ class TestSuggestSampler:
           double_parameter.copy_protobuf(),
           categorical_parameter.copy_protobuf(),
         ],
-        conditionals=[conditional_parameter.copy_protobuf()],
+        conditionals=[conditional_parameter.copy_protobuf()],  # pylint: disable=protobuf-undefined-attribute
       ),
     )
 

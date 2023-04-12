@@ -21,7 +21,9 @@ class SuggestionsUpdateHandler(SuggestionHandler):
     client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(
       json_dict, default=self.suggestion.client_provided_data
     )
+    # pylint: disable=protobuf-undefined-attribute
     suggestion_meta.SetFieldIfNotNone("client_provided_data", client_provided_data)
+    # pylint: enable=protobuf-undefined-attribute
 
     processed = self.suggestion.processed
     processed.processed_suggestion_meta = suggestion_meta

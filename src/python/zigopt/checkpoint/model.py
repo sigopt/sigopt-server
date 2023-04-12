@@ -48,10 +48,6 @@ class Checkpoint(Base):
   def validator(self, key, meta):
     return ProtobufColumnValidator(meta, proxy=CheckpointDataProxy)
 
-  @property
-  def values_json(self):
-    return [{"name": v.name, "value": v.value} for v in self.values]
-
   def sorted_measurements(self):
     return self.data.sorted_measurements()
 
