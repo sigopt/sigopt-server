@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from google.protobuf import Message
+from google.protobuf.message import Message
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
