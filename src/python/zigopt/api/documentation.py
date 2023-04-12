@@ -52,7 +52,7 @@ def main():
   swagger_path = os.environ["SIGOPT_SWAGGER_PATH"]
   swagger_file = os.environ["SIGOPT_SWAGGER_FILENAME"]
   path = os.path.join(swagger_path, swagger_file)
-  with open(path, "w") as file:
+  with open(path, "w", encoding="utf-8") as file:
     logging.getLogger("sigopt.python").info("OpenAPI file open %s", path)
     write_documentation(file, app)
     logging.getLogger("sigopt.python").info("Completed write to file %s", path)

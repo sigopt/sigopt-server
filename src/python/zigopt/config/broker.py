@@ -80,7 +80,7 @@ class ConfigBroker:
     while extends:
       extends = os.path.abspath(extends)
       try:
-        with open(extends, "r") as config_fp:
+        with open(extends, "r", encoding="utf-8") as config_fp:
           config = yaml.safe_load(config_fp)
       except OSError as ose:
         raise Exception(f"Error when loading config file {extends}") from ose
