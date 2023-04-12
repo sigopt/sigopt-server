@@ -29,60 +29,62 @@ def handler_registry(app):
   ):
     handler_cls.validate_class()
 
+    def respond(request, args, kwargs):
+      if not disable_request_logging:
+        app.global_services.exception_logger.add_extra(
+          path=request.path,
+          params=request.sanitized_params(),
+        )
+      app.global_services.exception_logger.set_tracer(app.tracer)
+
+      if request.method not in methods:
+        raise InvalidMethodError(methods)
+
+      args = [validate_api_input(arg) for arg in args]
+      kwargs = map_dict(validate_api_input, kwargs)
+      services = app.request_local_services_factory(
+        app.global_services,
+        request=request,
+      )
+      services.database_service.start_session()
+      handler = handler_cls(services, request, *args, **kwargs)
+      handler.prepare()
+
+      user = handler and handler.auth and handler.auth.current_user
+      client = handler and handler.auth and handler.auth.current_client
+      app.global_services.logging_service.set_identity(user=user, client=client)
+
+      app.global_services.exception_logger.add_extra(
+        user_id=user.id if user else None,
+        client_id=client.id if client else None,
+      )
+
+      handler_params = handler.parse_params(request)
+      fields = request.optional_list_param("fields") if request.method in ["GET", "POST"] else None
+      if handler_params is Handler.NO_PARAMS:
+        response = handler.handle()
+      else:
+        response = handler.handle(handler_params)
+      if request.skip_response_content:
+        response = None
+      elif response is None:
+        response = {}
+      elif isinstance(response, JsonBuilder):
+        response = resolve_builder(response, fields)
+      return success_response(response)
+
     def execute_url_rule(*args, **kwargs):
       app.profiler.enable()
       app.tracer.set_transaction_name(route_name)
       services = None
       response = None
-      handler = None
       exc_info = None
       config_broker = app.global_services.config_broker
       app.global_services.logging_service.set_request(_request)
       request = RequestProxy(_request)
       app.global_services.exception_logger.reset_extra()
       try:
-        if not disable_request_logging:
-          app.global_services.exception_logger.add_extra(
-            path=request.path,
-            params=request.sanitized_params(),
-          )
-        app.global_services.exception_logger.set_tracer(app.tracer)
-
-        if request.method not in methods:
-          raise InvalidMethodError(methods)
-
-        args = [validate_api_input(arg) for arg in args]
-        kwargs = map_dict(validate_api_input, kwargs)
-        services = app.request_local_services_factory(
-          app.global_services,
-          request=request,
-        )
-        services.database_service.start_session()
-        handler = handler_cls(services, request, *args, **kwargs)
-        handler.prepare()
-
-        user = handler and handler.auth and handler.auth.current_user
-        client = handler and handler.auth and handler.auth.current_client
-        app.global_services.logging_service.set_identity(user=user, client=client)
-
-        app.global_services.exception_logger.add_extra(
-          user_id=user.id if user else None,
-          client_id=client.id if client else None,
-        )
-
-        handler_params = handler.parse_params(request)
-        fields = request.optional_list_param("fields") if request.method in ["GET", "POST"] else None
-        if handler_params is Handler.NO_PARAMS:
-          response = handler.handle()
-        else:
-          response = handler.handle(handler_params)
-        if request.skip_response_content:
-          response = None
-        elif response is None:
-          response = {}
-        elif isinstance(response, JsonBuilder):
-          response = resolve_builder(response, fields)
-        return success_response(response)
+        return respond(request, args, kwargs)
       except RequestError as e:
         exc_info = sys.exc_info()
         return e.get_error_response()
@@ -92,8 +94,6 @@ def handler_registry(app):
         raise
       except Exception as e:  # pylint: disable=broad-except
         exc_info = sys.exc_info()
-        user = handler and handler.auth and handler.auth.current_user
-        client = handler and handler.auth and handler.auth.current_client
         app.global_services.exception_logger.log_exception(
           e,
           exc_info=exc_info,

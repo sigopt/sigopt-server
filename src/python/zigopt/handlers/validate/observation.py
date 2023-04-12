@@ -73,18 +73,31 @@ def validate_observation_json_dict_for_create(json_dict: dict[str, Any], experim
       raise BadParamError("'value_stddev' should be specified within the 'values' list.")
 
 
+def _get_assignments(json_dict, experiment, observation):
+  if key_present(json_dict, "assignments"):
+    return json_dict["assignments"]
+  if not observation.processed_suggestion_id:
+    return observation.get_assignments(experiment)
+  return None
+
+
+def _validate_task(json_dict, experiment):
+  if not key_present(json_dict, "task"):
+    return
+  if not experiment.is_multitask:
+    raise BadParamError("Only multitask experiments should have a task present.")
+  if json_dict["task"] is not None:
+    # This will error if the task is unacceptable
+    extract_task_from_json(experiment, json_dict)
+
+
 def validate_observation_json_dict_for_update(
   json_dict: dict[str, Any], experiment: Experiment, observation: Observation
 ) -> None:
   validate(json_dict, observation_schema)
   suggestion = json_dict["suggestion"] if key_present(json_dict, "suggestion") else observation.processed_suggestion_id
 
-  if key_present(json_dict, "assignments"):
-    assignments = json_dict["assignments"]
-  elif not observation.processed_suggestion_id:
-    assignments = observation.get_assignments(experiment)
-  else:
-    assignments = None
+  assignments = _get_assignments(json_dict, experiment, observation)
 
   if (suggestion is not None and assignments is not None) or (suggestion is None and assignments is None):
     raise BadParamError("Must provide exactly one of `suggestion`, `assignments`")
@@ -113,9 +126,4 @@ def validate_observation_json_dict_for_update(
     if value is None and failed is not True:
       raise BadParamError("Observations must either have a value or failed == true")
 
-  if key_present(json_dict, "task"):
-    if not experiment.is_multitask:
-      raise BadParamError("Only multitask experiments should have a task present.")
-    if json_dict["task"] is not None:
-      # This will error if the task is unacceptable
-      extract_task_from_json(experiment, json_dict)
+  _validate_task(json_dict, experiment)

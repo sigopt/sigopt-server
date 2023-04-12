@@ -78,44 +78,38 @@ class SuggestionAssignmentUpdates(Enum):
   ASSIGNMENTS_ONLY = 4
 
 
-def update_observation_data_assignments_task_from_json(
-  observation_data,
-  observation,
-  json_dict,
-  experiment,
-  suggestion,
-):
-  assignments_json = get_opt_with_validation(json_dict, "assignments", ValidationType.object)
-  suggestion_json = get_opt_with_validation(json_dict, "suggestion", ValidationType.id)
+def _get_suggestion_assignments_update_type(update_suggestion: bool, update_assignments: bool):
+  return (
+    {
+      (True, True): SuggestionAssignmentUpdates.BOTH,
+      (True, False): SuggestionAssignmentUpdates.SUGGESTION_ONLY,
+      (False, True): SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY,
+    }
+  ).get((update_suggestion, update_assignments), SuggestionAssignmentUpdates.NEITHER)
 
-  update_suggestion = "suggestion" in json_dict
-  update_assignments = "assignments" in json_dict
 
-  if update_suggestion and update_assignments:
-    update = SuggestionAssignmentUpdates.BOTH
-  elif update_suggestion and not update_assignments:
-    update = SuggestionAssignmentUpdates.SUGGESTION_ONLY
-  elif not update_suggestion and update_assignments:
-    update = SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY
-  else:
-    update = SuggestionAssignmentUpdates.NEITHER
-
+def _check_suggestion_assignments_update(update, suggestion_json, assignments_json, observation):
   if update is SuggestionAssignmentUpdates.BOTH:
     if suggestion_json is None and assignments_json is None:
       raise BadParamError("Cannot provide null for both `suggestion` and `assignments`")
     if suggestion_json is not None and assignments_json is not None:
       raise BadParamError("Cannot set values for both `suggestion` and `assignments`")
-  elif update is SuggestionAssignmentUpdates.SUGGESTION_ONLY:
+    return
+  if update is SuggestionAssignmentUpdates.SUGGESTION_ONLY:
     if observation.has_suggestion and suggestion_json is None:
       raise BadParamError("Cannot provide null for `suggestion` without providing `assignments`")
     if not observation.has_suggestion and suggestion_json is not None:
       raise BadParamError("Cannot provide `suggestion` without providing null for `assignments`")
-  elif update is SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY:
+    return
+  if update is SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY:
     if not observation.has_suggestion and assignments_json is None:
       raise BadParamError("Cannot provide null for `assignments` without providing `suggestion`")
     if observation.has_suggestion and assignments_json is not None:
       raise BadParamError("Cannot provide `assignments` without providing null not `suggestion`")
+    return
 
+
+def _check_task_update(json_dict, experiment, suggestion_json, assignments_json, observation):
   task_field_present = "task" in json_dict
   if experiment.is_multitask:
     observation_has_processed_suggestion = observation.processed_suggestion_id is not None
@@ -130,6 +124,26 @@ def update_observation_data_assignments_task_from_json(
         raise BadParamError("Most provide both `task` and `assignments` when updating observation to remove suggestion")
   elif task_field_present:
     raise BadParamError(f"Cannot provide `task` for experiment {experiment.id} which is not multitask")
+
+
+def update_observation_data_assignments_task_from_json(
+  observation_data,
+  observation,
+  json_dict,
+  experiment,
+  suggestion,
+):
+  assignments_json = get_opt_with_validation(json_dict, "assignments", ValidationType.object)
+  suggestion_json = get_opt_with_validation(json_dict, "suggestion", ValidationType.id)
+
+  update_suggestion = "suggestion" in json_dict
+  update_assignments = "assignments" in json_dict
+
+  update = _get_suggestion_assignments_update_type(update_suggestion, update_assignments)
+
+  _check_suggestion_assignments_update(update, suggestion_json, assignments_json, observation)
+
+  _check_task_update(json_dict, experiment, suggestion_json, assignments_json, observation)
 
   if suggestion_json is not None:
     if (
@@ -153,5 +167,5 @@ def update_observation_data_assignments_task_from_json(
           json_dict,
           experiment,
         )
-    if task_field_present:
+    if "task" in json_dict:
       set_observation_data_task_from_json(observation_data, json_dict, experiment)

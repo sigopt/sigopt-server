@@ -39,6 +39,32 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
       deleted=deleted,
     )
 
+  def _get_sort_key(self, sort):
+    if sort.field == "timestamp":
+      return lambda o: (o.timestamp, o.id)
+    if sort.field == "value":
+      metric_name = self.experiment.all_metrics[0].name
+      return lambda o: (o.metric_value(self.experiment, metric_name), o.id)
+    if sort.field.startswith("value-"):
+      name = sort.field[len("value-") :]
+      return lambda o: (o.metric_value(self.experiment, name), o.id)
+    if sort.field == "value_stddev":
+      metric_name = self.experiment.all_metrics[0].name
+      return lambda o: (o.metric_value_var(self.experiment, metric_name), o.id)
+    if sort.field.startswith("value_stddev-"):
+      name = sort.field[len("value_stddev-") :]
+      return lambda o: (o.metric_value_var(self.experiment, name), o.id)
+    if sort.field.startswith("parameter-"):
+      param_name = sort.field[len("parameter-") :]
+      if param_name not in self.experiment.all_parameters_map:
+        raise BadParamError(f"Unknown parameter: {param_name}")
+      parameter = self.experiment.all_parameters_map[param_name]
+      return lambda o: (o.get_assignment(parameter), o.id)
+    if sort.field == "task":
+      optimized_metric_name = self.experiment.optimized_metrics[0].name
+      return lambda o: (o.task.cost, o.metric_value(self.experiment, optimized_metric_name), o.id)
+    raise BadParamError(f"Invalid sort: {sort.field}")
+
   def handle(self, args):
     paging = args.paging
     sort = args.sort
@@ -69,31 +95,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
       observations, new_before, new_after = Pager(fetch_page).fetch(paging, Observation.id, ascending=sort.ascending)
     else:
       all_observations = self.services.observation_service.all_data(self.experiment)
-      if sort.field == "timestamp":
-        key = lambda o: (o.timestamp, o.id)
-      elif sort.field == "value":
-        metric_name = self.experiment.all_metrics[0].name
-        key = lambda o: (o.metric_value(self.experiment, metric_name), o.id)
-      elif sort.field.startswith("value-"):
-        name = sort.field[len("value-") :]
-        key = lambda o: (o.metric_value(self.experiment, name), o.id)
-      elif sort.field == "value_stddev":
-        metric_name = self.experiment.all_metrics[0].name
-        key = lambda o: (o.metric_value_var(self.experiment, metric_name), o.id)
-      elif sort.field.startswith("value_stddev-"):
-        name = sort.field[len("value_stddev-") :]
-        key = lambda o: (o.metric_value_var(self.experiment, name), o.id)
-      elif sort.field.startswith("parameter-"):
-        param_name = sort.field[len("parameter-") :]
-        if param_name not in self.experiment.all_parameters_map:
-          raise BadParamError(f"Unknown parameter: {param_name}")
-        parameter = self.experiment.all_parameters_map[param_name]
-        key = lambda o: (o.get_assignment(parameter), o.id)
-      elif sort.field == "task":
-        optimized_metric_name = self.experiment.optimized_metrics[0].name
-        key = lambda o: (o.task.cost, o.metric_value(self.experiment, optimized_metric_name), o.id)
-      else:
-        raise BadParamError(f"Invalid sort: {sort.field}")
+      key = self._get_sort_key(sort)
 
       if deleted is not None:
         all_observations = [o for o in all_observations if o.deleted is deleted]

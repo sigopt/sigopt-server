@@ -83,6 +83,58 @@ class OptimizationSource:
       open_suggestion_datas = [s.suggestion_meta.suggestion_data for s in optimization_args.open_suggestions]
     return open_suggestion_datas
 
+  def _get_dimension_index(self, hyper_opt_dimension):
+    if hyper_opt_dimension < 11:
+      return 0
+    if hyper_opt_dimension < 21:
+      return 1
+    if hyper_opt_dimension < 26:
+      return 2
+    if hyper_opt_dimension < 31:
+      return 3
+    if hyper_opt_dimension < 36:
+      return 4
+    if hyper_opt_dimension < 41:
+      return 5
+    return None
+
+  def _get_num_observed_index(self, num_successful_observations):
+    if num_successful_observations < 251:
+      return 0
+    if num_successful_observations < 501:
+      return 1
+    if num_successful_observations < 751:
+      return 2
+    if num_successful_observations < 1001:
+      return 3
+    if num_successful_observations < 1251:
+      return 4
+    if num_successful_observations < 1501:
+      return 5
+    return None
+
+  def _get_lag(self, hyper_opt_dimension):
+    if hyper_opt_dimension < 5:
+      return 1
+    if hyper_opt_dimension < 10:
+      return 4
+    if hyper_opt_dimension < 15:
+      return 8
+    if hyper_opt_dimension < 20:
+      return 12
+    return hyper_opt_dimension
+
+  def _get_lag_scale(self, num_successful_observations):
+    if num_successful_observations < 200:
+      return 1.0
+    if num_successful_observations < 400:
+      return 1.5
+    if num_successful_observations < 600:
+      return 2.5
+    if num_successful_observations < 800:
+      return 4.0
+    return None
+
   # NOTE: The role of this function is to determine when we want to enqueue a hyper_opt call.
   #       We are placing it here to allow this to be called in a more coherent fashion.
   #
@@ -107,59 +159,22 @@ class OptimizationSource:
     ]
     # 1      250       500      750     1000     1250     1500,  N bounds
 
-    if hyper_opt_dimension < 11:
-      dimension_index = 0
-    elif 11 <= hyper_opt_dimension < 21:
-      dimension_index = 1
-    elif 21 <= hyper_opt_dimension < 26:
-      dimension_index = 2
-    elif 26 <= hyper_opt_dimension < 31:
-      dimension_index = 3
-    elif 31 <= hyper_opt_dimension < 36:
-      dimension_index = 4
-    elif 36 <= hyper_opt_dimension < 41:
-      dimension_index = 5
-    else:
+    dimension_index = self._get_dimension_index(hyper_opt_dimension)
+    if dimension_index is None:
       return False
 
-    if num_successful_observations < 251:
-      num_observed_index = 0
-    elif 251 <= num_successful_observations < 501:
-      num_observed_index = 1
-    elif 501 <= num_successful_observations < 751:
-      num_observed_index = 2
-    elif 751 <= num_successful_observations < 1001:
-      num_observed_index = 3
-    elif 1001 <= num_successful_observations < 1251:
-      num_observed_index = 4
-    elif 1251 <= num_successful_observations < 1501:
-      num_observed_index = 5
-    else:
+    num_observed_index = self._get_num_observed_index(num_successful_observations)
+    if num_observed_index is None:
       return False
 
     lag = lag_matrix[dimension_index][num_observed_index]
 
     should_stagger_hyperopt = self.experiment.constraints
     if should_stagger_hyperopt:
-      if hyper_opt_dimension < 5:
-        lag = 1
-      elif 5 <= hyper_opt_dimension < 10:
-        lag = 4
-      elif 10 <= hyper_opt_dimension < 15:
-        lag = 8
-      elif 15 <= hyper_opt_dimension < 20:
-        lag = 12
-      else:
-        lag = hyper_opt_dimension
-      if num_successful_observations < 200:
-        lag = int(1.0 * lag)
-      elif 200 <= num_successful_observations < 400:
-        lag = int(1.5 * lag)
-      elif 400 <= num_successful_observations < 600:
-        lag = int(2.5 * lag)
-      elif 600 <= num_successful_observations < 800:
-        lag = int(4 * lag)
-      else:
+      lag = self._get_lag(hyper_opt_dimension)
+      lag_scale = self._get_lag_scale(num_successful_observations)
+      if lag_scale is None:
         return False
+      lag = int(lag_scale * lag)
 
     return num_successful_observations % lag == 0
