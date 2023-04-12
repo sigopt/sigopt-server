@@ -135,7 +135,7 @@ class TestSuggestSampler:
     return conditional
 
   def test_coverage(self, segmenter):
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals,too-many-statements
     int_parameter = self.int_parameter(0, 10)
     double_parameter = self.double_parameter(3, 5)
     categorical_parameter = self.categorical_parameter(
@@ -823,7 +823,7 @@ class TestSuggestSampler:
       assert suggestion.get_assignment(parameter) in [0, 2]
 
   def test_conditionals(self, segmenter):
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals,too-many-statements
     conditional_parameter = self.conditional_parameter(
       "x",
       [

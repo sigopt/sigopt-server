@@ -75,7 +75,7 @@ class Pager:
     return marker
 
   def fetch(self, paging, Field, ascending=False):
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals,too-many-statements
     assert isinstance(paging, PagingRequest)
     limit = paging.limit
     before = coalesce(paging.before, self._NO_MARKER)
