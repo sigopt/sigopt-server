@@ -16,7 +16,7 @@ from zigopt.services.base import Service
 @dataclasses.dataclass
 class SmtpConnectionInfo:
   host: str | None
-  port: int
+  port: int | None
   username: str | None
   password: str | None
   tls: str | None
