@@ -724,14 +724,9 @@ class SCAdapter(Service):
       raise ValueError('"mean_type" and "poly_indices" are required in nonzero_mean_choice')
 
     passed_mean_type = nonzero_mean_choice.get("mean_type")
-    self._valudate_passed_mean_type(passed_mean_type)
-    if passed_mean_type is None:
-      raise ValueError("You must choose a mean_type in nonzero_mean_choice")
-    if not is_string(passed_mean_type):
-      raise ValueError(f"mean_type should be a string, but passed: {type(passed_mean_type)}")
+    self._validate_passed_mean_type(passed_mean_type)
     passed_poly_indices = nonzero_mean_choice.get("poly_indices")
-    if not (passed_poly_indices is None or is_sequence(passed_poly_indices)):
-      raise ValueError("poly_indices must be a list of lists, or None to let sigoptcompute choose")
+    self._validate_passed_poly_indices(passed_poly_indices)
     correct_mean_type, correct_poly_indices = self._get_correct_mean_type_and_poly_indices(
       passed_mean_type,
       passed_poly_indices,
@@ -743,6 +738,16 @@ class SCAdapter(Service):
       "mean_type": correct_mean_type,
       "poly_indices": correct_poly_indices,
     }
+
+  def _validate_passed_mean_type(self, passed_mean_type):
+    if passed_mean_type is None:
+      raise ValueError("You must choose a mean_type in nonzero_mean_choice")
+    if not is_string(passed_mean_type):
+      raise ValueError(f"mean_type should be a string, but passed: {type(passed_mean_type)}")
+
+  def _validate_passed_poly_indices(self, passed_poly_indices):
+    if not (passed_poly_indices is None or is_sequence(passed_poly_indices)):
+      raise ValueError("poly_indices must be a list of lists, or None to let sigoptcompute choose")
 
   def _get_correct_mean_type_and_poly_indices(self, passed_mean_type, passed_poly_indices, num_points, dimension):
     if passed_mean_type == "custom":
