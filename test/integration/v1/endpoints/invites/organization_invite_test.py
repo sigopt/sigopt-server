@@ -422,7 +422,10 @@ class TestUpdate(OrganizationInviteTestBase):
     assert invite.id == updated_invite.id
     assert invite.email == updated_invite.email
     assert invite.membership_type == updated_invite.membership_type
-    pp_set = lambda pps: frozenset(pp.client for pp in pps)
+
+    def pp_set(pps):
+      return frozenset(pp.client for pp in pps)
+
     assert pp_set(invite.pending_permissions) == pp_set(updated_invite.pending_permissions)
 
   def test_add_client_to_invite(

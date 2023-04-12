@@ -77,9 +77,9 @@ class MembershipService(Service):
   # Users are mutually visible if they are members of the same organization
   # and at least one of them is an owner of that organization.
   def users_are_mutually_visible(self, user1_id, user2_id):
-    membership_subquery = lambda user_id: (
-      self.services.database_service.query(Membership).filter_by(user_id=user_id)
-    ).subquery()
+    def membership_subquery(user_id):
+      return (self.services.database_service.query(Membership).filter_by(user_id=user_id)).subquery()
+
     user1_membership_query = membership_subquery(user1_id)
     user2_membership_query = membership_subquery(user2_id)
     return self.services.database_service.exists(
