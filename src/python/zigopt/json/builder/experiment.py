@@ -177,6 +177,7 @@ class RunProgressJsonBuilder(JsonBuilder):
 
 
 class ExperimentJsonBuilder(JsonBuilder):
+  # pylint: disable=too-many-public-methods
   object_name = "experiment"
 
   def __init__(

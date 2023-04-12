@@ -45,6 +45,7 @@ class _TestObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler
 
 
 class V1Base(BaseTest):
+  # pylint: disable=too-many-public-methods
   @pytest.fixture(autouse=True)
   def setup(self, services):
     # pylint: disable=attribute-defined-outside-init
