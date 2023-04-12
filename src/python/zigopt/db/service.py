@@ -109,7 +109,7 @@ class DatabaseConnectionService(Service):
     context_to_use = ssl_context or ssl.create_default_context()
     connect_args = {"ssl_context": context_to_use if use_ssl else None}
 
-    override_pool_kwargs = remove_nones(dict(poolclass=poolclass))
+    override_pool_kwargs: dict = remove_nones_mapping(dict(poolclass=poolclass))
     default_pool_kwargs = dict(
       # Maximum number of persistent connections this engine will keep in the pool, reusing until pool_recycle seconds
       # This is per-process (and only used by code that takes advantage of threading, such as API but not QWorker)
@@ -226,15 +226,18 @@ class DatabaseService(Service):
 
   @sanitize_errors
   def flush_session(self):
+    assert self._session is not None
     self._session.flush()
 
   @sanitize_errors
   def rollback_session(self):
+    assert self._session is not None
     self._session.rollback()
     self._session.expunge_all()
 
   @sanitize_errors
   def insert(self, obj):
+    assert self._session is not None
     self._ensure_safe_to_insert(obj)
     self._session.add(obj)
     self._commit()
@@ -259,9 +262,9 @@ class DatabaseService(Service):
     column_properties = inspect(obj.__class__).column_attrs
     assert [len(prop.columns) == 1 for prop in column_properties]
     columns_and_values = [(prop.columns[0], getattr(obj, prop.key)) for prop in column_properties]
-    column_names = {column.name for column, _ in columns_and_values}
+    unique_column_names = {column.name for column, _ in columns_and_values}
     assert all(
-      column.name in column_names for column in insert_dict.keys()
+      column.name in unique_column_names for column in insert_dict.keys()
     ), f"The keys of the insert_dict must be columns of {obj.__class__.__name__}"
     insert_selects = {column.name: literal(value, type_=column.type) for column, value in columns_and_values}
     insert_selects.update((column.name, value) for column, value in insert_dict.items())
@@ -322,16 +325,19 @@ class DatabaseService(Service):
     for obj in objs:
       self._ensure_safe_to_insert(obj)
     if objs:
+      assert self._session is not None
       self._session.bulk_save_objects(objs, return_defaults=return_defaults)
       self._commit()
 
   @sanitize_errors
   def update_all(self, mapper, mappings):
+    assert self._session is not None
     self._session.bulk_update_mappings(mapper, mappings)
     self._commit()
 
   @sanitize_errors
   def query(self, *args):
+    assert self._session is not None
     return self._session.query(*args)
 
   @sanitize_errors
@@ -449,6 +455,7 @@ class DatabaseService(Service):
 
   @sanitize_errors
   def update_returning(self, model, where, values):
+    assert self._session is not None
     rows = self._session.execute(update(model).where(where).values(**values).returning(*model.__table__.columns))
     self._commit()
 
@@ -483,10 +490,12 @@ class DatabaseService(Service):
       if self._flush_after_writes:
         self.flush_session()
     else:
+      assert self._session is not None
       self._session.commit()
 
   def _rollback(self):
     if not self._in_transaction:
+      assert self._session is not None
       self._session.rollback()
 
   def _expunge(self, obj):
@@ -507,4 +516,5 @@ class DatabaseService(Service):
         # might be better to just make sure those classes' definitions are registered
         pass
       else:
+        assert self._session is not None
         self._session.expunge(obj)
