@@ -20,32 +20,35 @@ def authenticate_token(services, token):
 
 
 def authenticate_client_token(services, token_obj):
-  if token_obj and token_obj.client_id:
-    client = services.client_service.find_by_id(token_obj.client_id, include_deleted=True)
-    if client:
-      if client.deleted:
-        raise ForbiddenError(f"Client {client.id} has been deleted")
-      if token_obj.user_id is not None:
-        membership = services.membership_service.find_by_user_and_organization(
-          user_id=token_obj.user_id,
-          organization_id=client.organization_id,
-        )
-        if membership is not None:
-          permission = services.permission_service.find_by_client_and_user(token_obj.client_id, token_obj.user_id)
-          if permission is not None and permission.can_read or membership.is_owner:
-            user = services.user_service.find_by_id(token_obj.user_id, include_deleted=True)
-            if user.deleted:
-              raise ForbiddenError(f"User {user.id} has been deleted")
-            return authentication_result(
-              token=token_obj,
-              client=client,
-              user=user,
-              permission=permission,
-              membership=membership,
-            )
-      else:
-        return authentication_result(token=token_obj, client=client)
-  return authentication_result()
+  if not token_obj or not token_obj.client_id:
+    return authentication_result()
+  client = services.client_service.find_by_id(token_obj.client_id, include_deleted=True)
+  if not client:
+    return authentication_result()
+  if client.deleted:
+    raise ForbiddenError(f"Client {client.id} has been deleted")
+  if token_obj.user_id is None:
+    return authentication_result(token=token_obj, client=client)
+  membership = services.membership_service.find_by_user_and_organization(
+    user_id=token_obj.user_id,
+    organization_id=client.organization_id,
+  )
+  if membership is None:
+    return authentication_result()
+  permission = services.permission_service.find_by_client_and_user(token_obj.client_id, token_obj.user_id)
+  # not an organization owner and has no explicit read permissions for the client
+  if not membership.is_owner and (permission is None or not permission.can_read):
+    return authentication_result()
+  user = services.user_service.find_by_id(token_obj.user_id, include_deleted=True)
+  if user.deleted:
+    raise ForbiddenError(f"User {user.id} has been deleted")
+  return authentication_result(
+    token=token_obj,
+    client=client,
+    user=user,
+    permission=permission,
+    membership=membership,
+  )
 
 
 def authenticate_user_token(services, token_obj):

@@ -79,6 +79,51 @@ class ExperimentProgressService(Service):
         active_run_count=active_count,
       )
 
+  def _fetch_best_observations_for_experiments(self, best_observations_by_experiment, experiments):
+    experiments_eligible_for_best = [e for e in experiments if len(e.optimized_metrics) == 1]
+    if experiments_eligible_for_best:
+      experiments_by_optimized_index = as_grouped_dict(
+        experiments_eligible_for_best,
+        lambda e: find_index(e.all_metrics, lambda m: m.strategy == ExperimentMetric.OPTIMIZE),
+      )
+
+      num_indexes = len(experiments_by_optimized_index)
+      if num_indexes > 2:
+        self.services.logging_service.getLogger("sigopt.progress").warning(
+          "Found %s optimized indexes for progress call with experiments %s",
+          num_indexes,
+          [e.id for e in experiments_eligible_for_best],
+        )
+      for optimized_metric_index, exp_list in experiments_by_optimized_index.items():
+        # Tricky query using window functions to compute max value
+        # https://www.postgresql.org/docs/9.5/static/tutorial-window.html
+        # http://docs.sqlalchemy.org/en/latest/core/tutorial.html#window-functions
+        # TODO(SN-1079): This query can be pretty expensive when lots of experiments
+        # have lots of observations (~100ms). I don't see any immediate optimizations so
+        # it may be worth considering denormalizing the best observation somewhere, or
+        # reconsidering our need for this query in prod
+        min_exps, max_exps = partition(experiments_eligible_for_best, lambda e: e.optimized_metrics[0].is_minimized)
+        value_clause = Observation.data.values[optimized_metric_index].value.as_numeric()
+
+        for v_clause, exp_list in [(desc(value_clause), max_exps), (value_clause, min_exps)]:
+          if exp_list:
+            subquery = (
+              self.services.database_service.query(
+                Observation.experiment_id.label("experiment_id"),
+                Observation.id.label("observation_id"),
+                func.rank().over(partition_by=Observation.experiment_id, order_by=v_clause).label("rank"),
+              )
+              .filter(Observation.experiment_id.in_([e.id for e in exp_list]))
+              .filter(~Observation.data.deleted.as_boolean())
+              .filter(~Observation.data.reported_failure.as_boolean())
+              .filter(Observation.data.task.cost.as_numeric() == 1)
+              .subquery("q")
+            )
+            for eid, best, _ in self.services.database_service.all(
+              self.services.database_service.query(subquery).filter(subquery.c.rank == 1)
+            ):
+              best_observations_by_experiment[eid] = best
+
   def _observation_progress_for_experiments(self, experiments, should_fetch_best, progress_map):
     last_observations = {}
     first_observations = {}
@@ -104,49 +149,7 @@ class ExperimentProgressService(Service):
 
     best_observations = {}
     if should_fetch_best:
-      experiments_eligible_for_best = [e for e in experiments if len(e.optimized_metrics) == 1]
-      if experiments_eligible_for_best:
-        experiments_by_optimized_index = as_grouped_dict(
-          experiments_eligible_for_best,
-          lambda e: find_index(e.all_metrics, lambda m: m.strategy == ExperimentMetric.OPTIMIZE),
-        )
-
-        num_indexes = len(experiments_by_optimized_index)
-        if num_indexes > 2:
-          self.services.logging_service.getLogger("sigopt.progress").warning(
-            "Found %s optimized indexes for progress call with experiments %s",
-            num_indexes,
-            [e.id for e in experiments_eligible_for_best],
-          )
-        for optimized_metric_index, exp_list in experiments_by_optimized_index.items():
-          # Tricky query using window functions to compute max value
-          # https://www.postgresql.org/docs/9.5/static/tutorial-window.html
-          # http://docs.sqlalchemy.org/en/latest/core/tutorial.html#window-functions
-          # TODO(SN-1079): This query can be pretty expensive when lots of experiments
-          # have lots of observations (~100ms). I don't see any immediate optimizations so
-          # it may be worth considering denormalizing the best observation somewhere, or
-          # reconsidering our need for this query in prod
-          min_exps, max_exps = partition(experiments_eligible_for_best, lambda e: e.optimized_metrics[0].is_minimized)
-          value_clause = Observation.data.values[optimized_metric_index].value.as_numeric()
-
-          for v_clause, exp_list in [(desc(value_clause), max_exps), (value_clause, min_exps)]:
-            if exp_list:
-              subquery = (
-                self.services.database_service.query(
-                  Observation.experiment_id.label("experiment_id"),
-                  Observation.id.label("observation_id"),
-                  func.rank().over(partition_by=Observation.experiment_id, order_by=v_clause).label("rank"),
-                )
-                .filter(Observation.experiment_id.in_([e.id for e in exp_list]))
-                .filter(~Observation.data.deleted.as_boolean())
-                .filter(~Observation.data.reported_failure.as_boolean())
-                .filter(Observation.data.task.cost.as_numeric() == 1)
-                .subquery("q")
-              )
-              for eid, best, _ in self.services.database_service.all(
-                self.services.database_service.query(subquery).filter(subquery.c.rank == 1)
-              ):
-                best_observations[eid] = best
+      self._fetch_best_observations_for_experiments(best_observations, experiments)
 
     observations = self.services.observation_service.find_by_ids(
       distinct(
