@@ -195,6 +195,7 @@ class UnprocessedSuggestionService(Service):
       self.services.redis_service.remove_from_sorted_set(suggestion_timestamp_key, *suggestions_to_drop)
 
   def _store_unprocessed_suggestions(self, experiment_id, unprocessed_suggestions, timestamp=None):
+    # pylint: disable=too-many-locals
     sources_key = self.services.redis_key_service.create_sources_key(experiment_id)
     suggestions_by_source = as_grouped_dict(unprocessed_suggestions, lambda s: s.source)
     timestamp = timestamp or unix_timestamp(with_microseconds=True)

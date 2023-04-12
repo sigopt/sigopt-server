@@ -220,6 +220,7 @@ class V1Base(BaseTest):
     development=False,
     has_verified_email=True,
   ):
+    # pylint: disable=too-many-locals
     api_url = cls.get_api_url(config_broker)
     email = email or AuthProvider.randomly_generated_email()
     password = AuthProvider.randomly_generated_password()

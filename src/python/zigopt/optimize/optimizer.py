@@ -144,6 +144,7 @@ class OptimizerService(Service):
     return CategoricalOptimizationSource(self.services, experiment)
 
   def exclude_duplicate_suggestions(self, optimization_args, suggestions, experiment):
+    # pylint: disable=too-many-locals
     tol = 0
     if not suggestions:
       return []

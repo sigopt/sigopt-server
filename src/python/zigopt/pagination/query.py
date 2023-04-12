@@ -25,6 +25,7 @@ class QueryPager(Service):
     use_having=False,
     nulls_descendant=False,
   ):
+    # pylint: disable=too-many-locals
     Fields = as_tuple(Fields)
     assert isinstance(before, (type(None), PagingMarker))
     assert isinstance(after, (type(None), PagingMarker))

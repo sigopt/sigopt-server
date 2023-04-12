@@ -72,6 +72,7 @@ class TestOptimization(V1Base):
     connection,
     db_connection,
   ):
+    # pylint: disable=too-many-locals
     parameters = [  # It makes it easier to deal with the SuggestionMeta if there are no categoricals
       {"name": "x0", "type": "double", "bounds": {"min": -1, "max": 1}},
       {"name": "x1", "type": "double", "bounds": {"min": -1, "max": 1}},

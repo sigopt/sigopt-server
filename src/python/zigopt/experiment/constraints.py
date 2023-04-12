@@ -73,6 +73,7 @@ def parse_constraints_to_halfspaces(constraints, parameters):
     of the form Ax <= b in format [A; -b].
 
     """
+  # pylint: disable=too-many-locals
   constrained_parameters_names = parse_constraints_to_list_of_constrained_parameter_names(constraints)
   constrained_parameters = [p for p in parameters if p.name in constrained_parameters_names]
   dim = len(constrained_parameters)

@@ -235,6 +235,7 @@ class TestExperimentBestObservationService:
 
   @pytest.mark.parametrize("num_observations", [2, 5, 30, 50])
   def test_multiple_solutions_best(self, num_observations):
+    # pylint: disable=too-many-locals
     observation_values = list(range(num_observations))
     num_solutions = 2
     num_top_observations = max(round(num_observations * MULTISOLUTION_TOP_OBSERVATIONS_FRACTION), num_solutions)
