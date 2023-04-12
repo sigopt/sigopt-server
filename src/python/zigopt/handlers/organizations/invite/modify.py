@@ -10,8 +10,10 @@ from zigopt.handlers.validate.membership import validate_membership_type
 from zigopt.handlers.validate.role import validate_invite_role, validate_role
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.invite.constant import NO_ROLE
+from zigopt.invite.model import Invite
 from zigopt.membership.model import MembershipType
 from zigopt.net.errors import BadParamError, ForbiddenError
+from zigopt.permission.pending.model import PendingPermission
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN
 
 
@@ -27,6 +29,9 @@ class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
       "membership_type",
     ),
   )
+
+  invite: Invite
+  pending_permissions: list[PendingPermission]
 
   def parse_params(self, request):
     data = request.params()
