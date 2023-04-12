@@ -7,7 +7,7 @@ from sqlalchemy import BigInteger, Column, Enum, ForeignKey, String
 from sqlalchemy.orm import validates
 
 from zigopt.common import *
-from zigopt.common.sigopt_datetime import unix_timestamp
+from zigopt.common.sigopt_datetime import unix_timestamp_seconds
 from zigopt.common.strings import random_string
 from zigopt.db.column import ProtobufColumn, ProtobufColumnValidator
 from zigopt.db.declarative import Base
@@ -32,7 +32,7 @@ class Token(Base):
 
   def __init__(self, *args, **kwargs):
     if not kwargs.get("meta"):
-      kwargs["meta"] = TokenMeta(date_created=unix_timestamp())
+      kwargs["meta"] = TokenMeta(date_created=unix_timestamp_seconds())
     if not kwargs.get("token"):
       kwargs["token"] = random_string()
     super().__init__(*args, **kwargs)
@@ -69,7 +69,7 @@ class Token(Base):
     return None
 
   @property
-  def ttl_seconds(self):
+  def ttl_seconds(self) -> int | None:
     if self.is_userless_client_token:
       return None
     if self.meta.lasts_forever:
@@ -86,7 +86,7 @@ class Token(Base):
 
   @property
   def expired(self):
-    now = unix_timestamp()
+    now = unix_timestamp_seconds()
     if self.expiration_timestamp is not None:
       return now > self.expiration_timestamp
     return False
