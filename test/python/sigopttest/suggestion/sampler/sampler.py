@@ -682,7 +682,7 @@ class TestSuggestSampler:
     for _ in range(num_values):
       optimization_args = partial_opt_args(observation_iterator=observations, observation_count=len(observations))
       sampler = CategoricalOnlySampler(services, experiment, optimization_args)
-      suggestion = sampler.fetch_best_suggestions(1)[0]
+      suggestion = list(sampler.fetch_best_suggestions(1))[0]
       observations.append(self.suggestion_to_observation(experiment, suggestion))
 
     for check in (observations, multi_observations):
@@ -703,7 +703,7 @@ class TestSuggestSampler:
     for _ in range(num_values):
       optimization_args = partial_opt_args(open_suggestions=suggestions)
       sampler = CategoricalOnlySampler(services, experiment, optimization_args)
-      suggestion = sampler.fetch_best_suggestions(1)[0]
+      suggestion = list(sampler.fetch_best_suggestions(1))[0]
       suggestions.append(suggestion)
     observations = [self.suggestion_to_observation(experiment, s) for s in suggestions]
 
