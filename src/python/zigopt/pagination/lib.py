@@ -53,4 +53,4 @@ def get_value_of_paging_symbol(symbol):
     return None
   if symbol.WhichOneof("type") == "timestamp_value":
     return naive_datetime_to_aware_datetime(symbol.timestamp_value.ToDatetime())
-  return symbol.GetOneofValueOrNone("type")
+  return symbol.GetOneofValueOrNone("type")  # type: ignore
