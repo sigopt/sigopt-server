@@ -52,7 +52,7 @@ def handler_registry(app):
         if request.method not in methods:
           raise InvalidMethodError(methods)
 
-        args = [validate_api_input(arg) for arg in args]
+        args = tuple(validate_api_input(arg) for arg in args)
         kwargs = map_dict(validate_api_input, kwargs)
         services = app.request_local_services_factory(
           app.global_services,
