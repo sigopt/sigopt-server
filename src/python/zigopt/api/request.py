@@ -19,15 +19,15 @@ from libsigopt.aux.errors import MissingParamError
 DEFAULT_PAGING_MAX_LIMIT = 1000
 
 
-def validate_api_input_string(input_str):
+def validate_api_input_string(input_str: str) -> str:
   assert isinstance(input_str, str)
   # Postgres treats any string with a NUL-byte (the Unicode code point 0, represented as '\0' in UTF-8)
   # as invalid, even though it is valid UTF-8 string.
   # We are natively rejecting all other invalid UTF-8 so we just need to reject strings with NUL bytes
   # as a special case.
   if "\0" in input_str:
-    raise BadParamError(f"Invalid string parameter: {string}")
-  return string
+    raise BadParamError(f"Invalid string parameter: {input_str}")
+  return input_str
 
 
 def validate_api_input(val):
@@ -76,7 +76,7 @@ def parse_float(float_str):
   return ret
 
 
-def as_json(data, encoding="utf-8"):
+def as_json(data: str, encoding: str = "utf-8"):
   """Deserialize a str holding a JSON document into a Python dict.
 
     :param string: serialized json data
