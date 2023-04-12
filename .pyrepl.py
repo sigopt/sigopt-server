@@ -15,12 +15,12 @@ from zigopt.services.api import ApiRequestLocalServiceBag, ApiServiceBag
 config_broker, global_services, services, conn = (None, None, None, None)
 
 
-def make_cleanup_db_service(services):
-  db_config = services.config_broker.get_object("db")
+def make_cleanup_db_service(_services):
+  db_config = _services.config_broker.get_object("db")
   return DatabaseService(
-    services,
+    _services,
     DatabaseConnection(
-      services.database_connection_service.make_engine(
+      _services.database_connection_service.make_engine(
         db_config,
         user=db_config.get("cleanup_user"),
         password=db_config.get("cleanup_password"),

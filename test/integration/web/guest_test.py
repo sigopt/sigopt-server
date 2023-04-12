@@ -87,6 +87,7 @@ class TestGuestWebCreate(GuestWebTestBase):
     experiment_guest_token,
     cookie_testing_enabled,
   ):
+    # pylint: disable=too-many-locals
     del cookie_testing_enabled
     logged_in_web_connection.get("/experiment/" + experiment.id)
     with api_connection.create_any_experiment() as second_experiment:

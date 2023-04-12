@@ -154,6 +154,7 @@ class BuilderDetails:
 
 class JsonBuilder:
   builder: BuilderDetails
+  object_name: str
 
   def __new__(cls, *args, **kwargs):
     instance = super().__new__(cls)

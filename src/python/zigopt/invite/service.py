@@ -254,6 +254,7 @@ class InviteService(Service):
 
   @generator_to_list
   def create_memberships_and_permissions_from_invites(self, user, invites, requestor):
+    # pylint: disable=too-many-locals
     invite_ids = [invite.id for invite in invites]
     inviters = to_map_by_key(self.services.user_service.find_by_ids([i.inviter for i in invites]), lambda u: u.id)
     organizations = to_map_by_key(

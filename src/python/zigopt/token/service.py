@@ -58,7 +58,7 @@ class TokenService(Service):
     meta = TokenMeta()
     meta.date_created = now
     meta.can_renew = can_renew
-    meta.SetFieldIfNotNone(
+    meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
       "ttl_seconds",
       min_option(
         remove_nones(
@@ -152,7 +152,7 @@ class TokenService(Service):
   ):
     meta = self._make_guest_token_meta(session_expiration=session_expiration, creating_user_id=creating_user_id)
     meta.guest_training_run_id = training_run_id
-    meta.SetFieldIfNotNone("guest_experiment_id", experiment_id)
+    meta.SetFieldIfNotNone("guest_experiment_id", experiment_id)  # pylint: disable=protobuf-undefined-attribute
     new = Token(token_type=TokenType.GUEST, client_id=client_id, user_id=None, meta=meta)
     self.services.database_service.insert(new)
     return new

@@ -59,6 +59,7 @@ class InviteHandler(Handler):
     invite_code=None,
     invite_id=None,
   ):
+    # pylint: disable=too-many-locals
     invitee = self.services.user_service.find_by_email(email)
     inviter = self.auth.current_user
 

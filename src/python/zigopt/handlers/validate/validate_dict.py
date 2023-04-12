@@ -140,9 +140,9 @@ class ArrayValidator(TypeValidator):
 
 
 class EnumValidator(TypeValidator):
-  def __init__(self, enum: type[enum.Enum]):
-    super().__init__(f"enum[{str(enum)}]", lambda xs: xs in list(enum.__members__))
-    self.enum = enum
+  def __init__(self, enum_cls: type[enum.Enum]):
+    super().__init__(f"enum[{str(enum_cls)}]", lambda xs: xs in list(enum_cls.__members__))
+    self.enum = enum_cls
 
   def __eq__(self, other: Any) -> bool:
     return other and self.__class__ == other.__class__ and self.enum == other.enum
@@ -353,8 +353,8 @@ class PrimitiveValidationType:
     return ObjectValidator(ValidationType.string, value_validator)
 
   @classmethod
-  def enum(cls, enum: type[enum.Enum]) -> EnumValidator:
-    return EnumValidator(enum)
+  def enum(cls, enum_cls: type[enum.Enum]) -> EnumValidator:
+    return EnumValidator(enum_cls)
 
 
 def create_array_io_validator(sub_validator: IOValidatorInterface) -> IOValidatorInterface:

@@ -65,7 +65,7 @@ class TestNextSampler(SuggestionBrokerTestBase):
   @pytest.mark.parametrize("num_open_suggestions", [0, 1])
   def test_only_categorical_parameters(self, services, num_observations, num_open_suggestions):
     experiment_meta = self.new_experiment_meta()
-    experiment_meta.ClearField("all_parameters_unsorted")
+    del experiment_meta.all_parameters_unsorted[:]
     experiment_meta.all_parameters_unsorted.extend(
       [
         ExperimentParameter(

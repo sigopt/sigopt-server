@@ -158,6 +158,7 @@ class Pager:
     return (self._decrement_marker(after) if after is not self._NO_MARKER else self._NO_MARKER, after)
 
   def fetch(self, paging, Field, ascending=False):
+    # pylint: disable=too-many-locals
     assert isinstance(paging, PagingRequest)
     limit = paging.limit
     before = coalesce(paging.before, self._NO_MARKER)

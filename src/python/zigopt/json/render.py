@@ -4,8 +4,9 @@
 from typing import Optional
 
 from zigopt.common import *
+from zigopt.experiment.model import ExperimentParameterProxy
 from zigopt.handlers.validate.assignments import parameter_conditions_satisfied
-from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional, ExperimentParameter
+from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional
 
 
 class BaseParamRenderException(Exception):
@@ -13,7 +14,7 @@ class BaseParamRenderException(Exception):
 
 
 class ParamRenderException(BaseParamRenderException):
-  def __init__(self, msg: str, parameter: ExperimentParameter, assignment: float):
+  def __init__(self, msg: str, parameter: ExperimentParameterProxy, assignment: float):
     super().__init__(msg)
     self.parameter = parameter
     self.assignment = assignment
@@ -26,7 +27,7 @@ class ConditionalParamRenderException(BaseParamRenderException):
     self.assignment = assignment
 
 
-def render_param_value(parameter: ExperimentParameter, assignment: float) -> int | float | str:
+def render_param_value(parameter: ExperimentParameterProxy, assignment: float) -> int | float | str:
   # categoricals are stored internally by their enum_index
   # so we reverse the mapping, from index back to name, for user-facing output
   try:
@@ -56,7 +57,7 @@ def render_conditional_value(conditional: ExperimentConditional, assignment: flo
 
 
 def conditionally_render_param_value(
-  parameter: ExperimentParameter, assignment: float, assignments_dict: dict[str, float]
+  parameter: ExperimentParameterProxy, assignment: float, assignments_dict: dict[str, float]
 ) -> Optional[int | float | str]:
   if parameter_conditions_satisfied(parameter, assignments_dict):
     return render_param_value(parameter, assignment)

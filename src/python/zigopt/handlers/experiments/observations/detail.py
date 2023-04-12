@@ -66,6 +66,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     raise BadParamError(f"Invalid sort: {sort.field}")
 
   def handle(self, args):
+    # pylint: disable=too-many-locals
     paging = args.paging
     sort = args.sort
     deleted = args.deleted

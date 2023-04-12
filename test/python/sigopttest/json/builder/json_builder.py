@@ -178,7 +178,7 @@ class TestFieldsDecorator:
 
 class TestJsonBuilder:
   @pytest.mark.parametrize(
-    "field,input_value,expected_value,checker",
+    "field_name,input_value,expected_value,checker",
     [
       ("none", None, None, instance_check(type(None))),
       ("boolean", False, False, instance_check(bool)),
@@ -201,14 +201,14 @@ class TestJsonBuilder:
       ("object", None, "builder_test_object", str),
     ],
   )
-  def test_valid_fields(self, field, input_value, expected_value, checker):
-    output_json = BuilderTestObject({field: input_value}).resolve_fields([field])
-    assert field in output_json
-    assert {field: expected_value} == output_json
-    checker(output_json[field])
+  def test_valid_fields(self, field_name, input_value, expected_value, checker):
+    output_json = BuilderTestObject({field_name: input_value}).resolve_fields([field_name])
+    assert field_name in output_json
+    assert {field_name: expected_value} == output_json
+    checker(output_json[field_name])
 
   @pytest.mark.parametrize(
-    "field,input_value",
+    "field_name,input_value",
     [
       ("none", 1),
       ("boolean", "false"),
@@ -223,9 +223,9 @@ class TestJsonBuilder:
       ("json_builder_partial_fields", {}),
     ],
   )
-  def test_invalid_fields(self, field, input_value):
-    builder = BuilderTestObject({field: input_value})
-    pytest.raises(InvalidFieldError, builder.resolve_fields, [field])
+  def test_invalid_fields(self, field_name, input_value):
+    builder = BuilderTestObject({field_name: input_value})
+    pytest.raises(InvalidFieldError, builder.resolve_fields, [field_name])
 
   def test_all_fields(self):
     input_json = {

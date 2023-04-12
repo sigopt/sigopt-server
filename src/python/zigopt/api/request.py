@@ -19,15 +19,15 @@ from libsigopt.aux.errors import MissingParamError
 DEFAULT_PAGING_MAX_LIMIT = 1000
 
 
-def validate_api_input_string(string):
-  assert isinstance(string, str)
+def validate_api_input_string(input_str: str) -> str:
+  assert isinstance(input_str, str)
   # Postgres treats any string with a NUL-byte (the Unicode code point 0, represented as '\0' in UTF-8)
   # as invalid, even though it is valid UTF-8 string.
   # We are natively rejecting all other invalid UTF-8 so we just need to reject strings with NUL bytes
   # as a special case.
-  if "\0" in string:
-    raise BadParamError(f"Invalid string parameter: {string}")
-  return string
+  if "\0" in input_str:
+    raise BadParamError(f"Invalid string parameter: {input_str}")
+  return input_str
 
 
 def validate_api_input(val):
@@ -76,7 +76,7 @@ def parse_float(float_str):
   return ret
 
 
-def as_json(string, encoding="utf-8"):
+def as_json(data: bytes, encoding: str = "utf-8"):
   """Deserialize a str holding a JSON document into a Python dict.
 
     :param string: serialized json data
@@ -89,13 +89,13 @@ def as_json(string, encoding="utf-8"):
 
   try:
     return json.loads(
-      string.decode(encoding),
+      data.decode(encoding),
       object_pairs_hook=object_pairs_hook,
       parse_constant=parse_constant,
       parse_float=parse_float,
     )
   except json.JSONDecodeError as e:
-    raise BadParamError("Invalid json: " + string.decode(encoding)) from e
+    raise BadParamError("Invalid json: " + data.decode(encoding)) from e
   except ValueError as e:
     raise BadParamError(f"Error parsing json: {e}") from e
 

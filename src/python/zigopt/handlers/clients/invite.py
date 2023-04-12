@@ -41,6 +41,7 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
     return request
 
   def handle(self, request):
+    # pylint: disable=too-many-locals
     data = request.params()
     email = validate_email(get_with_validation(data, "email", ValidationType.string))
     old_role = validate_role(get_opt_with_validation(data, "old_role", ValidationType.string) or NO_ROLE)

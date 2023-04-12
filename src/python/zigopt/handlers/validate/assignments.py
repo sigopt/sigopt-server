@@ -13,7 +13,7 @@ from libsigopt.aux.constant import ConstraintType
 from libsigopt.aux.errors import InvalidValueError
 
 
-def get_assignment(param: ExperimentParameter, assignment: float | str) -> float | str:
+def get_assignment(param: ExperimentParameterProxy, assignment: float | str) -> float | str:
   """Return and validates a single assignment value of this parameter."""
   param = ExperimentParameterProxy(param)
   param_name = param.name
@@ -49,7 +49,7 @@ def get_assignment(param: ExperimentParameter, assignment: float | str) -> float
   return assignment
 
 
-def parameter_conditions_satisfied(parameter: ExperimentParameter, assignments_map: dict[str, Any]) -> bool:
+def parameter_conditions_satisfied(parameter: ExperimentParameterProxy, assignments_map: dict[str, Any]) -> bool:
   if parameter.conditions:
     for condition in parameter.conditions:
       assignment = assignments_map.get(condition.name)

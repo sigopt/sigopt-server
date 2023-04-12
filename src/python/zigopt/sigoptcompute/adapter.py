@@ -389,6 +389,7 @@ class SCAdapter(Service):
     nonzero_mean_choice=None,
     tag=None,
   ):
+    # pylint: disable=too-many-locals
     if not observations:
       return self._make_suggestion_datas(experiment, [])
     assert 1 <= num_to_suggest <= MAXIMUM_NUMBER_OF_SUGGESTIONS_CL_MAX
@@ -453,6 +454,7 @@ class SCAdapter(Service):
     nonzero_mean_choice=None,
     tag=None,
   ):
+    # pylint: disable=too-many-locals
     if not observations:
       return self._make_suggestion_datas(experiment, [])
     assert 1 <= num_to_suggest <= MAXIMUM_NUMBER_OF_SUGGESTIONS_CL_MAX

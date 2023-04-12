@@ -97,7 +97,7 @@ class OrganizationService(Service):
     meta = ClientMeta()
     meta.date_created = unix_timestamp()
 
-    meta.client_security.SetFieldIfNotNone(
+    meta.client_security.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
       "allow_users_to_see_experiments_by_others", allow_users_to_see_experiments_by_others
     )
 
@@ -131,6 +131,7 @@ class OrganizationService(Service):
     return (organization, client)
 
   def merge_organizations_into_destination(self, dest_organization_id, organization_ids, requestor):
+    # pylint: disable=too-many-locals
     dest_organization = self.find_by_id(dest_organization_id)
 
     for organization_id in organization_ids:

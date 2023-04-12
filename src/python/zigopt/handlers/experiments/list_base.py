@@ -166,6 +166,7 @@ class BaseExperimentsListHandler(Handler):
       query_args.query = query_args.query.filter(Experiment.date_created < seconds_to_datetime(params.period_end))
 
   def do_handle(self, params, client_ids, created_by, project=None):
+    # pylint: disable=too-many-locals
     query_args = self._get_sorted_query(params)
 
     if params.state == "deleted":
