@@ -18,6 +18,9 @@ class _BaseRateLimit:
   def _on_raise(self, services, identifier, identifier_type):
     return None
 
+  def _get_identifier(self, services, identifying_object):
+    raise NotImplementedError
+
   def _check_rate_limit(self, services, identifying_object, rate_limit_type, increment=True):
     identifier, identifier_type = self._get_identifier(services, identifying_object)
     if services.rate_limiter.enabled and identifier != _UNUSED:
