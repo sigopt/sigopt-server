@@ -78,7 +78,7 @@ class LogJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def content(self) -> Optional[str]:
-    return self._log.GetFieldOrNone("content")
+    return self._log.GetFieldOrNone("content")  # type: ignore
 
 
 class TrainingRunModelJsonBuilder(JsonBuilder):
@@ -89,7 +89,7 @@ class TrainingRunModelJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def type(self) -> Optional[str]:
-    return self._training_run_model.GetFieldOrNone("type")
+    return self._training_run_model.GetFieldOrNone("type")  # type: ignore
 
 
 class SourceCodeJsonBuilder(JsonBuilder):
@@ -100,11 +100,11 @@ class SourceCodeJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def content(self) -> Optional[str]:
-    return self._source_code.GetFieldOrNone("content")
+    return self._source_code.GetFieldOrNone("content")  # type: ignore
 
   @field(ValidationType.string)
   def hash(self) -> Optional[str]:
-    return self._source_code.GetFieldOrNone("hash")
+    return self._source_code.GetFieldOrNone("hash")  # type: ignore
 
 
 # TODO(SN-1112): Only used in MPM endpoints for now, can port over to
