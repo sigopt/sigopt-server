@@ -30,9 +30,12 @@ FORBIDDEN_FIELDS = (
 def ImmutableStruct(name, args, defaults=None):
   fields = tuple(args)
   assert defaults is None or len(defaults) == len(fields)
-  underlying_cls = collections.namedtuple(name, fields, defaults=defaults)
+  underlying_cls = collections.namedtuple(name, fields, defaults=defaults)  # type: ignore
 
   class StructClass:
+    __name__ = name
+    _fields = fields
+
     def __init__(self, *args, **kwargs):
       underlying = underlying_cls(*args, **kwargs)
       assert isinstance(underlying, tuple)
@@ -45,7 +48,7 @@ def ImmutableStruct(name, args, defaults=None):
       return getattr(underlying, attr)
 
     def __getinitargs__(self):
-      return self._underlying.__getinitargs__()
+      return self._underlying.__getinitargs__()  # type: ignore
 
     def __repr__(self):
       return repr(self._underlying)
@@ -61,6 +64,4 @@ def ImmutableStruct(name, args, defaults=None):
     def __ne__(self, other):
       return not self.__eq__(other)
 
-  StructClass.__name__ = name
-  StructClass._fields = fields
   return StructClass
