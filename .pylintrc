@@ -31,7 +31,6 @@ disable=
   too-many-return-statements,
   unnecessary-lambda-assignment,
   unspecified-encoding,
-  unsubscriptable-object,
   unused-argument,
   unused-wildcard-import,
   use-dict-literal,
