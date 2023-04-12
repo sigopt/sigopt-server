@@ -70,12 +70,11 @@ class ExperimentsWrapper(Proxy):
 
 
 class IntegrationTestConnection:
-  def __init__(self, api_url, api, client_token=None, user_token=None, development=False):
+  def __init__(self, api_url, client_token=None, user_token=None, development=False):
     self.api_url = api_url
     self.user_token = user_token
     self.client_token = client_token
     self.development = development
-    self.api = api
 
     self.api_token = client_token
     if self.user_token and not self.development:
@@ -121,7 +120,7 @@ class IntegrationTestConnection:
     return self.driver._request(method, f"{self.api_url}{url}", params, json, headers)
 
   def as_client_only(self):
-    return IntegrationTestConnection(self.api_url, self.api, client_token=self.client_token, user_token=None)
+    return IntegrationTestConnection(self.api_url, client_token=self.client_token, user_token=None)
 
   def create_experiment(self, data):
     return WithExperiment(self, self._create_experiment(data, client_id=None))

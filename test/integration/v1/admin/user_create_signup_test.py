@@ -151,7 +151,7 @@ class TestUserCreateOrgSignup(V1Base):
   @pytest.fixture
   def signup_connection(self, owner_connection, api_url, api):
     token = owner_connection.clients(owner_connection.client_id).tokens().create().token
-    return IntegrationTestConnection(api_url, api, client_token=token)
+    return IntegrationTestConnection(api_url, client_token=token)
 
   @pytest.fixture(autouse=True)
   def setup_org(self, owner_connection, organization_id, client_for_email_signup_id):
@@ -174,7 +174,7 @@ class TestUserCreateOrgSignup(V1Base):
     return self.verify_email(user, signup_connection, inbox, config_broker)
 
   def create_and_test_connection(self, session, api_url, api, organization_id):
-    connection = IntegrationTestConnection(api_url, api, user_token=session.api_token.token)
+    connection = IntegrationTestConnection(api_url, user_token=session.api_token.token)
     connection.organizations(organization_id).fetch()
     return connection
 

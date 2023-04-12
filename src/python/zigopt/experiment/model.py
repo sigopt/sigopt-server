@@ -93,7 +93,7 @@ class ExperimentMetricProxy(Proxy):
     return self.strategy == ExperimentMetric.CONSTRAINT
 
 
-class ExperimentMetaProxy(Proxy):
+class ExperimentMetaProxy(Proxy):  # pylint: disable=too-many-instance-attributes
   def __init__(self, underlying):
     super().__init__(underlying)
     self._parameters = tuple((ExperimentParameterProxy(p) for p in underlying.all_parameters_unsorted)) or ()

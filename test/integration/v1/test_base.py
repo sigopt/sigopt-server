@@ -105,7 +105,6 @@ class V1Base(BaseTest):
     conn = Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=None,
         client_token="_",
       ),
@@ -237,7 +236,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=user_token,
         client_token=client_token,
         development=development,
@@ -271,7 +269,6 @@ class V1Base(BaseTest):
     client_conn = Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=user_token,
       ),
       client_id=client_id,
@@ -292,7 +289,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url,
-        api=api,
         client_token=development_token.token,
       ),
       client_id=connection.client_id,
@@ -315,7 +311,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=None,
         client_token=None,
       ),
@@ -334,7 +329,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=auth_provider.create_user_token(),
         client_token=auth_provider.create_user_client_token(),
       ),
@@ -348,7 +342,7 @@ class V1Base(BaseTest):
   def make_v1_guest_connection(cls, config_broker, api, guest_token=None):
     api_url = cls.get_api_url(config_broker)
     return Connection(
-      IntegrationTestConnection(api_url=api_url, api=api, user_token=None, client_token=guest_token),
+      IntegrationTestConnection(api_url=api_url, user_token=None, client_token=guest_token),
       client_id=None,
       organization_id=None,
     )
@@ -365,7 +359,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         client_token=client_token,
       ),
       client_id,
