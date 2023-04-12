@@ -33,7 +33,6 @@ def ImmutableStruct(name, args, defaults=None):
   underlying_cls = collections.namedtuple(name, fields, defaults=defaults)  # type: ignore
 
   class StructClass:
-    __name__ = name
     _fields = fields
 
     def __init__(self, *args, **kwargs):
@@ -63,5 +62,7 @@ def ImmutableStruct(name, args, defaults=None):
 
     def __ne__(self, other):
       return not self.__eq__(other)
+
+  StructClass.__name__ = name
 
   return StructClass
