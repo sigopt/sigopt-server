@@ -7,6 +7,7 @@ from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.common.sigopt_datetime import current_datetime, datetime_to_seconds
 from zigopt.common.struct import ImmutableStruct
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.experiments.observations.create import CreatesObservationsMixin
 from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.handlers.training_runs.parser import TrainingRunRequestParams, TrainingRunRequestParser
@@ -91,6 +92,9 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
 
   Params = ImmutableStruct("Params", ["skip_response_content", "merge_objects", "training_run_params"])
 
+  experiment: Experiment | None
+  training_run: TrainingRun | None
+
   def parse_params(self, request):
     unaccepted_params = request.params().keys() - TrainingRunRequestParams.valid_fields
     if unaccepted_params:
@@ -109,7 +113,9 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     if params.training_run_params.field_is_explicitly_null(user_name):
       raise BadParamError(f"Cannot remove {user_name} from a run")
 
-  def _create_observation_from_suggestion(self, training_run, updated_timestamp):
+  def _create_observation_from_suggestion(self, training_run: TrainingRun, updated_timestamp):
+    assert self.experiment is not None
+
     client = self.services.client_service.find_by_id(training_run.client_id)
     counts = self.services.observation_service.get_observation_counts(self.experiment.id)
     if training_run.state == TrainingRunData.FAILED:
@@ -143,6 +149,9 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
       self._create_observation_from_suggestion(training_run, updated_timestamp)
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.training_run is not None
+
     self._ensure_field_cannot_be_removed(params, "state")
     self._ensure_field_cannot_be_removed(params, "name")
     self._ensure_field_cannot_be_removed(params, "project")
