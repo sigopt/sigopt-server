@@ -53,18 +53,6 @@ class LocalCheckpointsTable extends React.Component {
       checkpoints: [],
     };
   }
-  // move over to sigopt server once checkpoint table is done
-  // experiment_table.js in siteadmin for pageFetcher stuff
-  // this.props.promiseApiClient.trainingRuns(run.id).checkpoints().exhaustivelyPage().call(
-  // this.test(),
-  // {},
-  // {
-  // },
-  // (response) => {
-  // if(isDefinedAndNotNull(response)) {
-  // this.setState({checkpoints: response.data})
-  // }
-  // };
 
   componentDidMount() {
     const getCheckpointsForRun = (id) => {
