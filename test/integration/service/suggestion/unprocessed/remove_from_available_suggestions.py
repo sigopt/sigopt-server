@@ -45,25 +45,28 @@ class TestProcessRedisSuggestion(
     assert uuids == expected_uuids
 
   def test_not_remove_redis_disabled(self, services, experiment, auth):
-    services.config_broker["redis.enabled"] = False
+    if not services.redis_service.enabled:
+      pytest.skip()
+
+    services.config_broker.setdefault("redis", {})["enabled"] = False
     services.redis_service.redis = None
 
     # Ensure we can serve suggestions without raising error
-    services.config_broker["features.raiseSoftExceptions"] = False
+    services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = False
     suggestion = services.suggestion_broker.serve_suggestion(
       experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
     )
     assert isinstance(suggestion, Suggestion)
 
     # Ensure we actually are raising a soft exception for logging purposes
-    services.config_broker["features.raiseSoftExceptions"] = True
+    services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = True
     with pytest.raises(SoftException):
       suggestion = services.suggestion_broker.serve_suggestion(
         experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
       )
 
     # Ensure that we can reconnect to redis
-    services.config_broker["redis.enabled"] = True
+    services.config_broker["redis"]["enabled"] = True
     suggestion = services.suggestion_broker.serve_suggestion(
       experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
     )
@@ -73,14 +76,14 @@ class TestProcessRedisSuggestion(
     with patch.object(services.redis_service, "remove_from_hash") as remove_from_hash_mock:
       remove_from_hash_mock.side_effect = Exception
 
-      services.config_broker["features.raiseSoftExceptions"] = False
+      services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = False
       suggestion = services.suggestion_broker.serve_suggestion(
         experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
       )
       assert isinstance(suggestion, Suggestion)
       assert remove_from_hash_mock.call_count == 1
 
-      services.config_broker["features.raiseSoftExceptions"] = True
+      services.config_broker["features"]["raiseSoftExceptions"] = True
       with pytest.raises(SoftException):
         suggestion = services.suggestion_broker.serve_suggestion(
           experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
