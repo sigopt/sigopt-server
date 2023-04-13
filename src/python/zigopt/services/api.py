@@ -61,7 +61,7 @@ from zigopt.user.service import UserService
 from zigopt.web_data.service import WebDataService
 
 
-class ApiServiceBag(ServiceBag):
+class ApiServiceBag(ServiceBag):  # pylint: disable=too-many-instance-attributes
   def __init__(self, config_broker, is_qworker):
     self.is_qworker = is_qworker
     super().__init__(config_broker)
@@ -104,7 +104,7 @@ class ApiServiceBag(ServiceBag):
     return cls(config_broker, is_qworker)
 
 
-class ApiRequestLocalServiceBag(RequestLocalServiceBag):
+class ApiRequestLocalServiceBag(RequestLocalServiceBag):  # pylint: disable=too-many-instance-attributes
   def __init__(self, underlying, request=None):
     super().__init__(underlying, request=None)
     self.best_practices_service = BestPracticesService(self)

@@ -23,7 +23,7 @@ class TestTokenUpdate(V1Base):
     # Second call to rotate should fail, because the previous token should no longer be valid
     with RaisesApiException(HTTPStatus.FORBIDDEN):
       connection.tokens("self").update(token="rotate")
-    new_conn = IntegrationTestConnection(api_url=connection.api_url, api=api, user_token=new_token)
+    new_conn = IntegrationTestConnection(api_url=connection.api_url, user_token=new_token)
     assert new_conn.sessions().fetch().user == user_id
     new_conn.tokens("self").update(token="rotate")
 
@@ -87,6 +87,6 @@ class TestTokenUpdate(V1Base):
   def test_cant_modify_as_guest(self, connection, config_broker, api, update_kwargs):
     with connection.create_any_experiment() as e:
       token_value = connection.experiments(e.id).tokens().create().token
-      guest_conn = IntegrationTestConnection(api_url=connection.api_url, api=api, client_token=token_value)
+      guest_conn = IntegrationTestConnection(api_url=connection.api_url, client_token=token_value)
       with RaisesApiException(HTTPStatus.FORBIDDEN):
         guest_conn.tokens("self").update(**update_kwargs)
