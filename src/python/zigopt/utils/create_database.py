@@ -97,7 +97,7 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
     "password": superuser_password,
     "host": config_broker.get("db.host"),
     "port": config_broker.get("db.port"),
-    **(config_broker.get_object("db.query") or {}),
+    **(config_broker.get("db.query") or {}),
   }
   conn = pg8000.connect(**remove_nones(args))
   try:
@@ -211,7 +211,7 @@ def purge_redis_database(services):
 
 def get_root_engine(config_broker, superuser=None, superuser_password=None, echo=False):
   return DatabaseConnectionService.make_engine(
-    config_broker.get_object("db"),
+    config_broker.get("db"),
     user=superuser or "postgres",
     password=superuser_password,
     echo=echo,
@@ -253,7 +253,7 @@ def create_db(
   database = config_broker.get("db.path")
   username = config_broker.get("db.user")
   password = config_broker.get("db.password")
-  query = config_broker.get_object("db.query")
+  query = config_broker.get("db.query")
   if allow_list:
     assert username in USERNAME_ALLOW_LIST
   make_produser(
@@ -273,7 +273,7 @@ def create_db(
   services.database_service.start_session()
 
   if initialize_data:
-    if config_broker.get_object("clients.client"):
+    if config_broker.get("clients.client"):
       client_name = config_broker["clients.client.name"]
       client_id = config_broker["clients.client.id"]
       client_meta = ClientMeta()
@@ -293,8 +293,8 @@ def create_db(
         )
         services.project_service.create_example_for_client(client_id=sibling_client.id)
 
-      if config_broker.get_object("clients.client.user"):
-        user = create_user(services, config_broker.get_object("clients.client.user"))
+      if config_broker.get("clients.client.user"):
+        user = create_user(services, config_broker.get("clients.client.user"))
         create_owner(
           services=services,
           user_id=user.id,

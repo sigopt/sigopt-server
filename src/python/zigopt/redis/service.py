@@ -243,14 +243,14 @@ class RedisService(Service):
     if self.enabled:
       try:
         self.redis = self.make_redis(
-          self.services.config_broker.get_object("redis"),
+          self.services.config_broker.get("redis"),
           socket_timeout=self.SHORT_TIMEOUT,
         )
         # NOTE: bzpopmin intentionally has a long polling timeout.
         # we want the value to be at least as large as wait_time_seconds, but we don't
         # know which queue this would be called on; we can probably configure it eventually
         self.blocking_conn_redis = self.make_redis(
-          self.services.config_broker.get_object("redis"),
+          self.services.config_broker.get("redis"),
           socket_timeout=self.POLLING_TIMEOUT,
         )
       except AssertionError:

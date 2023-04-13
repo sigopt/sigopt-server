@@ -25,7 +25,7 @@ class TestCookie(WebBase):
     url = config_broker.get("web.cookiejar_endpoint")
     if url:
       options["endpoint_url"] = url
-    access_credentials = config_broker.get_object("web.cookiejar_credentials")
+    access_credentials = config_broker.get("web.cookiejar_credentials")
     if access_credentials:
       options["aws_access_key_id"] = access_credentials["accessKeyId"]
       options["aws_secret_access_key"] = access_credentials["secretAccessKey"]
@@ -59,12 +59,12 @@ class TestCookie(WebBase):
   ):
     response = web_connection.get("/cookie").response
     session_id = response.cookies.get(scoped_cookie_name)
-    assert json.load(s3_client.get_object(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
+    assert json.load(s3_client.get(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
     s3_client.put_object(Bucket=cookiejar_bucket, Key=session_id, Body="invalid json")
     web_connection.get("/")
     response = web_connection.get("/cookie").response
     session_id = response.cookies.get(scoped_cookie_name)
-    assert json.load(s3_client.get_object(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
+    assert json.load(s3_client.get(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
 
   def check_cookie_was_deleted(self, s3_client, session_id, cookiejar_bucket):
     with pytest.raises(AWSError) as aws_error:

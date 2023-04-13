@@ -156,7 +156,7 @@ def configure_loggers(config_broker):
       "urllib3": logging.INFO,
       "werkzeug": logging.WARNING,
     }
-    LOG_LEVELS.update(config_broker.get_object("logging.levels", default={}))
+    LOG_LEVELS.update(config_broker.get("logging.levels", default={}))
 
   for name, level in LOG_LEVELS.items():
     logging.getLogger(name or None).setLevel(level)
