@@ -77,11 +77,6 @@ class SCAdapter(Service):
       )
       raise SigoptComputeError(e) from e
 
-  """
-  Translates requests from zigopt (containing Experiments, Suggestions, Observations, etc),
-  to requests that sigoptcompute can understand (serialized numeric data).
-  """
-
   # NOTE - This has been modified for metric constraint experiments to keep the next points call
   # under ~120 seconds in the worst case scenario.
   # This is designed for upward to 5 constraint metrics (with 1 optimized metric)
@@ -93,6 +88,10 @@ class SCAdapter(Service):
     has_constraint_metrics,
     constraint_list,
   ):
+    """
+        Translates requests from zigopt (containing Experiments, Suggestions, Observations, etc),
+        to requests that sigoptcompute can understand (serialized numeric data).
+        """
     if has_constraint_metrics and not constraint_list:
       use_qei_for_next_points = self.services.config_broker.get(
         "features.useQeiForConstraintMetricsNextPoints",

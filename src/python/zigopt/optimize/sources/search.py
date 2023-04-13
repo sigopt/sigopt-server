@@ -7,13 +7,12 @@ from zigopt.suggestion.lib import ScoredSuggestion
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
-"""
-This class will score suggestions based on a GPs similar to CategoricalOptimizationSource,
-we only change the scoring strategy. All hyperparameter calls are exactly the same.
-"""
-
-
 class SearchOptimizationSource(CategoricalOptimizationSource):
+  """
+    This class will score suggestions based on a GPs similar to CategoricalOptimizationSource,
+    we only change the scoring strategy. All hyperparameter calls are exactly the same.
+    """
+
   name = "search"
 
   def should_have_task_length(self):
