@@ -20,8 +20,8 @@ We store data in the following:
 ## Services
 
 This lists the services we use to run SigOpt.
-The configuration of these services in specfied in the appropriate config file
-(such as config/development.json for development).
+The configuration of these services in specfied in the appropriate config directory
+(such as config/development/ for development).
 Most of these can be disabled to run in a minimal environment.
 
 We use redis for queues and storing unprocessed suggestions.
