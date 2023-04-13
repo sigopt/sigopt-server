@@ -16,6 +16,8 @@ training_run_tags_json_name = TrainingRunData.DESCRIPTOR.fields_by_name["tags"].
 
 class BaseTrainingRunsTagHandler(TrainingRunHandler):
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     if not super().can_act_on_objects(requested_permission, objects):
       return False
     client = objects["client"]
@@ -46,6 +48,8 @@ class TrainingRunsAddTagHandler(BaseTrainingRunsTagHandler):
     return params
 
   def handle(self, params):
+    assert self.training_run is not None
+
     tag_id = params[self.ID_PARAM]
     tag = self.services.tag_service.find_by_client_and_id(
       client_id=self.training_run.client_id,
@@ -94,6 +98,8 @@ class TrainingRunsRemoveTagHandler(BaseTrainingRunsTagHandler):
     return objs
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.tag is not None
+
     if not super().can_act_on_objects(requested_permission, objects):
       return False
     tag = objects["tag"]
@@ -107,6 +113,8 @@ class TrainingRunsRemoveTagHandler(BaseTrainingRunsTagHandler):
     return None
 
   def handle(self, params):
+    assert self.tag is not None
+
     update_clause = {
       TrainingRun.training_run_data: self.create_update_clause(
         merge_objects=True,

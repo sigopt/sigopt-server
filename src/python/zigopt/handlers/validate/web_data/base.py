@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from collections import defaultdict
 from copy import deepcopy
+from typing import Any
 
 from zigopt.common import *
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
@@ -82,11 +83,11 @@ def validate_web_data_create(params):
   validate(params, base_web_data_schema)
   validate_web_data_parent_resource_id(params)
 
-  payload_validator = schema_by_resource.get(params["parent_resource_type"]).get(params["web_data_type"])
+  payload_validator = schema_by_resource[params["parent_resource_type"]].get(params["web_data_type"])
   validate(params["payload"], payload_validator)
 
 
-list_web_data_schema = deepcopy(base_web_data_schema)
+list_web_data_schema: dict[str, Any] = deepcopy(base_web_data_schema)
 del list_web_data_schema["properties"]["payload"]
 list_web_data_schema["required"].remove("payload")
 
@@ -96,7 +97,7 @@ def validate_web_data_list(params):
   validate_web_data_parent_resource_id(params)
 
 
-update_web_data_schema = deepcopy(base_web_data_schema)
+update_web_data_schema: dict[str, Any] = deepcopy(base_web_data_schema)
 update_web_data_schema["required"].append("id")
 update_web_data_schema["properties"]["id"] = {"type": "string"}
 
@@ -107,11 +108,11 @@ def validate_web_data_update(params):
 
   get_with_validation(params, "id", ValidationType.id)
 
-  payload_validator = schema_by_resource.get(params["parent_resource_type"]).get(params["web_data_type"])
+  payload_validator = schema_by_resource[params["parent_resource_type"]].get(params["web_data_type"])
   validate(params["payload"], payload_validator)
 
 
-delete_web_data_schema = deepcopy(base_web_data_schema)
+delete_web_data_schema: dict[str, Any] = deepcopy(base_web_data_schema)
 delete_web_data_schema["required"].append("id")
 delete_web_data_schema["properties"]["id"] = {"type": "string"}
 del delete_web_data_schema["properties"]["payload"]

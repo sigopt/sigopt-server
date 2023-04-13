@@ -29,6 +29,8 @@ class MetricImportancesDetailHandler(ExperimentHandler):
     return None if is_nan(importance) else importance
 
   def handle(self):
+    assert self.experiment is not None
+
     data = []
     # NOTE: this expects that importances/service is also using all_metrics
     metrics = sorted(self.experiment.all_metrics, key=lambda m: m.name)

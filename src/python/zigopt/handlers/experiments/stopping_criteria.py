@@ -24,6 +24,8 @@ class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
   required_permissions = READ
 
   def get_values_for_maximization_with_features_replaced(self):
+    assert self.experiment is not None
+
     observations = self.services.observation_service.all_data(self.experiment)
     replacement_values = [-numpy.inf] * len(self.experiment.optimized_metrics)
 
@@ -39,6 +41,8 @@ class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
     return numpy.array(values), len(observations)
 
   def handle(self):
+    assert self.experiment is not None
+
     reported_values, num_observations = self.get_values_for_maximization_with_features_replaced()
     lookback_depth = LOOKBACK_FACTOR * self.experiment.dimension
 

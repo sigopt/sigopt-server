@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Any
+
 import pytest
 
 from zigopt.handlers.experiments.stopping_criteria import LOOKBACK_FACTOR, NUM_TOP_RESULTS_TO_CHECK
@@ -122,7 +124,7 @@ class TestExperimentStoppingCriteria(V1Base):
     stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
     assert not stopping_criteria.should_stop
 
-    observations = []
+    observations: list[dict[str, Any]] = []
     for k in range(e.observation_budget + 1):
       x = 10 * (e.observation_budget - k) / e.observation_budget
       f1 = 1 - (x - 5) ** 2

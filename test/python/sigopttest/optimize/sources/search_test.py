@@ -75,7 +75,7 @@ class TestSearchExperimentProgress:
       "parameters": [{"name": f"x{k}", "type": "double", "bounds": {"min": 0, "max": 1}} for k in range(5)],
     }
     experiment_meta = BaseExperimentsCreateHandler.make_experiment_meta_from_json(json_dict, "offline", False)
-    experiment = Experiment(experiment_meta=experiment_meta)
+    experiment: Experiment | None = Experiment(experiment_meta=experiment_meta)
     source = SearchOptimizationSource(None, experiment)
     assert source.should_have_task_length() is False
 

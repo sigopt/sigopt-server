@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-module
+
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.checkpoint.model import CHECKPOINT_MAX_METADATA_FIELDS, Checkpoint
@@ -37,26 +39,43 @@ class CheckpointsCreateHandler(TrainingRunHandler):
     validate_metric_names(values, self.experiment)
     for value_dict in values:
       observation_value = ObservationValue()
-      observation_value.SetFieldIfNotNone("name", get_with_validation(value_dict, "name", ValidationType.string))
-      observation_value.SetFieldIfNotNone("value", get_with_validation(value_dict, "value", ValidationType.number))
-      value_stddev = get_opt_with_validation(value_dict, "value_stddev", ValidationType.number)
+      observation_value.SetFieldIfNotNone(  # type: ignore
+        "name",
+        get_with_validation(
+          value_dict,
+          "name",
+          ValidationType.string,
+        ),
+      )
+      observation_value.SetFieldIfNotNone(  # type: ignore
+        "value",
+        get_with_validation(
+          value_dict,
+          "value",
+          ValidationType.number,
+        ),
+      )
+      value_stddev: float | None = get_opt_with_validation(value_dict, "value_stddev", ValidationType.number)
       value_var = napply(value_stddev, lambda stddev: stddev * stddev)
-      observation_value.SetFieldIfNotNone("value_var", value_var)
+      observation_value.SetFieldIfNotNone("value_var", value_var)  # type: ignore
       yield observation_value
 
   def parse_params(self, request):
     data = request.params()
     validate_checkpoint_json_dict_for_create(data)
     values = self._parse_values(data)
+    metadata: Struct | None = get_opt_with_validation(data, "metadata", ValidationType.metadata)
     return self.Params(
       values=values,
       metadata=napply(
-        get_opt_with_validation(data, "metadata", ValidationType.metadata),
+        metadata,
         lambda obj: validate_metadata(obj, max_keys=CHECKPOINT_MAX_METADATA_FIELDS),
       ),
     )
 
   def handle(self, params):
+    assert self.training_run is not None
+
     if self.experiment and self.experiment.deleted:
       raise BadParamError(f"Cannot create checkpoints for deleted experiment {self.experiment.id}")
 
@@ -78,7 +97,7 @@ class CheckpointsCreateHandler(TrainingRunHandler):
     self.services.training_run_service.mark_as_updated(self.training_run, now)
     if self.experiment:
       self.services.experiment_service.mark_as_updated(self.experiment, now)
-    return CheckpointJsonBuilder(new_checkpoint, self.experiment)
+    return CheckpointJsonBuilder(new_checkpoint)
 
   def _get_max_checkpoints(self, experiment):
     max_checkpoints = 200

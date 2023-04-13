@@ -22,6 +22,9 @@ class SuggestionsCreateHandler(ExperimentHandler):
     return request.params()
 
   def handle(self, json_dict):
+    assert self.auth is not None
+    assert self.experiment is not None
+
     if self.experiment.deleted:
       raise BadParamError(f"Cannot create suggestions for deleted experiment {self.experiment.id}")
 
@@ -57,6 +60,9 @@ class SuggestionsCreateHandler(ExperimentHandler):
     suggestion_meta = ProcessedSuggestionMeta()
 
     client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(json_dict)
-    suggestion_meta.SetFieldIfNotNone("client_provided_data", client_provided_data)
+    suggestion_meta.SetFieldIfNotNone(  # type: ignore
+      "client_provided_data",
+      client_provided_data,
+    )
 
     return suggestion_meta

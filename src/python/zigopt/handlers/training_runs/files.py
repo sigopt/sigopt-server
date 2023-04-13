@@ -13,6 +13,7 @@ from zigopt.protobuf.gen.file.filedata_pb2 import FileData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun
+from zigopt.user.model import User
 
 
 training_run_files_json_name = TrainingRunData.DESCRIPTOR.fields_by_name["files"].json_name
@@ -40,6 +41,8 @@ class FileCreateHandler(Handler):
     super().prepare()
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return super().can_act_on_objects(requested_permission, objects) and self.auth.can_act_on_client(
       self.services, WRITE, objects["client"]
     )
@@ -190,8 +193,11 @@ class TrainingRunsCreateFileHandler(TrainingRunHandler, FileCreateHandler):
   required_permissions = WRITE
 
   def handle(self, params):
+    assert self.auth is not None
+    current_user: User | None = self.auth.current_user
+
     file_obj, file_json_builder = self.create_file_and_json_builder(
-      params, self.auth, self.client, napply(self.auth.current_user, lambda u: u.id)
+      params, self.auth, self.client, napply(current_user, lambda u: u.id)
     )
 
     update_clause = {

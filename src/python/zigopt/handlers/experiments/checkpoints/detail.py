@@ -18,10 +18,12 @@ class CheckpointsDetailHandler(TrainingRunHandler):
     self._checkpoint_id = checkpoint_id
 
   def handle(self):
+    assert self.training_run is not None
+
     checkpoint = self.services.checkpoint_service.find_by_id(self._checkpoint_id)
     if checkpoint.training_run_id != self.training_run.id:
       raise NotFoundError(f"No checkpoint with id {self._checkpoint_id} found for training run {self.training_run.id}")
-    return CheckpointJsonBuilder(checkpoint, self.experiment)
+    return CheckpointJsonBuilder(checkpoint)
 
 
 class CheckpointsDetailMultiHandler(TrainingRunHandler):
@@ -44,7 +46,7 @@ class CheckpointsDetailMultiHandler(TrainingRunHandler):
     )
 
     return PaginationJsonBuilder(
-      data=[CheckpointJsonBuilder(checkpoint, self.experiment) for checkpoint in checkpoints],
+      data=[CheckpointJsonBuilder(checkpoint) for checkpoint in checkpoints],
       count=checkpoint_count,
       before=new_before,
       after=new_after,

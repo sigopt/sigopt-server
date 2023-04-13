@@ -46,6 +46,8 @@ class ExperimentsDetailHandler(ExperimentHandler):
   redirect_ai_experiments = True
 
   def handle(self):
+    assert self.experiment is not None
+
     progress_map = self.services.experiment_progress_service.progress_for_experiments([self.experiment])
     progress = progress_map.get(self.experiment.id)
     project = self.services.project_service.find_by_client_and_id(

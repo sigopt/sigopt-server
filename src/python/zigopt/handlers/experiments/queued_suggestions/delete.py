@@ -11,5 +11,8 @@ class QueuedSuggestionsDeleteHandler(QueuedSuggestionHandler):
   required_permissions = WRITE
 
   def handle(self):
+    assert self.experiment is not None
+    assert self.queued_suggestion is not None
+
     self.services.queued_suggestion_service.delete_by_id(self.experiment.id, self.queued_suggestion.id)
     return {}

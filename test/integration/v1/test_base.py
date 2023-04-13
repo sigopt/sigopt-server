@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import copy
+from typing import Any
 
 import pytest
 
@@ -84,14 +85,14 @@ class V1Base(BaseTest):
     ],
   }
 
-  offline_multimetric_experiment_meta = copy.deepcopy(small_experiment_meta)
+  offline_multimetric_experiment_meta: dict[str, Any] = copy.deepcopy(small_experiment_meta)
   offline_multimetric_experiment_meta["metrics"] = [dict(name="metric1"), dict(name="metric2")]
   offline_multimetric_experiment_meta["observation_budget"] = 100
 
   offline_named_metric_experiment_meta = copy.deepcopy(small_experiment_meta)
   offline_named_metric_experiment_meta["metrics"] = [dict(name="metric")]
 
-  offline_multitask_experiment_meta = copy.deepcopy(small_experiment_meta)
+  offline_multitask_experiment_meta: dict[str, Any] = copy.deepcopy(small_experiment_meta)
   offline_multitask_experiment_meta["observation_budget"] = 60
   offline_multitask_experiment_meta["tasks"] = [
     {"name": "cheapest", "cost": 0.1},
@@ -287,7 +288,7 @@ class V1Base(BaseTest):
   @pytest.fixture(scope="function")
   def development_connection(cls, connection, config_broker, api):
     api_url = cls.get_api_url(config_broker)
-    development_token = find(connection.clients(connection.client_id).tokens().fetch().data, lambda t: t.development)
+    development_token = next(t for t in connection.clients(connection.client_id).tokens().fetch().data if t.development)
     return Connection(
       IntegrationTestConnection(
         api_url,

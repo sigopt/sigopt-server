@@ -146,9 +146,13 @@ class ExperimentsListHandler(BaseExperimentsListHandler):
   required_permissions = READ
 
   def handle(self, params):
+    assert self.auth is not None
+
     return self.do_handle(params, [self.auth.current_client.id], params.user)
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return (
       super().can_act_on_objects(requested_permission, objects)
       and self.auth.current_client
@@ -161,6 +165,8 @@ class ClientsExperimentsHandler(ClientHandler, BaseExperimentsListHandler):
   required_permissions = READ
 
   def handle(self, params):
+    assert self.client is not None
+
     return self.do_handle(params, [self.client.id], params.user)
 
 
@@ -177,6 +183,8 @@ class UsersExperimentsHandler(UserHandler, BaseExperimentsListHandler):
   required_permissions = READ
 
   def handle(self, params):
+    assert self.user is not None
+
     member_client_ids = [r.client_id for r in self.services.permission_service.find_by_user_id(self.user.id)]
     owned_client_ids = [c.id for c in self.services.user_service.find_owned_clients(self.user)]
     client_ids = list(set(member_client_ids + owned_client_ids))

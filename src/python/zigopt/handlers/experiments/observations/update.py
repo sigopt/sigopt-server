@@ -33,7 +33,7 @@ class ObservationsUpdateHandler(CreatesObservationsMixin, ObservationHandler):
     no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
 
     now = current_datetime()
-    new_observation_data = self.observation.data.copy_protobuf()
+    new_observation_data = self.observation.data.copy_protobuf()  # type: ignore
     new_observation_data.timestamp = datetime_to_seconds(now)
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
 
