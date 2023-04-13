@@ -67,6 +67,7 @@
     "react-select": "^3.1.0",
     "react-transition-group": "^2.4.0",
     "react-uid": "^2.3.0",
+    "sigopt-config": "git+https://github.com/sigopt/sigopt-config.git#reimpl",
     "smoothscroll": "^0.4.0",
     "source-map-support": "^0.5.19",
     "spin.js": "^2.3.2",
