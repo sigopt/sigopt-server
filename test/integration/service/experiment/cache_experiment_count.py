@@ -91,7 +91,7 @@ class TestExperimentCacheCount(ExperimentServiceTestBase):
     with patch.object(services.redis_service, "set") as set_mock:
       set_mock.side_effect = Exception
 
-      services.config_broker["features.raiseSoftExceptions"] = False
+      services.config_broker.data.setdefault("features", {})["raiseSoftExceptions"] = False
       services.experiment_service.incr_count_by_organization_id_for_billing(
         experiment,
         organization.id,
@@ -99,7 +99,7 @@ class TestExperimentCacheCount(ExperimentServiceTestBase):
       )
       assert set_mock.call_count == 1
 
-      services.config_broker["features.raiseSoftExceptions"] = True
+      services.config_broker["features"]["raiseSoftExceptions"] = True
       with pytest.raises(Exception):
         services.experiment_service.incr_count_by_organization_id_for_billing(
           experiment,
@@ -152,7 +152,7 @@ class TestExperimentCacheCount(ExperimentServiceTestBase):
       with patch.object(services.redis_service, "get") as get_mock:
         get_mock.side_effect = Exception
 
-        services.config_broker["features.raiseSoftExceptions"] = False
+        services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = False
         count = services.experiment_service.count_by_organization_id_for_billing(
           organization.id,
           time_interval,
@@ -162,7 +162,7 @@ class TestExperimentCacheCount(ExperimentServiceTestBase):
         assert set_mock.call_count == 1
         assert get_mock.call_count == 1
 
-        services.config_broker["features.raiseSoftExceptions"] = True
+        services.config_broker["features"]["raiseSoftExceptions"] = True
         with pytest.raises(Exception):
           services.experiment_service.count_by_organization_id_for_billing(
             organization.id,
