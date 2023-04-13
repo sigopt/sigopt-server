@@ -12,7 +12,7 @@ from zigopt.training_run.model import TrainingRun
 
 
 class BaseExperimentProgress:
-  builder_cls: object
+  builder_cls: type[ObservationProgressJsonBuilder] | type[RunProgressJsonBuilder]
 
   def __init__(self, experiment):
     self.experiment = experiment

@@ -5,6 +5,7 @@
 import argparse
 import os
 import warnings
+from typing import Any
 
 from zigopt.common import *
 from zigopt.config.broker import ConfigBroker
@@ -72,7 +73,7 @@ def main():
   global config_broker
   ServiceBag = ApiServiceBag
   RequestLocalServiceBag = ApiRequestLocalServiceBag
-  kwargs = {}
+  kwargs: dict[str, Any] = {}
   config_broker = ConfigBroker.from_file(config)
   global global_services
   global_services = ServiceBag.from_config_broker(config_broker, **kwargs)

@@ -113,9 +113,9 @@ def _raise_for_is_usage():
   )
 
 
-def extend_with_forbid_is_clause(Cls):
+def extend_with_forbid_is_clause(Cls: type):
   class Subclass(Cls):
-    class comparator_factory(Cls.comparator_factory):
+    class comparator_factory(Cls.comparator_factory):  # type: ignore
       def is_(self, arg):
         _raise_for_is_usage()
 
@@ -133,7 +133,7 @@ def _default_value_for_descriptor(message_factory, descriptor):
   if isinstance(descriptor, google.protobuf.descriptor.FieldDescriptor):
     if descriptor.label == google.protobuf.descriptor.FieldDescriptor.LABEL_REPEATED:
       # pylint: disable=protected-access
-      if google.protobuf.json_format._IsMapEntry(descriptor):
+      if google.protobuf.json_format._IsMapEntry(descriptor):  # type: ignore
         return {}
       # pylint: enable=protected-access
       return []
@@ -326,7 +326,7 @@ class _ProtobufColumnType(TypeDecorator):
         isinstance(self._descriptor, google.protobuf.descriptor.FieldDescriptor)
         and
         # pylint: disable=protected-access
-        google.protobuf.json_format._IsMapEntry(self._descriptor)
+        google.protobuf.json_format._IsMapEntry(self._descriptor)  # type: ignore
         # pylint: enable=protected-access
       ):
         return self._real_getitem(key, with_default=True)
@@ -378,7 +378,7 @@ class ProtobufColumn(sqlalchemy.Column):
   _constructor = sqlalchemy.Column
 
   def __init__(self, cls, proxy=None, **kwargs):
-    message_factory = google.protobuf.symbol_database.Default()
+    message_factory = google.protobuf.symbol_database.Default()  # type: ignore
     super().__init__(type_=_ProtobufColumnType(cls.DESCRIPTOR, message_factory, proxy=proxy), **kwargs)
     self._cls = cls
     self._proxy = proxy

@@ -671,7 +671,8 @@ class SCAdapter(Service):
       task_costs=task_costs if experiment.is_multitask else None,
     )
 
-  _make_points_to_evaluate = _make_points_being_sampled
+  def _make_points_to_evaluate(self, experiment, suggestion_datas_to_evaluate):
+    return self._make_points_being_sampled(experiment, suggestion_datas_to_evaluate)
 
   @staticmethod
   def supplement_tag_with_experiment_id(tag, experiment):

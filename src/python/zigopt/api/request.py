@@ -4,6 +4,7 @@
 import json
 import time
 import uuid
+from typing import Any
 
 from flask import Request as RequestBase
 
@@ -253,8 +254,8 @@ class Request(RequestBase):
 
   def optional_param(self, name):
     """Retrieve ``name`` from flask HTTP request."""
-    unvalidated = self.params().get(name)
-    return napply(unvalidated, lambda v: validate_type(v, ValidationType.string, key=name))
+    unvalidated: Any | None = self.params().get(name)
+    return napply(unvalidated, lambda v: validate_type(v, ValidationType.string, key=name))  # type: ignore
 
   def required_param(self, name):
     """Retrieve ``name`` from flask HTTP request and *fail* if ``name`` is not found."""
@@ -265,12 +266,12 @@ class Request(RequestBase):
 
   def optional_int_param(self, name):
     assert self.method in ("GET", "DELETE"), "Must use get_with_validation for non-query arguments"
-    unvalidated = self.params().get(name)
+    unvalidated: int | Any | None = self.params().get(name)
     return napply(unvalidated, lambda v: validate_type(v, ValidationType.integer_string, key=name))
 
   def optional_bool_param(self, name):
     assert self.method in ("GET", "DELETE"), "Must use get_with_validation for non-query arguments"
-    unvalidated = napply(self.params().get(name), self.string_to_bool)
+    unvalidated: bool | Any | None = napply(self.params().get(name), self.string_to_bool)
     return napply(unvalidated, lambda v: validate_type(v, ValidationType.boolean, key=name))
 
   def optional_list_param(self, name):

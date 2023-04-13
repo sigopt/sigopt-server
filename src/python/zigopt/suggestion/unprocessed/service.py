@@ -7,7 +7,7 @@ from datetime import timedelta
 from sqlalchemy.exc import IntegrityError
 
 from zigopt.common import *
-from zigopt.common.sigopt_datetime import unix_timestamp
+from zigopt.common.sigopt_datetime import unix_timestamp_with_microseconds
 from zigopt.exception.logger import AlreadyLoggedException
 from zigopt.profile.timing import time_function
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionMeta
@@ -200,7 +200,7 @@ class UnprocessedSuggestionService(Service):
     # pylint: disable=too-many-locals
     sources_key = self.services.redis_key_service.create_sources_key(experiment_id)
     suggestions_by_source = as_grouped_dict(unprocessed_suggestions, lambda s: s.source)
-    timestamp = timestamp or unix_timestamp(with_microseconds=True)
+    timestamp = timestamp or unix_timestamp_with_microseconds()
     expiry = timedelta(days=31)
 
     for source, suggestions in suggestions_by_source.items():

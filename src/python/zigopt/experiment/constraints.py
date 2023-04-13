@@ -60,7 +60,7 @@ def parse_experiment_constraints_to_func_list(experiment):
 
 
 def parse_constraints_to_list_of_constrained_parameter_names(constraints):
-  constrained_variables = []
+  constrained_variables: list = []
   for constraint in constraints:
     constrained_variables = constrained_variables + [term.name for term in constraint.terms]
   return list(set(constrained_variables))

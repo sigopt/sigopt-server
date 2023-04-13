@@ -26,7 +26,7 @@ class BaseMessageBody:
 
 class ProtobufMessageBody(BaseMessageBody):
   # To be defined by subclasses
-  PROTOBUF_CLASS: Message
+  PROTOBUF_CLASS: type[Message]
 
   def __init__(self, pb):
     assert isinstance(pb, self.PROTOBUF_CLASS)
