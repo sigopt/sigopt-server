@@ -187,7 +187,7 @@ class BaseExperimentsCreateHandler(Handler):
       raise BadParamError(f"Invalid experiment type: {experiment_type_string}") from ke
 
   @classmethod
-  def _set_grid_experiment_budget(cls, budget_key, budget, experiment_meta):
+  def _check_and_set_grid_experiment_budget(cls, budget_key, budget, experiment_meta):
     if len(experiment_meta.conditionals) > 0:
       raise BadParamError("Grid search experiments do not support conditional parameters currently.")
     experiment_meta.observation_budget = GridSampler.observation_budget_from_experiment_meta(experiment_meta)
@@ -283,7 +283,7 @@ class BaseExperimentsCreateHandler(Handler):
     budget_key, budget = cls.get_budget_key_and_value(json_dict, experiment_meta.runs_only)
 
     if experiment_type == ExperimentMeta.GRID:
-      cls._set_grid_experiment_budget(budget_key, budget, experiment_meta)
+      cls._check_and_set_grid_experiment_budget(budget_key, budget, experiment_meta)
     elif budget is None:
       cls._check_budget_required(budget_key, optimized_metrics, has_constraint_metrics, num_solutions)
     else:
