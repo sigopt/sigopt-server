@@ -30,6 +30,5 @@ disable=
   unused-argument,
   unused-wildcard-import,
   use-dict-literal,
-  use-implicit-booleaness-not-comparison,
   wildcard-import
 enable=missing-final-newline
