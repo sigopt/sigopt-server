@@ -4,7 +4,7 @@
 from typing import Sequence
 
 from zigopt.common import *
-from zigopt.common.sigopt_datetime import unix_timestamp_seconds
+from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.db.column import JsonPath, jsonb_set, unwind_json_path
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ, TokenMeta
 from zigopt.services.base import Service
@@ -56,7 +56,7 @@ class TokenService(Service):
     )
 
   def _make_meta(self, session_expiration: int | None, token_type, can_renew):
-    now = unix_timestamp_seconds()
+    now = unix_timestamp()
     meta = TokenMeta()
     meta.date_created = now
     meta.can_renew = can_renew
@@ -161,7 +161,7 @@ class TokenService(Service):
   def create_temporary_user_token(self, user_id, session_expiration=None):
     if not session_expiration:
       ttl_seconds = self.services.config_broker.get("login_session.idle_timeout_seconds", USER_TOKEN_EXPIRY_SECONDS)
-      session_expiration = unix_timestamp_seconds() + ttl_seconds
+      session_expiration = unix_timestamp() + ttl_seconds
     return self._create_user_token(user_id, session_expiration, can_renew=False)
 
   def _create_user_token(self, user_id, session_expiration, can_renew):
@@ -180,7 +180,7 @@ class TokenService(Service):
     return new
 
   def renew_token(self, token):
-    now = unix_timestamp_seconds()
+    now = unix_timestamp()
     updated = self.services.database_service.update_one_or_none(
       self.services.database_service.query(Token)
       .filter(Token.token == token.token)
