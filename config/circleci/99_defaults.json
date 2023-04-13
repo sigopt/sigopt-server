@@ -1,0 +1,45 @@
+{
+  "address": {
+    "api_url": "https://sigopt.ninja:4443/api",
+    "app_url": "https://sigopt.ninja:4443"
+  },
+  "db": {
+    "path": "basedb",
+    "query": {
+      "unix_sock": "/var/run/postgresql/.s.PGSQL.5432"
+    },
+    "ssl": false,
+    "user": "produser"
+  },
+  "queue": {
+    "message_groups": {
+      "analytics": {
+        "pull_queue_name": "analytics-messages-1"
+      },
+      "optimization": {
+        "pull_queue_name": "optimize-messages-1"
+      }
+    }
+  },
+  "queues": [
+    {
+      "name": "analytics-messages-1",
+      "provider": "redis-message"
+    },
+    {
+      "name": "optimize-messages-1",
+      "provider": "redis-optimize"
+    }
+  ],
+  "web": {
+    "cookiejar_force_path_style": true,
+    "cookiejar_region": "us-eeast-1",
+    "scoped_cookie_name": "sigoptlocal-session-id",
+    "static_asset_url": "https://sigopt.ninja:4443/static/a/",
+    "static_routes": {
+      "/static/a": {
+        "dir": "artifacts/web/static"
+      }
+    }
+  }
+}
