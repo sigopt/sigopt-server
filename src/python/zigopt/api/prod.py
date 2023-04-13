@@ -28,8 +28,6 @@ class ProdApp(Flask):
     self.tracer = tracer
     self.config_broker = config_broker
 
-    config_broker.log_configs()
-
     self.global_services = self.ServiceBag(config_broker, is_qworker=False)
     self.request_local_services_factory = self.RequestLocalServiceBag
 
