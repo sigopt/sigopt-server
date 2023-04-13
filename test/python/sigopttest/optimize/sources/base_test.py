@@ -158,8 +158,9 @@ class TestSourceFunctionality(UnitTestBase):
       assert scored_suggestion.suggestion in suggestions
 
   def test_categorical_scoring(self, services, experiment):
-    services.config_broker["model.max_simultaneous_af_points"] = 1000
-    services.config_broker["model.nonzero_mean_default"] = "automatic"
+    model = services.config_broker.data.setdefault("model", {})
+    model["max_simultaneous_af_points"] = 1000
+    model["nonzero_mean_default"] = "automatic"
     source = CategoricalOptimizationSource(services, experiment)
     suggestions = self.sample_suggestions(services, experiment, 10)
     observations = self.form_random_observations_from_suggestions(experiment, suggestions)
