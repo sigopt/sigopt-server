@@ -60,8 +60,8 @@ class TestNextSuggestion:
     random_fallback,
     suggestion_broker,
   ):
-    services.config_broker["queue.forbid_random_fallback"] = random_fallback
-    services.config_broker["features.raiseSoftExceptions"] = True
+    services.config_broker.setdefault("queue", {})["forbid_random_fallback"] = random_fallback
+    services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = True
     suggestion_broker.suggestion_to_serve_next = Mock(side_effect=CustomException())
     with pytest.raises(CustomException):
       suggestion_broker.next_suggestion(
