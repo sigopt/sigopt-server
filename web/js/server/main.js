@@ -7,7 +7,7 @@
 import _ from "underscore";
 import cluster from "cluster";
 import path from "path";
-import {ConfigBroker} from "sigopt-config";
+import {loadConfigBrokerFromDirectory} from "sigopt-config";
 import {program} from "commander";
 
 import GlobalServiceBag from "../services/global";
@@ -40,7 +40,7 @@ export default function main() {
     _.each(_.range(opts.workers || 1), () => cluster.fork());
     return Promise.resolve(null);
   }
-  return ConfigBroker.fromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR)
+  return loadConfigBrokerFromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR)
     .then((configBroker) => {
       const globalServiceBag = new GlobalServiceBag(
         configBroker,
@@ -55,6 +55,7 @@ export default function main() {
       const nodePort = configBroker.get("express.port", 4000);
       const app = makeApp(globalServiceBag);
       const server = app.listen(nodePort);
+      console.log(`Listening on ${nodePort}`);
       server.keepAliveTimeout = 75 * 1000;
       server.headersTimeout = 75 * 1000;
       return {app, server};
