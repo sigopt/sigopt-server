@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.api.auth import api_token_authentication
 from zigopt.common.sigopt_datetime import current_datetime, datetime_to_seconds
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.experiments.observations.base import ObservationHandler
 from zigopt.handlers.experiments.observations.create import CreatesObservationsMixin
 from zigopt.handlers.validate.observation import validate_observation_json_dict_for_update
@@ -18,10 +19,16 @@ class ObservationsUpdateHandler(CreatesObservationsMixin, ObservationHandler):
   authenticator = api_token_authentication
   required_permissions = WRITE
 
+  experiment: Experiment | None
+  observation: Observation | None
+
   def parse_params(self, request):
     return request.params()
 
   def handle(self, json_dict):
+    assert self.experiment is not None
+    assert self.observation is not None
+
     validate_observation_json_dict_for_update(json_dict, self.experiment, self.observation)
     no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
 
