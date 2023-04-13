@@ -131,11 +131,11 @@ def set_string_clause(key, value):
     return value
   parts = key.split(".", 1)
   head = parts[0]
-  tail = list_get(parts, 1)
+  tail_ = list_get(parts, 1)
   adjacent_values = {}
   if head == "value_stddev":
     adjacent_values["value"] = 1.0
-  return {head: set_string_clause(tail, value), **adjacent_values}
+  return {head: set_string_clause(tail_, value), **adjacent_values}
 
 
 def get_json_key(obj, key):
@@ -144,8 +144,8 @@ def get_json_key(obj, key):
       return obj
     parts = key.split(".", 1)
     head = parts[0]
-    tail = list_get(parts, 1)
-    return recurse(obj[head], tail)
+    tail_ = list_get(parts, 1)
+    return recurse(obj[head], tail_)
 
   return recurse(obj.to_json(), key)
 
@@ -167,6 +167,7 @@ def is_null(field):
 
 
 class TestTrainingRunsList(V1Base):
+  # pylint: disable=too-many-public-methods
   @pytest.fixture(autouse=True)
   def setup_project(self, connection, setup):
     del setup

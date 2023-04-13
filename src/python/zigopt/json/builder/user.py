@@ -16,11 +16,11 @@ class PlannedUsageJsonBuilder(JsonBuilder):
 
   @field(ValidationType.boolean)
   def track(self) -> Optional[bool]:
-    return self._planned_usage.GetFieldOrNone("track")
+    return self._planned_usage.GetFieldOrNone("track")  # type: ignore
 
   @field(ValidationType.boolean)
   def optimize(self) -> Optional[bool]:
-    return self._planned_usage.GetFieldOrNone("optimize")
+    return self._planned_usage.GetFieldOrNone("optimize")  # type: ignore
 
 
 class UserJsonBuilder(JsonBuilder):

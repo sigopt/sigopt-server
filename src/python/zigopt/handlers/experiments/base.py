@@ -54,14 +54,14 @@ class ExperimentHandler(Handler):
   JsonBuilder = ExperimentJsonBuilder
   redirect_ai_experiments = False
 
-  def __init__(self, services, request, experiment_id):
+  def __init__(self, services, req, experiment_id):
     if experiment_id is None:
       raise Exception("Experiment id required")
 
     self.client = None
     self.experiment_id = experiment_id
     self.experiment = None
-    super().__init__(services, request)
+    super().__init__(services, req)
 
   def prepare(self):
     super().prepare()

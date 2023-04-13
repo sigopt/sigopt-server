@@ -65,7 +65,7 @@ def save_console_logs(test, logs):
   sanitized_name = sanitize_test_name_for_path(test.name)
   f = os.path.join(CONSOLE_LOG_DIR, f"{sanitized_name}.txt")
   if logs:
-    with open(f, "w") as outfile:
+    with open(f, "w", encoding="utf-8") as outfile:
       for entry in logs:
         outfile.write(f"{json.dumps(entry)}\n")
 
@@ -98,13 +98,13 @@ def pytest_runtest_makereport(item, call):
   setattr(item, "failed", rep.failed or getattr(rep, "failed", False))
 
 
-@pytest.fixture(scope="session")
-def browser(config_broker):
+@pytest.fixture(name="browser", scope="session")
+def fixture_browser(config_broker):
   return config_broker["test.browser"]
 
 
-@pytest.fixture(scope="session")
-def headless(request):
+@pytest.fixture(name="headless", scope="session")
+def fixture_headless(request):
   return request.param
 
 
@@ -130,8 +130,8 @@ def _driver(request, _session_driver):
 
 
 # TODO(SN-970): firefox and webkit button clicks are flaky, why?
-@pytest.fixture(scope="session", params=["chrome"])
-def playwright_browser(headless, config_broker, request):
+@pytest.fixture(name="playwright_browser", scope="session", params=["chrome"])
+def fixture_playwright_browser(headless, config_broker, request):
   kwargs = {"headless": headless}
   if request.param == "chrome":
     browser = "chromium"
@@ -142,8 +142,8 @@ def playwright_browser(headless, config_broker, request):
     yield getattr(p, browser).launch(**kwargs)
 
 
-@pytest.fixture(scope="function")
-def playwright_page(request, playwright_browser):
+@pytest.fixture(name="playwright_page", scope="function")
+def fixture_playwright_page(request, playwright_browser):
   browser = playwright_browser
   width, height = (int(x) for x in os.environ.get("GEOMETRY", "1920x1080").split("x"))
   context = browser.new_context(ignore_https_errors=True, viewport={"width": width, "height": height})
@@ -156,14 +156,14 @@ def playwright_page(request, playwright_browser):
     page.close()
 
 
-@pytest.fixture(scope="function")
-def driver(request, _driver, web, api):
+@pytest.fixture(name="driver", scope="function")
+def fixture_driver(request, _driver, web, api):
   _driver.reset()
   yield _driver
 
 
-@pytest.fixture(scope="function")
-def page(playwright_page, web, api):
+@pytest.fixture(name="page", scope="function")
+def fixture_page(playwright_page, web, api):
   yield playwright_page
 
 

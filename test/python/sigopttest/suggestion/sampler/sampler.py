@@ -40,6 +40,7 @@ from sigopttest.base.utils import partial_opt_args
 
 
 class TestSuggestSampler:
+  # pylint: disable=too-many-public-methods
   @pytest.fixture
   def segmenter(self):
     return ExperimentParameterSegmenter(Mock())
@@ -134,6 +135,7 @@ class TestSuggestSampler:
     return conditional
 
   def test_coverage(self, segmenter):
+    # pylint: disable=too-many-locals,too-many-statements
     int_parameter = self.int_parameter(0, 10)
     double_parameter = self.double_parameter(3, 5)
     categorical_parameter = self.categorical_parameter(
@@ -233,6 +235,7 @@ class TestSuggestSampler:
       assert len([c in ClosedInterval(4.5, 5) for c in double_observations]) >= 1
 
   def test_constrained_random_sampler(self, segmenter):
+    # pylint: disable=too-many-locals
     int_parameter_1 = self.int_parameter(0, 10, name="i_1")
     int_parameter_2 = self.int_parameter(10, 20, name="i_2")
     double_parameter_1 = self.double_parameter(30, 40, name="d_1")
@@ -302,6 +305,7 @@ class TestSuggestSampler:
       assert suggestion.get_assignment(double_parameter_1) + suggestion.get_assignment(double_parameter_2) <= 85
 
   def test_integer_constrained_sampler(self, segmenter):
+    # pylint: disable=too-many-locals
     c1 = 70
     c2 = 85
     c3 = 0.5
@@ -678,7 +682,7 @@ class TestSuggestSampler:
     for _ in range(num_values):
       optimization_args = partial_opt_args(observation_iterator=observations, observation_count=len(observations))
       sampler = CategoricalOnlySampler(services, experiment, optimization_args)
-      suggestion = sampler.fetch_best_suggestions(1)[0]
+      suggestion = list(sampler.fetch_best_suggestions(1))[0]
       observations.append(self.suggestion_to_observation(experiment, suggestion))
 
     for check in (observations, multi_observations):
@@ -699,7 +703,7 @@ class TestSuggestSampler:
     for _ in range(num_values):
       optimization_args = partial_opt_args(open_suggestions=suggestions)
       sampler = CategoricalOnlySampler(services, experiment, optimization_args)
-      suggestion = sampler.fetch_best_suggestions(1)[0]
+      suggestion = list(sampler.fetch_best_suggestions(1))[0]
       suggestions.append(suggestion)
     observations = [self.suggestion_to_observation(experiment, s) for s in suggestions]
 
@@ -819,6 +823,7 @@ class TestSuggestSampler:
       assert suggestion.get_assignment(parameter) in [0, 2]
 
   def test_conditionals(self, segmenter):
+    # pylint: disable=too-many-locals,too-many-statements
     conditional_parameter = self.conditional_parameter(
       "x",
       [
@@ -844,7 +849,7 @@ class TestSuggestSampler:
           double_parameter.copy_protobuf(),
           categorical_parameter.copy_protobuf(),
         ],
-        conditionals=[conditional_parameter.copy_protobuf()],
+        conditionals=[conditional_parameter.copy_protobuf()],  # pylint: disable=protobuf-undefined-attribute
       ),
     )
 

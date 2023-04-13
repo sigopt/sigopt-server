@@ -45,6 +45,7 @@ class _TestObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler
 
 
 class V1Base(BaseTest):
+  # pylint: disable=too-many-public-methods
   @pytest.fixture(autouse=True)
   def setup(self, services):
     # pylint: disable=attribute-defined-outside-init
@@ -105,7 +106,6 @@ class V1Base(BaseTest):
     conn = Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=None,
         client_token="_",
       ),
@@ -220,6 +220,7 @@ class V1Base(BaseTest):
     development=False,
     has_verified_email=True,
   ):
+    # pylint: disable=too-many-locals
     api_url = cls.get_api_url(config_broker)
     email = email or AuthProvider.randomly_generated_email()
     password = AuthProvider.randomly_generated_password()
@@ -237,7 +238,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=user_token,
         client_token=client_token,
         development=development,
@@ -271,7 +271,6 @@ class V1Base(BaseTest):
     client_conn = Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=user_token,
       ),
       client_id=client_id,
@@ -292,7 +291,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url,
-        api=api,
         client_token=development_token.token,
       ),
       client_id=connection.client_id,
@@ -315,7 +313,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=None,
         client_token=None,
       ),
@@ -334,7 +331,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         user_token=auth_provider.create_user_token(),
         client_token=auth_provider.create_user_client_token(),
       ),
@@ -348,7 +344,7 @@ class V1Base(BaseTest):
   def make_v1_guest_connection(cls, config_broker, api, guest_token=None):
     api_url = cls.get_api_url(config_broker)
     return Connection(
-      IntegrationTestConnection(api_url=api_url, api=api, user_token=None, client_token=guest_token),
+      IntegrationTestConnection(api_url=api_url, user_token=None, client_token=guest_token),
       client_id=None,
       organization_id=None,
     )
@@ -365,7 +361,6 @@ class V1Base(BaseTest):
     return Connection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         client_token=client_token,
       ),
       client_id,
@@ -399,7 +394,7 @@ class V1Base(BaseTest):
       validate_observation_json_dict_for_create(o, experiment)
       obs = Observation(experiment_id=experiment.id)
       observation_data = ObservationData()
-      handler = _TestObservationsCreateHandler(self.services, request=None, experiment_id=experiment.id)
+      handler = _TestObservationsCreateHandler(self.services, req=None, experiment_id=experiment.id)
       handler.experiment = experiment
       handler.observation_from_json(
         o,

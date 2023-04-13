@@ -7,6 +7,7 @@ from integration.browser.tests.interaction.experiment.test_base import Experimen
 
 
 class TestList(ExperimentBrowserTest):
+  # pylint: disable=too-many-public-methods
   PAGE_SIZE = 10
   SEARCH_TOOLS_PREFIX = "div.search-tools-wrapper"
 
@@ -292,6 +293,7 @@ class TestList(ExperimentBrowserTest):
       assert other_user.name in title or other_user.name in author
 
   def test_experiment_search_pagination_history(self, api_connection, logged_in_driver):
+    # pylint: disable=too-many-locals
     driver = logged_in_driver
 
     def find_all_by_pagination(target):

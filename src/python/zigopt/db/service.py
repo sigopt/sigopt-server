@@ -183,6 +183,8 @@ def retry_on_error(func):
 
 
 class DatabaseService(Service):
+  # pylint: disable=too-many-public-methods
+
   def __init__(self, services, connection):
     super().__init__(services)
     self._session = None
@@ -215,14 +217,14 @@ class DatabaseService(Service):
   # https://github.com/zzzeek/sqlalchemy/blob/dd755ca59b173dfd94c7198557553604ccdfa1c2/lib/sqlalchemy/orm/state.py#L227
   def _ensure_safe_to_insert(self, obj):
     if inspect(obj).detached:
-      string = (
+      msg = (
         "Cannot insert a detached ORM object. "
         "This may happen if you try to insert an object that is already present in the SQLAlchemy session. "
         "If this is intentional, you may need to either set `inspect(obj).key = None` "
         "or create a new ORM object based on `obj.__dict__` but excluding `_sa_instance_state` "
         f"on {obj} that was pulled from the DB"
       )
-      raise ValueError(string)
+      raise ValueError(msg)
 
   @sanitize_errors
   def flush_session(self):

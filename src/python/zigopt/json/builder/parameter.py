@@ -13,9 +13,11 @@ from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationT
 from zigopt.json.conditions import conditions_json
 from zigopt.json.render import render_param_value
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
+  BetaPrior,
   Bounds,
   ExperimentCategoricalValue,
   ExperimentParameter,
+  NormalPrior,
   Prior,
 )
 
@@ -40,6 +42,8 @@ class BoundsJsonBuilder(JsonBuilder):
 class BasePriorJsonBuilder(JsonBuilder):
   PARAMETER_PRIOR_NAME: str
 
+  _prior: Prior | NormalPrior | BetaPrior
+
   def __init__(self, prior: Prior):
     self._prior = prior
 
@@ -52,6 +56,8 @@ class NormalPriorJsonBuilder(BasePriorJsonBuilder):
   object_name = "normal_prior"
 
   PARAMETER_PRIOR_NAME = ParameterPriorNames.NORMAL
+
+  _prior: NormalPrior
 
   @field(ValidationType.number)
   def mean(self) -> float:
@@ -66,6 +72,8 @@ class BetaPriorJsonBuilder(BasePriorJsonBuilder):
   object_name = "beta_prior"
 
   PARAMETER_PRIOR_NAME = ParameterPriorNames.BETA
+
+  _prior: BetaPrior
 
   @field(ValidationType.number)
   def shape_a(self) -> float:

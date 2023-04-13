@@ -359,7 +359,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    assert view_input["metrics_info"].optimized_metrics_index == []
+    assert not view_input["metrics_info"].optimized_metrics_index
     assert not view_input["metrics_info"].has_optimization_metrics
 
     response = self.call_sigoptcompute(SPESearchNextPoints, view_input)
@@ -388,6 +388,7 @@ class SCAdapter(Service):
     nonzero_mean_choice=None,
     tag=None,
   ):
+    # pylint: disable=too-many-locals
     if not observations:
       return self._make_suggestion_datas(experiment, [])
     assert 1 <= num_to_suggest <= MAXIMUM_NUMBER_OF_SUGGESTIONS_CL_MAX
@@ -452,6 +453,7 @@ class SCAdapter(Service):
     nonzero_mean_choice=None,
     tag=None,
   ):
+    # pylint: disable=too-many-locals
     if not observations:
       return self._make_suggestion_datas(experiment, [])
     assert 1 <= num_to_suggest <= MAXIMUM_NUMBER_OF_SUGGESTIONS_CL_MAX
@@ -480,7 +482,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    assert view_input["metrics_info"].optimized_metrics_index == []
+    assert not view_input["metrics_info"].optimized_metrics_index
     assert not view_input["metrics_info"].has_optimization_metrics
 
     response = self.call_sigoptcompute(SearchNextPoints, view_input)

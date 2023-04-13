@@ -70,6 +70,7 @@ class TestListAiExperiments(ExperimentsTestBase):
     ],
   )
   def test_sort(self, services, connection, project1, sort_field, order, ascending):
+    # pylint: disable=too-many-locals
     e1 = (
       connection.clients(project1.client_id)
       .projects(project1.reference_id)

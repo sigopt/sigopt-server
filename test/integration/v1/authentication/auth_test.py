@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# pylint: disable=too-many-lines
 from http import HTTPStatus
 
 import pytest
@@ -22,6 +23,7 @@ from integration.v1.test_base import Connection, V1Base
 
 
 class TestAuth(V1Base):
+  # pylint: disable=too-many-public-methods
   @classmethod
   @pytest.fixture(scope="function")
   def client_id(cls, connection):
@@ -380,6 +382,7 @@ class TestAuth(V1Base):
 
   @pytest.mark.slow
   def test_experiment_guest_token(self, connection, guest_with_experiment, guest_experiment, attacker):
+    # pylint: disable=too-many-statements
     # Guests cant reshare experiments
     with RaisesApiException(HTTPStatus.FORBIDDEN):
       guest_with_experiment.experiments(guest_experiment.id).tokens().create()
@@ -892,7 +895,7 @@ class TestAuth(V1Base):
     all_tokens = list(owner_connection.clients(owner_connection.client_id).tokens().fetch().iterate_pages())
     client_token = find(all_tokens, lambda t: t.user == owner_connection.user_id and not t.development)
     client_connection = Connection(
-      IntegrationTestConnection(api_url, api, client_token.token),
+      IntegrationTestConnection(api_url, client_token.token),
       email=owner_connection.email,
       password=owner_connection.password,
       client_id=client_token.client,
@@ -1009,7 +1012,7 @@ class TestTokens(V1Base):
         ),
       )
       db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, api, token.token)
+      new_connection = IntegrationTestConnection(api_url, token.token)
       token_obj = new_connection.tokens("self").fetch()
       assert token_obj.token == token.token
       assert token_obj.token_type == "guest"
@@ -1034,7 +1037,7 @@ class TestTokens(V1Base):
         ),
       )
       db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, api, token.token)
+      new_connection = IntegrationTestConnection(api_url, token.token)
       with RaisesApiException(HTTPStatus.FORBIDDEN):
         new_connection.tokens("self").fetch()
       with RaisesApiException(HTTPStatus.FORBIDDEN):
@@ -1052,7 +1055,7 @@ class TestTokens(V1Base):
         ),
       )
       db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, api, token.token)
+      new_connection = IntegrationTestConnection(api_url, token.token)
       token_obj = new_connection.tokens("self").fetch()
       assert token_obj.expires is None
       assert new_connection.experiments(e.id).fetch().id == e.id
@@ -1071,7 +1074,7 @@ class TestTokens(V1Base):
         ),
       )
       db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, api, token.token)
+      new_connection = IntegrationTestConnection(api_url, token.token)
       token_obj = new_connection.tokens("self").fetch()
       assert token_obj.expires is None
       assert new_connection.experiments(e.id).fetch().id == e.id
@@ -1210,7 +1213,7 @@ class TestPermissions(V1Base):
     client_token = auth_provider.create_client_token(connection.client_id, other_connection.user_id)
     auth_provider.create_membership(other_connection.user_id, connection.organization_id)
     auth_provider.create_permission(other_connection.user_id, connection.client_id, READ)
-    client_only_connection = IntegrationTestConnection(api_url, api, client_token=client_token)
+    client_only_connection = IntegrationTestConnection(api_url, client_token=client_token)
 
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
     with connection.create_any_experiment() as e:
@@ -1223,7 +1226,7 @@ class TestPermissions(V1Base):
     client_token = auth_provider.create_client_token(connection.client_id, other_connection.user_id)
     auth_provider.create_membership(other_connection.user_id, connection.organization_id)
     auth_provider.create_permission(other_connection.user_id, connection.client_id, WRITE)
-    client_only_connection = IntegrationTestConnection(api_url, api, client_token=client_token)
+    client_only_connection = IntegrationTestConnection(api_url, client_token=client_token)
 
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
     with connection.create_any_experiment() as e:
@@ -1236,7 +1239,7 @@ class TestPermissions(V1Base):
     client_token = auth_provider.create_client_token(connection.client_id, other_connection.user_id)
     auth_provider.create_membership(other_connection.user_id, connection.organization_id)
     auth_provider.create_permission(other_connection.user_id, connection.client_id, ADMIN)
-    client_only_connection = IntegrationTestConnection(api_url, api, client_token=client_token)
+    client_only_connection = IntegrationTestConnection(api_url, client_token=client_token)
 
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
     with connection.create_any_experiment() as e:
@@ -1244,7 +1247,7 @@ class TestPermissions(V1Base):
 
   def test_token_signup_scope(self, owner_connection, config_broker, api, api_url):
     token = owner_connection.clients(owner_connection.client_id).tokens().create()
-    connection = IntegrationTestConnection(api_url, api, client_token=token.token)
+    connection = IntegrationTestConnection(api_url, client_token=token.token)
     assert connection.sessions().fetch().user is None
     assert connection.sessions().fetch().client.id == owner_connection.client_id
     connection.organizations(owner_connection.organization_id).fetch()

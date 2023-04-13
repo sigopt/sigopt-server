@@ -231,6 +231,7 @@ def create_db(
   initialize_data=True,
   echo=False,
 ):
+  # pylint: disable=too-many-locals,too-many-statements
   if "production" in config_file_name:
     raise Exception("whoa whoa whoa, this is probably a bad idea on the prod database")
 
@@ -504,7 +505,7 @@ def parse_args():
   return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
   the_args = parse_args()
 
   config_file = the_args.config_file
@@ -527,3 +528,7 @@ if __name__ == "__main__":
       initialize_data=the_args.initialize_data,
       echo=True,
     )
+
+
+if __name__ == "__main__":
+  main()

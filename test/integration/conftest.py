@@ -52,8 +52,8 @@ def wait_for_url(url, proc=None, seconds=10, raise_for_status=False):
     raise Exception(f"{url} did not start") from e
 
 
-@pytest.fixture(scope="session", autouse=True)
-def profiler(request):
+@pytest.fixture(name="profiler", scope="session", autouse=True)
+def fixture_profiler(request):
   profile = request.config.option.profile
   profiler = Profiler() if profile else NullProfiler()
   profiler.enable()
@@ -62,14 +62,14 @@ def profiler(request):
   profiler.print_stats()
 
 
-@pytest.fixture(scope="session")
-def config_broker(request):
+@pytest.fixture(name="config_broker", scope="session")
+def fixture_config_broker(request):
   config_file = request.config.getoption("--config-file")
   return ConfigBroker.from_file(config_file)
 
 
-@pytest.fixture(scope="session")
-def api_url(config_broker):
+@pytest.fixture(name="api_url", scope="session")
+def fixture_api_url(config_broker):
   return BaseTest.get_api_url(config_broker)
 
 
@@ -85,21 +85,21 @@ def auth_provider(config_broker, db_connection, api, inbox, services):
   return AuthProvider(config_broker, db_connection, api_url, services)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def redis_server(config_broker):
+@pytest.fixture(name="redis_server", scope="session", autouse=True)
+def fixture_redis_server(config_broker):
   yield
 
 
-@pytest.fixture(scope="session")
-def global_services(config_broker, email_server, redis_server):
+@pytest.fixture(name="global_services", scope="session")
+def fixture_global_services(config_broker, email_server, redis_server):
   del email_server
   del redis_server
   # depends on redis_server being started
   return ApiServiceBag(config_broker, is_qworker=False)
 
 
-@pytest.fixture
-def services(global_services, config_broker):
+@pytest.fixture(name="services")
+def fixture_services(global_services, config_broker):
   ret = ApiRequestLocalServiceBag(global_services)
 
   # In case the test modifies the service bag with mocks pull the references we need
@@ -135,8 +135,8 @@ def wait_for_messages_to_finish(global_services, queue_name, timeout=60):
   )
 
 
-@pytest.fixture(scope="function")
-def wait_for_empty_optimization_queue(global_services):
+@pytest.fixture(name="wait_for_empty_optimization_queue", scope="function")
+def fixture_wait_for_empty_optimization_queue(global_services):
   def waiter(timeout=60):
     return wait_for_messages_to_finish(
       global_services,
@@ -147,16 +147,16 @@ def wait_for_empty_optimization_queue(global_services):
   return waiter
 
 
-@pytest.fixture(scope="function")
-def wait_for_empty_analytics_queue(global_services):
+@pytest.fixture(name="wait_for_empty_analytics_queue", scope="function")
+def fixture_wait_for_empty_analytics_queue(global_services):
   return lambda: wait_for_messages_to_finish(
     global_services,
     global_services.config_broker["queue.message_groups.analytics.pull_queue_name"],
   )
 
 
-@pytest.fixture(scope="function")
-def db_connection(services):
+@pytest.fixture(name="db_connection", scope="function")
+def fixture_db_connection(services):
   return services.database_service
 
 
@@ -189,20 +189,20 @@ def wait_for_queue_cleanup(global_services, services):
       ) from e
 
 
-@pytest.fixture(scope="session")
-def api(request, config_broker, email_server, api_url):
+@pytest.fixture(name="api", scope="session")
+def fixture_api(request, config_broker, email_server, api_url):
   del email_server
   wait_for_url(f"{api_url}/health")
   yield
 
 
-@pytest.fixture(scope="session")
-def email_enabled(config_broker):
+@pytest.fixture(name="email_enabled", scope="session")
+def fixture_email_enabled(config_broker):
   return config_broker.get("email.enabled", True)
 
 
-@pytest.fixture(scope="session")
-def base_email_url(config_broker, email_enabled):
+@pytest.fixture(name="base_email_url", scope="session")
+def fixture_base_email_url(config_broker, email_enabled):
   base_url = None
   if email_enabled:
     receive_host = config_broker["smtp.receive_host"]
@@ -211,15 +211,15 @@ def base_email_url(config_broker, email_enabled):
   return base_url
 
 
-@pytest.fixture(scope="session")
-def email_server(config_broker, email_enabled, base_email_url):
+@pytest.fixture(name="email_server", scope="session")
+def fixture_email_server(config_broker, email_enabled, base_email_url):
   base_url = base_email_url
   if email_enabled:
     wait_for_url(f"{base_url}/health")
 
 
-@pytest.fixture(scope="function")
-def base_inbox(email_server, email_enabled, base_email_url, config_broker, wait_for_empty_analytics_queue):
+@pytest.fixture(name="base_inbox", scope="function")
+def fixture_base_inbox(email_server, email_enabled, base_email_url, config_broker, wait_for_empty_analytics_queue):
   del email_server
   del wait_for_empty_analytics_queue
   enabled = email_enabled
@@ -265,8 +265,8 @@ def check_for_deep_mocked_services(global_services):
     )
 
 
-@pytest.fixture(scope="function")
-def inbox(base_inbox):
+@pytest.fixture(name="inbox", scope="function")
+def fixture_inbox(base_inbox):
   if base_inbox:
     base_inbox.reset()
   return base_inbox

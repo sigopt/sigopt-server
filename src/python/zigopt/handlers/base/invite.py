@@ -59,6 +59,7 @@ class InviteHandler(Handler):
     invite_code=None,
     invite_id=None,
   ):
+    # pylint: disable=too-many-locals
     invitee = self.services.user_service.find_by_email(email)
     inviter = self.auth.current_user
 
@@ -133,6 +134,7 @@ class InviteHandler(Handler):
     return list(client_invite_map.values())
 
   def update_existing_user(self, invite, organization, invitee, client_invites, skip_email, skip_check, inviter):
+    # pylint: disable=too-many-locals
     if not skip_check:
       for client_invite in client_invites:
         invitee_permission = self.services.permission_service.find_by_client_and_user(

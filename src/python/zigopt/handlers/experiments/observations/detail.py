@@ -40,6 +40,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     )
 
   def handle(self, args):
+    # pylint: disable=too-many-locals,unnecessary-lambda-assignment
     paging = args.paging
     sort = args.sort
     deleted = args.deleted

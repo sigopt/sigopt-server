@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import json
+import operator
 
 from sqlalchemy import cast as sql_cast
 from sqlalchemy import func, types
@@ -44,26 +45,22 @@ Cast.NUMERIC = Cast(lambda x: x.cast(types.Numeric), ValidationType.number)
 Cast.TEXT = Cast(lambda x: x.cast(types.Text), ValidationType.string)
 
 OPERATOR_EQ_STRING = "=="
-OPERATOR_EQ = lambda x, y: x == y
-OPERATOR_NE = lambda x, y: x != y
-OPERATOR_GE = lambda x, y: x >= y
-OPERATOR_GT = lambda x, y: x > y
-OPERATOR_LE = lambda x, y: x <= y
-OPERATOR_LT = lambda x, y: x < y
-OPERATOR_ISNULL = lambda x, y: x.is_(None)
-OPERATOR_IN = lambda x, y: x.in_(y)
 
-ORDERING_OPERATORS = (OPERATOR_GE, OPERATOR_GT, OPERATOR_LE, OPERATOR_LT)
+ORDERING_OPERATORS = (operator.ge, operator.gt, operator.le, operator.lt)
 
 STRING_TO_OPERATOR_DICT = {
-  OPERATOR_EQ_STRING: OPERATOR_EQ,
-  "!=": OPERATOR_NE,
-  ">=": OPERATOR_GE,
-  ">": OPERATOR_GT,
-  "<=": OPERATOR_LE,
-  "<": OPERATOR_LT,
-  "isnull": OPERATOR_ISNULL,
+  OPERATOR_EQ_STRING: operator.eq,
+  "!=": operator.ne,
+  ">=": operator.ge,
+  ">": operator.gt,
+  "<=": operator.le,
+  "<": operator.lt,
+  "isnull": lambda x, y: x.is_(None),
 }
+
+
+def sqlalchemy_operator_contains(x, y):
+  return x.in_(y)
 
 
 class Field:
@@ -148,7 +145,7 @@ class Field:
   def interpret_operator(self, operator_string):
     if self.name == "state":
       if operator_string == OPERATOR_EQ_STRING:
-        return OPERATOR_IN
+        return sqlalchemy_operator_contains
       raise BadParamError(f"Only the `{OPERATOR_EQ_STRING}` operator is supported for the `state` field")
     # TODO(SN-1095): Allow comparing to None to find "unset" values?
     # TODO(SN-1096): Do we need to support .has_key?
@@ -176,25 +173,25 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
       if field.clause is None:
         raise BadParamError(f"Invalid field: {field.name}")
       input_operator = get_with_validation(f, "operator", ValidationType.string)
-      operator = field.interpret_operator(input_operator)
-      if operator is OPERATOR_ISNULL:
+      resolved_operator = field.interpret_operator(input_operator)
+      if resolved_operator is STRING_TO_OPERATOR_DICT["isnull"]:
         cast, value = None, None
       else:
         input_value = get_unvalidated(f, "value")
         cast, value = field.validate_and_interpret_value(input_value)
       # NOTE: We need to use `is` here, since 1 == True
       can_be_ordered = not any(value is v for v in (True, False, None))
-      if not can_be_ordered and operator in ORDERING_OPERATORS:
+      if not can_be_ordered and resolved_operator in ORDERING_OPERATORS:
         raise BadParamError(f"Cannot filter the value `{input_value}` with the operator `{input_operator}`")
       if cast is None:
         casted_value = None
       else:
         casted_value = cast.python_cast_func(value)
-      if operator is None:
+      if resolved_operator is None:
         raise BadParamError(f"Invalid operator: {input_operator}")
       yield Filter(
         field=field,
-        operator=operator,
+        operator=resolved_operator,
         casted_value=casted_value,
       )
 
@@ -216,6 +213,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
     )
 
   def _generate_response(self, params, client, project, organization):
+    # pylint: disable=too-many-locals
     if client:
       query = self.services.database_service.query(TrainingRun).filter(TrainingRun.client_id == client.id)
       by_organization = False

@@ -99,7 +99,7 @@ class MetricJsonBuilder(JsonBuilder):
 
   @field(ValidationType.number)
   def threshold(self) -> Optional[float]:
-    return self._metric.GetFieldOrNone("threshold")
+    return self._metric.GetFieldOrNone("threshold")  # type: ignore
 
   @field(ValidationType.string)
   def strategy(self) -> str:
@@ -177,6 +177,7 @@ class RunProgressJsonBuilder(JsonBuilder):
 
 
 class ExperimentJsonBuilder(JsonBuilder):
+  # pylint: disable=too-many-public-methods
   object_name = "experiment"
 
   def __init__(

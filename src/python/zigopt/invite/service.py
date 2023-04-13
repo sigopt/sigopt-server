@@ -14,6 +14,7 @@ from zigopt.user.model import get_domain_from_email, normalize_email
 
 
 class InviteService(Service):
+  # pylint: disable=too-many-public-methods
   def create_invite(self, email, organization_id, inviter_id, invite_code, membership_type, invite_id=None):
     return Invite(
       id=invite_id,
@@ -254,6 +255,7 @@ class InviteService(Service):
 
   @generator_to_list
   def create_memberships_and_permissions_from_invites(self, user, invites, requestor):
+    # pylint: disable=too-many-locals
     invite_ids = [invite.id for invite in invites]
     inviters = to_map_by_key(self.services.user_service.find_by_ids([i.inviter for i in invites]), lambda u: u.id)
     organizations = to_map_by_key(

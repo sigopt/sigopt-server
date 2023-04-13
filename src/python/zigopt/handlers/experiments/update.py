@@ -170,6 +170,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     return self.client
 
   def handle(self, json_dict):
+    # pylint: disable=too-many-locals,too-many-statements
     no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
 
     validate_experiment_json_dict_for_update(json_dict)
@@ -453,6 +454,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
       )
 
   def update_param(self, parameter, parameter_json, experiment_type):
+    # pylint: disable=too-many-statements
     if "type" in parameter_json:
       param_type = parameter.param_type
       set_parameter_type_from_json(parameter, parameter_json)

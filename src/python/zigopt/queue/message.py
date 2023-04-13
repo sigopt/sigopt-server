@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from google.protobuf.message import Message
+
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
 
@@ -18,13 +20,13 @@ class BaseMessageBody:
     raise NotImplementedError()
 
   @classmethod
-  def deserialize(cls, string):
+  def deserialize(cls, msg):
     raise NotImplementedError()
 
 
 class ProtobufMessageBody(BaseMessageBody):
   # To be defined by subclasses
-  # PROTOBUF_CLASS: protobuf class
+  PROTOBUF_CLASS: Message
 
   def __init__(self, pb):
     assert isinstance(pb, self.PROTOBUF_CLASS)
@@ -42,9 +44,9 @@ class ProtobufMessageBody(BaseMessageBody):
     return self._message_pb.SerializeToString()
 
   @classmethod
-  def deserialize(cls, string):
+  def deserialize(cls, msg):
     pb = cls.PROTOBUF_CLASS()
-    pb.ParseFromString(string)
+    pb.ParseFromString(msg)
     return cls(pb)
 
 

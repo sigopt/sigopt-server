@@ -38,19 +38,19 @@ class TestMultimetric(UnitTestBase):
         values=[ObservationValue(name="f", value=5), ObservationValue(name="g", value=6)],
       )
     )
-    assert observation.data.sorted_all_metric_values(experiment) == [5, 6]
+    assert observation.data_proxy.sorted_all_metric_values(experiment) == [5, 6]
 
     observation = Observation(
       data=ObservationData(
         values=[ObservationValue(name="g", value=6), ObservationValue(name="f", value=5)],
       )
     )
-    assert observation.data.sorted_all_metric_values(experiment) == [5, 6]
+    assert observation.data_proxy.sorted_all_metric_values(experiment) == [5, 6]
 
     experiment = Experiment(
       experiment_meta=ExperimentMeta(metrics=[ExperimentMetric(name="g"), ExperimentMetric(name="f")])
     )
-    assert observation.data.sorted_all_metric_values(experiment) == [5, 6]
+    assert observation.data_proxy.sorted_all_metric_values(experiment) == [5, 6]
 
     # NOTE: Can we even have this situation?  We handle it as a failure (fine) but could this occur?
     observation = Observation(
@@ -58,11 +58,11 @@ class TestMultimetric(UnitTestBase):
         values=[ObservationValue(name="f"), ObservationValue(name="g", value=6)],
       )
     )
-    assert observation.data.sorted_all_metric_values(experiment) is None
+    assert observation.data_proxy.sorted_all_metric_values(experiment) is None
 
     observation = Observation(data=ObservationData(values=[ObservationValue(name="g", value=6)]))
     with pytest.raises(AssertionError):
-      observation.data.sorted_all_metric_values(experiment)
+      observation.data_proxy.sorted_all_metric_values(experiment)
 
     experiment = Experiment(experiment_meta=ExperimentMeta(metrics=[ExperimentMetric(name="f")]))
     observation = Observation(
@@ -71,19 +71,19 @@ class TestMultimetric(UnitTestBase):
       )
     )
     with pytest.raises(AssertionError):
-      observation.data.sorted_all_metric_values(experiment)
+      observation.data_proxy.sorted_all_metric_values(experiment)
 
     observation = Observation(data=ObservationData(values=[ObservationValue(name="f", value=5)]))
-    assert observation.data.sorted_all_metric_values(experiment) == [5]
+    assert observation.data_proxy.sorted_all_metric_values(experiment) == [5]
 
     observation = Observation(data=ObservationData(values=[ObservationValue(value=5)]))
-    assert observation.data.sorted_all_metric_values(experiment) == [5]
+    assert observation.data_proxy.sorted_all_metric_values(experiment) == [5]
 
     observation = Observation(data=ObservationData(values=[ObservationValue()]))
-    assert observation.data.sorted_all_metric_values(experiment) is None
+    assert observation.data_proxy.sorted_all_metric_values(experiment) is None
 
     observation = Observation(data=ObservationData())
-    assert observation.data.sorted_all_metric_values(experiment) is None
+    assert observation.data_proxy.sorted_all_metric_values(experiment) is None
 
   def test_multimetric_value_var(self):
     experiment = Experiment(
@@ -94,30 +94,30 @@ class TestMultimetric(UnitTestBase):
         values=[ObservationValue(name="f", value_var=5), ObservationValue(name="g", value_var=6)],
       )
     )
-    assert observation.data.sorted_all_metric_value_vars(experiment) == [5, 6]
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) == [5, 6]
 
     observation = Observation(
       data=ObservationData(
         values=[ObservationValue(name="g", value_var=6), ObservationValue(name="f", value_var=5)],
       )
     )
-    assert observation.data.sorted_all_metric_value_vars(experiment) == [5, 6]
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) == [5, 6]
 
     experiment = Experiment(
       experiment_meta=ExperimentMeta(metrics=[ExperimentMetric(name="g"), ExperimentMetric(name="f")])
     )
-    assert observation.data.sorted_all_metric_value_vars(experiment) == [5, 6]
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) == [5, 6]
 
     observation = Observation(
       data=ObservationData(
         values=[ObservationValue(name="f"), ObservationValue(name="g", value_var=6)],
       )
     )
-    assert observation.data.sorted_all_metric_value_vars(experiment) is None
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) is None
 
     observation = Observation(data=ObservationData(values=[ObservationValue(name="g", value_var=6)]))
     with pytest.raises(AssertionError):
-      observation.data.sorted_all_metric_value_vars(experiment)
+      observation.data_proxy.sorted_all_metric_value_vars(experiment)
 
     experiment = Experiment(experiment_meta=ExperimentMeta(metrics=[ExperimentMetric(name="f")]))
     observation = Observation(
@@ -126,19 +126,19 @@ class TestMultimetric(UnitTestBase):
       )
     )
     with pytest.raises(AssertionError):
-      observation.data.sorted_all_metric_value_vars(experiment)
+      observation.data_proxy.sorted_all_metric_value_vars(experiment)
 
     observation = Observation(data=ObservationData(values=[ObservationValue(name="f", value_var=5)]))
-    assert observation.data.sorted_all_metric_value_vars(experiment) == [5]
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) == [5]
 
     observation = Observation(data=ObservationData(values=[ObservationValue(value_var=5)]))
-    assert observation.data.sorted_all_metric_value_vars(experiment) == [5]
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) == [5]
 
     observation = Observation(data=ObservationData(values=[ObservationValue()]))
-    assert observation.data.sorted_all_metric_value_vars(experiment) is None
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) is None
 
     observation = Observation(data=ObservationData())
-    assert observation.data.sorted_all_metric_value_vars(experiment) is None
+    assert observation.data_proxy.sorted_all_metric_value_vars(experiment) is None
 
   def test_form_metrics_info(self):
     meta = ExperimentMeta(metrics=[ExperimentMetric(name="f", objective=MINIMIZE)])

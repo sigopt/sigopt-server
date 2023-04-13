@@ -1,8 +1,5 @@
 title = 'SigOpt Server'
 
-[tool.mypy]
-disable_error_code = 'attr-defined,valid-type'
-
 [tool.black]
 line-length = 120
 

@@ -25,7 +25,7 @@ BLOCKED_METHODS = [
   "aksjdoij",
 ]
 
-assert not (set(m for m, _ in ALLOWED_METHODS) & set(BLOCKED_METHODS))
+assert not set(m for m, _ in ALLOWED_METHODS) & set(BLOCKED_METHODS)
 
 
 def request(method, path):

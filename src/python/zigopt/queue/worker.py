@@ -4,7 +4,7 @@
 import base64
 
 from zigopt.profile.timing import *
-from zigopt.queue.message import QueueMessage, ReceivedMessage
+from zigopt.queue.message import BaseMessageBody, QueueMessage, ReceivedMessage
 
 
 def log_message_content(message_content):
@@ -15,8 +15,8 @@ def log_message_content(message_content):
 
 class QueueWorker:
   # To be defined by subclasses
-  # MESSAGE_TYPE: string (from zigopt.queue.message_types:MessageType)
-  # MessageBody: subclass of zigopt.queue.message:BaseMessageBody
+  MESSAGE_TYPE: str  # defined by MessageType
+  MessageBody: BaseMessageBody
 
   def __init__(self, services, message):
     assert isinstance(message, (QueueMessage, ReceivedMessage))

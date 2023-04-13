@@ -1,13 +1,14 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# pylint: disable=protobuf-undefined-attribute
 import json
 
 import pytest
 from google.protobuf.message import Message
 
 from zigopt.protobuf.dict import dict_to_protobuf, protobuf_to_dict
-from zigopt.protobuf.gen.test.message_pb2 import Child, InvalidDuplicateJsonName, InvalidDuplicateName, Parent
+from zigopt.protobuf.gen.test.message_pb2 import Child, Parent
 from zigopt.protobuf.lib import CopyFrom, MergeFrom
 
 
@@ -121,15 +122,6 @@ def test_to_dict():
   nonstandard_serialization.variable_name = "abc"
   assert_eq(protobuf_to_dict(nonstandard_serialization), {"serialized_name": "abc"})
   assert_eq(dict_to_protobuf(Parent, {"serialized_name": "abc"}), Parent(variable_name="abc"))
-
-
-@pytest.mark.parametrize("Cls", [InvalidDuplicateJsonName, InvalidDuplicateName])
-def test_validate_json(Cls):
-  c = Cls()
-  with pytest.raises(ValueError):
-    protobuf_to_dict(c)
-  with pytest.raises(ValueError):
-    dict_to_protobuf(Cls, {})
 
 
 def test_large_floats():

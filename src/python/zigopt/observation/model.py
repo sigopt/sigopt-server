@@ -61,16 +61,21 @@ class Observation(Base):
     )
 
   @property
+  def data_proxy(self) -> ObservationDataProxy:
+    """Explicitly returns ObservationDataProxy which helps with linting"""
+    return ObservationDataProxy(self.data.underlying)  # pylint: disable=protobuf-undefined-attribute
+
+  @property
   def reported_failure(self):
     return self.data.reported_failure
 
   @property
   def timestamp(self):
-    return self.data.GetFieldOrNone("timestamp")
+    return self.data.GetFieldOrNone("timestamp")  # pylint: disable=protobuf-undefined-attribute
 
   @property
   def client_provided_data(self):
-    return self.data.GetFieldOrNone("client_provided_data")
+    return self.data.GetFieldOrNone("client_provided_data")  # pylint: disable=protobuf-undefined-attribute
 
   @property
   def deleted(self):
@@ -82,23 +87,23 @@ class Observation(Base):
 
   @property
   def task(self):
-    return self.data.GetFieldOrNone("task")
+    return self.data.GetFieldOrNone("task")  # pylint: disable=protobuf-undefined-attribute
 
   @property
   def has_suggestion(self):
     return self.processed_suggestion_id is not None
 
   def get_all_measurements(self, experiment):
-    return self.data.get_all_measurements(experiment)
+    return self.data_proxy.get_all_measurements(experiment)
 
   def get_all_measurements_for_maximization(self, experiment):
-    return self.data.get_all_measurements_for_maximization(experiment)
+    return self.data_proxy.get_all_measurements_for_maximization(experiment)
 
   def get_optimized_measurements_for_maximization(self, experiment):
-    return self.data.get_optimized_measurements_for_maximization(experiment)
+    return self.data_proxy.get_optimized_measurements_for_maximization(experiment)
 
   def value_for_maximization(self, experiment, name):
-    return self.data.value_for_maximization(experiment, name)
+    return self.data_proxy.value_for_maximization(experiment, name)
 
   def _within_metric_threshold(self, metric, experiment):
     metric_value = self.metric_value(experiment, metric.name)
@@ -116,13 +121,13 @@ class Observation(Base):
     return all(self._within_metric_threshold(metric, experiment) for metric in experiment.all_metrics)
 
   def metric_value(self, experiment, name):
-    return self.data.metric_value(experiment, name)
+    return self.data_proxy.metric_value(experiment, name)
 
   def metric_value_var(self, experiment, name):
-    return self.data.metric_value_var(experiment, name)
+    return self.data_proxy.metric_value_var(experiment, name)
 
   def get_assignment(self, parameter):
-    return self.data.get_assignment(parameter)
+    return self.data_proxy.get_assignment(parameter)
 
   def get_assignments(self, experiment):
-    return self.data.get_assignments(experiment)
+    return self.data_proxy.get_assignments(experiment)

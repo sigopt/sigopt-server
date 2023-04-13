@@ -23,6 +23,7 @@ class TestExperimentBestAssignments(BestAssignmentsTestBase):
     assert a.data == []
 
   def test_best_assignments_data(self, connection, client_id, any_meta):
+    # pylint: disable=too-many-locals
     wider_meta = deepcopy(any_meta)
     wider_meta["parallel_bandwidth"] = 20
     e = connection.clients(client_id).experiments().create(**wider_meta)

@@ -14,7 +14,7 @@ from zigopt.common import *
 from integration.v1.test_base import V1Base
 
 
-def request(method, path, timeout=5, **kwargs):
+def secure_request(method, path, timeout=5, **kwargs):
   kwargs.setdefault("verify", os.environ.get("SIGOPT_API_VERIFY_SSL_CERTS", True))
   return requests.request(method, path, timeout=timeout, **kwargs)
 
@@ -49,7 +49,7 @@ class TestApiBase(V1Base):
 
   def test_invalid_unicode_auth(self, api_url, connection):
     self.expect_400(
-      request(
+      secure_request(
         "GET",
         f"{api_url}/v1/sessions",
         headers={
@@ -59,14 +59,16 @@ class TestApiBase(V1Base):
     )
 
   def test_invalid_unicode_path(self, api_url, connection):
-    self.expect_400(request("GET", f"{api_url}/v1/\x00"))
+    self.expect_400(secure_request("GET", f"{api_url}/v1/\x00"))
 
   def test_invalid_unicode_body(self, api_url, connection):
-    self.expect_400(request("POST", f"{api_url}/v1/verifications", data=json.dumps({"email": "test\x00@sigopt.ninja"})))
+    self.expect_400(
+      secure_request("POST", f"{api_url}/v1/verifications", data=json.dumps({"email": "test\x00@sigopt.ninja"}))
+    )
 
   def test_invalid_unicode_param(self, api_url, auth, connection):
     self.expect_400(
-      request(
+      secure_request(
         "GET",
         f"{api_url}/v1/clients/{connection.client_id}/experiments",
         auth=auth,
@@ -75,11 +77,11 @@ class TestApiBase(V1Base):
     )
 
   def test_get_json(self, api_url, headers, auth):
-    request("GET", api_url + "/v1/sessions", headers=headers, auth=auth).raise_for_status()
+    secure_request("GET", api_url + "/v1/sessions", headers=headers, auth=auth).raise_for_status()
 
   @pytest.mark.parametrize("data", ["", "{}"])
   def test_post_json(self, api_url, headers, data, auth, user_id):
-    response = request(
+    response = secure_request(
       "POST",
       f"{api_url}/v1/users/{user_id}/verifications",
       headers=headers,
@@ -90,7 +92,7 @@ class TestApiBase(V1Base):
     assert response.text == "{}\n"
 
   def test_no_content(self, api_url, headers, auth, user_id):
-    response = request(
+    response = secure_request(
       "POST",
       f"{api_url}/v1/users/{user_id}/verifications",
       headers=extend_dict({"X-Response-Content": "skip"}, headers),
@@ -101,7 +103,7 @@ class TestApiBase(V1Base):
     assert response.text == ""
 
   def test_post_bad_json(self, api_url, headers, auth, user_id):
-    response = request(
+    response = secure_request(
       "POST",
       f"{api_url}/v1/users/{user_id}/verifications",
       headers=headers,
@@ -112,7 +114,7 @@ class TestApiBase(V1Base):
     assert "Invalid json" in response.json()["message"]
 
   def test_post_read_params_json(self, api_url, headers, auth):
-    response = request(
+    response = secure_request(
       "POST",
       api_url + "/v1/verifications",
       headers=headers,

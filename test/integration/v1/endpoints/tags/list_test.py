@@ -18,7 +18,7 @@ class TestListTags(V1Base):
     assert self.get_tag_count(services, connection.client_id) == 0
 
     tags = list(connection.clients(connection.client_id).tags().fetch().iterate_pages())
-    assert tags == []
+    assert not tags
 
   def test_list_tags(self, services, connection):
     assert self.get_tag_count(services, connection.client_id) == 0
@@ -28,7 +28,7 @@ class TestListTags(V1Base):
       services.tag_service.insert(
         Tag(
           name=tag_name,
-          data=TagData(color=Color(red=i, green=i, blue=i)),
+          data=TagData(color=Color(red=i, green=i, blue=i)),  # pylint: disable=protobuf-type-error
           client_id=connection.client_id,
         )
       )

@@ -40,8 +40,8 @@ class TestOrganizationTrainingRun(V1Base):
       {"Content-Type": "application/x-www-form-urlencoded"},
     ]
   )
-  def headers(self, request):
-    return request.param
+  def headers(self, req):
+    return req.param
 
   def expect_400(self, response):
     assert response.status_code == HTTPStatus.BAD_REQUEST

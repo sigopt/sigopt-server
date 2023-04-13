@@ -37,6 +37,7 @@ class ClientInviteTestBase(InviteTestBase):
 
 
 class TestInvite(ClientInviteTestBase):
+  # pylint: disable=too-many-public-methods
   def test_needs_invite(self, connection, client_id, invitee_connection):
     connection.clients(client_id).permissions().fetch()
     with RaisesApiException(HTTPStatus.NOT_FOUND):
@@ -92,7 +93,7 @@ class TestInvite(ClientInviteTestBase):
     password = AuthProvider.randomly_generated_password()
     deleted_invitee = auth_provider.create_user(password=password)
     deleted_invitee_token = auth_provider.create_user_token(deleted_invitee.id)
-    deleted_invitee_connection = IntegrationTestConnection(api_url, api, user_token=deleted_invitee_token)
+    deleted_invitee_connection = IntegrationTestConnection(api_url, user_token=deleted_invitee_token)
     deleted_invitee_connection.users(deleted_invitee.id).delete(password=password)
     inbox.reset()
     self.invite_email(connection, client_id, deleted_invitee.email, READ_ONLY_ROLE)

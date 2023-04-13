@@ -94,6 +94,7 @@ class OptimizationSource:
   # TODO(RTL-116): Extend this concept to consider the importance computations
   # TODO(RTL-117): Should there be some consideration of parallel bandwidth here?
   def execute_gp_hyper_opt_call_based_on_lag(self, num_successful_observations):
+    # pylint: disable=too-many-statements
     hyper_opt_dimension = self.hyper_opt_dimension
 
     # NOTE: Never allow hyper opt for larger problems until we handle the memory issues

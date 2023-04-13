@@ -13,6 +13,7 @@ from integration.service.test_base import ServiceBase
 
 
 class TestRedisService(ServiceBase):
+  # pylint: disable=too-many-public-methods
   @pytest.fixture
   def hash_mapping(self):
     return {

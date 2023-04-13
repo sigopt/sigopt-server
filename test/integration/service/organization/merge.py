@@ -12,6 +12,7 @@ from integration.service.test_base import ServiceBase
 class TestOrganizationMerge(ServiceBase):
   @pytest.mark.slow
   def test_merge_organizations(self, services, config_broker):
+    # pylint: disable=too-many-locals,too-many-statements
     if not config_broker.get("features.allowCreateOrganization", False):
       pytest.skip()
     dest_org = self.make_organization(services, "Destination Organization")
