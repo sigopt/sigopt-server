@@ -24,17 +24,17 @@ class SmtpConnectionInfo:
 class SmtpEmailService(Service):
   def __init__(self, services):
     super().__init__(services)
-    self.enabled = self.services.config_broker.get_bool("smtp.enabled", default=False)
+    self.enabled = self.services.config_broker.get("smtp.enabled", default=False)
     self.connection_info = None
     if self.enabled:
       self.connection_info = SmtpConnectionInfo(
-        host=self.services.config_broker.get_string("smtp.host"),
-        port=self.services.config_broker.get_int("smtp.port"),
-        username=self.services.config_broker.get_string("smtp.username", default=None),
-        password=self.services.config_broker.get_string("smtp.password", default=None),
-        tls=self.services.config_broker.get_bool("smtp.tls", default=False),
+        host=self.services.config_broker.get("smtp.host"),
+        port=self.services.config_broker.get("smtp.port"),
+        username=self.services.config_broker.get("smtp.username", default=None),
+        password=self.services.config_broker.get("smtp.password", default=None),
+        tls=self.services.config_broker.get("smtp.tls", default=False),
       )
-    self.timeout = self.services.config_broker.get_int("smtp.timeout", default=10)
+    self.timeout = self.services.config_broker.get("smtp.timeout", default=10)
     self.smtp = None
 
   @contextmanager

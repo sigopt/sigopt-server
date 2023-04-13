@@ -287,7 +287,7 @@ def create_db(
       ).fetchall()
       root_engine.execute(f"REVOKE UPDATE ON SEQUENCE clients_id_seq FROM {username}")
 
-      for sibling_name in config_broker.get_array("clients.siblings", []):
+      for sibling_name in config_broker.get("clients.siblings", []):
         sibling_client = services.client_service.insert(
           Client(organization_id=client.organization_id, name=sibling_name)
         )

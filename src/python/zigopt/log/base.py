@@ -131,7 +131,7 @@ def configure_warnings():
 def configure_loggers(config_broker):
   syslog_handler = syslog_logger_setup(config_broker)
 
-  force_level = config_broker.get_int("logging.force")
+  force_level = config_broker.get("logging.force")
   if force_level:
     LOG_LEVELS = {"": force_level}
   else:
@@ -168,7 +168,7 @@ def configure_loggers(config_broker):
   if config_broker.get("logging.warnings", "ignore") == "error":
     warnings.simplefilter("error", append=True)
 
-  log_format = config_broker.get_string("logging.format", "verbose")
+  log_format = config_broker.get("logging.format", "verbose")
   if log_format == "compact":
     set_default_formatter(COMPACT_FORMATTER)
   elif log_format == "json":

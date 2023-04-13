@@ -9,7 +9,7 @@ class BaseEmailService(Service):
   def should_send(self, email):
     internal_email_domains = self.services.config_broker.get("email.additional_internal_domains", [])
     return bool(
-      not self.services.config_broker.get_bool("email.internal_only")
+      not self.services.config_broker.get("email.internal_only")
       or all(e.endswith(tuple(internal_email_domains)) for e in email.to)
     )
 
@@ -20,9 +20,9 @@ class BaseEmailService(Service):
 class EmailSenderService(BaseEmailService):
   def __init__(self, services):
     super().__init__(services)
-    self.enabled = self.services.config_broker.get_bool("email.enabled", default=True)
-    self.method = self.services.config_broker.get_string("email.method", default="smtp")
-    self.from_address = self.services.config_broker.get_string("email.from_address", default=None)
+    self.enabled = self.services.config_broker.get("email.enabled", default=True)
+    self.method = self.services.config_broker.get("email.method", default="smtp")
+    self.from_address = self.services.config_broker.get("email.from_address", default=None)
     assert self.method in ("smtp",)
 
   def _sanitize(self, email):
