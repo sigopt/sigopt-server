@@ -208,13 +208,11 @@ class BaseExperimentsCreateHandler(Handler):
 
   @classmethod
   def _check_conditionals_viability(cls, experiment_meta, num_solutions):
-    """Check feature viability with conditionals"""
     if len(experiment_meta.conditionals) > 0 and num_solutions and num_solutions > 1:
       raise BadParamError("Conditional experiments cannot be run with multisolution experiments")
 
   @classmethod
   def _check_multisolution_viability(cls, experiment_meta, num_solutions, optimized_metrics):
-    """Check feature viability with multisolution experiments"""
     if num_solutions and num_solutions > 1:
       if num_solutions > experiment_meta.observation_budget:
         raise BadParamError("Observation budget needs to be larger than the number of solutions")
