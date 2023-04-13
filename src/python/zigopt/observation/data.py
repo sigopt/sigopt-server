@@ -30,7 +30,7 @@ def validate_metric_names(values, experiment):
       raise BadParamError(f"Duplicate name: {name}")
 
   names = list(name_counts.keys())
-  non_empty_names = compact(names)
+  non_empty_names: list[str] = compact_sequence(names, list)  # type: ignore
   if len(names) >= 2 and len(names) > len(non_empty_names):
     raise BadParamError("A name must be specified for all values.")
 
@@ -57,7 +57,7 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
       raise BadParamError("The number of observation values and experiment metrics must be equal.")
     raise BadParamError("Experiments without a defined `metrics` do not support multiple values.")
   validate_metric_names(values, experiment)
-  old_values_by_name = to_map_by_key(coalesce(old_values, []), key=lambda v: v.name)
+  old_values_by_name: dict[str, ObservationValue] = to_map_by_key(coalesce(old_values, []), key=lambda v: v.name)
   for v in values:
     assert is_mapping(v)
     name = get_opt_with_validation(v, "name", ValidationType.string)
@@ -65,8 +65,15 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
     if old_values_by_name and old_v is None:
       raise BadParamError(f"Invalid metric name {name}")
 
-    val = value_from_json(v, default=napply(old_v, lambda v: v.GetFieldOrNone("value")))
-    v_var = value_var_from_json(v, experiment, default=napply(old_v, lambda v: v.GetFieldOrNone("value_var")))
+    val = value_from_json(
+      v,
+      default=napply(old_v, lambda v: v.GetFieldOrNone("value")),  # type: ignore
+    )
+    v_var = value_var_from_json(
+      v,
+      experiment,
+      default=napply(old_v, lambda v: v.GetFieldOrNone("value_var")),  # type: ignore
+    )
 
     if val is None:
       raise BadParamError(

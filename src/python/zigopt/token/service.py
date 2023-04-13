@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.db.column import JsonPath, jsonb_set, unwind_json_path
@@ -11,8 +13,8 @@ from zigopt.token.token_types import TokenType
 
 
 class TokenService(Service):
-  def _reject_expired(self, tokens):
-    expired, valid = partition(remove_nones(tokens), lambda t: t.expired)
+  def _reject_expired(self, tokens: Sequence[Token]):
+    expired, valid = partition(remove_nones_sequence(tokens, list), lambda t: t.expired)
     if expired:
       self.delete_tokens(expired)
     return valid
@@ -53,23 +55,22 @@ class TokenService(Service):
       )
     )
 
-  def _make_meta(self, session_expiration, token_type, can_renew):
+  def _make_meta(self, session_expiration: int | None, token_type, can_renew):
     now = unix_timestamp()
     meta = TokenMeta()
     meta.date_created = now
     meta.can_renew = can_renew
-    meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
+    ttl_options: Sequence[int | None] = [
+      Token.default_ttl_seconds(token_type, can_renew),
+      napply(session_expiration, lambda s: max(s - now, 0)),
+      self.services.config_broker.get("external_authorization.token_ttl_seconds"),
+    ]
+    # pylint: disable=protobuf-undefined-attribute
+    meta.SetFieldIfNotNone(  # type: ignore
       "ttl_seconds",
-      min_option(
-        remove_nones(
-          [
-            Token.default_ttl_seconds(token_type, can_renew),
-            napply(session_expiration, lambda s: max(s - now, 0)),
-            self.services.config_broker.get("external_authorization.token_ttl_seconds"),
-          ]
-        )
-      ),
+      min_option(remove_nones_sequence(ttl_options, list)),
     )
+    # pylint: enable=protobuf-undefined-attribute
     return meta
 
   def _get_or_create_role_token(self, client_id, user_id, development):

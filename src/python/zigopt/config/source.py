@@ -48,7 +48,7 @@ class DecoratorConfigBrokerSource(ConfigBrokerSource):
 
 class MutableConfigBrokerSource(DecoratorConfigBrokerSource):
   def __init__(self):
-    data = {}
+    data: dict = {}
     super().__init__(DictConfigBrokerSource(data))
     self._dict = data
 
@@ -70,6 +70,7 @@ class MutableConfigBrokerSource(DecoratorConfigBrokerSource):
 
 class EnvironmentConfigBrokerSource(DecoratorConfigBrokerSource):
   supports_types = False
+  underlying: MutableConfigBrokerSource
 
   def __init__(self):
     super().__init__(MutableConfigBrokerSource())

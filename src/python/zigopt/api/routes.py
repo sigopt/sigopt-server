@@ -8,7 +8,7 @@ from flask import request
 
 from zigopt.api.common import handler_registry
 from zigopt.handlers.base.welcome import WelcomeHandler
-from zigopt.net.errors import EndpointNotFoundError, InvalidMethodError
+from zigopt.net.errors import EndpointNotFoundError, InvalidMethodError, RequestError
 from zigopt.net.responses import success_response
 
 
@@ -51,7 +51,7 @@ def initialize_blueprint(app):
   # NOTE: hide OPTIONS for non-public routes because they should not be publicly visible
   @app.errorhandler(HTTPStatus.METHOD_NOT_ALLOWED)
   def invalid_method(e):
-    error = EndpointNotFoundError(request.path)
+    error: RequestError = EndpointNotFoundError(request.path)
     if request.path.startswith("/v1/"):
       map_adapter = app.url_map.bind(request.host, path_info=request.path)
       allowed_methods = map_adapter.allowed_methods()

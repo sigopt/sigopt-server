@@ -8,6 +8,7 @@
 import argparse
 import logging
 import string
+from typing import Any
 
 import pg8000
 import sqlalchemy
@@ -91,17 +92,14 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
     assert database in DB_NAME_ALLOW_LIST
 
   # Connect as default superuser
-  conn = pg8000.connect(
-    **remove_nones(
-      {
-        "user": superuser or "postgres",
-        "password": superuser_password,
-        "host": config_broker.get("db.host"),
-        "port": config_broker.get("db.port"),
-        **(config_broker.get_object("db.query") or {}),
-      }
-    )
-  )
+  args: dict[str, Any] = {
+    "user": superuser or "postgres",
+    "password": superuser_password,
+    "host": config_broker.get("db.host"),
+    "port": config_broker.get("db.port"),
+    **(config_broker.get_object("db.query") or {}),
+  }
+  conn = pg8000.connect(**remove_nones(args))
   try:
     conn.autocommit = True
     with conn.cursor() as cursor:

@@ -42,6 +42,7 @@ class Pager:
   # None values. This comes up when paging over sorted observations values,
   # which can be None on failed observations.
   _NO_MARKER = object()
+  item_list: list | None
 
   def __init__(self, fetch_page):
     try:
@@ -139,7 +140,7 @@ class Pager:
       )
     ]
     if limit is not None:
-      filtered_page = filtered_page[:limit] if start_from_before else tail(filtered_page, limit)
+      filtered_page = filtered_page[:limit] if start_from_before else list(tail(filtered_page, limit))
     return filtered_page
 
   def _get_markers_from_results(self, results, Field, start_from_before, has_more):
@@ -176,13 +177,13 @@ class Pager:
       start_from_before = before is not self._NO_MARKER or after is self._NO_MARKER
 
     if self.item_list is None:
-      fetch_page = self.fetch_page
+      assert self.fetch_page is not None
       # TODO(SN-1117): Most callers of this function are not equipped to handle _NO_MARKER, so we adapt it
       # back into None. But this means that None values will not be sorted properly. Fortunately,
       # for most of those use-cases they are just sorting by ID.
       qbefore = None if before is self._NO_MARKER else before
       qafter = None if after is self._NO_MARKER else after
-      results = fetch_page(fetch_limit, qbefore, qafter)
+      results = self.fetch_page(fetch_limit, qbefore, qafter)
     else:
       sorted_list = sorted(
         self.item_list, key=lambda v: self._sanitized_field_values_from_result(Field, v), reverse=True

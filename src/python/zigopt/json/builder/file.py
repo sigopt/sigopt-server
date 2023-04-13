@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Literal, Mapping, Optional
+from typing import Mapping, Optional
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import datetime_to_seconds
@@ -80,7 +80,7 @@ class FileJsonBuilder(JsonBuilder):
 class S3UploadJsonBuilder(JsonBuilder):
   object_name = "s3_upload"
 
-  def __init__(self, url: str, method: Literal["POST"] | Literal["PUT"], headers: Mapping[str, str]):
+  def __init__(self, url: str, method: str, headers: Mapping[str, str]):
     self._url = url
     self._method = method
     self._headers = headers

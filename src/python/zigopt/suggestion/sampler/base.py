@@ -16,7 +16,7 @@ class SuggestionSampler:
     self.optimization_args = optimization_args
 
   def best_suggestion(self, skip=0):
-    process_kwargs = {}
+    process_kwargs: dict = {}
     suggestions = self.fetch_best_suggestions(limit=1 + skip)
     suggestions = suggestions[skip:]
     if not suggestions:
@@ -72,7 +72,7 @@ class SequentialSampler(SuggestionSampler):
     log_attributes=lambda self, *args, **kwargs: {"experiment": str(self.experiment.id)},
   )
   def fetch_best_suggestions(self, limit):
-    ret = []
+    ret: list[UnprocessedSuggestion] = []
     for sampler, this_count in self.samplers_with_counts:
       remaining_needed = limit - len(ret)
       this_count = min(remaining_needed, this_count)

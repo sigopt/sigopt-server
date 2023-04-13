@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Any
+
 import sqlalchemy
 from sqlalchemy import tuple_
 
@@ -89,16 +91,15 @@ class ProjectService(Service):
     return project
 
   def update(self, client_id, reference_id, name=None, data=None, deleted=None):
+    updates: dict[Any, Any | None] = {
+      Project.name: name,
+      Project.data: data,
+      Project.date_updated: current_datetime(),
+      Project.deleted: deleted,
+    }
     return self.services.database_service.update_one(
       self.project_query.filter(Project.client_id == client_id).filter(Project.reference_id == reference_id),
-      remove_nones(
-        {
-          Project.name: name,
-          Project.data: data,
-          Project.date_updated: current_datetime(),
-          Project.deleted: deleted,
-        }
-      ),
+      remove_nones_mapping(updates),
     )
 
   def projects_for_experiments(self, experiments):

@@ -34,7 +34,7 @@ class _SoftExceptionHandler:
     if exc_type is None:
       return None
     if isinstance(exc_val, self.handled_exception_type):
-      current_stack = traceback.walk_stack(sys._getframe().f_back.f_back)
+      current_stack = traceback.walk_stack(sys._getframe().f_back.f_back)  # type: ignore
       full_tb = self._extend_traceback(exc_tb, current_stack)
       self.services.exception_logger.process_soft_exception((exc_type, exc_val, full_tb), extra=self.extra)
       return True

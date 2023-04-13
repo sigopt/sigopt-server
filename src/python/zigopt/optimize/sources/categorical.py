@@ -25,18 +25,17 @@ from libsigopt.aux.constant import (
 )
 
 
-"""
-This class exists specifically to allow for a single GP mechanism to work with mixed categorical/continuous
-experiments.  Maybe this could also handle pure categorical situations as well, but I'd imagine there is
-something better than this.
-
-The idea is that, for a categorical variable with k categories, k new continuous variables on [0, 1] are created.
-The category that is returned as a suggestion to SigOpt is chosen randomly with probably based on the values of the
-one_hot continuous dimensions.
-"""
-
-
 class CategoricalOptimizationSource(OptimizationSource):
+  """
+    This class exists specifically to allow for a single GP mechanism to work with mixed categorical/continuous
+    experiments.  Maybe this could also handle pure categorical situations as well, but I'd imagine there is
+    something better than this.
+
+    The idea is that, for a categorical variable with k categories, k new continuous variables on [0, 1] are created.
+    The category that is returned as a suggestion to SigOpt is chosen randomly with probably based on the values of the
+    one_hot continuous dimensions.
+    """
+
   name = "gp_categorical"
 
   def get_gp_cutoff_observation_count(self):
@@ -216,12 +215,11 @@ class CategoricalOptimizationSource(OptimizationSource):
       return 2
     return 1
 
-  """
-  For this optimization source, the categorical hyperparameters are computed, stored and used in future computations.
-  This is in contrast to the structure of the old lion object.
-  """
-
   def get_hyperparameters(self, optimization_args):
+    """
+        For this optimization source, the categorical hyperparameters are computed,
+        stored and used in future computations.
+        """
     if self.should_force_default_hyperparameters(optimization_args, optimization_args.old_hyperparameters):
       hyperparameter_dict = self.default_hyperparameter_dict(optimization_args)
     else:

@@ -274,6 +274,7 @@ def set_default_value_from_json(parameter, parameter_json):
     parameter.replacement_value_if_missing = value_to_set
 
     if parameter.transformation == ExperimentParameter.TRANSFORMATION_LOG:
+      assert isinstance(parameter.replacement_value_if_missing, float)
       if parameter.replacement_value_if_missing <= 0.0:
         raise BadParamError("Invalid default_value for log-transformation: default_value must be positive")
 

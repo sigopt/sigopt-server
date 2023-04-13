@@ -43,6 +43,7 @@ class S3UserUploadService(Service):
     return self.services.config_broker["user_uploads.s3.bucket"]
 
   def generate_upload_info(self, key, method, content_length, content_type, content_md5_base64):
+    assert self.s3_client is not None
     url = self.s3_client.generate_presigned_url(
       "put_object",
       Params={
@@ -65,6 +66,7 @@ class S3UserUploadService(Service):
     return url, headers
 
   def generate_download_info(self, key):
+    assert self.s3_client is not None
     url = self.s3_client.generate_presigned_url(
       "get_object",
       Params={
