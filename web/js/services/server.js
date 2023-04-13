@@ -38,7 +38,7 @@ export default class ServerServiceBag extends SerializeableForClientBundle {
     this.errorNotifier = new NoopAlertNotifier(this);
     this.logger = new ServerLoggingService(
       this,
-      configBroker.getObject("logging", {}),
+      configBroker.get("logging", {}),
     );
     this.netRequestor = new NodeRequestor(this);
     this.promiseApiClient = new PromiseApiClient(this);

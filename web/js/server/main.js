@@ -7,9 +7,9 @@
 import _ from "underscore";
 import cluster from "cluster";
 import path from "path";
+import {ConfigBroker} from "sigopt-config";
 import {program} from "commander";
 
-import ConfigBroker from "../config/broker";
 import GlobalServiceBag from "../services/global";
 import makeApp from "./express/app";
 import {ENTRY_MANIFEST_FILE_NAME} from "../webpack/constants";
@@ -40,18 +40,18 @@ export default function main() {
     _.each(_.range(opts.workers || 1), () => cluster.fork());
     return Promise.resolve(null);
   }
-  const configBroker = ConfigBroker.fromFile(
-    process.env.sigopt_server_config_file,
-  );
-  return new Promise((s, e) => configBroker.initialize(s, e))
-    .then(() => {
+  return ConfigBroker.fromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR)
+    .then((configBroker) => {
       const globalServiceBag = new GlobalServiceBag(
         configBroker,
         entryManifestFile,
       );
-      return globalServiceBag.warmup();
+      return Promise.all([
+        Promise.resolve(configBroker),
+        globalServiceBag.warmup(),
+      ]);
     })
-    .then((globalServiceBag) => {
+    .then(([configBroker, globalServiceBag]) => {
       const nodePort = configBroker.get("express.port", 4000);
       const app = makeApp(globalServiceBag);
       const server = app.listen(nodePort);

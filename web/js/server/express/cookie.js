@@ -173,7 +173,7 @@ export default function makeCookieHandlers(configBroker) {
   if (cookiejarEndpoint) {
     s3Options.endpoint = cookiejarEndpoint;
   }
-  const cookiejarCredentials = configBroker.getObject(
+  const cookiejarCredentials = configBroker.get(
     "web.cookiejar_credentials",
     null,
   );

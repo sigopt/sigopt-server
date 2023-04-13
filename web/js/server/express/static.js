@@ -15,7 +15,7 @@ const ONE_HOUR_MILLISECONDS = 60 * 60 * 1000;
 const faviconServe = ["/favicon.ico", (req, res) => res.redirect(FaviconIco)];
 
 export const getRoutes = (configBroker) => {
-  const staticRoutes = configBroker.getObject("web.static_routes", {});
+  const staticRoutes = configBroker.get("web.static_routes", {});
 
   return [
     faviconServe,

@@ -7,21 +7,20 @@
 import _ from "underscore";
 import fs from "fs";
 import path from "path";
+import {ConfigBroker} from "sigopt-config";
 
-import ConfigBroker from "../js/config/broker";
 import appRoutes from "../js/server/routes/app";
 import {getRoutes as staticRoutes} from "../js/server/express/static";
 
-const configBroker = ConfigBroker.fromFile(
-  process.env.sigopt_server_config_file,
+ConfigBroker.fromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR).then(
+  (configBroker) => {
+    fs.mkdirSync(path.join("artifacts", "web", "routes"), {recursive: true});
+    fs.writeFileSync(
+      path.join("artifacts", "web", "routes", "routes.json"),
+      JSON.stringify({
+        app: _.keys(appRoutes(configBroker)),
+        static: _.pluck(staticRoutes(configBroker), 0),
+      }),
+    );
+  },
 );
-configBroker.initialize(() => {
-  fs.mkdirSync(path.join("artifacts", "web", "routes"), {recursive: true});
-  fs.writeFileSync(
-    path.join("artifacts", "web", "routes", "routes.json"),
-    JSON.stringify({
-      app: _.keys(appRoutes(configBroker)),
-      static: _.pluck(staticRoutes(configBroker), 0),
-    }),
-  );
-});
