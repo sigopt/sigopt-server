@@ -85,33 +85,33 @@ class OptimizationSource:
 
   def _get_dimension_index(self, hyper_opt_dimension):
     # pylint: disable=too-many-return-statements
-    if hyper_opt_dimension < 11:
+    if hyper_opt_dimension <= 10:
       return 0
-    if hyper_opt_dimension < 21:
+    if hyper_opt_dimension <= 20:
       return 1
-    if hyper_opt_dimension < 26:
+    if hyper_opt_dimension <= 25:
       return 2
-    if hyper_opt_dimension < 31:
+    if hyper_opt_dimension <= 30:
       return 3
-    if hyper_opt_dimension < 36:
+    if hyper_opt_dimension <= 35:
       return 4
-    if hyper_opt_dimension < 41:
+    if hyper_opt_dimension <= 40:
       return 5
     return None
 
   def _get_num_observed_index(self, num_successful_observations):
     # pylint: disable=too-many-return-statements
-    if num_successful_observations < 251:
+    if num_successful_observations <= 250:
       return 0
-    if num_successful_observations < 501:
+    if num_successful_observations <= 500:
       return 1
-    if num_successful_observations < 751:
+    if num_successful_observations <= 750:
       return 2
-    if num_successful_observations < 1001:
+    if num_successful_observations <= 1000:
       return 3
-    if num_successful_observations < 1251:
+    if num_successful_observations <= 1250:
       return 4
-    if num_successful_observations < 1501:
+    if num_successful_observations <= 1500:
       return 5
     return None
 
@@ -153,12 +153,12 @@ class OptimizationSource:
 
     # NOTE: Never allow hyper opt for larger problems until we handle the memory issues
     lag_matrix = [
-      [1, 2, 3, 1000000, 1000000, 1000000],  # 1 <= dim < 11
-      [2, 4, 6, 1000000, 1000000, 1000000],  # 11 <= dim < 21
-      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 21 <= dim < 26
-      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 26 <= dim < 31
-      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 31 <= dim < 36
-      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 36 <= dim < 41
+      [1, 2, 3, 1000000, 1000000, 1000000],  # 1 <= dim <= 10
+      [2, 4, 6, 1000000, 1000000, 1000000],  # 11 <= dim <= 20
+      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 21 <= dim <= 25
+      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 26 <= dim <= 30
+      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 31 <= dim <= 35
+      [1000000, 1000000, 1000000, 1000000, 1000000, 1000000],  # 36 <= dim <= 40
     ]
     # 1      250       500      750     1000     1250     1500,  N bounds
 
