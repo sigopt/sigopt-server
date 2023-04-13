@@ -43,6 +43,8 @@ class WebDataBaseHandler(Handler):
     return can_act is True and super().can_act_on_objects(requested_permission, objects)
 
   def can_act_on_project(self, parent_resource_id, requested_permission):
+    assert self.auth is not None
+
     project = self.services.project_service.find_by_client_and_reference_id(
       parent_resource_id["client"], parent_resource_id["project"]
     )
