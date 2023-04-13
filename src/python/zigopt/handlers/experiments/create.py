@@ -220,8 +220,15 @@ class BaseExperimentsCreateHandler(Handler):
         raise BadParamError("Multisolution experiments require exactly one optimized metric")
 
   @classmethod
-  def _maybe_set_tasks(
-    cls, json_dict, budget_key, budget, optimized_metrics, has_constraint_metrics, num_solutions, experiment_meta
+  def _maybe_set_tasks_for_multitask_experiment(
+    cls,
+    json_dict,
+    budget_key,
+    budget,
+    optimized_metrics,
+    has_constraint_metrics,
+    num_solutions,
+    experiment_meta,
   ):
     tasks = cls.get_tasks_from_json(json_dict)
     if not tasks:
@@ -299,8 +306,14 @@ class BaseExperimentsCreateHandler(Handler):
     if not (has_optimization_metrics or has_constraint_metrics):
       raise BadParamError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")
 
-    cls._maybe_set_tasks(
-      json_dict, budget_key, budget, optimized_metrics, has_constraint_metrics, num_solutions, experiment_meta
+    cls._maybe_set_tasks_for_multitask_experiment(
+      json_dict,
+      budget_key,
+      budget,
+      optimized_metrics,
+      has_constraint_metrics,
+      num_solutions,
+      experiment_meta,
     )
 
     return ExperimentMetaProxy(experiment_meta)
