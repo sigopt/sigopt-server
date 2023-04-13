@@ -164,6 +164,8 @@ class ExperimentMetaProxy(Proxy):
 
 
 class Experiment(Base):
+  # pylint: disable=too-many-public-methods
+
   NAME_MAX_LENGTH = 100
   CATEGORICAL_VALUE_MAX_LENGTH = 50
   CLIENT_PROVIDED_DATA_MAX_KEYS = 100

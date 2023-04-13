@@ -20,6 +20,7 @@ from libsigopt.aux.constant import ParameterTransformationNames
 
 
 class TestCreateExperiments(ExperimentsTestBase):
+  # pylint: disable=too-many-public-methods
   def test_experiment_create(self, connection, client_id, any_meta):
     e = connection.clients(client_id).experiments().create(**any_meta)
     assert e.id is not None
@@ -389,6 +390,7 @@ class TestCreateExperiments(ExperimentsTestBase):
 
 
 class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
+  # pylint: disable=too-many-public-methods
   def test_strategy_optimize(self, connection, services):
     e = connection.create_any_experiment(
       metrics=[dict(name="metric", strategy=MetricStrategyNames.OPTIMIZE)],

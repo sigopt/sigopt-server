@@ -84,6 +84,7 @@ class OptimizationSource:
     return open_suggestion_datas
 
   def _get_dimension_index(self, hyper_opt_dimension):
+    # pylint: disable=too-many-return-statements
     if hyper_opt_dimension < 11:
       return 0
     if hyper_opt_dimension < 21:
@@ -99,6 +100,7 @@ class OptimizationSource:
     return None
 
   def _get_num_observed_index(self, num_successful_observations):
+    # pylint: disable=too-many-return-statements
     if num_successful_observations < 251:
       return 0
     if num_successful_observations < 501:
@@ -146,6 +148,7 @@ class OptimizationSource:
   # TODO(RTL-116): Extend this concept to consider the importance computations
   # TODO(RTL-117): Should there be some consideration of parallel bandwidth here?
   def execute_gp_hyper_opt_call_based_on_lag(self, num_successful_observations):
+    # pylint: disable=too-many-statements
     hyper_opt_dimension = self.hyper_opt_dimension
 
     # NOTE: Never allow hyper opt for larger problems until we handle the memory issues

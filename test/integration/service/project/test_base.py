@@ -12,7 +12,10 @@ from integration.service.test_base import ServiceBase
 class ProjectServiceTestBase(ServiceBase):
   def assert_same_projects(self, a_projects, b_projects):
     assert len(a_projects) == len(b_projects)
-    keys_set = lambda projects: set((g.client_id, g.id) for g in projects)
+
+    def keys_set(projects):
+      return set((g.client_id, g.id) for g in projects)
+
     assert keys_set(a_projects) == keys_set(b_projects)
 
   @pytest.fixture

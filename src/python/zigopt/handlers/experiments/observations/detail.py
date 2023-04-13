@@ -40,6 +40,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     )
 
   def _get_sort_key(self, sort):
+    # pylint: disable=too-many-return-statements
     if sort.field == "timestamp":
       return lambda o: (o.timestamp, o.id)
     if sort.field == "value":
@@ -66,7 +67,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     raise BadParamError(f"Invalid sort: {sort.field}")
 
   def handle(self, args):
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals,unnecessary-lambda-assignment
     paging = args.paging
     sort = args.sort
     deleted = args.deleted

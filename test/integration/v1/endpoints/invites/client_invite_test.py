@@ -37,6 +37,7 @@ class ClientInviteTestBase(InviteTestBase):
 
 
 class TestInvite(ClientInviteTestBase):
+  # pylint: disable=too-many-public-methods
   def test_needs_invite(self, connection, client_id, invitee_connection):
     connection.clients(client_id).permissions().fetch()
     with RaisesApiException(HTTPStatus.NOT_FOUND):

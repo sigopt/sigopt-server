@@ -487,7 +487,7 @@ class BaseExperimentsCreateHandler(Handler):
 
   @classmethod
   def get_constraints_from_json(cls, json_dict, parameters):
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals,too-many-statements
     constraints = get_opt_with_validation(
       json_dict,
       "linear_constraints",
