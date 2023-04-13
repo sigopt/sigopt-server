@@ -92,7 +92,7 @@ if __name__ == "__main__":
   vulture.scavenge(paths, exclude=config["exclude"])
   found_dead_code_or_error = False
   pwd = os.getcwd()
-  with open(allowlist_path, "w+") if allow_list else sys.stdout as fp:
+  with open(allowlist_path, "w+", encoding="utf-8") if allow_list else sys.stdout as fp:
     for item in vulture.get_unused_code(min_confidence=min_confidence, sort_by_size=sort_by_size):
       print(  # noqa: T001
         item.get_whitelist_string().rstrip().replace(pwd + "/", "")

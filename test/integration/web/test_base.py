@@ -234,7 +234,7 @@ def load_routes():
   global _routes  # pylint: disable=global-statement
   if _routes is None:
     try:
-      with open("artifacts/web/routes/routes.json") as routes_fp:
+      with open("artifacts/web/routes/routes.json", encoding="utf-8") as routes_fp:
         _routes = json.load(routes_fp)
     except FileNotFoundError as fne:
       raise Exception(
@@ -334,7 +334,6 @@ class WebBase(BaseTest):
     return ApiConnection(
       IntegrationTestConnection(
         api_url=api_url,
-        api=api,
         client_token=login_state.client_token,
         user_token=login_state.user_token,
       ),
@@ -357,7 +356,6 @@ class WebBase(BaseTest):
     return ApiConnection(
       IntegrationTestConnection(
         api_url,
-        api=api,
         client_token=development_token.token,
       ),
       client_id=login_state.client_id,
@@ -368,7 +366,7 @@ class WebBase(BaseTest):
   @classmethod
   def make_admin_api_connection(cls, config_broker, api, user_token):
     api_url = cls.get_api_url(config_broker)
-    conn = IntegrationTestConnection(api_url, api, user_token=user_token)
+    conn = IntegrationTestConnection(api_url, user_token=user_token)
     user_id = conn.sessions().fetch().user.id
     return ApiConnection(conn, client_id=None, user_id=user_id, organization_id=None)
 

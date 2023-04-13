@@ -62,7 +62,7 @@ from zigopt.user.service import UserService
 from zigopt.web_data.service import WebDataService
 
 
-class ApiServiceBag(ServiceBag):
+class ApiServiceBag(ServiceBag):  # pylint: disable=too-many-instance-attributes
   queue_service: BaseQueueService
   s3_user_upload_service: S3UserUploadService | DisabledService
 
@@ -108,7 +108,7 @@ class ApiServiceBag(ServiceBag):
     return cls(config_broker, is_qworker)
 
 
-class ApiRequestLocalServiceBag(RequestLocalServiceBag):
+class ApiRequestLocalServiceBag(RequestLocalServiceBag):  # pylint: disable=too-many-instance-attributes
   def __init__(self, underlying, request=None):
     super().__init__(underlying, request=None)
     self.best_practices_service = BestPracticesService(self)

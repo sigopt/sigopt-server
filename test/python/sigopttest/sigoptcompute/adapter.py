@@ -295,7 +295,7 @@ class TestAdapter(AdapterTests):
     assert not metrics_info.has_constraint_metrics
     assert metrics_info.objectives == ["maximize"]
     assert metrics_info.optimized_metrics_index == [0]
-    assert metrics_info.constraint_metrics_index == []
+    assert not metrics_info.constraint_metrics_index
     assert metrics_info.has_optimization_metrics
 
   def test_form_metrics_info_search(self, search_experiment):
@@ -306,7 +306,7 @@ class TestAdapter(AdapterTests):
     assert not metrics_info.has_optimized_metric_thresholds
     assert metrics_info.has_constraint_metrics
     assert metrics_info.objectives == ["minimize"]
-    assert metrics_info.optimized_metrics_index == []
+    assert not metrics_info.optimized_metrics_index
     assert metrics_info.constraint_metrics_index == [0]
     assert not metrics_info.has_optimization_metrics
 
@@ -386,7 +386,7 @@ class TestFormMetricsInfoForSearchNextPoints(AdapterTests):
     mi_for_search = SCAdapter.form_metrics_info_for_search_next_point(multisolution_experiment, points_sampled)
     assert mi_for_search != metrics_info
     assert mi_for_search.user_specified_thresholds == [0.100, expected_threshold]
-    assert mi_for_search.optimized_metrics_index == []
+    assert not mi_for_search.optimized_metrics_index
     assert mi_for_search.constraint_metrics_index == [0, 1]
     assert not mi_for_search.has_optimized_metric_thresholds
     assert mi_for_search.has_constraint_metrics

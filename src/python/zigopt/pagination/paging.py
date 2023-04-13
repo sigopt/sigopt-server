@@ -76,7 +76,7 @@ class Pager:
     return marker
 
   def fetch(self, paging, Field, ascending=False):
-    # pylint: disable=too-many-locals
+    # pylint: disable=too-many-locals,too-many-statements
     assert isinstance(paging, PagingRequest)
     limit = paging.limit
     before = coalesce(paging.before, self._NO_MARKER)
@@ -136,8 +136,10 @@ class Pager:
     def sanitize_nones(val):
       return tuple(coalesce(v, INF) for v in val)
 
+    # pylint: disable=unnecessary-lambda-assignment
     sanitized_field_values_from_result = lambda v: sanitize_nones(get_field_values_from_result(v))
     sanitized_field_values_from_marker = lambda v: sanitize_nones(get_field_values_from_marker(v))
+    # pylint: enable=unnecessary-lambda-assignment
 
     if self.item_list is not None:
       sorted_list = sorted(self.item_list, key=sanitized_field_values_from_result, reverse=True)

@@ -4,7 +4,7 @@
 from zigopt.common import *
 
 
-class OptimizationArgs:
+class OptimizationArgs:  # pylint: disable=too-many-instance-attributes
   def __init__(
     self,
     source,

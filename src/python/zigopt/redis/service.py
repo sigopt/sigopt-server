@@ -161,6 +161,7 @@ class RedisKeyService(Service):
 
 
 class RedisService(Service):
+  # pylint: disable=too-many-public-methods
   logger_name = "sigopt.redis"
   SHORT_TIMEOUT = 1.0  # in seconds
   POLLING_TIMEOUT = 30.0  # in seconds

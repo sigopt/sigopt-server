@@ -183,6 +183,8 @@ def retry_on_error(func):
 
 
 class DatabaseService(Service):
+  # pylint: disable=too-many-public-methods
+
   def __init__(self, services, connection):
     super().__init__(services)
     self._session = None

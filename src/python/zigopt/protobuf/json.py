@@ -146,6 +146,7 @@ def is_valid_scalar_descriptor_for_value(value, descriptor):
 
 
 def emit_json_with_descriptor(value, descriptor):
+  # pylint: disable=too-many-return-statements
   is_array = _validate_array(value, descriptor, is_emit=True)
   if is_array:
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
@@ -175,6 +176,7 @@ def emit_json_with_descriptor(value, descriptor):
 
 
 def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknown_fields):
+  # pylint: disable=too-many-return-statements
   is_array = _validate_array(value, descriptor, is_emit=False)
   if is_array:
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)

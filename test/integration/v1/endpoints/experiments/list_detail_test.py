@@ -165,7 +165,9 @@ class TestListExperiments(ExperimentsTestBase):
 
   def test_experiment_list_paging(self, connection):
     with MultiContext(connection.create_any_experiment() for _ in range(3)) as (e1, e2, e3):
-      fetcher = lambda *a, **kw: connection.clients(connection.client_id).experiments().fetch(*a, **kw)
+
+      def fetcher(*a, **kw):
+        return connection.clients(connection.client_id).experiments().fetch(*a, **kw)
 
       paging = fetcher(limit=1)
       assert paging.count == 3
@@ -396,7 +398,9 @@ class TestListExperiments(ExperimentsTestBase):
     with MultiContext(connection.create_any_experiment() for _ in range(paging_limit + 1)) as (e_first, *_, e_last):
       sort_methods = ("id", "recent")
       for sort in sort_methods:
-        fetcher = lambda *a, **kw: connection.clients(connection.client_id).experiments().fetch(*a, **kw)
+
+        def fetcher(*a, **kw):
+          return connection.clients(connection.client_id).experiments().fetch(*a, **kw)
 
         paging = fetcher(limit=paging_limit, sort=sort)
         before = paging.paging.before

@@ -7,6 +7,7 @@ from integration.browser.tests.interaction.experiment.test_base import Experimen
 
 
 class TestList(ExperimentBrowserTest):
+  # pylint: disable=too-many-public-methods
   PAGE_SIZE = 10
   SEARCH_TOOLS_PREFIX = "div.search-tools-wrapper"
 

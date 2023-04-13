@@ -175,6 +175,7 @@ api_token_authentication = staticmethod(_api_token_authentication)
 
 
 def _do_api_token_authentication(services, request, token, mandatory):
+  # pylint: disable=too-many-return-statements
   if token:
     api_token_rate_limit.increment_and_check_rate_limit(services, request)
     authentication = authenticate_token(services, token)

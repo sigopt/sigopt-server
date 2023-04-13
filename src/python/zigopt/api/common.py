@@ -18,6 +18,7 @@ from libsigopt.aux.errors import SigoptValidationError
 
 
 def handler_registry(app):
+  # pylint: disable=too-many-statements
   def resolve_builder(builder, fields):
     try:
       return builder.resolve_fields(fields)
@@ -27,10 +28,11 @@ def handler_registry(app):
   def register_handler(
     route_name, handler_cls, methods, disable_request_logging=False, provide_automatic_options=False
   ):
+    # pylint: disable=too-many-statements
     handler_cls.validate_class()
 
     def execute_url_rule(*args, **kwargs):
-      # pylint: disable=too-many-locals
+      # pylint: disable=too-many-locals,too-many-statements
       app.profiler.enable()
       app.tracer.set_transaction_name(route_name)
       services = None

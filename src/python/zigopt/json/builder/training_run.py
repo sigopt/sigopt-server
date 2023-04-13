@@ -110,6 +110,7 @@ class SourceCodeJsonBuilder(JsonBuilder):
 # TODO(SN-1112): Only used in MPM endpoints for now, can port over to
 # existing training run endpoints after content is backfilled
 class TrainingRunJsonBuilder(JsonBuilder):
+  # pylint: disable=too-many-public-methods
   object_name = "training_run"
 
   def __init__(self, training_run: TrainingRun, checkpoint_count: int, project: Project):

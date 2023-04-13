@@ -93,7 +93,7 @@ class ExperimentMetricProxy(Proxy):
     return self.strategy == ExperimentMetric.CONSTRAINT
 
 
-class ExperimentMetaProxy(Proxy):
+class ExperimentMetaProxy(Proxy):  # pylint: disable=too-many-instance-attributes
   def __init__(self, underlying):
     super().__init__(underlying)
     self._parameters = tuple((ExperimentParameterProxy(p) for p in underlying.all_parameters_unsorted)) or ()
@@ -164,6 +164,8 @@ class ExperimentMetaProxy(Proxy):
 
 
 class Experiment(Base):
+  # pylint: disable=too-many-public-methods
+
   NAME_MAX_LENGTH = 100
   CATEGORICAL_VALUE_MAX_LENGTH = 50
   CLIENT_PROVIDED_DATA_MAX_KEYS = 100

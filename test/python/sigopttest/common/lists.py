@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# pylint: disable=use-implicit-booleaness-not-comparison
 import numpy
 import pytest
 
@@ -9,6 +10,7 @@ from zigopt.protobuf.gen.test.message_pb2 import Parent
 
 
 class TestLists:
+  # pylint: disable=too-many-public-methods
   def test_flatten(self):
     assert flatten([]) == []
     assert flatten([[]]) == []

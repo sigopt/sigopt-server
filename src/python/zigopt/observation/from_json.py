@@ -85,6 +85,7 @@ def update_observation_data_assignments_task_from_json(
   experiment,
   suggestion,
 ):
+  # pylint: disable=too-many-statements
   assignments_json = get_opt_with_validation(json_dict, "assignments", ValidationType.object)
   suggestion_json = get_opt_with_validation(json_dict, "suggestion", ValidationType.id)
 
