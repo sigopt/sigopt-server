@@ -5,7 +5,18 @@
 import time
 
 
-class Profiler:
+class BaseProfiler:
+  def enable(self) -> None:
+    raise NotImplementedError
+
+  def disable(self) -> None:
+    raise NotImplementedError
+
+  def print_stats(self, *args, **kwargs) -> None:
+    raise NotImplementedError
+
+
+class Profiler(BaseProfiler):
   def __init__(self):
     import cProfile
     import tracemalloc
@@ -26,7 +37,10 @@ class Profiler:
 
     self.profile.disable()
     self.last_tracemalloc_snapshot = tracemalloc.take_snapshot()
-    self.total_time += time.time() - self.start_time
+    if self.start_time is not None:
+      self.total_time += time.time() - self.start_time
+    else:
+      self.total_time = 0.0
     self.start_time = None
 
   def print_stats(self, *args, **kwargs):
@@ -47,7 +61,7 @@ class Profiler:
       pass
 
 
-class NullProfiler:
+class NullProfiler(BaseProfiler):
   def enable(self):
     pass
 

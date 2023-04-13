@@ -115,7 +115,7 @@ class ExperimentMetaProxy(Proxy):  # pylint: disable=too-many-instance-attribute
     )
     self.all_metrics_sorted = sorted(self._metrics, key=lambda m: m.name)
 
-    constrained_variables = []
+    constrained_variables: list = []
     if self.has_constraints:
       for constraint in self.constraints:
         constrained_variables = constrained_variables + [term.name for term in constraint.terms]

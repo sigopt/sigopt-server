@@ -7,7 +7,7 @@ from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta
 from zigopt.services.base import Service
 from zigopt.suggestion.lib import CouldNotProcessSuggestionError, SuggestionAlreadyProcessedError
-from zigopt.suggestion.sampler.base import SequentialSampler
+from zigopt.suggestion.sampler.base import SequentialSampler, SuggestionSampler
 from zigopt.suggestion.sampler.categorical import CategoricalOnlySampler
 from zigopt.suggestion.sampler.grid import GridSampler
 from zigopt.suggestion.sampler.lhc import LatinHypercubeSampler
@@ -176,6 +176,7 @@ class BaseBroker(Service):
 
   # NOTE: If we ever reorganize fetch_args, we could change the broker to be able to fetch inside here
   def next_sampler(self, experiment, optimization_args):
+    sampler: SuggestionSampler
     if experiment.development or experiment.experiment_type == ExperimentMeta.RANDOM:
       sampler = RandomSampler(self.services, experiment, source=UnprocessedSuggestion.Source.EXPLICIT_RANDOM)
     elif experiment.experiment_type == ExperimentMeta.GRID:
@@ -189,7 +190,7 @@ class BaseBroker(Service):
       if experiment.parallel_bandwidth > 1 and num_open_suggestions < experiment.parallel_bandwidth:
         lds_count -= num_open_suggestions
 
-      samplers_with_counts = ()
+      samplers_with_counts: tuple[tuple[SuggestionSampler, int], ...] = ()
       if lds_count > 0:
         optimization_args, lds_optimization_args = self.duplicate_optimization_args(optimization_args)
         low_discrepancy_sampler = self._low_discrepancy_sampler(experiment, lds_optimization_args)

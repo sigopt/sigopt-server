@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import logging
 from contextlib import contextmanager
+from typing import Any
 
 import pg8000
 
@@ -15,18 +16,15 @@ DELETE_ALLOW_LIST = ["tokens", "invites", "roles", "experiment_optimization_aux"
 
 @contextmanager
 def make_db_connection(host, port, database, query, user, password):
-  conn = pg8000.connect(
-    **remove_nones(
-      {
-        "host": host,
-        "port": int(port or 5432),
-        "database": database,
-        "user": user or "postgres",
-        "password": password,
-        **(query or {}),
-      }
-    )
-  )
+  options: dict[str, Any | None] = {
+    "host": host,
+    "port": int(port or 5432),
+    "database": database,
+    "user": user or "postgres",
+    "password": password,
+    **(query or {}),
+  }
+  conn = pg8000.connect(**remove_nones(options))
   try:
     conn.autocommit = True
     yield conn

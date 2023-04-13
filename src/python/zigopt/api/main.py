@@ -10,7 +10,7 @@ from zigopt.api.prod import ProdApp
 from zigopt.brand.constant import PRODUCT_NAME
 from zigopt.config.broker import ConfigBroker
 from zigopt.log.base import base_logger_setup, configure_loggers
-from zigopt.profile.profile import NullProfiler, Profiler
+from zigopt.profile.profile import BaseProfiler, NullProfiler, Profiler
 from zigopt.profile.tracer import NullTracer
 from zigopt.version import log_version
 
@@ -19,7 +19,7 @@ base_logger_setup()
 
 
 def _default_app(profiler, tracer):
-  config_file = os.environ.get("sigopt_server_config_file")
+  config_file = os.environ["sigopt_server_config_file"]
   config_broker = ConfigBroker.from_file(config_file)
   configure_loggers(config_broker)
   logging.getLogger("sigopt.python").info("Python version: %s", sys.version)
@@ -61,7 +61,7 @@ def run_app():
   if args.profile and args.debug:
     raise Exception("The profiler does not work in debug mode")
 
-  profiler = NullProfiler()
+  profiler: BaseProfiler = NullProfiler()
   if args.profile:
     profiler = Profiler()
 

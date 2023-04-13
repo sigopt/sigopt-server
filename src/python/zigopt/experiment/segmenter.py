@@ -8,6 +8,14 @@ from zigopt.math.interval import RightOpenInterval
 from zigopt.services.base import Service
 
 
+def linear_fencepost(i, parameter, sample_interval, length):
+  return parameter.bounds.minimum + (i / sample_interval) * length
+
+
+def log_fencepost(i, log_min, sample_interval, length):  # pylint: disable=function-redefined
+  return 10 ** (log_min + (i / sample_interval) * length)
+
+
 class ExperimentParameterSegmenter(Service):
   """
     Segments experiment parameters into chunked ranges.
@@ -33,20 +41,26 @@ class ExperimentParameterSegmenter(Service):
     if not parameter.has_log_transformation:
       length = parameter.bounds.maximum - parameter.bounds.minimum
 
-      def fencepost(i):
-        return parameter.bounds.minimum + (i / sample_interval) * length
-
-      intervals = [RightOpenInterval(fencepost(i), fencepost(i + 1)) for i in range(sample_interval)]
+      intervals = [
+        RightOpenInterval(
+          linear_fencepost(i, parameter, sample_interval, length),
+          linear_fencepost(i + 1, parameter, sample_interval, length),
+        )
+        for i in range(sample_interval)
+      ]
       intervals[-1] = intervals[-1].closure()
       return intervals
     log_min = math.log10(parameter.bounds.minimum)
     log_max = math.log10(parameter.bounds.maximum)
     length = log_max - log_min
 
-    def fencepost(i):  # pylint: disable=function-redefined
-      return log_min + (i / sample_interval) * length
-
-    intervals = [RightOpenInterval(10 ** fencepost(i), 10 ** fencepost(i + 1)) for i in range(sample_interval)]
+    intervals = [
+      RightOpenInterval(
+        log_fencepost(i, log_min, sample_interval, length),
+        log_fencepost(i + 1, log_min, sample_interval, length),
+      )
+      for i in range(sample_interval)
+    ]
     intervals[-1] = intervals[-1].closure()
     return intervals
 

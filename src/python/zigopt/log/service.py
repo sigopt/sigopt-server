@@ -9,6 +9,8 @@ from zigopt.services.base import Service
 
 
 class RequestIdAdapter(logging.LoggerAdapter):
+  extra: dict[str, object]
+
   def process(self, msg, kwargs):
     extra = extend_dict({}, self.extra, kwargs.pop("extra", None) or {})
     return (msg, extend_dict({"extra": extra}, kwargs))

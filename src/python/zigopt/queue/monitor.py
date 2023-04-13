@@ -4,7 +4,7 @@
 from datetime import timedelta
 
 from zigopt.common import *
-from zigopt.common.sigopt_datetime import unix_timestamp
+from zigopt.common.sigopt_datetime import unix_timestamp_with_microseconds
 from zigopt.redis.service import RedisServiceError
 from zigopt.services.base import Service
 
@@ -30,7 +30,7 @@ class QueueMonitor(Service):
         :type experiment: zigopt.experiment.model.Experiment
 
         """
-    now = unix_timestamp(with_microseconds=True)
+    now = unix_timestamp_with_microseconds()
     enqueue_time = int(now)
     queue_messages_by_group_key = as_grouped_dict(
       queue_messages,
@@ -77,7 +77,7 @@ class QueueMonitor(Service):
 
   def after_dequeue(self, queue_name, message):
     if self.should_monitor(queue_name):
-      now = unix_timestamp(with_microseconds=True)
+      now = unix_timestamp_with_microseconds()
       self._update_status(
         queue_name=queue_name,
         status={LAST_DEQUEUE: now},

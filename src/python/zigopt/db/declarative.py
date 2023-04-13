@@ -3,10 +3,13 @@
 # SPDX-License-Identifier: Apache License 2.0
 from pprint import pformat
 
+from sqlalchemy import Table
 from sqlalchemy.ext.declarative import declarative_base
 
 
 class SQLAPrintMixin:
+  __table__: Table
+
   def __str__(self):
     return pformat(self._asdict())
 

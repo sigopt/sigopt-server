@@ -40,4 +40,4 @@ class RequestLocalServiceBag:
     return getattr(self.underlying, name)
 
   def __dir__(self):
-    return object.__dir__(self) + dir(self.underlying)
+    return [*object.__dir__(self), *dir(self.underlying)]

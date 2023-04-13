@@ -85,9 +85,8 @@ class SyslogFormatter(JsonFormatter):
     return f"Python: {json_message}"
 
 
-class SensitiveFilter:
-  def filter(self, record):
-    return 0 if record.name.startswith("sigopt.rawsql") else 1
+def sensitive_filter(record):
+  return not record.name.startswith("sigopt.rawsql")
 
 
 def set_default_formatter(formatter):
@@ -113,7 +112,7 @@ def syslog_logger_setup(config_broker, syslog_host=None, syslog_port=None):
     if syslog_handler:
       # syslog_handler logs get saved forever, so we make sure
       # we aren't logging anything sensitive here
-      syslog_handler.addFilter(SensitiveFilter())
+      syslog_handler.addFilter(sensitive_filter)
       syslog_handler.setFormatter(
         SyslogFormatter(
           environment=config_broker.get("logging.environment", None),

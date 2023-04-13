@@ -165,9 +165,10 @@ class JsonBuilder:
     )
     for attr in dir(cls):
       func = getattr(cls, attr)
-      field_exposer = getattr(func, "__field_exposer", False)
-      if field_exposer:
-        field_exposer.update_field_dict(field_dict)
+      field_exposer = getattr(func, "__field_exposer", None)
+      if field_exposer is None:
+        continue
+      field_exposer.update_field_dict(field_dict)
     setattr(instance, "builder", BuilderDetails(cls.object_name, field_dict))
     return instance
 

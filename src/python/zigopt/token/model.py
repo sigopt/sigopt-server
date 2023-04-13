@@ -69,7 +69,7 @@ class Token(Base):
     return None
 
   @property
-  def ttl_seconds(self):
+  def ttl_seconds(self) -> int | None:
     if self.is_userless_client_token:
       return None
     if self.meta.lasts_forever:
