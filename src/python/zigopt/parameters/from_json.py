@@ -123,20 +123,41 @@ def set_bounds_from_json(parameter, parameter_json, experiment_type):
       raise BadParamError("Invalid bounds for log-transformation: bounds must be positive")
 
 
-def set_prior_from_json(parameter, parameter_json):
+def _check_prior(parameter, parameter_json):
   if parameter.param_type != PARAMETER_DOUBLE:
-    if parameter_json.get("prior") is not None:
-      raise InvalidKeyError("Currently only continuous parameters can have `prior`")
-    return
-  if parameter.transformation == ExperimentParameter.TRANSFORMATION_LOG:
-    if parameter_json.get("prior") is not None:
-      raise InvalidKeyError("Currently, parameters with a log transformation cannot have priors")
+    raise InvalidKeyError("Currently only continuous parameters can have `prior`")
 
-  if parameter_json.get("prior") is None:
-    return
+  if parameter.transformation == ExperimentParameter.TRANSFORMATION_LOG:
+    raise InvalidKeyError("Currently, parameters with a log transformation cannot have priors")
 
   if parameter_json.get("grid") is not None:
     raise GridError(parameter, "Grid parameters cannot have priors.")
+
+
+def _set_prior_normal(parameter, prior_json):
+  parameter.prior.normal_prior.mean = get_with_validation(prior_json, "mean", ValidationType.number)
+  if (
+    parameter.prior.normal_prior.mean > parameter.bounds.maximum
+    or parameter.prior.normal_prior.mean < parameter.bounds.minimum
+  ):
+    raise BadParamError("`mean` must be within the bounds of the parameter.")
+  parameter.prior.normal_prior.scale = get_with_validation(prior_json, "scale", ValidationType.number)
+  if parameter.prior.normal_prior.scale <= 0:
+    raise BadParamError("`scale` must be positive.")
+
+
+def _set_prior_beta(parameter, prior_json):
+  parameter.prior.beta_prior.shape_a = get_with_validation(prior_json, "shape_a", ValidationType.number)
+  parameter.prior.beta_prior.shape_b = get_with_validation(prior_json, "shape_b", ValidationType.number)
+  if parameter.prior.beta_prior.shape_a <= 0 or parameter.prior.beta_prior.shape_b <= 0:
+    raise BadParamError(f"shape parameters for {ParameterPriorNames.BETA} must be positive.")
+
+
+def set_prior_from_json(parameter, parameter_json):
+  if parameter_json.get("prior") is None:
+    return
+
+  _check_prior(parameter, parameter_json)
 
   prior_json = get_with_validation(parameter_json, "prior", ValidationType.object)
   prior_name = get_with_validation(prior_json, "name", ValidationType.string)
@@ -145,20 +166,9 @@ def set_prior_from_json(parameter, parameter_json):
 
   parameter.prior.prior_type = PARAMETER_PRIOR_NAME_TO_TYPE[prior_name]
   if prior_name == ParameterPriorNames.NORMAL:
-    parameter.prior.normal_prior.mean = get_with_validation(prior_json, "mean", ValidationType.number)
-    if (
-      parameter.prior.normal_prior.mean > parameter.bounds.maximum
-      or parameter.prior.normal_prior.mean < parameter.bounds.minimum
-    ):
-      raise BadParamError("`mean` must be within the bounds of the parameter.")
-    parameter.prior.normal_prior.scale = get_with_validation(prior_json, "scale", ValidationType.number)
-    if parameter.prior.normal_prior.scale <= 0:
-      raise BadParamError("`scale` must be positive.")
+    _set_prior_normal(parameter, prior_json)
   elif prior_name == ParameterPriorNames.BETA:
-    parameter.prior.beta_prior.shape_a = get_with_validation(prior_json, "shape_a", ValidationType.number)
-    parameter.prior.beta_prior.shape_b = get_with_validation(prior_json, "shape_b", ValidationType.number)
-    if parameter.prior.beta_prior.shape_a <= 0 or parameter.prior.beta_prior.shape_b <= 0:
-      raise BadParamError(f"shape parameters for {ParameterPriorNames.BETA} must be positive.")
+    _set_prior_beta(parameter, prior_json)
   else:
     raise InvalidValueError(f"{prior_name} prior is not supported currently.")
 

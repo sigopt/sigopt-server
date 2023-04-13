@@ -74,6 +74,24 @@ def field_descriptor_to_scalar_descriptor(field_descriptor):
   return python_type
 
 
+def get_json_key_from_field_descriptor(descriptor, key):
+  assert isinstance(descriptor, FieldDescriptor)
+  is_array_access = is_integer(key)
+  if is_array_access:
+    if descriptor.label != FieldDescriptor.LABEL_REPEATED:
+      raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
+    reached_end = descriptor.message_type is None
+    if reached_end:
+      return field_descriptor_to_scalar_descriptor(descriptor)
+    return descriptor.message_type
+  if descriptor.label == FieldDescriptor.LABEL_REPEATED:
+    if IsMapEntry(descriptor):
+      value_field = descriptor.message_type.fields_by_name["value"]
+      return next_descriptor_for_field_descriptor(value_field)
+    raise InvalidPathError(f"{key} is a repeated field for {descriptor.full_name}")
+  raise TypeError("Did not dereference FieldDescriptor message_type")
+
+
 def get_json_key(descriptor, key, json=False):
   assert hasattr(descriptor, "GetOptions"), "validate_path can only be called on protobuf descriptors"
   assert descriptor is not None
@@ -81,21 +99,7 @@ def get_json_key(descriptor, key, json=False):
   is_field_descriptor = isinstance(descriptor, FieldDescriptor)
   is_array_access = is_integer(key)
   if is_field_descriptor:
-    if is_array_access:
-      if descriptor.label != FieldDescriptor.LABEL_REPEATED:
-        raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
-      reached_end = descriptor.message_type is None
-      if reached_end:
-        descriptor = field_descriptor_to_scalar_descriptor(descriptor)
-      else:
-        descriptor = descriptor.message_type
-    else:
-      if descriptor.label == FieldDescriptor.LABEL_REPEATED:
-        if IsMapEntry(descriptor):
-          value_field = descriptor.message_type.fields_by_name["value"]
-          return next_descriptor_for_field_descriptor(value_field)
-        raise InvalidPathError(f"{key} is a repeated field for {descriptor.full_name}")
-      raise TypeError("Did not dereference FieldDescriptor message_type")
+    descriptor = get_json_key_from_field_descriptor(descriptor, key)
   else:
     if is_array_access:
       raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")

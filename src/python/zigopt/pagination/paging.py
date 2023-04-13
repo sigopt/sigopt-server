@@ -75,8 +75,91 @@ class Pager:
     marker.symbols[-1].int_value -= 1
     return marker
 
+  def _get_field_values_from_result(self, Field, r):
+    if hasattr(Field, "__call__"):
+      return as_tuple(Field(r))
+    Fields = as_tuple(Field)
+    ret = []
+    for F in Fields:
+      ret.append(getattr(r, F.name))
+    return tuple(ret)
+
+  def _build_marker_from_field_values(self, field_values):
+    marker = PagingMarker()
+    for value in field_values:
+      symbol = marker.symbols.add()
+      if value is None:
+        symbol.null_value = PagingSymbol.NULL_VALUE
+        symbol.null_value  # pylint: disable=pointless-statement
+      elif isinstance(value, dt.datetime):
+        symbol.timestamp_value.FromDatetime(aware_datetime_to_naive_datetime(value))
+      elif is_number(value):
+        if is_integer(value):
+          symbol.int_value = value
+          symbol.int_value  # pylint: disable=pointless-statement
+        else:
+          symbol.double_value = value
+          symbol.double_value  # pylint: disable=pointless-statement
+      elif is_string(value):
+        symbol.string_value = value
+        symbol.string_value  # pylint: disable=pointless-statement
+      elif is_boolean(value):
+        symbol.bool_value = value
+        symbol.bool_value  # pylint: disable=pointless-statement
+      else:
+        raise ValueError(f"Unknown field value: {value}")
+    return marker
+
+  @generator_to_list
+  def _get_field_values_from_marker(self, marker):
+    for s in marker.symbols:
+      yield get_value_of_paging_symbol(s)
+
+  def _sanitize_nones(self, val):
+    return tuple(coalesce(v, INF) for v in val)
+
+  def _sanitized_field_values_from_result(self, Field, v):
+    return self._sanitize_nones(self._get_field_values_from_result(Field, v))
+
+  def _sanitized_field_values_from_marker(self, v):
+    return self._sanitize_nones(self._get_field_values_from_marker(v))
+
+  def _fetch_page_from_item_list(self, Field, sorted_list, limit, before, after, start_from_before):
+    filtered_page = [
+      p
+      for p in sorted_list
+      if (
+        (
+          before is self._NO_MARKER
+          or self._sanitized_field_values_from_result(Field, p) < self._sanitized_field_values_from_marker(before)
+        )
+        and (
+          after is self._NO_MARKER
+          or self._sanitized_field_values_from_result(Field, p) > self._sanitized_field_values_from_marker(after)
+        )
+      )
+    ]
+    if limit is not None:
+      filtered_page = filtered_page[:limit] if start_from_before else list(tail(filtered_page, limit))
+    return filtered_page
+
+  def _get_markers_from_results(self, results, Field, start_from_before, has_more):
+    minimum = self._build_marker_from_field_values(self._get_field_values_from_result(Field, results[-1]))
+    maximum = self._build_marker_from_field_values(self._get_field_values_from_result(Field, results[0]))
+
+    if start_from_before:
+      return (minimum if has_more else self._NO_MARKER, maximum)
+    return (minimum, maximum if has_more else self._NO_MARKER)
+
+  def _get_new_markers(self, results, before, after, Field, start_from_before, has_more):
+    if results:
+      return self._get_markers_from_results(results, Field, start_from_before, has_more)
+    if start_from_before:
+      return (before, self._increment_marker(before) if before is not self._NO_MARKER else self._NO_MARKER)
+    return (self._decrement_marker(after) if after is not self._NO_MARKER else self._NO_MARKER, after)
+
   def fetch(self, paging, Field, ascending=False):
-    # pylint: disable=too-many-locals,too-many-statements
+    # pylint: disable=too-many-locals
     assert isinstance(paging, PagingRequest)
     limit = paging.limit
     before = coalesce(paging.before, self._NO_MARKER)
@@ -93,78 +176,7 @@ class Pager:
     else:
       start_from_before = before is not self._NO_MARKER or after is self._NO_MARKER
 
-    def get_field_values_from_result(r):
-      if hasattr(Field, "__call__"):
-        return as_tuple(Field(r))
-      Fields = as_tuple(Field)
-      ret = []
-      for F in Fields:
-        ret.append(getattr(r, F.name))
-      return tuple(ret)
-
-    def build_marker_from_field_values(field_values):
-      marker = PagingMarker()
-      for value in field_values:
-        symbol = marker.symbols.add()
-        if value is None:
-          symbol.null_value = PagingSymbol.NULL_VALUE
-          symbol.null_value  # pylint: disable=pointless-statement
-        elif isinstance(value, dt.datetime):
-          symbol.timestamp_value.FromDatetime(aware_datetime_to_naive_datetime(value))
-        elif is_number(value):
-          if is_integer(value):
-            symbol.int_value = value
-            symbol.int_value  # pylint: disable=pointless-statement
-          else:
-            symbol.double_value = value
-            symbol.double_value  # pylint: disable=pointless-statement
-        elif is_string(value):
-          symbol.string_value = value
-          symbol.string_value  # pylint: disable=pointless-statement
-        elif is_boolean(value):
-          symbol.bool_value = value
-          symbol.bool_value  # pylint: disable=pointless-statement
-        else:
-          raise ValueError(f"Unknown field value: {value}")
-      return marker
-
-    @generator_to_list
-    def get_field_values_from_marker(marker):
-      for s in marker.symbols:
-        yield get_value_of_paging_symbol(s)
-
-    def sanitize_nones(val):
-      return tuple(coalesce(v, INF) for v in val)
-
-    # pylint: disable=unnecessary-lambda-assignment
-    sanitized_field_values_from_result = lambda v: sanitize_nones(get_field_values_from_result(v))
-    sanitized_field_values_from_marker = lambda v: sanitize_nones(get_field_values_from_marker(v))
-    # pylint: enable=unnecessary-lambda-assignment
-
-    if self.item_list is not None:
-      sorted_list = sorted(self.item_list, key=sanitized_field_values_from_result, reverse=True)
-
-      def fetch_page(limit, before, after):
-        filtered_page = [
-          p
-          for p in sorted_list
-          if (
-            (
-              before is self._NO_MARKER
-              or sanitized_field_values_from_result(p) < sanitized_field_values_from_marker(before)
-            )
-            and (
-              after is self._NO_MARKER
-              or sanitized_field_values_from_result(p) > sanitized_field_values_from_marker(after)
-            )
-          )
-        ]
-        if limit is not None:
-          filtered_page = filtered_page[:limit] if start_from_before else list(tail(filtered_page, limit))
-        return filtered_page
-
-      results = fetch_page(fetch_limit, before, after)
-    else:
+    if self.item_list is None:
       assert self.fetch_page is not None
       # TODO(SN-1117): Most callers of this function are not equipped to handle _NO_MARKER, so we adapt it
       # back into None. But this means that None values will not be sorted properly. Fortunately,
@@ -172,6 +184,11 @@ class Pager:
       qbefore = None if before is self._NO_MARKER else before
       qafter = None if after is self._NO_MARKER else after
       results = self.fetch_page(fetch_limit, qbefore, qafter)
+    else:
+      sorted_list = sorted(
+        self.item_list, key=lambda v: self._sanitized_field_values_from_result(Field, v), reverse=True
+      )
+      results = self._fetch_page_from_item_list(Field, sorted_list, fetch_limit, before, after, start_from_before)
 
     has_more = fetch_limit is not None and len(results) >= fetch_limit
 
@@ -181,7 +198,7 @@ class Pager:
       assert len(results) <= 1
       if results:
         extra_item = results[0]
-        marker = build_marker_from_field_values(get_field_values_from_result(extra_item))
+        marker = self._build_marker_from_field_values(self._get_field_values_from_result(Field, extra_item))
         if start_from_before:
           return [], self._sanitize_marker(self._increment_marker(marker)), None
         return [], None, self._sanitize_marker(self._decrement_marker(marker))
@@ -189,27 +206,8 @@ class Pager:
     if limit is not None:
       results = results[:limit] if start_from_before else tail(results, limit)
 
-    if results:
-      minimum = build_marker_from_field_values(get_field_values_from_result(results[-1]))
-      maximum = build_marker_from_field_values(get_field_values_from_result(results[0]))
-
-      new_before = None
-      new_after = None
-      if start_from_before:
-        new_before = minimum if has_more else self._NO_MARKER
-        new_after = maximum
-      else:
-        new_before = minimum
-        new_after = maximum if has_more else self._NO_MARKER
-
-      if ascending:
-        results.reverse()
-    else:
-      if start_from_before:
-        new_before = before
-        new_after = self._increment_marker(before) if before is not self._NO_MARKER else self._NO_MARKER
-      else:
-        new_before = self._decrement_marker(after) if after is not self._NO_MARKER else self._NO_MARKER
-        new_after = after
+    new_before, new_after = self._get_new_markers(results, before, after, Field, start_from_before, has_more)
+    if results and ascending:
+      results.reverse()
 
     return results, self._sanitize_marker(new_before), self._sanitize_marker(new_after)

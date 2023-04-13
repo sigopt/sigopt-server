@@ -719,43 +719,55 @@ class SCAdapter(Service):
       nonzero_mean_default = self.services.config_broker.get("model.nonzero_mean_default", default=DEFAULT_NONZERO_MEAN)
       nonzero_mean_choice = {"mean_type": nonzero_mean_default, "poly_indices": None}
 
-    if is_mapping(nonzero_mean_choice):
-      if not all(mean_keys in nonzero_mean_choice for mean_keys in ("mean_type", "poly_indices")):
-        raise ValueError('"mean_type" and "poly_indices" are required in nonzero_mean_choice')
-      passed_mean_type = nonzero_mean_choice.get("mean_type")
-      passed_poly_indices = nonzero_mean_choice.get("poly_indices")
-      if passed_mean_type is None:
-        raise ValueError("You must choose a mean_type in nonzero_mean_choice")
-      if not is_string(passed_mean_type):
-        raise ValueError(f"mean_type should be a string, but passed: {type(passed_mean_type)}")
-      if not (passed_poly_indices is None or is_sequence(passed_poly_indices)):
-        raise ValueError("poly_indices must be a list of lists, or None to let sigoptcompute choose")
-      if passed_mean_type == "custom":
-        if passed_poly_indices is None:
-          raise ValueError("You must choose indices if you want a custom mean")
-        correct_mean_type = passed_mean_type
-        correct_poly_indices = passed_poly_indices
-      elif passed_mean_type == "automatic":
-        if passed_poly_indices is not None:
-          raise ValueError("When requesting automatic indices construction, poly_indices must be None")
-        if num_points < max(dimension, 2):
-          correct_mean_type = "zero"
-        elif num_points < 3 * dimension:
-          correct_mean_type = "constant"
-        else:
-          correct_mean_type = "linear" if ACTIVATE_LINEAR_MEAN else "constant"
-        correct_poly_indices = None
-      elif passed_mean_type in ("zero", "constant", "linear"):
-        if passed_poly_indices is not None:
-          raise ValueError(f"Mean is chosen by mean_type={passed_mean_type} ... poly_indices should be None")
-        correct_mean_type = passed_mean_type
-        correct_poly_indices = None
-      else:
-        raise ValueError(f"Unrecognized mean_type, {passed_mean_type}")
-    else:
+    if not is_mapping(nonzero_mean_choice):
       raise TypeError(f"nonzero_mean_choice should be a dictionary, but is {type(nonzero_mean_choice)}")
+
+    if not all(mean_keys in nonzero_mean_choice for mean_keys in ("mean_type", "poly_indices")):
+      raise ValueError('"mean_type" and "poly_indices" are required in nonzero_mean_choice')
+
+    passed_mean_type = nonzero_mean_choice.get("mean_type")
+    self._validate_passed_mean_type(passed_mean_type)
+    passed_poly_indices = nonzero_mean_choice.get("poly_indices")
+    self._validate_passed_poly_indices(passed_poly_indices)
+    correct_mean_type, correct_poly_indices = self._get_correct_mean_type_and_poly_indices(
+      passed_mean_type,
+      passed_poly_indices,
+      num_points,
+      dimension,
+    )
 
     return {
       "mean_type": correct_mean_type,
       "poly_indices": correct_poly_indices,
     }
+
+  def _validate_passed_mean_type(self, passed_mean_type):
+    if passed_mean_type is None:
+      raise ValueError("You must choose a mean_type in nonzero_mean_choice")
+    if not is_string(passed_mean_type):
+      raise ValueError(f"mean_type should be a string, but passed: {type(passed_mean_type)}")
+
+  def _validate_passed_poly_indices(self, passed_poly_indices):
+    if not (passed_poly_indices is None or is_sequence(passed_poly_indices)):
+      raise ValueError("poly_indices must be a list of lists, or None to let sigoptcompute choose")
+
+  def _get_correct_mean_type_and_poly_indices(self, passed_mean_type, passed_poly_indices, num_points, dimension):
+    if passed_mean_type == "custom":
+      if passed_poly_indices is None:
+        raise ValueError("You must choose indices if you want a custom mean")
+      return (passed_mean_type, passed_poly_indices)
+    if passed_mean_type == "automatic":
+      if passed_poly_indices is not None:
+        raise ValueError("When requesting automatic indices construction, poly_indices must be None")
+      if num_points < max(dimension, 2):
+        correct_mean_type = "zero"
+      elif num_points < 3 * dimension:
+        correct_mean_type = "constant"
+      else:
+        correct_mean_type = "linear" if ACTIVATE_LINEAR_MEAN else "constant"
+      return (correct_mean_type, None)
+    if passed_mean_type in ("zero", "constant", "linear"):
+      if passed_poly_indices is not None:
+        raise ValueError(f"Mean is chosen by mean_type={passed_mean_type} ... poly_indices should be None")
+      return (passed_mean_type, None)
+    raise ValueError(f"Unrecognized mean_type, {passed_mean_type}")

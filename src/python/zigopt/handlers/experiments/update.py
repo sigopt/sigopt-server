@@ -169,88 +169,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
   def get_client(self):
     return self.client
 
-  def handle(self, json_dict):
-    # pylint: disable=too-many-locals,too-many-statements
-    no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
-
-    validate_experiment_json_dict_for_update(json_dict)
-    client = self.services.client_service.find_by_id(self.experiment.client_id, current_client=self.auth.current_client)
-
-    update_meta_fields = {}
-    update_experiment_fields = {}
-    new_meta = self.experiment.experiment_meta.copy_protobuf()
-    if not new_meta.metrics:
-      new_meta.metrics.extend([ExperimentMetric(name=None)])
-
-    project = None
-    if "project" in json_dict:
-      project = self.get_project(json_dict)
-      if self.experiment.runs_only:
-        if project is None:
-          raise BadParamError("This experiment cannot be removed from the project.")
-        if project.id != self.experiment.project_id:
-          raise BadParamError("This experiment's project cannot be changed.")
-      update_experiment_fields[Experiment.project_id] = project and project.id
-    else:
-      project = self.services.project_service.find_by_client_and_id(
-        client_id=self.experiment.client_id,
-        project_id=self.experiment.project_id,
-      )
-
-    if "name" in json_dict:
-      name = get_with_validation(json_dict, "name", ValidationType.string)
-      validate_experiment_name(name)
-      update_experiment_fields[Experiment.name] = name
-      self.experiment.name = name
-
-    if "state" in json_dict:
-      state = get_with_validation(json_dict, "state", ValidationType.string)
-      state = validate_state(state)
-      deleted = state == "deleted"
-      update_experiment_fields[Experiment.deleted] = deleted
-      self.experiment.deleted = deleted
-
-    try:
-      budget_key, budget = self.get_budget_key_and_value(json_dict, self.experiment.runs_only)
-    except MissingJsonKeyError:
-      pass
-    else:
-      if self.experiment.experiment_type == ExperimentMeta.GRID:
-        raise BadParamError(f"`{budget_key}` cannot be updated for experiments of type `grid`.")
-      if self.experiment.requires_pareto_frontier_optimization:
-        raise BadParamError(f"`{budget_key}` cannot be updated for experiments with more than one optimized metric.")
-      if self.experiment.num_solutions > 1:
-        raise BadParamError(f"`{budget_key}` cannot be updated for experiments with more than one solution.")
-      update_meta_fields[Experiment.experiment_meta.observation_budget] = budget
-      if budget is not None:
-        new_meta.observation_budget = budget
-      else:
-        new_meta.ClearField("observation_budget")
-
-    if "parameters" in json_dict:
-      if self.experiment.experiment_type == ExperimentMeta.GRID:
-        raise BadParamError("Parameters cannot be updated for experiments of type `grid`.")
-      if self.experiment.constraints:
-        raise BadParamError("Parameters cannot be updated for experiments with constraints")
-
-      parameters_json = get_with_validation(
-        json_dict,
-        "parameters",
-        ValidationType.arrayOf(ValidationType.object),
-      )
-
-      if not parameters_json:
-        raise BadParamError("Experiments must have at least one parameter.")
-
-      name_counts = distinct_counts(remove_nones([p.get("name") for p in parameters_json]))
-      duplicates = [key for (key, value) in name_counts.items() if value > 1]
-      if len(duplicates) > 0:
-        raise BadParamError(f"Duplicate parameter names: {duplicates}")
-
-      self.update_parameters(new_meta, parameters_json, self.experiment.experiment_type)
-      update_meta_fields[Experiment.experiment_meta.all_parameters_unsorted] = list(new_meta.all_parameters_unsorted)
-
-    # NOTE: This will never be seen because experiment_update_schema will cause the validate above to crash
+  def _check_unsupported_updates(self, json_dict):
     if "constraints" in json_dict:
       raise BadParamError("Constraints cannot be updated for an experiment")
 
@@ -260,31 +179,141 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     if "conditionals" in json_dict:
       raise BadParamError("Conditionals cannot be updated for an experiment")
 
-    if "metadata" in json_dict:
-      client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(json_dict)
-      update_meta_fields[Experiment.experiment_meta.client_provided_data] = client_provided_data
-      if client_provided_data is not None:
-        new_meta.client_provided_data = client_provided_data
-      else:
-        new_meta.ClearField("client_provided_data")
-
-    if "parallel_bandwidth" in json_dict:
-      parallel_bandwidth = BaseExperimentsCreateHandler.get_parallel_bandwidth_from_json(json_dict)
-      if parallel_bandwidth is None:
-        new_meta.ClearField("parallel_bandwidth")
-      else:
-        new_meta.parallel_bandwidth = parallel_bandwidth
-      update_meta_fields[Experiment.experiment_meta.parallel_bandwidth] = parallel_bandwidth
-
     if "tasks" in json_dict:
       raise BadParamError("The tasks of a multitask experiment cannot be updated after creation")
 
-    if "metrics" in json_dict:
-      update_meta_fields, new_meta = self.update_metrics(
-        update_meta_fields,
-        json_dict,
-        new_meta,
+  def _get_project(self, json_dict, update_experiment_fields):
+    if "project" not in json_dict:
+      return self.services.project_service.find_by_client_and_id(
+        client_id=self.experiment.client_id,
+        project_id=self.experiment.project_id,
       )
+    project = self.get_project(json_dict)
+    if self.experiment.runs_only:
+      if project is None:
+        raise BadParamError("This experiment cannot be removed from the project.")
+      if project.id != self.experiment.project_id:
+        raise BadParamError("This experiment's project cannot be changed.")
+    update_experiment_fields[Experiment.project_id] = project and project.id
+    return project
+
+  def _maybe_set_name(self, json_dict, update_experiment_fields):
+    if "name" not in json_dict:
+      return
+    name = get_with_validation(json_dict, "name", ValidationType.string)
+    validate_experiment_name(name)
+    update_experiment_fields[Experiment.name] = name
+    self.experiment.name = name
+
+  def _maybe_set_state(self, json_dict, update_experiment_fields):
+    if "state" not in json_dict:
+      return
+    state = get_with_validation(json_dict, "state", ValidationType.string)
+    state = validate_state(state)
+    deleted = state == "deleted"
+    update_experiment_fields[Experiment.deleted] = deleted
+    self.experiment.deleted = deleted
+
+  def _maybe_set_budget(self, json_dict, new_meta, update_meta_fields):
+    try:
+      budget_key, budget = self.get_budget_key_and_value(json_dict, self.experiment.runs_only)
+    except MissingJsonKeyError:
+      return
+    if self.experiment.experiment_type == ExperimentMeta.GRID:
+      raise BadParamError(f"`{budget_key}` cannot be updated for experiments of type `grid`.")
+    if self.experiment.requires_pareto_frontier_optimization:
+      raise BadParamError(f"`{budget_key}` cannot be updated for experiments with more than one optimized metric.")
+    if self.experiment.num_solutions > 1:
+      raise BadParamError(f"`{budget_key}` cannot be updated for experiments with more than one solution.")
+    update_meta_fields[Experiment.experiment_meta.observation_budget] = budget
+    if budget is not None:
+      new_meta.observation_budget = budget
+    else:
+      new_meta.ClearField("observation_budget")
+
+  def _maybe_set_parameters(self, json_dict, new_meta, update_meta_fields):
+    if "parameters" not in json_dict:
+      return
+    if self.experiment.experiment_type == ExperimentMeta.GRID:
+      raise BadParamError("Parameters cannot be updated for experiments of type `grid`.")
+    if self.experiment.constraints:
+      raise BadParamError("Parameters cannot be updated for experiments with constraints")
+
+    parameters_json = get_with_validation(
+      json_dict,
+      "parameters",
+      ValidationType.arrayOf(ValidationType.object),
+    )
+
+    if not parameters_json:
+      raise BadParamError("Experiments must have at least one parameter.")
+
+    name_counts = distinct_counts(remove_nones([p.get("name") for p in parameters_json]))
+    duplicates = [key for (key, value) in name_counts.items() if value > 1]
+    if len(duplicates) > 0:
+      raise BadParamError(f"Duplicate parameter names: {duplicates}")
+
+    self.update_parameters(new_meta, parameters_json, self.experiment.experiment_type)
+    update_meta_fields[Experiment.experiment_meta.all_parameters_unsorted] = list(new_meta.all_parameters_unsorted)
+
+  def _maybe_set_metadata(self, json_dict, new_meta, update_meta_fields):
+    if "metadata" not in json_dict:
+      return
+    client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(json_dict)
+    update_meta_fields[Experiment.experiment_meta.client_provided_data] = client_provided_data
+    if client_provided_data is not None:
+      new_meta.client_provided_data = client_provided_data
+    else:
+      new_meta.ClearField("client_provided_data")
+
+  def _maybe_set_parallel_bandwidth(self, json_dict, new_meta, update_meta_fields):
+    if "parallel_bandwidth" not in json_dict:
+      return
+    parallel_bandwidth = BaseExperimentsCreateHandler.get_parallel_bandwidth_from_json(json_dict)
+    if parallel_bandwidth is None:
+      new_meta.ClearField("parallel_bandwidth")
+    else:
+      new_meta.parallel_bandwidth = parallel_bandwidth
+    update_meta_fields[Experiment.experiment_meta.parallel_bandwidth] = parallel_bandwidth
+
+  def _maybe_set_metrics(self, json_dict, new_meta, update_meta_fields):
+    if "metrics" not in json_dict:
+      return
+    self.update_metrics(
+      update_meta_fields,
+      json_dict,
+      new_meta,
+    )
+
+  def handle(self, json_dict):
+    no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
+
+    validate_experiment_json_dict_for_update(json_dict)
+    self._check_unsupported_updates(json_dict)
+
+    client = self.services.client_service.find_by_id(self.experiment.client_id, current_client=self.auth.current_client)
+
+    update_meta_fields = {}
+    update_experiment_fields = {}
+    new_meta = self.experiment.experiment_meta.copy_protobuf()
+    if not new_meta.metrics:
+      new_meta.metrics.extend([ExperimentMetric(name=None)])
+
+    project = self._get_project(json_dict, update_experiment_fields)
+
+    self._maybe_set_name(json_dict, update_experiment_fields)
+
+    self._maybe_set_state(json_dict, update_experiment_fields)
+
+    self._maybe_set_budget(json_dict, new_meta, update_meta_fields)
+
+    self._maybe_set_parameters(json_dict, new_meta, update_meta_fields)
+
+    self._maybe_set_metadata(json_dict, new_meta, update_meta_fields)
+
+    self._maybe_set_parallel_bandwidth(json_dict, new_meta, update_meta_fields)
+
+    self._maybe_set_metrics(json_dict, new_meta, update_meta_fields)
 
     self.experiment.experiment_meta = new_meta
 
@@ -343,7 +372,6 @@ class ExperimentsUpdateHandler(ExperimentHandler):
           metric.ClearField("threshold")
         else:
           metric.threshold = new_threshold
-    return new_meta
 
   def _raise_if_objective_changed(self, json_dict, metrics):
     for metric_json, metric in self._compare_metric_jsons_with_metrics_by_name(json_dict, metrics):
@@ -397,9 +425,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
   def update_metrics(self, update_meta_fields, json_dict, new_meta):
     metrics = self.experiment.all_metrics
     self._raise_if_bad_update(json_dict, metrics)
-    new_meta = self._update_thresholds_on_metrics(json_dict, new_meta)
+    self._update_thresholds_on_metrics(json_dict, new_meta)
     update_meta_fields[Experiment.experiment_meta.metrics] = new_meta.metrics
-    return update_meta_fields, new_meta
 
   def update_parameters(self, meta, parameters_json, experiment_type):
     parameter_map = dict(((p.name, p) for p in meta.all_parameters_unsorted))
@@ -453,79 +480,107 @@ class ExperimentsUpdateHandler(ExperimentHandler):
         f" - must be between {param.bounds.minimum} and {param.bounds.maximum}"
       )
 
-  def update_param(self, parameter, parameter_json, experiment_type):
-    # pylint: disable=too-many-statements
-    if "type" in parameter_json:
-      param_type = parameter.param_type
-      set_parameter_type_from_json(parameter, parameter_json)
-      if parameter.param_type != param_type:
-        raise BadParamError(
-          f"`type` attribute on parameter {parameter.name}"
-          f" must remain {EXPERIMENT_PARAMETER_TYPE_TO_NAME.get(param_type)}"
-        )
+  def _maybe_set_parameter_type(self, parameter, parameter_json):
+    if "type" not in parameter_json:
+      return
+    param_type = parameter.param_type
+    set_parameter_type_from_json(parameter, parameter_json)
+    if parameter.param_type != param_type:
+      raise BadParamError(
+        f"`type` attribute on parameter {parameter.name}"
+        f" must remain {EXPERIMENT_PARAMETER_TYPE_TO_NAME.get(param_type)}"
+      )
 
-    if "bounds" in parameter_json or "grid" in parameter_json:
-      set_bounds_from_json(parameter, parameter_json, experiment_type)
+  def _maybe_set_parameter_bounds(self, parameter, parameter_json, experiment_type):
+    if "bounds" not in parameter_json and "grid" not in parameter_json:
+      return
+    set_bounds_from_json(parameter, parameter_json, experiment_type)
 
-    if "grid" in parameter_json:
-      set_grid_values_from_json(parameter, parameter_json)
+  def _maybe_set_parameter_grid_values(self, parameter, parameter_json):
+    if "grid" not in parameter_json:
+      return
+    set_grid_values_from_json(parameter, parameter_json)
 
+  def _maybe_set_parameter_categorical_values(self, parameter, parameter_json):
     categorical_values_json = get_opt_with_validation(
       parameter_json,
       "categorical_values",
       ValidationType.arrayOf(ValidationType.oneOf([ValidationType.object, ValidationType.string])),
     )
-    if categorical_values_json is not None:
-      categorical_values_map = dict((c.name, c) for c in parameter.all_categorical_values)
+    if categorical_values_json is None:
+      return
+
+    categorical_values_map = dict((c.name, c) for c in parameter.all_categorical_values)
+    try:
+      enum_index = max((c.enum_index for c in parameter.all_categorical_values)) + 1
+    except ValueError:
+      enum_index = 1
+
+    seen_names = set()
+    for categorical_value_json in categorical_values_json:
+      if is_string(categorical_value_json):
+        name = categorical_value_json
+      else:
+        name = get_with_validation(categorical_value_json, "name", ValidationType.string)
       try:
-        enum_index = max((c.enum_index for c in parameter.all_categorical_values)) + 1
-      except ValueError:
-        enum_index = 1
+        categorical_value = categorical_values_map[name]
+        categorical_value.ClearField("deleted")
+      except KeyError:
+        categorical_value = parameter.all_categorical_values.add()
+        set_categorical_value_from_json(categorical_value, categorical_value_json, enum_index)
+        enum_index += 1
 
-      seen_names = set()
-      for categorical_value_json in categorical_values_json:
-        if is_string(categorical_value_json):
-          name = categorical_value_json
-        else:
-          name = get_with_validation(categorical_value_json, "name", ValidationType.string)
-        try:
-          categorical_value = categorical_values_map[name]
-          categorical_value.ClearField("deleted")
-        except KeyError:
-          categorical_value = parameter.all_categorical_values.add()
-          set_categorical_value_from_json(categorical_value, categorical_value_json, enum_index)
-          enum_index += 1
+      if categorical_value.name in seen_names:
+        raise BadParamError(f"Duplicate categorical value {categorical_value.name} for parameter {parameter.name}")
+      seen_names.add(categorical_value.name)
 
-        if categorical_value.name in seen_names:
-          raise BadParamError(f"Duplicate categorical value {categorical_value.name} for parameter {parameter.name}")
-        seen_names.add(categorical_value.name)
+    for categorical_value in parameter.all_categorical_values:
+      if categorical_value.name not in seen_names:
+        categorical_value.deleted = True
 
-      for categorical_value in parameter.all_categorical_values:
-        if categorical_value.name not in seen_names:
-          categorical_value.deleted = True
+    if len([c for c in parameter.all_categorical_values if not c.deleted]) < 2:
+      raise BadParamError(f"Parameters {parameter.name} must have 2 or more active (not deleted) categorical values")
 
-      if len([c for c in parameter.all_categorical_values if not c.deleted]) < 2:
-        raise BadParamError(f"Parameters {parameter.name} must have 2 or more active (not deleted) categorical values")
+  def _maybe_set_parameter_default_value(self, parameter, parameter_json):
+    if "default_value" not in parameter_json:
+      return
+    set_default_value_from_json(parameter, parameter_json)
 
-    if "default_value" in parameter_json:
-      set_default_value_from_json(parameter, parameter_json)
+  def _maybe_set_parameter_prior(self, parameter, parameter_json):
+    if "prior" not in parameter_json:
+      return
+    if parameter_json["prior"] is None:
+      parameter.ClearField("prior")
+    else:
+      set_prior_from_json(parameter, parameter_json)
 
+  def _maybe_set_parameter_transformation(self, parameter, parameter_json):
+    if "transformation" not in parameter_json:
+      return
+    original_transformation = parameter.transformation
+    set_transformation_from_json(parameter, parameter_json)
+    if parameter.transformation != original_transformation:
+      raise BadParamError(
+        f"`transformation` attribute on parameter {parameter.name}"
+        f" must remain {PARAMETER_TRANSFORMATION_TYPE_TO_NAME.get(original_transformation)}"
+      )
+
+  def update_param(self, parameter, parameter_json, experiment_type):
     if "conditions" in parameter_json:
       raise BadParamError("Conditions cannot be updated for parameters")
 
-    if "prior" in parameter_json:
-      if parameter_json["prior"] is None:
-        parameter.ClearField("prior")
-      else:
-        set_prior_from_json(parameter, parameter_json)
+    self._maybe_set_parameter_type(parameter, parameter_json)
 
-    if "transformation" in parameter_json:
-      original_transformation = parameter.transformation
-      set_transformation_from_json(parameter, parameter_json)
-      if parameter.transformation != original_transformation:
-        raise BadParamError(
-          f"`transformation` attribute on parameter {parameter.name}"
-          f" must remain {PARAMETER_TRANSFORMATION_TYPE_TO_NAME.get(original_transformation)}"
-        )
+    self._maybe_set_parameter_bounds(parameter, parameter_json, experiment_type)
+
+    self._maybe_set_parameter_grid_values(parameter, parameter_json)
+
+    self._maybe_set_parameter_categorical_values(parameter, parameter_json)
+
+    self._maybe_set_parameter_default_value(parameter, parameter_json)
+
+    self._maybe_set_parameter_prior(parameter, parameter_json)
+
+    self._maybe_set_parameter_transformation(parameter, parameter_json)
 
     parameter.ClearField("deleted")
