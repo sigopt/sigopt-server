@@ -459,7 +459,7 @@ def invert_dict(base: _Mapping[lists_GHashable, lists_THashable]) -> dict[lists_
 
 def generate_constant_map_and_inverse(
   base: _Mapping[lists_GHashable, lists_THashable]
-) -> tuple[_Mapping[lists_GHashable, lists_THashable], dict[lists_THashable, lists_GHashable]]:
+) -> tuple[dict[lists_GHashable, lists_THashable], dict[lists_THashable, lists_GHashable]]:
   """
     A shorthand to generate bi-directional mappings for named constants.
     An example,
@@ -469,7 +469,7 @@ def generate_constant_map_and_inverse(
       name2=type2,
     ))
     """
-  return base, invert_dict(base)
+  return dict(base), invert_dict(base)
 
 
 def omit(base: _Mapping[lists_GHashable, lists_T], *keys: lists_GHashable) -> dict[lists_GHashable, lists_T]:
