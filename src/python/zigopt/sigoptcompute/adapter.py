@@ -360,7 +360,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    assert view_input["metrics_info"].optimized_metrics_index == []
+    assert not view_input["metrics_info"].optimized_metrics_index
     assert not view_input["metrics_info"].has_optimization_metrics
 
     response = self.call_sigoptcompute(SPESearchNextPoints, view_input)
@@ -483,7 +483,7 @@ class SCAdapter(Service):
       "task_options": [t.cost for t in experiment.tasks],
     }
 
-    assert view_input["metrics_info"].optimized_metrics_index == []
+    assert not view_input["metrics_info"].optimized_metrics_index
     assert not view_input["metrics_info"].has_optimization_metrics
 
     response = self.call_sigoptcompute(SearchNextPoints, view_input)

@@ -219,7 +219,7 @@ class TestLoggedOutPassword(PasswordTest):
       new_password,
       config_broker,
     )
-    new_connection = IntegrationTestConnection(api_url=api_url, api=api, user_token=session.api_token.token)
+    new_connection = IntegrationTestConnection(api_url=api_url, user_token=session.api_token.token)
     assert new_connection.users(session.user.id).permissions().fetch().count == 1
 
     inbox.wait_for_email(email, search_term="recently changed")
@@ -385,7 +385,7 @@ class TestSessionCreate(PasswordTest):
     token = Token(user_id=user.id, token_type=TokenType.USER)
     db_connection.insert(token)
 
-    connection = IntegrationTestConnection(api_url=api_url, api=api, user_token=token.token)
+    connection = IntegrationTestConnection(api_url=api_url, user_token=token.token)
 
     with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
       anonymous_connection.sessions().create(email=email, password="password")
