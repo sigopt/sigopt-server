@@ -6,9 +6,9 @@ from collections import defaultdict
 
 import mock
 import pytest
+from sigopt_config.broker import ConfigBroker
 
 from zigopt.assignments.model import make_experiment_assignment_value_array
-from zigopt.config.broker import ConfigBroker
 from zigopt.experiment.model import Experiment
 from zigopt.observation.model import Observation
 from zigopt.optimize.sources.base import OptimizationSource
@@ -28,7 +28,7 @@ class UnitTestBase:
   @pytest.fixture
   def services(self):
     return mock.Mock(
-      config_broker=ConfigBroker.from_configs({}),
+      config_broker=ConfigBroker({}),
       sc_adapter=SCAdapter(mock.Mock()),
     )
 

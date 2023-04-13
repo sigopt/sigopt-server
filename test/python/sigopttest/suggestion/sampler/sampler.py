@@ -8,6 +8,7 @@ import pytest
 from flaky import flaky
 from mock import Mock
 from scipy import stats
+from sigopt_config.broker import ConfigBroker
 
 from zigopt.experiment.model import Experiment, ExperimentParameterProxy
 from zigopt.experiment.segmenter import ExperimentParameterSegmenter
@@ -35,7 +36,6 @@ from zigopt.suggestion.sampler.lhc import LatinHypercubeSampler
 from zigopt.suggestion.sampler.random import RandomSampler
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
-from sigopttest.base.config_broker import StrictAccessConfigBroker
 from sigopttest.base.utils import partial_opt_args
 
 
@@ -51,7 +51,7 @@ class TestSuggestSampler:
 
   def mock_services(self, segmenter, observations):
     return Mock(
-      config_broker=StrictAccessConfigBroker.from_configs(
+      config_broker=ConfigBroker(
         {
           "optimize": {
             "rejection_sampling_trials": 10000,

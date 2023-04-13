@@ -3,12 +3,11 @@
 # SPDX-License-Identifier: Apache License 2.0
 # pylint: disable=global-statement
 import argparse
-import os
-import warnings
 from typing import Any
 
+from sigopt_config.broker import ConfigBroker
+
 from zigopt.common import *
-from zigopt.config.broker import ConfigBroker
 from zigopt.db.service import DatabaseConnection, DatabaseService
 from zigopt.services.api import ApiRequestLocalServiceBag, ApiServiceBag
 
@@ -34,15 +33,11 @@ def main():
   parser = argparse.ArgumentParser()
   repl_flags = parser.add_mutually_exclusive_group()
   repl_flags.add_argument(
-    "--config",
+    "--config-dir",
     "-c",
     type=str,
-    default="config/development.json",
-    help=(
-      'Config file name, joined by "," if multiple.'
-      " If multiple config files contain the same values,"
-      " files specified earlier will take precedence."
-    ),
+    default="/etc/sigopt/server-config/",
+    help="Config directory",
   )
   parser.add_argument(
     "--cleanup",
@@ -53,37 +48,20 @@ def main():
 
   args = parser.parse_args()
 
-  if args.config:
-    config = args.config
-  else:
-    config = "config/development.json"
-
-  if config == "config/development.json" and not os.environ.get("SIGOPT_CONTAINER_ENV"):
-    warnings.warn(
-      (
-        "Attempting to start repl outside of the repl container."
-        " Please run ./scripts/launch/repl.sh locally, or choose the correct environment."
-      ),
-      RuntimeWarning,
-    )
-    response = input("Continue with development repl (Y/n)? ")
-    if not response.lower().startswith("y"):
-      return
-
   global config_broker
   ServiceBag = ApiServiceBag
   RequestLocalServiceBag = ApiRequestLocalServiceBag
   kwargs: dict[str, Any] = {}
-  config_broker = ConfigBroker.from_file(config)
+  config_broker = ConfigBroker.from_directory(args.config_dir)
   global global_services
   global_services = ServiceBag.from_config_broker(config_broker, **kwargs)
   global services
   services = RequestLocalServiceBag(global_services)
 
   if args.cleanup:
-    db_config = services.config_broker.get_object("db")
+    db_config = dict(services.config_broker["db"])
     if not db_config.get("cleanup_user") or not db_config.get("cleanup_password"):
-      raise Exception("You must specify cleanup_user and cleanup_password in the db section of your config file.")
+      raise Exception("You must specify cleanup_user and cleanup_password in the db section of your config.")
     services.database_service = make_cleanup_db_service(services)
 
   services.database_service.start_session()

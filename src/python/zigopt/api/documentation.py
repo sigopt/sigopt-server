@@ -10,7 +10,7 @@ import sys
 from flasgger import Swagger
 
 from zigopt.api.swaggerapp import SwaggerApp
-from zigopt.config.broker import ConfigBroker
+from zigopt.config import load_config_from_env
 from zigopt.log.base import base_logger_setup, configure_loggers
 from zigopt.version import log_version
 
@@ -36,8 +36,7 @@ def write_documentation(file_to_write, flask_app):
 
 
 def _default_app():
-  config_file = os.environ["sigopt_server_config_file"]
-  config_broker = ConfigBroker.from_file(config_file)
+  config_broker = load_config_from_env()
   configure_loggers(config_broker)
   logging.getLogger("sigopt.python").info("Python version: %s", sys.version)
   log_version()

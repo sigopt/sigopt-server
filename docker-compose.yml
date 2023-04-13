@@ -62,7 +62,7 @@ services:
       - python
       - -m
       - zigopt.utils.create_database
-      - &config-file "$sigopt_server_config_file"
+      - &config-dir "$SIGOPT_SERVER_CONFIG_DIR"
     command:
       - --drop-tables
     environment:
@@ -116,7 +116,7 @@ services:
       - zigopt.api.main:GUNICORN_ENTRY_POINT
     environment: &zigopt_environment
       - "sigopt.user_uploads.s3.aws_secret_access_key=$MINIO_ROOT_PASSWORD"
-      - "sigopt_server_config_file=$sigopt_server_config_file"
+      - SIGOPT_SERVER_CONFIG_DIR
       - sigopt_server_version
     volumes:
       - *sigopt-config-volume
@@ -156,7 +156,7 @@ services:
         - NODE_MAJOR
     environment:
       - "sigopt.web.cookiejar_credentials.secretAccessKey=$MINIO_ROOT_PASSWORD"
-      - "sigopt_server_config_file=$sigopt_server_config_file"
+      - SIGOPT_SERVER_CONFIG_DIR
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
       - sigopt_server_version
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1

@@ -234,7 +234,7 @@ commands:
           environment:
             SIGOPT_SWAGGER_PATH: /home/circleci/project/
             SIGOPT_SWAGGER_FILENAME: swagger.json
-            sigopt_server_config_file: ./config/circleci.json
+            SIGOPT_SERVER_CONFIG_DIR: ./config/circleci/
       - persist_to_workspace:
           root: /home/circleci/
           paths:

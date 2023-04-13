@@ -12,12 +12,12 @@ from typing import Any
 
 import pg8000
 import sqlalchemy
+from sigopt_config.broker import ConfigBroker
 
 import zigopt.db.all_models  # pylint: disable=unused-import
 from zigopt.common import *
 from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import current_datetime, unix_timestamp
-from zigopt.config.broker import ConfigBroker
 from zigopt.db.declarative import Base
 from zigopt.db.service import DatabaseConnectionService
 from zigopt.experiment.model import Experiment
@@ -219,7 +219,7 @@ def get_root_engine(config_broker, superuser=None, superuser_password=None, echo
 
 
 def create_db(
-  config_file_name,
+  config_dir,
   config_broker,
   fake_data,
   drop_tables,
@@ -230,9 +230,6 @@ def create_db(
   echo=False,
 ):
   # pylint: disable=too-many-locals,too-many-statements
-  if "production" in config_file_name:
-    raise Exception("whoa whoa whoa, this is probably a bad idea on the prod database")
-
   root_engine = get_root_engine(
     config_broker,
     superuser=superuser,
@@ -467,9 +464,9 @@ def parse_args():
   )
 
   parser.add_argument(
-    "config_file",
+    "config_dir",
     type=str,
-    help="config json file for db",
+    help="config directory for db",
   )
 
   parser.add_argument(
@@ -506,20 +503,18 @@ def parse_args():
 def main():
   the_args = parse_args()
 
-  config_file = the_args.config_file
-  if "production" in config_file:
-    raise Exception("This should not be run on the prod db.")
+  config_dir = the_args.config_dir
 
-  config_broker = ConfigBroker.from_file(config_file)
-  config_broker["redis.enabled"] = False
-  config_broker["user_uploads.s3.enabled"] = False
+  config_broker = ConfigBroker.from_directory(config_dir)
+  config_broker.data.setdefault("redis", {})["enabled"] = False
+  config_broker.data.setdefault("user_uploads", {}).setdefault("s3", {})["enabled"] = False
   should_populate = setup_db(config_broker=config_broker)
 
   # Won't try to populate db unless explicitly told or a new db was created
   if should_populate or the_args.fake_data or the_args.drop_tables:
     logging.info("Populating db")
     create_db(
-      config_file_name=the_args.config_file,
+      config_dir=the_args.config_dir,
       config_broker=config_broker,
       fake_data=the_args.fake_data,
       drop_tables=the_args.drop_tables,

@@ -3,12 +3,11 @@
 # SPDX-License-Identifier: Apache License 2.0
 import argparse
 import logging
-import os
 import sys
 
 from zigopt.api.prod import ProdApp
 from zigopt.brand.constant import PRODUCT_NAME
-from zigopt.config.broker import ConfigBroker
+from zigopt.config import load_config_from_env
 from zigopt.log.base import base_logger_setup, configure_loggers
 from zigopt.profile.profile import BaseProfiler, NullProfiler, Profiler
 from zigopt.profile.tracer import NullTracer
@@ -19,8 +18,7 @@ base_logger_setup()
 
 
 def _default_app(profiler, tracer):
-  config_file = os.environ["sigopt_server_config_file"]
-  config_broker = ConfigBroker.from_file(config_file)
+  config_broker = load_config_from_env()
   configure_loggers(config_broker)
   logging.getLogger("sigopt.python").info("Python version: %s", sys.version)
   log_version()
