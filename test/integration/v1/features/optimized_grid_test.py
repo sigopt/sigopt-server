@@ -8,11 +8,17 @@ from typing import Any
 import pytest
 
 from integration.base import RaisesApiException
-from integration.v1.constants import DEFAULT_EXPERIMENT_META, EXPERIMENT_META_WITH_CONSTRAINTS
+from integration.v1.constants import (
+  DEFAULT_EXPERIMENT_META,
+  EXPERIMENT_META_WITH_CONSTRAINTS,
+  AnyParameterMetaType,
+  GriddedDoubleParameterMetaType,
+  GriddedIntegerParameterMetaType,
+)
 from integration.v1.test_base import V1Base
 
 
-GOOD_GRID_PARAMS = [
+GOOD_GRID_PARAMS: list[GriddedDoubleParameterMetaType | GriddedIntegerParameterMetaType] = [
   dict(name="grid_param", type="int", grid=[1, 2, 3]),
   dict(name="grid_param", type="double", grid=[0.1, 2, 0.3]),
   dict(name="grid_param", type="int", grid=[3, 2, 1]),
@@ -31,7 +37,7 @@ BAD_GRID_PARAMS: list[dict[str, Any]] = [
   dict(name="grid_param", type="int", grid=[1, 33, 33]),
 ]
 
-BASIC_GRID_PARAM: dict[str, Any] = dict(name="grid_param", type="int", grid=[1, 2, 3])
+BASIC_GRID_PARAM: GriddedIntegerParameterMetaType = dict(name="grid_param", type="int", grid=[1, 2, 3])
 
 
 # Note: API sorts grid values so we can't compare them directly
@@ -63,10 +69,10 @@ class TestOptimizedGrid(V1Base):
 
   def test_wrong_param_type(self, connection):
     experiment_meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
-    grid_param = dict(
+    grid_param = GriddedIntegerParameterMetaType(
       name="grid_param",
       type="int",
-      grid=[0, 1, 2, 3.5],
+      grid=[0, 1, 2, 3.5],  # type: ignore
     )
     experiment_meta["parameters"].append(grid_param)
 
@@ -87,9 +93,9 @@ class TestOptimizedGrid(V1Base):
 
   @pytest.mark.parametrize("bad_param", [param for param in BAD_GRID_PARAMS if param["grid"] is not None])
   def test_update_existing_grid_with_bad(self, connection, bad_param):
-    grid_param = dict(name=bad_param["name"], type=bad_param["type"], grid=[1, 2, 3])
+    grid_param = dict(name=bad_param["name"], type=bad_param["type"], grid=[1, 2, 3])  # type: ignore
     experiment_meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
-    experiment_meta["parameters"].append(grid_param)
+    experiment_meta["parameters"].append(grid_param)  # type: ignore
     e = connection.clients(connection.client_id).experiments().create(**experiment_meta)
 
     grid_param["grid"] = bad_param["grid"]
@@ -97,12 +103,12 @@ class TestOptimizedGrid(V1Base):
       connection.experiments(e.id).update(parameters=[grid_param])
 
   def test_multiple_grid_params(self, connection):
-    grid_param1 = dict(
+    grid_param1 = GriddedIntegerParameterMetaType(
       name="grid_1",
       type="int",
       grid=[0, 1, 2, 3],
     )
-    grid_param2 = dict(
+    grid_param2 = GriddedDoubleParameterMetaType(
       name="grid_2",
       type="double",
       grid=[0, 1, 4.1, 3, 4],
@@ -121,7 +127,7 @@ class TestOptimizedGrid(V1Base):
     experiment_meta = copy.deepcopy(EXPERIMENT_META_WITH_CONSTRAINTS)
     connection.clients(connection.client_id).experiments().create(**experiment_meta)
 
-    grid_param = dict(
+    grid_param = GriddedDoubleParameterMetaType(
       name="grid_param",
       type="double",
       grid=[0.1, 0.2, 0.3, 0.4, 5, 10],
@@ -139,13 +145,13 @@ class TestOptimizedGrid(V1Base):
         ],
       )
     ]
-    experiment_meta["linear_constraints"] = linear_constraint_with_grid
+    experiment_meta["linear_constraints"] = linear_constraint_with_grid  # type: ignore
 
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.clients(connection.client_id).experiments().create(**experiment_meta)
 
   def test_grid_param_works_with_log(self, connection):
-    grid_param = dict(
+    grid_param: GriddedDoubleParameterMetaType = dict(
       name="grid_param",
       type="double",
       grid=[0.01, 0.1, 10, 1000],
@@ -157,7 +163,7 @@ class TestOptimizedGrid(V1Base):
 
     connection.clients(connection.client_id).experiments().create(**experiment_meta)
 
-    grid_param_bad = dict(
+    grid_param_bad: GriddedDoubleParameterMetaType = dict(
       name="grid_param",
       type="double",
       grid=[0.01, 0.1, 10, 1000, 0],
@@ -172,7 +178,7 @@ class TestOptimizedGrid(V1Base):
     assert "log-transformation" in error.value.message
 
   def test_prior_beliefs_errors(self, connection):
-    grid_param = dict(
+    grid_param: AnyParameterMetaType = GriddedDoubleParameterMetaType(
       name="grid_param",
       type="double",
       grid=[0.01, 0.1, 10, 1000],
@@ -190,14 +196,15 @@ class TestOptimizedGrid(V1Base):
       connection.clients(connection.client_id).experiments().create(**experiment_meta)
 
     grid_param = copy.deepcopy(BASIC_GRID_PARAM)
-    double_grid_param = dict(name="grid_param2", type="double", grid=[0.1, -2, 0.3])
+    double_grid_param = GriddedDoubleParameterMetaType(name="grid_param2", type="double", grid=[0.1, -2, 0.3])
     experiment_meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
     experiment_meta["parameters"].append(grid_param)
     experiment_meta["parameters"].append(double_grid_param)
-    experiment_meta["observation_budget"] = 30
+    observation_budget = 30
+    experiment_meta["observation_budget"] = observation_budget
     e = connection.clients(connection.client_id).experiments().create(**experiment_meta)
 
-    for i in range(experiment_meta["observation_budget"]):
+    for i in range(observation_budget):
       s = connection.experiments(e.id).suggestions().create()
       connection.experiments(e.id).observations().create(suggestion=s.id, values=[{"value": i}])
       assert s.assignments["grid_param"] in BASIC_GRID_PARAM["grid"]
@@ -214,7 +221,7 @@ class TestOptimizedGrid(V1Base):
 
     connection.experiments(e.id).observations().create(assignments=assignments, values=[{"value": 1}])
 
-    assignments["grid_param"] = assignments["grid_param"] + 1
+    assignments["grid_param"] = max_grid_value + 1
 
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.experiments(e.id).observations().create(assignments=assignments, value=1)

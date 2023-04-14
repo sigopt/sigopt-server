@@ -6,20 +6,24 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Generic, Literal, TypeVar
 
-from typing_extensions import Required, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 
-class MetricMetaType(TypedDict, total=False):
-  name: Required[str]
-  objective: Literal["minimize"] | Literal["maximize"] | None
+class MetricMetaType(TypedDict):
+  name: str
+  objective: NotRequired[Literal["minimize"] | Literal["maximize"] | None]
 
 
-class OptimizeMetricMetaType(MetricMetaType, total=False):
-  threshold: float | None
-  strategy: Literal["optimize"] | None
+class StoredMetricMetaType(MetricMetaType):
+  strategy: Literal["store"]
 
 
-class ConstraintMetricMetaType(MetricMetaType):
+class OptimizedMetricMetaType(MetricMetaType):
+  threshold: NotRequired[float | None]
+  strategy: NotRequired[Literal["optimize"] | None]
+
+
+class ConstrainedMetricMetaType(MetricMetaType):
   threshold: float
   strategy: Literal["constraint"]
 
@@ -32,12 +36,16 @@ class BoundsMetaType(TypedDict, Generic[BoundType]):
   max: BoundType
 
 
-class ParameterMetaType(TypedDict, total=False):
-  name: Required[str]
-  conditions: dict[str, str | list[str]] | None
+class ParameterMetaType(TypedDict):
+  name: str
+  conditions: NotRequired[dict[str, str | list[str]] | None]
 
 
-class IntegerParameterMetaType(ParameterMetaType):
+class NumericalParameterMetaType(ParameterMetaType):
+  transformation: NotRequired[Literal["log"] | Literal["none"] | None]
+
+
+class IntegerParameterMetaType(NumericalParameterMetaType):
   type: Literal["int"]
 
 
@@ -45,19 +53,34 @@ class BoundedIntegerParameterMetaType(IntegerParameterMetaType):
   bounds: BoundsMetaType[int]
 
 
-class GriddedIntegerParameterMetaType(IntegerParameterMetaType, total=False):
+class GriddedIntegerParameterMetaType(IntegerParameterMetaType):
   grid: list[int]
 
 
-class DoubleParameterMetaType(ParameterMetaType):
+class ParameterPriorMetaType(TypedDict):
+  name: str
+
+
+class NormalParameterPriorMetaType(ParameterPriorMetaType):
+  mean: float
+  scale: float
+
+
+class BetaParameterPriorMetaType(ParameterPriorMetaType):
+  shape_a: float
+  shape_b: float
+
+
+class DoubleParameterMetaType(NumericalParameterMetaType):
   type: Literal["double"]
+  prior: NotRequired[NormalParameterPriorMetaType | BetaParameterPriorMetaType | None]
 
 
 class BoundedDoubleParameterMetaType(DoubleParameterMetaType):
-  bounds: Required[BoundsMetaType[float]]
+  bounds: BoundsMetaType[float]
 
 
-class GriddedDoubleParameterMetaType(DoubleParameterMetaType, total=False):
+class GriddedDoubleParameterMetaType(DoubleParameterMetaType):
   grid: list[float]
 
 
@@ -67,7 +90,16 @@ class CategoricalValueMetaType(TypedDict):
 
 class CategoricalParameterMetaType(ParameterMetaType):
   type: Literal["categorical"]
-  categorical_values: Required[list[CategoricalValueMetaType | str]]
+  categorical_values: list[CategoricalValueMetaType | str]
+
+
+AnyParameterMetaType = (
+  BoundedIntegerParameterMetaType
+  | GriddedIntegerParameterMetaType
+  | BoundedDoubleParameterMetaType
+  | GriddedDoubleParameterMetaType
+  | CategoricalParameterMetaType
+)
 
 
 class ConditionalMeta(TypedDict):
@@ -91,34 +123,29 @@ class TaskMeta(TypedDict):
   cost: float
 
 
-class BaseExperimentMetaType(TypedDict, total=False):
-  type: str
-  name: str | None
-  parameters: Required[
-    list[
-      BoundedIntegerParameterMetaType
-      | GriddedIntegerParameterMetaType
-      | BoundedDoubleParameterMetaType
-      | GriddedDoubleParameterMetaType
-      | CategoricalParameterMetaType
-    ]
-  ]
-  conditionals: list[ConditionalMeta] | None
-  num_solutions: int | None
-  linear_constraints: list[LinearConstraintMeta]
+class BaseExperimentMetaType(TypedDict):
+  type: NotRequired[str]
+  name: NotRequired[str | None]
+  parameters: list[AnyParameterMetaType]
+  conditionals: NotRequired[list[ConditionalMeta] | None]
+  num_solutions: NotRequired[int | None]
+  linear_constraints: NotRequired[list[LinearConstraintMeta] | None]
 
 
-class CoreExperimentMetaType(BaseExperimentMetaType, total=False):
-  metric: OptimizeMetricMetaType | ConstraintMetricMetaType | None
-  metrics: list[OptimizeMetricMetaType | ConstraintMetricMetaType] | None
-  observation_budget: int | None
-  project: str | None
-  tasks: list[TaskMeta]
+AnyMetricMetaType = StoredMetricMetaType | OptimizedMetricMetaType | ConstrainedMetricMetaType
+
+
+class CoreExperimentMetaType(BaseExperimentMetaType):
+  metric: NotRequired[AnyMetricMetaType | None]
+  metrics: NotRequired[list[AnyMetricMetaType] | None]
+  observation_budget: NotRequired[int | None]
+  project: NotRequired[str | None]
+  tasks: NotRequired[list[TaskMeta]]
 
 
 class AiExperimentMetaType(BaseExperimentMetaType):
-  metrics: Required[list[MetricMetaType]]
-  budget: int | None
+  metrics: list[AnyMetricMetaType]
+  budget: NotRequired[int | None]
 
 
 DEFAULT_EXPERIMENT_META: CoreExperimentMetaType = dict(

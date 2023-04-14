@@ -13,7 +13,7 @@ class TestExperimentsRandom(ExperimentsTestBase):
   @pytest.fixture
   def experiment_meta_random(self):
     meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
-    meta.update(type="random")
+    meta["type"] = "random"
     return meta
 
   def test_create_random(self, connection, client_id, experiment_meta_random):

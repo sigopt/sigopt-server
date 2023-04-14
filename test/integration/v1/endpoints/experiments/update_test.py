@@ -15,7 +15,7 @@ from zigopt.experiment.model import Experiment
 from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH
 
 from integration.base import RaisesApiException
-from integration.v1.constants import DEFAULT_EXPERIMENT_META
+from integration.v1.constants import DEFAULT_EXPERIMENT_META, BoundedDoubleParameterMetaType
 from integration.v1.experiments_test_base import ExperimentsTestBase
 from libsigopt.aux.constant import ParameterTransformationNames
 
@@ -708,7 +708,10 @@ class TestUpdateExperiments(ExperimentsTestBase):
     assert parameter_json["prior"] is None
 
     new_parameters = deepcopy(meta["parameters"])
-    new_parameters[1]["prior"] = prior
+    new_parameter = new_parameters[1]
+    assert new_parameter["type"] == "double"
+    assert "bounds" in new_parameter
+    new_parameter["prior"] = prior
     updated_experiment = connection.experiments(experiment.id).update(parameters=new_parameters)
 
     parameter_json = updated_experiment.parameters[1].to_json()
@@ -718,7 +721,10 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert created_prior[key] == value
 
     remove_prior_parameters = deepcopy(new_parameters)
-    remove_prior_parameters[1]["prior"] = None
+    remove_prior_parameter = remove_prior_parameters[1]
+    assert remove_prior_parameter["type"] == "double"
+    assert "prior" in remove_prior_parameter
+    remove_prior_parameter["prior"] = None
     updated_experiment = connection.experiments(experiment.id).update(parameters=remove_prior_parameters)
 
     parameter_json = updated_experiment.parameters[1].to_json()
@@ -726,8 +732,10 @@ class TestUpdateExperiments(ExperimentsTestBase):
     assert parameter_json["prior"] is None
 
   def test_log_transform_update_errors(self, connection):
-    p1 = dict(name="a", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG)
-    p2 = dict(name="b", type="double", bounds=dict(min=1, max=10))
+    p1: BoundedDoubleParameterMetaType = dict(
+      name="a", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG
+    )
+    p2: BoundedDoubleParameterMetaType = dict(name="b", type="double", bounds=dict(min=1, max=10))
     meta = deepcopy(DEFAULT_EXPERIMENT_META)
     meta["parameters"] = [p1, p2]
     e = connection.create_any_experiment(**meta)
@@ -744,7 +752,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       connection.experiments(e.id).update(parameters=[p1, p2_with_log])
 
   def test_log_transform_invalid_bounds_errors(self, connection):
-    p1 = dict(name="a", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG)
+    p1: BoundedDoubleParameterMetaType = dict(name="a", type="double", bounds=dict(min=1, max=10), transformation="log")
     meta = deepcopy(DEFAULT_EXPERIMENT_META)
     meta["parameters"] = [p1]
     e = connection.create_any_experiment(**meta)

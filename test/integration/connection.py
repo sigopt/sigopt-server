@@ -6,7 +6,7 @@ from copy import deepcopy
 
 from integration.enhanced_info_connection import EnhancedInfoConnection
 from integration.request import IntegrationTestRequestor
-from integration.v1.constants import ALL_META
+from integration.v1.constants import ALL_META, AnyParameterMetaType, CoreExperimentMetaType
 
 
 class WithExperiment:
@@ -87,7 +87,7 @@ class IntegrationTestConnection:
       requestor=requestor,
     )
     self.connection.set_api_url(api_url)
-    self.experiment_parameters = [
+    self.experiment_parameters: list[AnyParameterMetaType] = [
       {"name": "a", "type": "double", "bounds": {"min": 1, "max": 10}},
       {
         "name": "a1",
@@ -127,19 +127,20 @@ class IntegrationTestConnection:
 
   def create_any_experiment(self, **kwargs):
     client_id = kwargs.pop("client_id", None)
-    params = {
+    params: CoreExperimentMetaType = {
       "parameters": self.experiment_parameters,
     }
-    params.update(kwargs)
 
     experiment_type = kwargs.get("type", None)
     experiment_meta = ALL_META.get(experiment_type, None)
     if experiment_type and experiment_meta:
       params = deepcopy(experiment_meta)
 
+    params.update(kwargs)  # type: ignore
+
     return WithExperiment(self, self._create_experiment(params, client_id=client_id))
 
-  def _create_experiment(self, data, client_id, static_value=None):
+  def _create_experiment(self, data: CoreExperimentMetaType, client_id, static_value=None):
     value = str(time.time()) if static_value is None else hex(hash((static_value, "experiment")))[2:]
     data["name"] = data.get("name", f"sigopt_test_experiment_{value}")
     if client_id is None:

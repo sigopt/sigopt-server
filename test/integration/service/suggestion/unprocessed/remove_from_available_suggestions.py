@@ -14,7 +14,7 @@ from integration.service.suggestion.broker.test_base import SuggestionBrokerTest
 from integration.service.suggestion.unprocessed.test_base import UnprocessedSuggestionServiceTestBase
 
 
-class TestProcessRedisSuggestion(
+class TestProcessRedisSuggestion(  # type: ignore
   UnprocessedSuggestionServiceTestBase,
   SuggestionBrokerTestBase,
 ):

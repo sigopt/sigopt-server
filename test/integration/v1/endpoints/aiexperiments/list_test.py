@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import copy
 from datetime import timedelta
 
 import pytest
@@ -13,7 +14,7 @@ from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH
 from zigopt.project.model import Project
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta
 
-from integration.v1.constants import DEFAULT_AI_EXPERIMENT_META
+from integration.v1.constants import DEFAULT_AI_EXPERIMENT_META, AiExperimentMetaType
 from integration.v1.experiments_test_base import ExperimentsTestBase
 
 
@@ -169,18 +170,12 @@ class TestListAiExperiments(ExperimentsTestBase):
     ],
   )
   def test_search(self, services, connection, project1, search_term, expected_results):
-    e1 = (
-      connection.clients(project1.client_id)
-      .projects(project1.reference_id)
-      .aiexperiments()
-      .create(**{**DEFAULT_AI_EXPERIMENT_META, "name": "Hello World"})
-    )
-    e2 = (
-      connection.clients(project1.client_id)
-      .projects(project1.reference_id)
-      .aiexperiments()
-      .create(**{**DEFAULT_AI_EXPERIMENT_META, "name": "hello there"})
-    )
+    meta: AiExperimentMetaType = copy.deepcopy(DEFAULT_AI_EXPERIMENT_META)
+    meta["name"] = "Hello World"
+    e1 = connection.clients(project1.client_id).projects(project1.reference_id).aiexperiments().create(**meta)
+    meta = copy.deepcopy(DEFAULT_AI_EXPERIMENT_META)
+    meta["name"] = "hello there"
+    e2 = connection.clients(project1.client_id).projects(project1.reference_id).aiexperiments().create(**meta)
     expected_results = [[e1.id, e2.id][r] for r in reversed(expected_results)]
     params = {"search": search_term}
     for func in (

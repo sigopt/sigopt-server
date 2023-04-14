@@ -444,7 +444,10 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
 
   def test_conditionals_with_stored_metrics(self, connection, services):
     meta = copy.deepcopy(EXPERIMENT_META_CONDITIONALS)
-    meta["metrics"].append(dict(name="stored-metric", strategy=MetricStrategyNames.STORE))
+    metrics = meta.get("metrics")
+    if metrics is None:
+      metrics = []
+    meta["metrics"] = [*metrics, dict(name="stored-metric", strategy="store")]
     e = connection.create_any_experiment(**meta)
     assert e.conditionals is not None
     assert len(e.metrics) == 2
@@ -456,7 +459,7 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
     meta = copy.deepcopy(EXPERIMENT_META_MULTISOLUTION)
     meta["metrics"] = [
       dict(name="metric"),
-      dict(name="stored-metric", strategy=MetricStrategyNames.STORE),
+      dict(name="stored-metric", strategy="store"),
     ]
 
     e = connection.create_any_experiment(**meta)
@@ -682,7 +685,7 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
       connection.create_any_experiment(**meta)
 
     meta["parameters"] = [
-      dict(
+      dict(  # type: ignore
         name="cat",
         type="categorical",
         categorical_values=[dict(name="d"), dict(name="e")],
@@ -695,7 +698,7 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
   def test_log_transform_errors_on_parameter_priors(self, connection):
     meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
     meta["parameters"] = [
-      dict(
+      dict(  # type: ignore
         name="a",
         type="double",
         bounds=dict(min=1, max=10),
@@ -727,7 +730,9 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
     e = connection.create_any_experiment(**meta)
     assert e.id
 
-    meta["linear_constraints"][0]["terms"].append(dict(name="c", weight=1))
+    linear_constraints = meta["linear_constraints"]
+    assert linear_constraints
+    linear_constraints[0]["terms"].append(dict(name="c", weight=1))
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.create_any_experiment(**meta)
 

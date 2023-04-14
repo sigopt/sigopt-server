@@ -30,7 +30,7 @@ class TestCreateAiExperiments(AiExperimentsTestBase):
   )
   def test_experiment_create_invalid_missing_field(self, removed_field, connection, project):
     meta = copy.deepcopy(DEFAULT_AI_EXPERIMENT_META)
-    del meta[removed_field]
+    del meta[removed_field]  # type: ignore
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       self.create_ai_experiment(connection, project, meta)
 

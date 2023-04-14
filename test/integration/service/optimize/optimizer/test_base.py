@@ -77,7 +77,7 @@ class OptimizerServiceTestBase(ServiceBase):
       client_id=1,
       name="test multimetric experiment",
       experiment_meta=ExperimentMeta(
-        metrics=[{"name": "f1"}, {"name": "f2"}],
+        metrics=[ExperimentMetric(name="f1"), ExperimentMetric(name="f2")],
         all_parameters_unsorted=[
           ExperimentParameter(
             name="p1",
