@@ -67,13 +67,13 @@ class TestHandler:
   def req(self):
     return mock.Mock()
 
-  def test_handler_no_params(self, services, req, BaseHandler):
+  def test_handler_no_params(self, services, req, BaseHandler: type):
     handler = BaseHandler(services, req)
     handler.prepare()
     assert handler.parse_params(req) is Handler.NO_PARAMS
     assert handler.handle() is RESPONSE
 
-  def test_handler_with_params(self, services, req, BaseHandler):
+  def test_handler_with_params(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def parse_params(self, request):
         return PARAMS
@@ -87,7 +87,7 @@ class TestHandler:
     params = handler.parse_params(req)
     assert handler.handle(params) is RESPONSE
 
-  def test_authenticator(self, services, req, BaseHandler):
+  def test_authenticator(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       authenticator = always_fail_authentication
 
@@ -95,7 +95,7 @@ class TestHandler:
     with pytest.raises(ForbiddenError):
       handler.prepare()
 
-  def test_cannot_act_on_objects(self, services, req, BaseHandler):
+  def test_cannot_act_on_objects(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def __init__(self, services, request):
         super().__init__(services, request)
@@ -118,7 +118,7 @@ class TestHandler:
       handler.prepare()
     assert handler.object is None
 
-  def test_needs_email_verification(self, services, req, BaseHandler):
+  def test_needs_email_verification(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def __init__(self, services, request):
         super().__init__(services, request)
@@ -142,7 +142,7 @@ class TestHandler:
     assert handler.object is None
     assert e.value.token_status == TokenStatus.NEEDS_EMAIL_VERIFICATION
 
-  def test_forgot_can_act_on_objects(self, services, req, BaseHandler):
+  def test_forgot_can_act_on_objects(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def __init__(self, services, request):
         super().__init__(services, request)
@@ -159,7 +159,7 @@ class TestHandler:
     with pytest.raises(InconsistentCanActOnObjectsCheckError):
       ChildHandler.validate_class()
 
-  def test_forgot_super_in_can_act_on_objects(self, services, req, BaseHandler):
+  def test_forgot_super_in_can_act_on_objects(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def can_act_on_objects(self, requested_permission, objects):
         return True
@@ -168,7 +168,7 @@ class TestHandler:
     with pytest.raises(IncompletePermissionsCheckError):
       handler.prepare()
 
-  def test_forgot_super_in_find_objects(self, services, req, BaseHandler):
+  def test_forgot_super_in_find_objects(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def __init__(self, services, request):
         super().__init__(services, request)
@@ -185,7 +185,7 @@ class TestHandler:
       handler.prepare()
     assert handler.object is None
 
-  def test_return_none_in_find_objects(self, services, req, BaseHandler):
+  def test_return_none_in_find_objects(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def __init__(self, services, request):
         super().__init__(services, request)
@@ -207,7 +207,7 @@ class TestHandler:
       handler.prepare()
     assert handler.object is None
 
-  def test_forgot_return_in_find_objects(self, services, req, BaseHandler):
+  def test_forgot_return_in_find_objects(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def __init__(self, services, request):
         super().__init__(services, request)
@@ -224,7 +224,7 @@ class TestHandler:
       handler.prepare()
     assert handler.object is None
 
-  def test_forgot_set_in_init(self, services, req, BaseHandler):
+  def test_forgot_set_in_init(self, services, req, BaseHandler: type):
     class ChildHandler(BaseHandler):
       def find_objects(self):
         return extend_dict(

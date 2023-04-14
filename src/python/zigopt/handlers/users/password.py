@@ -25,6 +25,8 @@ class UsersChangePasswordHandler(BaseSessionHandler):
     return self.Params(new_plaintext_password=new_plaintext_password)
 
   def handle(self, params):
+    assert self.auth is not None
+
     new_user_token = self.update_password(
       user_to_update=self.auth.current_user,
       new_plaintext_password=params.new_plaintext_password,

@@ -65,6 +65,8 @@ class ExperimentHandler(Handler):
 
   def prepare(self):
     super().prepare()
+    assert self.experiment is not None
+
     if self.redirect_ai_experiments and self.experiment.runs_only:
       raise RedirectException(request.path.replace("/experiments/", "/aiexperiments/"))
     app_url = self.services.config_broker["address.app_url"]
@@ -72,6 +74,8 @@ class ExperimentHandler(Handler):
     maybe_raise_for_incorrect_development_access(auth=self.auth, experiment=self.experiment, docs_url=docs_url)
 
   def find_objects(self):
+    assert self.auth is not None
+
     experiment = self._find_experiment(self.experiment_id)
     return extend_dict(
       super().find_objects(),
@@ -94,6 +98,8 @@ class ExperimentHandler(Handler):
     raise NotFoundError(f"No experiment {experiment_id}")
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return super().can_act_on_objects(requested_permission, objects) and self.auth.can_act_on_experiment(
       self.services, requested_permission, objects["experiment"]
     )

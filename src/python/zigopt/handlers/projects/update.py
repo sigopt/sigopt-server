@@ -119,6 +119,8 @@ class ClientsProjectsUpdateHandler(ProjectHandler):
     )
 
   def handle(self, params):
+    assert self.project is not None
+
     data = None
     if params.metadata is not self._NO_METADATA:
       data = self.project.data.copy_protobuf()

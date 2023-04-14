@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# type: ignore
 import json
 import operator
 
@@ -37,12 +38,12 @@ class Cast:
     self.python_cast_func = python_cast_func
 
 
-Cast.BOOL = Cast(lambda x: x.cast(types.Boolean), ValidationType.boolean)
-Cast.ID = Cast(lambda x: x.cast(types.BigInteger), ValidationType.id)
-Cast.INT = Cast(lambda x: x.cast(types.BigInteger), ValidationType.integer)
-Cast.JSONB = Cast(identity, ValidationType.json, lambda y: sql_cast(y, JSONB))
-Cast.NUMERIC = Cast(lambda x: x.cast(types.Numeric), ValidationType.number)
-Cast.TEXT = Cast(lambda x: x.cast(types.Text), ValidationType.string)
+Cast.BOOL = Cast(lambda x: x.cast(types.Boolean), ValidationType.boolean)  # type: ignore
+Cast.ID = Cast(lambda x: x.cast(types.BigInteger), ValidationType.id)  # type: ignore
+Cast.INT = Cast(lambda x: x.cast(types.BigInteger), ValidationType.integer)  # type: ignore
+Cast.JSONB = Cast(identity, ValidationType.json, lambda y: sql_cast(y, JSONB))  # type: ignore
+Cast.NUMERIC = Cast(lambda x: x.cast(types.Numeric), ValidationType.number)  # type: ignore
+Cast.TEXT = Cast(lambda x: x.cast(types.Text), ValidationType.string)  # type: ignore
 
 OPERATOR_EQ_STRING = "=="
 
@@ -245,7 +246,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
       ascending=params.sort_ascending,
     )
     defined_fields = self.services.training_run_service.get_defined_fields(query, by_organization=by_organization)
-    count = find(defined_fields, lambda f: f.key == "id").field_count
+    count = next(f for f in defined_fields if f.key == "id").field_count
     checkpoint_counts = self.services.checkpoint_service.count_by_training_run_ids([t.id for t in training_runs])
 
     if project:
@@ -272,7 +273,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
         TrainingRunJsonBuilder(
           training_run=training_run,
           checkpoint_count=checkpoint_counts.get(training_run.id, 0),
-          project=projects_by_id.get(training_run.project_id),
+          project=projects_by_id[training_run.project_id],
         )
         for training_run in training_runs
       ],

@@ -40,6 +40,8 @@ class ClientsProjectsDetailHandler(ProjectHandler):
   permitted_scopes = (TokenMeta.ALL_ENDPOINTS, TokenMeta.SHARED_EXPERIMENT_SCOPE)
 
   def handle(self):
+    assert self.project is not None
+
     return ProjectJsonBuilder(
       self.project,
       experiment_count=self.services.experiment_service.count_by_project(self.project.client_id, self.project.id),

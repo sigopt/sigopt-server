@@ -30,6 +30,9 @@ class ClientsUpdateHandler(ClientHandler):
     return params
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.client is not None
+
     name = params.get("name")
     client_security = params.get("client_security")
 

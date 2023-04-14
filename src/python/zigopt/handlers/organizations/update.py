@@ -30,6 +30,8 @@ class OrganizationsUpdateHandler(OrganizationHandler):
   )
 
   def parse_params(self, request):
+    assert self.organization is not None
+
     data = request.params()
     name = get_opt_with_validation(data, "name", ValidationType.string)
     name = validate_organization_name(name) if name else None
@@ -57,6 +59,9 @@ class OrganizationsUpdateHandler(OrganizationHandler):
     )
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.organization is not None
+
     update_clause = {}
 
     if params.name is not None:

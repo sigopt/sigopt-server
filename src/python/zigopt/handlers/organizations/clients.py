@@ -20,6 +20,9 @@ class OrganizationsClientsListDetailHandler(OrganizationHandler):
   required_permissions = READ
 
   def handle(self):
+    assert self.auth is not None
+    assert self.organization is not None
+
     membership = self.services.membership_service.find_by_user_and_organization(
       user_id=self.auth.current_user.id,
       organization_id=self.organization.id,
@@ -45,6 +48,9 @@ class OrganizationsClientsCreateHandler(OrganizationHandler):
     return OrganizationsClientsCreateHandler.Params(name=name)
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.organization is not None
+
     meta = ClientMeta()
     meta.date_created = unix_timestamp()
 

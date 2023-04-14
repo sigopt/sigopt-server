@@ -13,6 +13,7 @@ from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun
+from zigopt.user.model import User
 
 from libsigopt.aux.errors import MissingParamError
 
@@ -323,7 +324,11 @@ class ProjectsTrainingRunsCreateHandler(ProjectHandler, BaseTrainingRunsCreateHa
     return self.handle_batch([params])[0]
 
   def handle_batch(self, batch):
+    assert self.auth is not None
+    current_user: User | None = self.auth.current_user
+    assert self.client is not None
     client = self.client
+    assert self.project is not None
     project = self.project
 
     runs = []
@@ -334,7 +339,7 @@ class ProjectsTrainingRunsCreateHandler(ProjectHandler, BaseTrainingRunsCreateHa
 
       training_run = TrainingRun(
         client_id=client.id,
-        created_by=napply(self.auth.current_user, lambda u: u.id),
+        created_by=napply(current_user, lambda u: u.id),
         project_id=project.id,
         training_run_data=training_run_data,
       )

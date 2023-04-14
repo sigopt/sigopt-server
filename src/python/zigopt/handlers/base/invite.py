@@ -60,6 +60,8 @@ class InviteHandler(Handler):
     invite_id=None,
   ):
     # pylint: disable=too-many-locals
+    assert self.auth is not None
+
     invitee = self.services.user_service.find_by_email(email)
     inviter = self.auth.current_user
 
@@ -150,6 +152,8 @@ class InviteHandler(Handler):
         )
 
   def _update_current_membership(self, current_membership, invite, invitee, organization):
+    assert self.auth is not None
+
     # NOTE: Currently only handle elevating members to owners, not the other way around
     if current_membership.membership_type == MembershipType.owner:
       raise BadParamError("Owners cannot have their memberships updated")
@@ -173,6 +177,7 @@ class InviteHandler(Handler):
       )
 
   def _create_new_membership(self, invite, invitee, organization):
+    assert self.auth is not None
     membership = self.services.membership_service.insert(
       user_id=invitee.id,
       organization_id=organization.id,
@@ -242,6 +247,8 @@ class InviteHandler(Handler):
       self._send_invite_emails(skip_email, invite, invitee, organization, clients)
 
   def send_existing_user_invite(self, invite, organization, clients, invitee):
+    assert self.auth is not None
+
     if invite.membership_type == MembershipType.owner:
       self.send_invite_owner_existing_user_email(organization, invitee, self.auth.current_user.name)
     else:

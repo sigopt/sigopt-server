@@ -99,6 +99,8 @@ class BaseExperimentsListHandler(Handler):
     )
 
   def get_development_filter_values(self, params):
+    assert self.auth is not None
+
     if self.auth.developer and self.auth.development:
       return tuple([True])
     if self.auth.developer and not self.auth.development:
@@ -167,8 +169,11 @@ class BaseExperimentsListHandler(Handler):
 
   def do_handle(self, params, client_ids, created_by, project=None):
     # pylint: disable=too-many-locals
+    assert self.auth is not None
+
     query_args = self._get_sorted_query(params)
 
+    deleted: tuple[bool | None, ...]
     if params.state == "deleted":
       deleted = tuple([True])
     elif params.state == "active":

@@ -18,6 +18,9 @@ class UsersDeleteHandler(UserHandler):
     return request.optional_param("password")
 
   def handle(self, password):
+    assert self.auth is not None
+    assert self.user is not None
+
     self.ensure_no_orphaned_organizations()
     self.ensure_no_orphaned_clients()
 
@@ -39,6 +42,8 @@ class UsersDeleteHandler(UserHandler):
     raise BadParamError("Invalid password")
 
   def ensure_no_orphaned_organizations(self):
+    assert self.user is not None
+
     owner_memberships = self.services.membership_service.find_owners_by_user_id(self.user.id)
     organization_ids = set(m.organization_id for m in owner_memberships)
     if not organization_ids:
@@ -63,6 +68,8 @@ class UsersDeleteHandler(UserHandler):
         )
 
   def ensure_no_orphaned_clients(self):
+    assert self.user is not None
+
     permissions = self.services.database_service.all(
       self.services.database_service.query(Permission).filter(Permission.user_id == self.user.id)
     )
@@ -88,6 +95,8 @@ class UsersDeleteHandler(UserHandler):
         raise ForbiddenError(f"This user cannot be deleted without deleting the following clients: {orphaned_clients}")
 
   def do_delete(self):
+    assert self.user is not None
+
     self.services.database_service.delete(
       self.services.database_service.query(Permission).filter(Permission.user_id == self.user.id)
     )

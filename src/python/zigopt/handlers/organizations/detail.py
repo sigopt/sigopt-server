@@ -15,6 +15,8 @@ class OrganizationsDetailHandler(OrganizationHandler):
   permitted_scopes = (TokenMeta.ALL_ENDPOINTS, TokenMeta.SIGNUP_SCOPE)
 
   def handle(self):
+    assert self.organization is not None
+
     return OrganizationJsonBuilder.json(
       self.organization,
       optimized_runs_in_billing_cycle=self.services.organization_service.get_optimized_runs_from_organization_id(

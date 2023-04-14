@@ -37,10 +37,14 @@ class FileHandler(Handler):
     return objects
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return super().can_act_on_objects(requested_permission, objects) and self.auth.can_act_on_file(
       self.services, requested_permission, objects["file"], client=objects["client"]
     )
 
   def get_file_json_builder(self):
+    assert self.file is not None
+
     download_data = self.services.file_service.create_download_data(self.file)
     return FileJsonBuilder(self.file, download_info=download_data)

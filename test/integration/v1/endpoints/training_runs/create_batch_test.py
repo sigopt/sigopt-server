@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -30,7 +31,7 @@ class TestTrainingRunsBatchCreate(V1Base, TrainingRunTestMixin):
   @pytest.mark.parametrize("verbose", [True, False])
   def test_create_batch(self, connection, project, verbose, n=10):
     runs = [self.create_run(i) for i in range(n)]
-    args = dict(runs=runs)
+    args: dict[str, Any] = dict(runs=runs)
     if not verbose:
       args["fields"] = "id,state"
     training_runs = (

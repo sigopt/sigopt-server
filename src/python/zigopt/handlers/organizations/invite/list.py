@@ -30,6 +30,9 @@ class OrganizationsInvitesListDetailHandler(OrganizationHandler):
     return self.Params(membership_type)
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.organization is not None
+
     if params.membership_type:
       invites = self.services.database_service.all(
         self.services.database_service.query(Invite)
