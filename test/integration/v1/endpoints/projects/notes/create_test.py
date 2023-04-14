@@ -6,7 +6,7 @@ from http import HTTPStatus
 import pytest
 
 from zigopt.common.sigopt_datetime import unix_timestamp
-from zigopt.handlers.validate.note import note_schema
+from zigopt.handlers.validate.note import NOTE_MAX_LENGTH
 
 from integration.base import RaisesApiException
 from integration.enhanced_info_objects import ProjectNote
@@ -41,7 +41,7 @@ class TestClientsProjectsNotesCreate(V1Base):
       connection.clients(connection.client_id).projects(project.id).notes().create(contents=123)
 
   def test_error_if_contents_too_large(self, connection, project):
-    contents = "a" * (note_schema["properties"]["contents"]["maxLength"] + 1)
+    contents = "a" * (NOTE_MAX_LENGTH + 1)
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.clients(connection.client_id).projects(project.id).notes().create(contents=contents)
 

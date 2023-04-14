@@ -5,7 +5,7 @@ from collections import deque
 
 from zigopt.common import *
 from zigopt.queue.base import BaseQueueService
-from zigopt.queue.message import ReceivedMessage
+from zigopt.queue.message import BaseMessageBody, ReceivedMessage
 from zigopt.queue.workers import QueueMessageHandler
 
 
@@ -17,7 +17,7 @@ class LocalQueueService(BaseQueueService):
   def __init__(self, services, request_local_cls):
     super().__init__(services)
     self._request_local_cls = request_local_cls
-    self._buffer = deque([])
+    self._buffer = deque[tuple[BaseMessageBody, float]]([])
     self._corked = False
 
   def warmup(self):

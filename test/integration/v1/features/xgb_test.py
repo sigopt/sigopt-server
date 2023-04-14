@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import copy
+from typing import Any
 
 import pytest
 
@@ -10,7 +11,7 @@ from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 from integration.v1.test_base import V1Base
 
 
-xgb_experiment_meta = dict(
+xgb_experiment_meta: dict[str, Any] = dict(
   name="XGB Experiment",
   parameters=[
     dict(name="gamma", type="double", bounds={"min": 0, "max": 10}),

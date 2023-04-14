@@ -1,7 +1,6 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-# type: ignore
 import json
 import operator
 
@@ -32,18 +31,25 @@ Filter = ImmutableStruct("Filter", ["field", "operator", "casted_value"])
 
 
 class Cast:
+  BOOL: "Cast"
+  ID: "Cast"
+  INT: "Cast"
+  JSONB: "Cast"
+  NUMERIC: "Cast"
+  TEXT: "Cast"
+
   def __init__(self, sql_cast_func, validation_type, python_cast_func=identity):
     self.sql_cast_func = sql_cast_func
     self.validation_type = validation_type
     self.python_cast_func = python_cast_func
 
 
-Cast.BOOL = Cast(lambda x: x.cast(types.Boolean), ValidationType.boolean)  # type: ignore
-Cast.ID = Cast(lambda x: x.cast(types.BigInteger), ValidationType.id)  # type: ignore
-Cast.INT = Cast(lambda x: x.cast(types.BigInteger), ValidationType.integer)  # type: ignore
-Cast.JSONB = Cast(identity, ValidationType.json, lambda y: sql_cast(y, JSONB))  # type: ignore
-Cast.NUMERIC = Cast(lambda x: x.cast(types.Numeric), ValidationType.number)  # type: ignore
-Cast.TEXT = Cast(lambda x: x.cast(types.Text), ValidationType.string)  # type: ignore
+Cast.BOOL = Cast(lambda x: x.cast(types.Boolean), ValidationType.boolean)
+Cast.ID = Cast(lambda x: x.cast(types.BigInteger), ValidationType.id)
+Cast.INT = Cast(lambda x: x.cast(types.BigInteger), ValidationType.integer)
+Cast.JSONB = Cast(identity, ValidationType.json, lambda y: sql_cast(y, JSONB))
+Cast.NUMERIC = Cast(lambda x: x.cast(types.Numeric), ValidationType.number)
+Cast.TEXT = Cast(lambda x: x.cast(types.Text), ValidationType.string)
 
 OPERATOR_EQ_STRING = "=="
 
@@ -83,7 +89,7 @@ class Field:
       # TODO(SN-1093): If we actually wanted to filter/sort by project correctly, we would need to turn
       # the provided string reference ID into an int project ID
       # However, this endpoint is scoped to the project so this is kind of pointless
-      # ('project',): TrainingRun.project_id,
+      # ("project",): TrainingRun.project_id,
       ("suggestion",): (TrainingRun.suggestion_id, Cast.ID),
       ("user",): (TrainingRun.created_by, Cast.ID),
       ("created",): (func.floor(func.extract("epoch", TrainingRun.created)), Cast.INT),
@@ -94,7 +100,10 @@ class Field:
       # TODO(SN-1094): Get the protobuf accessors working for these nested keys
       ("assignments", key): (TrainingRun.training_run_data["a"][key], Cast.JSONB),
       ("favorite",): (TrainingRun.training_run_data["f"], Cast.BOOL),
-      ("optimized_suggestion",): (UnprocessedSuggestion.source.notin_(NON_OPTIMIZED_SUGGESTION_TYPES), Cast.BOOL),
+      ("optimized_suggestion",): (
+        UnprocessedSuggestion.source.notin_(NON_OPTIMIZED_SUGGESTION_TYPES),
+        Cast.BOOL,
+      ),
       ("logs", key, "content"): (TrainingRun.training_run_data["l"][key]["c"].astext, Cast.TEXT),
       ("metadata", key): (TrainingRun.training_run_data["m"][key], Cast.JSONB),
       ("model", "type"): (TrainingRun.training_run_data["o"]["t"].astext, Cast.TEXT),

@@ -131,11 +131,11 @@ class TestIsNaN:
 
   def test_float_array(self):
     with pytest.raises(TypeError):
-      assert all(not x for x in is_nan([-1000000, 0, 1000000]))
+      assert all(not x for x in is_nan([-1000000, 0, 1000000]))  # type: ignore
 
   def test_long_array(self):
     with pytest.raises(TypeError):
-      assert all(not x for x in is_nan([-LONG_NUMBER, LONG_NUMBER]))
+      assert all(not x for x in is_nan([-LONG_NUMBER, LONG_NUMBER]))  # type: ignore
 
   @pytest.mark.parametrize("test", [False, True, None])
   def test_misc_values(self, test):

@@ -39,7 +39,7 @@ class TestConfigBroker:
     assert broker.get_object("fake") == {"key": "fake value", "other": "thing"}
 
   def test_not_available(self):
-    source = MutableConfigBrokerSource()
+    source: MutableConfigBrokerSource = MutableConfigBrokerSource()
     source.set_item("fake.key", "value")
     source.set_not_available("not.available.yet")
     broker = self.make_broker([source])

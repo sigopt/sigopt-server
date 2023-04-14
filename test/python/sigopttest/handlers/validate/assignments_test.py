@@ -80,7 +80,7 @@ class TestParameterConditionsSatisfied:
   )
   def test_json_dict_is_None(self, parameter):
     with pytest.raises(Exception):
-      parameter_conditions_satisfied(parameter, None)
+      parameter_conditions_satisfied(parameter, None)  # type: ignore
 
 
 # Note: Mocking the 'name' attribute does not work as expected

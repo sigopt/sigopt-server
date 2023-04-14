@@ -318,7 +318,7 @@ class TestGetWithValidation:
     key = "points"
     del data[key]
     with pytest.raises(MissingJsonKeyError) as missing_json_key:
-      get_with_validation(data, key, None)
+      get_with_validation(data, key, ValidationType.object)
     assert missing_json_key.value.missing_json_key is key
 
   @pytest.mark.parametrize(
@@ -409,13 +409,13 @@ class TestGetWithValidation:
 class TestValidateMutuallyExclusiveProperties:
   def test_only_validate_objects(self):
     with pytest.raises(InvalidTypeError):
-      validate_mutually_exclusive_properties([], ["a", "b"])
+      validate_mutually_exclusive_properties([], ["a", "b"])  # type: ignore
     with pytest.raises(InvalidTypeError):
-      validate_mutually_exclusive_properties(1, ["a", "b"])
+      validate_mutually_exclusive_properties(1, ["a", "b"])  # type: ignore
     with pytest.raises(InvalidTypeError):
-      validate_mutually_exclusive_properties("string", ["a", "b"])
+      validate_mutually_exclusive_properties("string", ["a", "b"])  # type: ignore
     with pytest.raises(InvalidTypeError):
-      validate_mutually_exclusive_properties(True, ["a", "b"])
+      validate_mutually_exclusive_properties(True, ["a", "b"])  # type: ignore
 
   def test_empty_arguments(self):
     validate_mutually_exclusive_properties({}, [])
@@ -443,5 +443,5 @@ class TestValidateMutuallyExclusiveProperties:
     assert not key_present({"def": None}, "abc")
 
     with pytest.raises(TypeError) as error:
-      key_present("abc", "def")
+      key_present("abc", "def")  # type: ignore
     assert str(error.value) == "Expected json_obj to be a mapping, received 'str'"

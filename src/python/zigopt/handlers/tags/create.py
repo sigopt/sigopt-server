@@ -37,6 +37,8 @@ class ClientsTagsCreateHandler(ClientHandler):
     )
 
   def handle(self, params):
+    assert self.client is not None
+
     name = params.name
     tag = Tag(
       name=name,

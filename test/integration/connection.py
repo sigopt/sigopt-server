@@ -154,9 +154,9 @@ class IntegrationTestConnection:
 
   def create_experiment_as(self, client_id):
     data = {
+      "name": "sigopt_test_experiment_" + str(int(time.time())),
       "parameters": [
         {"name": "a", "type": "double", "bounds": {"min": 1, "max": 10}},
-      ]
+      ],
     }
-    data["name"] = data.get("name", "sigopt_test_experiment_" + str(int(time.time())))
     return WithExperiment(self, self.clients(client_id).experiments().create(**data))

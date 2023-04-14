@@ -61,6 +61,9 @@ class UsersUpdateHandler(UserHandler):
     )
 
   def handle(self, uploaded_user):
+    assert self.auth is not None
+    assert self.user is not None
+
     user_json = UserJsonBuilder.json(self.do_update(self.user.id, uploaded_user))
     self.services.iam_logging_service.log_iam(
       requestor=self.auth.current_user,

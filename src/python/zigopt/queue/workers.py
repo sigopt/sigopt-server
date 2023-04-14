@@ -203,6 +203,8 @@ class QueueWorkers(QueueMessageHandler):
     self.submit(worker, services, message)
 
   def _consume_message_from_queue(self, queue_name, process_message, wait_time_seconds):
+    assert self.tracer is not None
+
     with self.global_services.queue_service.start_session(queue_name) as session:
       message = None
       with self.global_services.exception_logger.tolerate_exceptions(Exception):

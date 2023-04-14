@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Any
+
 import pytest
 from mock import MagicMock, Mock
 
@@ -17,7 +19,7 @@ class TestSuggestionToServeNext(SuggestionBrokerTestBase):
   def test_uses_sampler(self, services, num_observations, num_open_suggestions, optimization_args):
     mock_unprocessed_suggestion = Mock()
     mock_kwargs = MagicMock()
-    blank_kwargs = {}
+    blank_kwargs: dict[str, Any] = {}
     mock_kwargs.__getitem__.side_effect = blank_kwargs.__getitem__
     mock_kwargs.__iter__.side_effect = blank_kwargs.__iter__
     mock_kwargs.__contains__.side_effect = blank_kwargs.__contains__

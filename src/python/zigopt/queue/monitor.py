@@ -113,11 +113,12 @@ class QueueMonitor(Service):
     with self.services.exception_logger.tolerate_exceptions(RedisServiceError):
       queue_status = self._get_status(queue_name)
       last_progress = max_option(
-        remove_nones(
+        remove_nones_sequence(
           (
             queue_status.get(LAST_DEQUEUE),
             queue_status.get(LAST_EMPTY),
-          )
+          ),
+          list,
         )
       )
       last_enqueue = queue_status.get(LAST_ENQUEUE)

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import copy
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -19,7 +20,7 @@ GOOD_GRID_PARAMS = [
   dict(name="grid_param", type="int", grid=[-1, 5, -99]),
 ]
 
-BAD_GRID_PARAMS = [
+BAD_GRID_PARAMS: list[dict[str, Any]] = [
   dict(name="grid_param", type="int", grid=None),
   dict(name="grid_param", type="double", grid="a"),
   dict(name="grid_param", type="int", grid=1),
@@ -30,7 +31,7 @@ BAD_GRID_PARAMS = [
   dict(name="grid_param", type="int", grid=[1, 33, 33]),
 ]
 
-BASIC_GRID_PARAM = dict(name="grid_param", type="int", grid=[1, 2, 3])
+BASIC_GRID_PARAM: dict[str, Any] = dict(name="grid_param", type="int", grid=[1, 2, 3])
 
 
 # Note: API sorts grid values so we can't compare them directly

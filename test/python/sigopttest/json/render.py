@@ -113,10 +113,10 @@ class TestRenderParamValue(_TestParameterJsonBase):
       render_param_value(categorical_param, assignment)
 
   def test_unknown_param_type(self):
+    parameter = ExperimentParameterProxy(ExperimentParameter(param_type=4))  # type: ignore
     with pytest.raises(Exception):
-      parameter = ExperimentParameterProxy(ExperimentParameter(param_type=4))
       render_param_value(parameter, 1)
 
   def test_param_is_none(self):
     with pytest.raises(Exception):
-      render_param_value(None, 1)
+      render_param_value(None, 1)  # type: ignore

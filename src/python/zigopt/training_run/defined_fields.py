@@ -23,7 +23,7 @@ class TrainingRunDefinedFieldsExtractor:
 
   @generator_to_list
   def _count_primitive_fields(self, by_organization):
-    names = []
+    names: list[tuple[str, ...]] = []
     selectables = []
     for field in self.fields_details:
       if field.type in (FieldType.primitive, FieldType.protobuf_primitive):

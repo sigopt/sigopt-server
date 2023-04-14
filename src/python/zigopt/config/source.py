@@ -27,7 +27,7 @@ class ConfigBrokerSource:
   def get(self, name: str, default: Any = None) -> Any:
     raise NotImplementedError()
 
-  def all_configs_for_logging(self) -> None:
+  def all_configs_for_logging(self) -> dict[str, Any]:
     raise NotImplementedError()
 
 
@@ -42,7 +42,7 @@ class DecoratorConfigBrokerSource(ConfigBrokerSource):
   def get(self, name: str, default: Any = None) -> Any:
     return self.underlying.get(name, default=default)
 
-  def all_configs_for_logging(self) -> None:
+  def all_configs_for_logging(self):
     return self.underlying.all_configs_for_logging()
 
 
@@ -98,7 +98,7 @@ class DictConfigBrokerSource(ConfigBrokerSource):
   def get(self, name: str, default: Any = None) -> Any:
     return self._do_get(name, default)[1]
 
-  def all_configs_for_logging(self) -> None:
+  def all_configs_for_logging(self):
     return self._remove_unavailable(self.d)
 
   def _remove_unavailable(self, value: Any) -> Any:

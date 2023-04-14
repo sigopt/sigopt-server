@@ -4,6 +4,7 @@
 # pylint: disable=too-many-public-methods
 from copy import deepcopy
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -40,7 +41,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
   def test_parameter_update(self, connection, client_id):
     e = connection.create_any_experiment(client_id=client_id)
     assert len(e.parameters) != 1
-    p = find(e.parameters, lambda p: p.type == "int")
+    p = next(p for p in e.parameters if p.type == "int")
     e = connection.experiments(e.id).update(
       parameters=[dict(name=p.name, type=p.type, bounds=dict(min=p.bounds.min - 1, max=p.bounds.max + 1))]
     )
@@ -115,7 +116,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
 
     # Can't change type of a parameter
     parameters = e.parameters
-    find(parameters, lambda p: p.type == "int").type = "double"
+    next(p for p in parameters if p.type == "int").type = "double"
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.experiments(e.id).update(parameters=parameters)
 
@@ -589,7 +590,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_one_optimized_one_stored_raises(self, services, connection):
-    metrics = [{"name": "optimized"}, {"name": "stored", "strategy": MetricStrategyNames.STORE}]
+    metrics: list[dict[str, Any]] = [{"name": "optimized"}, {"name": "stored", "strategy": MetricStrategyNames.STORE}]
     with connection.create_any_experiment(metrics=metrics) as e:
       new_metrics = deepcopy(metrics)
       new_metrics[0]["threshold"] = 1.23
@@ -599,7 +600,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_only_optimized(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "optimized1"},
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
@@ -618,7 +619,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert fetched_e.metrics[2].threshold is None
 
   def test_update_threshold_on_stored_stays_none(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "optimized1"},
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
@@ -638,7 +639,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert fetched_e.metrics[2].threshold is None
 
   def test_update_threshold_on_stored_raises(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "optimized1"},
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
@@ -654,7 +655,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_on_constraint_metric(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT, "threshold": 0.1},
       {"name": "optimized1"},
     ]
@@ -665,7 +666,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert updated_e.metrics[0].threshold == 4.56
 
   def test_update_remove_threshold_on_constraint_raises(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT, "threshold": 0.1},
       {"name": "optimized"},
     ]

@@ -6,6 +6,7 @@ from zigopt.importance.worker import ImportancesWorker
 from zigopt.optimize.worker import HyperparameterOptimizationWorker, NextPointsWorker
 from zigopt.queue.message import QueueMessage
 from zigopt.queue.message_groups import MessageGroup
+from zigopt.queue.worker import QueueWorker
 from zigopt.services.base import Service
 
 
@@ -16,7 +17,7 @@ WORKER_CLASSES = [
   NextPointsWorker,
 ]
 
-WORKER_CLASSES_BY_MESSAGE_TYPE = {}
+WORKER_CLASSES_BY_MESSAGE_TYPE: dict[str, type[QueueWorker]] = {}
 
 
 def assign_worker_classes_by_message_type():

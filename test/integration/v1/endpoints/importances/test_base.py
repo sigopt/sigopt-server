@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from copy import deepcopy
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -13,7 +14,7 @@ from integration.v1.test_base import V1Base
 
 
 class ExperimentImportancesTestBase(V1Base):
-  experiment_meta = dict(
+  experiment_meta: dict[str, Any] = dict(
     name="importances",
     parameters=[
       dict(name="a", type="int", bounds=dict(min=1, max=50)),

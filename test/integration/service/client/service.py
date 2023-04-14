@@ -3,6 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 
+from zigopt.client.model import Client
+from zigopt.organization.model import Organization
+
 from integration.service.test_base import ServiceBase
 
 
@@ -11,8 +14,11 @@ def get_id(obj):
 
 
 class TestClientServiceFind(ServiceBase):
-  organization_a = organization_b = None
-  client_a = client_b = client_c = None
+  organization_a: Organization
+  organization_b: Organization
+  client_a: Client
+  client_b: Client
+  client_c: Client
 
   @pytest.fixture(autouse=True)
   def setup(self, services):

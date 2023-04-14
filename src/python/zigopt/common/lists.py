@@ -212,7 +212,7 @@ def recursively_omit_keys(json: _Any, keys: _Sequence) -> _Any:
   return recursively_filter_keys(lambda key: key not in keys, json)
 
 
-def distinct_counts(lis: _Sequence[lists_GHashable]) -> dict[lists_GHashable, int]:
+def distinct_counts(lis: _Iterable[lists_GHashable]) -> dict[lists_GHashable, int]:
   """
     Returns the number of times each element occurs in `lis`.
     """
@@ -222,7 +222,7 @@ def distinct_counts(lis: _Sequence[lists_GHashable]) -> dict[lists_GHashable, in
   return ret
 
 
-def partition(lis: _Sequence[lists_T], predicate: _Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
+def partition(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
   """
     Splits a list into two lists based on a predicate. The first list will contain
     all elements of the provided list where predicate is true, and the second list
@@ -325,7 +325,7 @@ def to_map_by_key(
 
 
 def max_option(
-  lis: _Sequence[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
+  lis: _Iterable[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
 ) -> _Optional[lists_T]:
   """
     Like max, but returns None on an empty seq instead of an error
@@ -340,7 +340,7 @@ def max_option(
 
 
 def min_option(
-  lis: _Sequence[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
+  lis: _Iterable[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
 ) -> _Optional[lists_T]:
   """
     Like min, but returns None on an empty seq instead of an error
@@ -412,7 +412,7 @@ def unsafe_generator(func: lists_TCallable) -> lists_TCallable:
   return func
 
 
-def as_tuple(val: _collectionsabc.Iterable[lists_T] | lists_T) -> tuple[lists_T, ...]:
+def as_tuple(val: _Iterable[lists_T] | lists_T) -> tuple[lists_T, ...]:
   """
     Turns a value into a tuple if it is not already iterable
     Allows creating functions that take either a single value

@@ -6,6 +6,7 @@ from typing import Any
 from libsigopt.aux.validate_schema import validate
 
 
+NOTE_MAX_LENGTH = 1024 * 1024
 note_schema = {
   "type": "object",
   "required": ["contents"],
@@ -13,7 +14,7 @@ note_schema = {
   "properties": {
     "contents": {
       "type": "string",
-      "maxLength": 1024 * 1024,  # 1MB if entirely ASCII
+      "maxLength": NOTE_MAX_LENGTH,  # 1MB if entirely ASCII
     },
   },
 }

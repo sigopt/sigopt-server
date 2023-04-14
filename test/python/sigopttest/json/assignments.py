@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Any
+
 import pytest
 
 from zigopt.experiment.model import Experiment, ExperimentMetaProxy
@@ -217,7 +219,7 @@ class TestAssignmentsJsonWithConditionals(_TestAssignmentsJsonBase):
     with pytest.raises(Exception):
       assignments_json(
         experiment,
-        dict(
+        dict[str, Any](
           categorical_param=1,
           double_param=2.4,
           int_param=3.2,

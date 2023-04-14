@@ -18,11 +18,11 @@ def test_copy_from():
   assert_reference_values((reference_value))
 
   p = Parent()
-  CopyFrom(p, reference_value.copy_protobuf())
+  CopyFrom(p, reference_value.copy_protobuf())  # type: ignore
   assert_reference_values((p))
 
   p = Parent()
-  MergeFrom(p, reference_value.copy_protobuf())
+  MergeFrom(p, reference_value.copy_protobuf())  # type: ignore
   assert_reference_values((p))
 
 
@@ -78,18 +78,18 @@ def test_copy_protobuf():
   ref = Parent()
   set_reference_values(ref)
   assert_reference_values((ref))
-  ref2 = ref.copy_protobuf()
+  ref2 = ref.copy_protobuf()  # type: ignore
   assert_reference_values(((ref2)))
   assert_eq((ref), ((ref2)))
   ref2.repeated_string_field.append("abc")
-  assert ref2 != ref.copy_protobuf()
+  assert ref2 != ref.copy_protobuf()  # type: ignore
   assert (ref2) != ref
-  assert ref.copy_protobuf() != ref2
+  assert ref.copy_protobuf() != ref2  # type: ignore
   assert ref != (ref2)
 
   empty = Parent()
-  mutable_empty_1 = empty.copy_protobuf()
-  mutable_empty_2 = empty.copy_protobuf()
+  mutable_empty_1 = empty.copy_protobuf()  # type: ignore
+  mutable_empty_2 = empty.copy_protobuf()  # type: ignore
   assert_eq((mutable_empty_1), empty)
   assert_eq((mutable_empty_2), empty)
   assert mutable_empty_1 == mutable_empty_2
@@ -140,49 +140,49 @@ def test_SetFieldIfNotNone():
   empty = Parent()
   assert not empty.HasField("optional_double_field")
   assert not empty.optional_composite_field.HasField("name")
-  empty.SetFieldIfNotNone("optional_double_field", None)
-  empty.optional_composite_field.SetFieldIfNotNone("name", None)
+  empty.SetFieldIfNotNone("optional_double_field", None)  # type: ignore
+  empty.optional_composite_field.SetFieldIfNotNone("name", None)  # type: ignore
   assert not empty.HasField("optional_double_field")
   assert not empty.optional_composite_field.HasField("name")
-  empty.SetFieldIfNotNone("optional_double_field", 1.0)
-  empty.optional_composite_field.SetFieldIfNotNone("name", "abc")
+  empty.SetFieldIfNotNone("optional_double_field", 1.0)  # type: ignore
+  empty.optional_composite_field.SetFieldIfNotNone("name", "abc")  # type: ignore
   assert empty.HasField("optional_double_field")
   assert empty.optional_double_field == 1.0
   assert empty.optional_composite_field.HasField("name")
   assert empty.optional_composite_field.name == "abc"
 
   with pytest.raises(AttributeError):
-    empty.SetFieldIfNotNone("fake_field", 1)
+    empty.SetFieldIfNotNone("fake_field", 1)  # type: ignore
   with pytest.raises(AttributeError):
-    empty.SetFieldIfNotNone("fake_field", None)
+    empty.SetFieldIfNotNone("fake_field", None)  # type: ignore
 
 
 def test_GetOneofValueOrNone():
   message = Parent()
-  assert message.GetOneofValueOrNone("oneof_value") is None
+  assert message.GetOneofValueOrNone("oneof_value") is None  # type: ignore
 
   message.oneof_double_field = 1.0
-  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_double_field == 1.0
+  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_double_field == 1.0  # type: ignore
   message.oneof_string_field = "abc"
-  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_string_field == "abc"
+  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_string_field == "abc"  # type: ignore
   message.oneof_composite_field.value = 1.0
-  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_composite_field == Child(value=1.0)
+  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_composite_field == Child(value=1.0)  # type: ignore
 
   message.ClearField("oneof_value")
-  assert message.GetOneofValueOrNone("oneof_value") is None
+  assert message.GetOneofValueOrNone("oneof_value") is None  # type: ignore
 
   with pytest.raises(ValueError):
-    Parent().GetOneofValueOrNone("optional_double_field")
+    Parent().GetOneofValueOrNone("optional_double_field")  # type: ignore
 
   with pytest.raises(ValueError):
-    Parent().GetOneofValueOrNone("optional_recursive_field")
+    Parent().GetOneofValueOrNone("optional_recursive_field")  # type: ignore
 
   with pytest.raises(ValueError):
-    Parent().GetOneofValueOrNone("map_field")
+    Parent().GetOneofValueOrNone("map_field")  # type: ignore
 
   for message in (Parent(), Parent(oneof_double_field=1.0)):
     with pytest.raises(ValueError):
-      message.GetFieldOrNone("oneof_value")
+      message.GetFieldOrNone("oneof_value")  # type: ignore
 
 
 def assert_eq(v1, v2):

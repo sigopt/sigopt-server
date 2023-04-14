@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -50,6 +51,8 @@ class TestExperimentMetadata(ExperimentsTestBase):
       )
 
   def test_update_metadata(self, connection, client_id):
+    metadata: dict[str, Any] | None
+
     with connection.create_any_experiment(client_id=client_id) as e:
       # set metadata
       metadata = {"foo": "bar"}

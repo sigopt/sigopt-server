@@ -34,6 +34,8 @@ class CustomChromeOptions(webdriver.ChromeOptions):
 
 class SigOptWebDriver:
   # pylint: disable=too-many-public-methods
+  driver: webdriver.remote.webdriver.WebDriver
+
   def __getattr__(self, name):
     if name.endswith("_by_class_name"):
       warnings.warn(
@@ -88,7 +90,7 @@ class SigOptWebDriver:
       else:
         d = {}
       d["acceptInsecureCerts"] = True
-      self.driver = webdriver.Remote(command_executor, options=d)
+      self.driver = webdriver.Remote(command_executor, options=d)  # type: ignore
     else:
       raise Exception(f"Driver name not recognized: {self.driver_name}")
     self.driver.set_window_size(1200, 8000)
@@ -137,6 +139,8 @@ class SigOptWebDriver:
     self.driver.delete_all_cookies()
 
   def login(self):
+    assert self.web_connection is not None
+
     self.web_connection.login()
     for cookie in self.web_connection.get_browser_cookies(self.config_broker):
       self.driver.add_cookie(cookie)

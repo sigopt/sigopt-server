@@ -24,7 +24,7 @@ class TestJsonFormatter:
       pathname="/path",
       lineno=12,
       msg="Logging Message %s",
-      args="arg1",
+      args=("arg1",),
       exc_info=None,
     )
 
@@ -91,7 +91,7 @@ class TestSyslogFormatter:
       pathname="/path",
       lineno=12,
       msg="Logging Message %s",
-      args="arg1",
+      args=("arg1",),
       exc_info=None,
     )
 
