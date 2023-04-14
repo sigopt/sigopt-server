@@ -1,7 +1,7 @@
 {
   "address": {
-    "api_url": "https://sigopt.ninja:4443/api",
-    "app_url": "https://sigopt.ninja:4443"
+    "api_url": "https://127.0.0.1:4443/api",
+    "app_url": "https://127.0.0.1:4443"
   },
   "db": {
     "path": "basedb",
