@@ -12,7 +12,6 @@ from zigopt.experiment.model import ExperimentMetaProxy, ExperimentParameterProx
 from zigopt.handlers.validate.assignments import get_assignment
 from zigopt.handlers.validate.experiment import validate_categorical_value, validate_parameter_name
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_CATEGORICAL,
   PARAMETER_DOUBLE,
@@ -23,10 +22,10 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 from zigopt.sigoptcompute.constant import MINIMUM_DOMAIN_EDGE_LENGTH
 
 from libsigopt.aux.constant import ParameterPriorNames
-from libsigopt.aux.errors import InvalidKeyError, InvalidValueError
+from libsigopt.aux.errors import InvalidKeyError, InvalidValueError, MissingParamError, SigoptValidationError
 
 
-class GridError(BadParamError):
+class GridError(SigoptValidationError):
   def __init__(self, parameter, msg):
     grid_error_prefix = f"`grid` provided for parameter {parameter.name} is invalid. "
     super().__init__(grid_error_prefix + msg)
@@ -42,7 +41,7 @@ def set_experiment_parameter_list_from_json(experiment_meta, experiment_json, us
   )
 
   if not parameters_json:
-    raise BadParamError(f"{user_facing_class_name}s must have at least one parameter.")
+    raise InvalidValueError(f"{user_facing_class_name}s must have at least one parameter.")
 
   seen_names = set()
   for parameter_json in parameters_json:
@@ -112,15 +111,15 @@ def set_bounds_from_json(parameter, parameter_json, experiment_type):
     parameter.bounds.maximum = get_with_validation(bounds_json, "max", validation_type)
 
   if parameter.bounds.maximum < parameter.bounds.minimum:
-    raise BadParamError("Invalid bounds: max must be greater than min")
+    raise SigoptValidationError("Invalid bounds: max must be greater than min")
   if parameter.bounds.maximum - parameter.bounds.minimum < MINIMUM_DOMAIN_EDGE_LENGTH:
-    raise BadParamError(
+    raise SigoptValidationError(
       f"Invalid bounds: {parameter.bounds} does not exceed min length: {MINIMUM_DOMAIN_EDGE_LENGTH}",
     )
 
   if parameter.transformation == ExperimentParameter.TRANSFORMATION_LOG:
     if parameter.bounds.minimum <= 0.0:
-      raise BadParamError("Invalid bounds for log-transformation: bounds must be positive")
+      raise SigoptValidationError("Invalid bounds for log-transformation: bounds must be positive")
 
 
 def _check_prior(parameter, parameter_json):
@@ -140,17 +139,17 @@ def _set_prior_normal(parameter, prior_json):
     parameter.prior.normal_prior.mean > parameter.bounds.maximum
     or parameter.prior.normal_prior.mean < parameter.bounds.minimum
   ):
-    raise BadParamError("`mean` must be within the bounds of the parameter.")
+    raise InvalidValueError("`mean` must be within the bounds of the parameter.")
   parameter.prior.normal_prior.scale = get_with_validation(prior_json, "scale", ValidationType.number)
   if parameter.prior.normal_prior.scale <= 0:
-    raise BadParamError("`scale` must be positive.")
+    raise InvalidValueError("`scale` must be positive.")
 
 
 def _set_prior_beta(parameter, prior_json):
   parameter.prior.beta_prior.shape_a = get_with_validation(prior_json, "shape_a", ValidationType.number)
   parameter.prior.beta_prior.shape_b = get_with_validation(prior_json, "shape_b", ValidationType.number)
   if parameter.prior.beta_prior.shape_a <= 0 or parameter.prior.beta_prior.shape_b <= 0:
-    raise BadParamError(f"shape parameters for {ParameterPriorNames.BETA} must be positive.")
+    raise InvalidValueError(f"shape parameters for {ParameterPriorNames.BETA} must be positive.")
 
 
 def set_prior_from_json(parameter, parameter_json):
@@ -196,9 +195,11 @@ def set_categorical_values_from_json(parameter, parameter_json):
     seen_names.add(categorical_value.name)
 
   if not parameter.all_categorical_values:
-    raise BadParamError(f"No categorical values provided for categorical parameter {parameter.name}")
+    raise SigoptValidationError(f"No categorical values provided for categorical parameter {parameter.name}")
   if len(parameter.all_categorical_values) == 1:
-    raise BadParamError(f"Categorical parameter {parameter.name} should have at least 2 categorical values.")
+    raise MissingParamError(
+      "parameter.name", f"Categorical parameter {parameter.name} should have at least 2 categorical values."
+    )
 
 
 def set_categorical_value_from_json(categorical_value, categorical_value_json, enum_index):
@@ -208,7 +209,7 @@ def set_categorical_value_from_json(categorical_value, categorical_value_json, e
   else:
     categorical_value.name = get_with_validation(categorical_value_json, "name", ValidationType.string)
     if get_opt_with_validation(categorical_value_json, "deleted", ValidationType.boolean):
-      raise BadParamError(f"Categorical value {categorical_value.name} cannot be deleted at creation time.")
+      raise SigoptValidationError(f"Categorical value {categorical_value.name} cannot be deleted at creation time.")
   categorical_value.name = validate_categorical_value(categorical_value.name)
 
 
@@ -273,10 +274,10 @@ def set_default_value_from_json(parameter, parameter_json):
     value_to_set = get_assignment(parameter, default_value)
     parameter.replacement_value_if_missing = value_to_set
 
-    if parameter.transformation == ExperimentParameter.TRANSFORMATION_LOG:
-      assert isinstance(parameter.replacement_value_if_missing, float)
-      if parameter.replacement_value_if_missing <= 0.0:
-        raise BadParamError("Invalid default_value for log-transformation: default_value must be positive")
+  if parameter.transformation == ExperimentParameter.TRANSFORMATION_LOG:
+    assert isinstance(parameter.replacement_value_if_missing, float)
+    if parameter.replacement_value_if_missing <= 0.0:
+      raise SigoptValidationError("Invalid default_value for log-transformation: default_value must be positive")
 
 
 def set_parameter_conditions_from_json(parameter, parameter_json, conditionals_map):
@@ -297,11 +298,11 @@ def set_parameter_conditions_from_json(parameter, parameter_json, conditionals_m
     try:
       conditional = conditionals_map[condition.name]
     except KeyError as e:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"Parameter {parameter.name} attempted to use non-existent conditional {condition.name}"
       ) from e
     if not values_json:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"When providing condition for {condition.name} on parameter {parameter.name}, must provide at least one value"
       )
     values_json = values_json if is_sequence(values_json) else [values_json]
@@ -309,7 +310,7 @@ def set_parameter_conditions_from_json(parameter, parameter_json, conditionals_m
     for value_json in values_json:
       conditional_value = find(conditional.values, lambda c: c.name == value_json)  # pylint: disable=cell-var-from-loop
       if conditional_value is None:
-        raise BadParamError(
+        raise SigoptValidationError(
           f"Conditional {condition.name} on parameter {parameter.name} attempted to use non-existent value {value_json}"
         )
       values.append(conditional_value.enum_index)
@@ -319,7 +320,7 @@ def set_parameter_conditions_from_json(parameter, parameter_json, conditionals_m
 def set_transformation_from_json(parameter, parameter_json):
   if parameter.param_type != PARAMETER_DOUBLE:
     if parameter_json.get("transformation") is not None:
-      raise BadParamError("Transformation is only valid for parameters of type `double`")
+      raise SigoptValidationError("Transformation is only valid for parameters of type `double`")
 
   transformation_string = get_opt_with_validation(parameter_json, "transformation", ValidationType.string)
   if transformation_string:

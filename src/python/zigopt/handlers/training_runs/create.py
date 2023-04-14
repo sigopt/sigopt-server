@@ -9,12 +9,11 @@ from zigopt.handlers.projects.base import ProjectHandler
 from zigopt.handlers.training_runs.parser import TrainingRunRequestParams, TrainingRunRequestParser
 from zigopt.handlers.validate.training_run import validate_assignments_meta
 from zigopt.json.builder import PaginationJsonBuilder, TrainingRunJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun
 
-from libsigopt.aux.errors import MissingParamError
+from libsigopt.aux.errors import MissingParamError, SigoptValidationError
 
 
 MAX_RUNS_BATCH_CREATE_COUNT = 10000
@@ -38,15 +37,15 @@ class BaseTrainingRunsCreateHandler(Handler):
   def parse_request(self, request):
     unaccepted_params = request.params().keys() - TrainingRunRequestParams.valid_fields
     if unaccepted_params:
-      raise BadParamError(f"Unknown parameters: {unaccepted_params}")
+      raise SigoptValidationError(f"Unknown parameters: {unaccepted_params}")
 
     training_run_params = TrainingRunRequestParser().parse_params(request)
     if not training_run_params.training_run_data.name:
       raise MissingParamError("name")
     if training_run_params.field_is_explicitly_null("state"):
-      raise BadParamError("state cannot be `null`")
+      raise SigoptValidationError("state cannot be `null`")
     if training_run_params.project is not None or training_run_params.field_is_explicitly_null("project"):
-      raise BadParamError("`project` is not a valid JSON key for this endpoint.")
+      raise SigoptValidationError("`project` is not a valid JSON key for this endpoint.")
 
     assignments_meta = training_run_params.training_run_data.assignments_meta
     if assignments_meta is not None:
@@ -417,7 +416,7 @@ class ProjectsTrainingRunsBatchCreateHandler(ProjectsTrainingRunsCreateHandler):
     runs = request.params().get("runs", [])
     max_count = get_default_max_batch_runs(self.services)
     if len(runs) > max_count:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"The number of runs needs to be less than or equal to {max_count}. "
         f"Please consider separating your {len(runs)} runs into multiple batches."
       )

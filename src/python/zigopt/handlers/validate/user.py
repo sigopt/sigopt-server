@@ -4,23 +4,24 @@
 from typing import Optional
 
 from zigopt.handlers.validate.base import validate_email, validate_name
-from zigopt.net.errors import BadParamError
 from zigopt.user.model import User
+
+from libsigopt.aux.errors import InvalidValueError, MissingParamError
 
 
 def validate_user_name(name: Optional[str]) -> str:
   name = validate_name(name)
   if name:
     if len(name) >= User.NAME_MAX_LENGTH:
-      raise BadParamError(f"Name must be fewer than {User.NAME_MAX_LENGTH} characters")
+      raise InvalidValueError(f"Name must be fewer than {User.NAME_MAX_LENGTH} characters")
     return name
-  raise BadParamError("User name is required")
+  raise MissingParamError("name", "User name is required")
 
 
 def validate_user_email(email: Optional[str]) -> str:
   email = validate_email(email)
   if len(email) >= User.EMAIL_MAX_LENGTH:
-    raise BadParamError(f"Email must be fewer than {User.EMAIL_MAX_LENGTH} characters")
+    raise InvalidValueError(f"Email must be fewer than {User.EMAIL_MAX_LENGTH} characters")
   return email
 
 
@@ -31,7 +32,7 @@ def validate_user_password(plaintext_password: str) -> str:
   # used to check if the password is correct.
   # We could count bytes, but conveying that to the user in an error message would be annoying
   if len(plaintext_password) >= User.PASSWORD_MAX_LENGTH_BYTES:
-    raise BadParamError(f"Password must be fewer than {User.PASSWORD_MAX_LENGTH_BYTES} characters")
+    raise InvalidValueError(f"Password must be fewer than {User.PASSWORD_MAX_LENGTH_BYTES} characters")
 
   is_long_enough = len(plaintext_password) >= User.PASSWORD_MIN_LENGTH_CHARACTERS
   has_num = any((c.isnumeric() for c in plaintext_password))
@@ -39,7 +40,7 @@ def validate_user_password(plaintext_password: str) -> str:
   has_upper = any((c.isupper() for c in plaintext_password))
   has_special = any((not c.isalnum() for c in plaintext_password))
   if not all((is_long_enough, has_num, has_lower, has_upper, has_special)):
-    raise BadParamError(
+    raise InvalidValueError(
       "Password must be"
       f" more than {User.PASSWORD_MIN_LENGTH_CHARACTERS} characters"
       ", and contain an uppercase character, a lowercase character, a digit, and a special character."

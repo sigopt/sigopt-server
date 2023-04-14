@@ -4,8 +4,9 @@
 from zigopt.common import *
 from zigopt.common.numbers import *
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationValue
+
+from libsigopt.aux.errors import InvalidKeyError, SigoptValidationError
 
 
 def value_var_from_json(json_dict, experiment, default=None):
@@ -27,24 +28,24 @@ def validate_metric_names(values, experiment):
   name_counts = distinct_counts([v.get("name") for v in values])
   for name, count in name_counts.items():
     if count >= 2:
-      raise BadParamError(f"Duplicate name: {name}")
+      raise InvalidKeyError("name", f"Duplicate name: {name}")
 
   names = list(name_counts.keys())
   non_empty_names: list[str] = compact_sequence(names, list)  # type: ignore
   if len(names) >= 2 and len(names) > len(non_empty_names):
-    raise BadParamError("A name must be specified for all values.")
+    raise InvalidKeyError("A name must be specified for all values.")
 
   if experiment is not None:
     experiment_metrics = set(m.name for m in experiment.all_metrics)
     if not experiment_metrics and non_empty_names:
-      raise BadParamError(
+      raise SigoptValidationError(
         "value names should match experiment metric names. Names should not be specified for unnamed metrics."
       )
     # NOTE: allow legacy of submitting unnamed metrics, whether or not experiment-metric name exists
     if len(names) == 1 and len(non_empty_names) == 0 and len(experiment_metrics) <= 1:
       pass
     elif experiment_metrics and not experiment_metrics.issubset(names):
-      raise BadParamError(f"values must have metric names defined in experiment: {experiment_metrics}")
+      raise SigoptValidationError(f"values must have metric names defined in experiment: {experiment_metrics}")
 
 
 @generator_to_list
@@ -54,8 +55,8 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
   # metric is unnamed (so the observation should only have one, also unnamed, value)
   if (experiment_metrics and len(experiment_metrics) != len(values)) or not experiment_metrics and len(values) != 1:
     if experiment.has_user_defined_metric:
-      raise BadParamError("The number of observation values and experiment metrics must be equal.")
-    raise BadParamError("Experiments without a defined `metrics` do not support multiple values.")
+      raise SigoptValidationError("The number of observation values and experiment metrics must be equal.")
+    raise SigoptValidationError("Experiments without a defined `metrics` do not support multiple values.")
   validate_metric_names(values, experiment)
   old_values_by_name: dict[str, ObservationValue] = to_map_by_key(coalesce(old_values, []), key=lambda v: v.name)
   for v in values:
@@ -63,7 +64,7 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
     name = get_opt_with_validation(v, "name", ValidationType.string)
     old_v = old_values_by_name.get(coalesce(name, ""))
     if old_values_by_name and old_v is None:
-      raise BadParamError(f"Invalid metric name {name}")
+      raise SigoptValidationError(f"Invalid metric name {name}")
 
     val = value_from_json(
       v,
@@ -76,7 +77,7 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
     )
 
     if val is None:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"Missing value for: {name}" if name else "A value should be specified for all entries in the 'values' list."
       )
 

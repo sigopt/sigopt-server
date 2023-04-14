@@ -4,7 +4,6 @@
 import pytest
 
 from zigopt.experiment.model import Experiment
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_DOUBLE,
   Bounds,
@@ -13,6 +12,8 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Task,
 )
 from zigopt.task.from_json import extract_task_from_json
+
+from libsigopt.aux.errors import InvalidKeyError, SigoptValidationError
 
 
 class TestExtractors:
@@ -59,17 +60,17 @@ class TestExtractors:
     assert task.name == "a" and task.cost == 0.1
 
     json_dict = {"assignments": {"x": 1.1}, "wrong_tag": "a"}
-    with pytest.raises(BadParamError):
+    with pytest.raises(InvalidKeyError):
       extract_task_from_json(experiment_mt, json_dict)
 
     json_dict = {"assignments": {"x": 1.1}, "task": "not_a_real_task"}
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       extract_task_from_json(experiment_mt, json_dict)
 
     json_dict = {"assignments": {"x": 1.1}, "task": {"name": "not_a_real_task"}}
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       extract_task_from_json(experiment_mt, json_dict)
 
     json_dict = {"assignments": {"x": 1.1}, "task": {"forgot_the_name": "a"}}
-    with pytest.raises(BadParamError):
+    with pytest.raises(InvalidKeyError):
       extract_task_from_json(experiment_mt, json_dict)

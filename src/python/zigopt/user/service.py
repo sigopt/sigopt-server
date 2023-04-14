@@ -7,9 +7,10 @@ from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.common.strings import random_string
 from zigopt.membership.model import Membership, MembershipType
-from zigopt.net.errors import BadParamError
 from zigopt.services.base import Service
 from zigopt.user.model import User, normalize_email, password_hash
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class UserService(Service):
@@ -54,7 +55,7 @@ class UserService(Service):
       preexisting_user = self.find_by_email(user.email, include_deleted=True)
       if not preexisting_user.deleted:
         self.services.email_router.send(self.services.email_templates.existing_email(user))
-        raise BadParamError("Please verify email.") from e
+        raise SigoptValidationError("Please verify email.") from e
       random_code = random_string(str_length=8)
       new_email = f"deleted-{random_code}-{preexisting_user.email}"
       preexisting_user.email = new_email
@@ -73,7 +74,7 @@ class UserService(Service):
   def change_user_email_without_save(self, user, new_email):
     existing_user = self.services.user_service.find_by_email(new_email)
     if existing_user is not None:
-      raise BadParamError("Unable to change email.")
+      raise SigoptValidationError("Unable to change email.")
 
     email_verification_code = self.services.email_verification_service.set_email_verification_code_without_save(user)
     user_meta = user.user_meta.copy_protobuf()

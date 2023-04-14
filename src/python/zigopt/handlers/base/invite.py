@@ -7,7 +7,9 @@ from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import NO_ROLE, permission_to_role
 from zigopt.json.builder import MembershipJsonBuilder
 from zigopt.membership.model import MembershipType
-from zigopt.net.errors import BadParamError, ConflictingDataError
+from zigopt.net.errors import ConflictingDataError
+
+from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
 
 
 class InviteHandler(Handler):
@@ -64,7 +66,7 @@ class InviteHandler(Handler):
     inviter = self.auth.current_user
 
     if not self.services.invite_service.email_is_permitted_by_organization_for_invite(organization, email, inviter):
-      raise BadParamError(
+      raise SigoptValidationError(
         "You can only invite users with emails from the following domains:"
         f' {",".join(self.services.invite_service.eligible_domains_for_invite(organization, inviter))}.'
       )
@@ -92,7 +94,7 @@ class InviteHandler(Handler):
       self.update_existing_user(invite, organization, invitee, client_invites, skip_email, skip_check, inviter)
     else:
       if self.services.invite_service.find_by_email_and_organization(invite.email, organization.id):
-        raise BadParamError(f"The email address {invite.email} was already invited.")
+        raise SigoptValidationError(f"The email address {invite.email} was already invited.")
 
       self.services.invite_service.insert_invite(invite)
       self.create_pending_permissions(invite, client_invites, client_map, insert=True)
@@ -152,7 +154,7 @@ class InviteHandler(Handler):
   def _update_current_membership(self, current_membership, invite, invitee, organization):
     # NOTE: Currently only handle elevating members to owners, not the other way around
     if current_membership.membership_type == MembershipType.owner:
-      raise BadParamError("Owners cannot have their memberships updated")
+      raise SigoptValidationError("Owners cannot have their memberships updated")
 
     if invite.membership_type == MembershipType.owner:
       self.services.membership_service.elevate_to_owner(current_membership)
@@ -233,7 +235,7 @@ class InviteHandler(Handler):
         self.send_existing_user_invite(invite, organization, clients, invitee)
 
     elif self.services.invite_service.find_by_email_and_organization(invite.email, organization.id):
-      raise BadParamError(f"The email address {invite.email} was already invited.")
+      raise InvalidValueError(f"The email address {invite.email} was already invited.")
 
     else:
       self.services.invite_service.insert_invite(invite)

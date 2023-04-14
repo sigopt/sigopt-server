@@ -36,7 +36,6 @@ from zigopt.handlers.validate.validate_dict import (
   key_present,
 )
 from zigopt.json.builder import ExperimentJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.parameters.from_json import set_experiment_parameter_list_from_json
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_DOUBLE,
@@ -52,7 +51,7 @@ from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.suggestion.sampler.grid import GridSampler
 
 from libsigopt.aux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
-from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
+from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError, MissingParamError, SigoptValidationError
 
 
 class BaseExperimentsCreateHandler(Handler):
@@ -107,7 +106,9 @@ class BaseExperimentsCreateHandler(Handler):
     experiment_meta = params.meta
 
     if experiment_meta.runs_only and project is None:
-      raise BadParamError(f"{self.user_facing_class_name}s must be placed in a project by defining the `project` field")
+      raise MissingParamError(
+        "project", f"{self.user_facing_class_name}s must be placed in a project by defining the `project` field"
+      )
 
     now = current_datetime()
     experiment = Experiment(
@@ -150,7 +151,7 @@ class BaseExperimentsCreateHandler(Handler):
         reference_id=reference_id,
       )
       if project is None:
-        raise BadParamError(f"Could not assign to project `{reference_id}`, the project does not exist.")
+        raise InvalidValueError(f"Could not assign to project `{reference_id}`, the project does not exist.")
       return project
     return default
 
@@ -304,7 +305,7 @@ class BaseExperimentsCreateHandler(Handler):
     )
 
     if not (has_optimization_metrics or has_constraint_metrics):
-      raise BadParamError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")
+      raise SigoptValidationError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")
 
     cls._maybe_set_tasks_for_multitask_experiment(
       json_dict,
@@ -330,7 +331,7 @@ class BaseExperimentsCreateHandler(Handler):
     objective = get_opt_with_validation(metric, "objective", ValidationType.string)
     if key_present(metric, "objective"):
       if objective is None:
-        raise BadParamError(f"Objective field, if specified, must be one of {tuple(ALL_METRIC_OBJECTIVE_NAMES)}")
+        raise InvalidValueError(f"Objective field, if specified, must be one of {tuple(ALL_METRIC_OBJECTIVE_NAMES)}")
     objective = validate_metric_objective(objective)
     return objective
 
@@ -338,7 +339,7 @@ class BaseExperimentsCreateHandler(Handler):
   def get_metric_name(cls, metric, seen_names, num_metrics):
     name = get_opt_with_validation(metric, "name", ValidationType.string)
     if name is None and num_metrics > 1:
-      raise BadParamError("Multimetric experiments do not support unnamed metrics")
+      raise SigoptValidationError("Multimetric experiments do not support unnamed metrics")
     if name in seen_names:
       raise InvalidValueError(f"Duplicate metric name: {name}")
     return name
@@ -350,16 +351,16 @@ class BaseExperimentsCreateHandler(Handler):
     has_threshold_field_and_valid_value = key_present(metric, "threshold") and threshold is not None
     if metric_strategy == ExperimentMetric.OPTIMIZE:
       if num_optimized_metrics == 1 and has_threshold_field_and_valid_value:
-        raise BadParamError(
+        raise SigoptValidationError(
           "Thresholds are only supported for experiments with more than one optimized metric."
           " Try an All-Constraint experiment instead by setting `strategy` to `constraint`."
         )
     elif metric_strategy == ExperimentMetric.CONSTRAINT:
       if not has_threshold_field_and_valid_value:
-        raise BadParamError("Constraint metrics must have the threshold field defined")
+        raise SigoptValidationError("Constraint metrics must have the threshold field defined")
     else:  # metric_strategy == ExperimentMetric.STORE
       if has_threshold_field_and_valid_value:
-        raise BadParamError("Thresholds cannot be specified on stored metrics")
+        raise SigoptValidationError("Thresholds cannot be specified on stored metrics")
 
     return threshold
 
@@ -368,7 +369,9 @@ class BaseExperimentsCreateHandler(Handler):
     metric_strategy = get_opt_with_validation(metric, "strategy", ValidationType.string)
     if key_present(metric, "strategy"):
       if metric_strategy is None:
-        raise BadParamError(f"Metric strategy field, if specified, must be one of {tuple(ALL_METRIC_STRATEGY_NAMES)}")
+        raise InvalidValueError(
+          f"Metric strategy field, if specified, must be one of {tuple(ALL_METRIC_STRATEGY_NAMES)}"
+        )
     metric_strategy = validate_metric_strategy(metric_strategy)
     return metric_strategy
 
@@ -384,16 +387,18 @@ class BaseExperimentsCreateHandler(Handler):
       assert MAX_OPTIMIZED_METRICS >= 1
       return [ExperimentMetric()]
     if not metrics:
-      raise BadParamError("The `metrics` list must contain a metric")
+      raise InvalidValueError("The `metrics` list must contain a metric")
     if len(metrics) > MAX_METRICS_ANY_STRATEGY:
-      raise BadParamError(f"Cannot have more then {MAX_METRICS_ANY_STRATEGY} metrics")
+      raise InvalidValueError(f"Cannot have more then {MAX_METRICS_ANY_STRATEGY} metrics")
     strategy_to_metrics_map = group_metric_strategies_from_json(metrics)
     optimized_metrics = strategy_to_metrics_map.get(MetricStrategyNames.OPTIMIZE, [])
     if len(optimized_metrics) > MAX_OPTIMIZED_METRICS:
-      raise BadParamError(f"{cls.user_facing_class_name}s must have at most {MAX_OPTIMIZED_METRICS} optimized metrics")
+      raise InvalidValueError(
+        f"{cls.user_facing_class_name}s must have at most {MAX_OPTIMIZED_METRICS} optimized metrics"
+      )
     constraint_metrics = strategy_to_metrics_map.get(MetricStrategyNames.CONSTRAINT, [])
     if len(constraint_metrics) > MAX_CONSTRAINT_METRICS:
-      raise BadParamError(
+      raise InvalidValueError(
         f"{cls.user_facing_class_name}s must have at most {MAX_CONSTRAINT_METRICS} constraint metrics"
       )
     seen_names = []
@@ -577,18 +582,18 @@ class BaseExperimentsCreateHandler(Handler):
       cost = get_opt_with_validation(task, "cost", ValidationType.number)
       tasks.append(Task(name=name, cost=cost))
       if cost <= 0 or cost > 1:
-        raise BadParamError("For multitask experiments, costs must all be positive and less than or equal to 1.")
+        raise InvalidValueError("For multitask experiments, costs must all be positive and less than or equal to 1.")
 
     distinct_costs = distinct([t.cost for t in tasks])
     distinct_names = distinct([t.name for t in tasks])
     if 1 not in distinct_costs:
-      raise BadParamError("For multitask experiments, exactly one task must have cost == 1 (none present).")
+      raise InvalidValueError("For multitask experiments, exactly one task must have cost == 1 (none present).")
     if len(distinct_costs) != len(tasks):
-      raise BadParamError("For multitask experiments, all task costs must be distinct.")
+      raise InvalidValueError("For multitask experiments, all task costs must be distinct.")
     if len(distinct_names) != len(tasks):
-      raise BadParamError("For multitask experiments, all task names must be distinct.")
+      raise InvalidValueError("For multitask experiments, all task names must be distinct.")
     if len(tasks) < 2:
-      raise BadParamError("For multitask experiments, at least 2 tasks must be present.")
+      raise InvalidValueError("For multitask experiments, at least 2 tasks must be present.")
 
     return tasks
 

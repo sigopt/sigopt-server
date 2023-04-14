@@ -24,7 +24,7 @@ from zigopt.handlers.validate.validate_dict import (
   get_with_validation,
   key_present,
 )
-from zigopt.net.errors import BadParamError, NotFoundError
+from zigopt.net.errors import NotFoundError
 from zigopt.parameters.from_json import (
   set_bounds_from_json,
   set_categorical_value_from_json,
@@ -38,7 +38,7 @@ from zigopt.parameters.from_json import (
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta, ExperimentMetric
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 
-from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
+from libsigopt.aux.errors import InvalidTypeError, InvalidValueError, MissingJsonKeyError, SigoptValidationError
 
 
 class ExperimentsUpdateHandler(ExperimentHandler):
@@ -171,16 +171,16 @@ class ExperimentsUpdateHandler(ExperimentHandler):
 
   def _check_unsupported_updates(self, json_dict):
     if "constraints" in json_dict:
-      raise BadParamError("Constraints cannot be updated for an experiment")
+      raise SigoptValidationError("Constraints cannot be updated for an experiment")
 
     if "num_solutions" in json_dict:
-      raise BadParamError("Number of solutions cannot be updated for an experiment")
+      raise SigoptValidationError("Number of solutions cannot be updated for an experiment")
 
     if "conditionals" in json_dict:
-      raise BadParamError("Conditionals cannot be updated for an experiment")
+      raise SigoptValidationError("Conditionals cannot be updated for an experiment")
 
     if "tasks" in json_dict:
-      raise BadParamError("The tasks of a multitask experiment cannot be updated after creation")
+      raise SigoptValidationError("The tasks of a multitask experiment cannot be updated after creation")
 
   def _get_project(self, json_dict, update_experiment_fields):
     if "project" not in json_dict:
@@ -191,9 +191,9 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     project = self.get_project(json_dict)
     if self.experiment.runs_only:
       if project is None:
-        raise BadParamError("This experiment cannot be removed from the project.")
+        raise SigoptValidationError("This experiment cannot be removed from the project.")
       if project.id != self.experiment.project_id:
-        raise BadParamError("This experiment's project cannot be changed.")
+        raise SigoptValidationError("This experiment's project cannot be changed.")
     update_experiment_fields[Experiment.project_id] = project and project.id
     return project
 
@@ -220,11 +220,13 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     except MissingJsonKeyError:
       return
     if self.experiment.experiment_type == ExperimentMeta.GRID:
-      raise BadParamError(f"`{budget_key}` cannot be updated for experiments of type `grid`.")
+      raise SigoptValidationError(f"`{budget_key}` cannot be updated for experiments of type `grid`.")
     if self.experiment.requires_pareto_frontier_optimization:
-      raise BadParamError(f"`{budget_key}` cannot be updated for experiments with more than one optimized metric.")
+      raise SigoptValidationError(
+        f"`{budget_key}` cannot be updated for experiments with more than one optimized metric."
+      )
     if self.experiment.num_solutions > 1:
-      raise BadParamError(f"`{budget_key}` cannot be updated for experiments with more than one solution.")
+      raise SigoptValidationError(f"`{budget_key}` cannot be updated for experiments with more than one solution.")
     update_meta_fields[Experiment.experiment_meta.observation_budget] = budget
     if budget is not None:
       new_meta.observation_budget = budget
@@ -235,9 +237,9 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     if "parameters" not in json_dict:
       return
     if self.experiment.experiment_type == ExperimentMeta.GRID:
-      raise BadParamError("Parameters cannot be updated for experiments of type `grid`.")
+      raise SigoptValidationError("Parameters cannot be updated for experiments of type `grid`.")
     if self.experiment.constraints:
-      raise BadParamError("Parameters cannot be updated for experiments with constraints")
+      raise SigoptValidationError("Parameters cannot be updated for experiments with constraints")
 
     parameters_json = get_with_validation(
       json_dict,
@@ -246,12 +248,12 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     )
 
     if not parameters_json:
-      raise BadParamError("Experiments must have at least one parameter.")
+      raise SigoptValidationError("Experiments must have at least one parameter.")
 
     name_counts = distinct_counts(remove_nones([p.get("name") for p in parameters_json]))
     duplicates = [key for (key, value) in name_counts.items() if value > 1]
     if len(duplicates) > 0:
-      raise BadParamError(f"Duplicate parameter names: {duplicates}")
+      raise InvalidValueError(f"Duplicate parameter names: {duplicates}")
 
     self.update_parameters(new_meta, parameters_json, self.experiment.experiment_type)
     update_meta_fields[Experiment.experiment_meta.all_parameters_unsorted] = list(new_meta.all_parameters_unsorted)
@@ -377,19 +379,19 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     for metric_json, metric in self._compare_metric_jsons_with_metrics_by_name(json_dict, metrics):
       if key_present(metric_json, "objective"):
         if METRIC_OBJECTIVE_NAME_TO_TYPE.get(metric_json["objective"]) != metric.objective:
-          raise BadParamError("Changing the objective of a metric is forbidden")
+          raise SigoptValidationError("Changing the objective of a metric is forbidden")
 
   def _raise_if_strategy_changed(self, json_dict, metrics):
     for metric_json, metric in self._compare_metric_jsons_with_metrics_by_name(json_dict, metrics):
       if key_present(metric_json, "strategy"):
         if METRIC_STRATEGY_NAME_TO_TYPE.get(metric_json["strategy"]) != metric.strategy:
-          raise BadParamError("Changing the strategy of a metric is forbidden")
+          raise SigoptValidationError("Changing the strategy of a metric is forbidden")
 
   def _raise_if_invalid_name(self, json_dict, metrics):
     experiment_metric_names = [metric.name for metric in metrics]
     if len(metrics) > 1:
       if any(not key_present(metric_json, "name") for metric_json in json_dict["metrics"]):
-        raise BadParamError(
+        raise InvalidValueError(
           "The `name` field must be specified for every metric in experiments with more than one metric"
         )
       provided_metric_names = [metric_json["name"] for metric_json in json_dict["metrics"]]
@@ -400,22 +402,22 @@ class ExperimentsUpdateHandler(ExperimentHandler):
       # if null name is provided we must convert to empty string since that is the protobuf unnamed metric name
       provided_metric_names = [coalesce(name, "") for name in provided_metric_names]
     if set(provided_metric_names) != set(experiment_metric_names):
-      raise BadParamError("Changing the name of a metric is forbidden")
+      raise SigoptValidationError("Changing the name of a metric is forbidden")
 
   def _raise_if_threshold_specified(self, json_dict, metrics):
     num_optimized_metrics = len([metric for metric in metrics if metric.is_optimized])
 
     for metric_json, metric in self._compare_metric_jsons_with_metrics_by_name(json_dict, metrics):
-      # Reuse get_metric_threshold to throw the appropriate BadParamErrors
+      # Reuse get_metric_threshold to throw the appropriate Error
       BaseExperimentsCreateHandler.get_metric_threshold(metric_json, num_optimized_metrics, metric.strategy)
 
   def _raise_if_num_metrics_changed(self, json_dict, metrics):
     if len(json_dict["metrics"]) != len(metrics):
-      raise BadParamError("Changing the number of metrics is forbidden")
+      raise SigoptValidationError("Changing the number of metrics is forbidden")
 
   def _raise_if_bad_update(self, json_dict, metrics):
     if not is_sequence(json_dict.get("metrics", None)):
-      raise BadParamError("Metrics must be an array.")
+      raise InvalidTypeError("metrics", "array", "Metrics must be an array.")
     self._raise_if_num_metrics_changed(json_dict, metrics)
     self._raise_if_invalid_name(json_dict, metrics)
     self._raise_if_objective_changed(json_dict, metrics)
@@ -462,7 +464,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
   def validate_default_value(self, param, is_new):
     if is_new:
       if not param.HasField("replacement_value_if_missing"):
-        raise BadParamError(
+        raise SigoptValidationError(
           "New parameters must have default values."
           " Please add a default_value field to the new parameter(s)."
           " Or if you are using the web dashboard fill out the Default Value field."
@@ -470,12 +472,14 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     default_value = param.GetFieldOrNone("replacement_value_if_missing")
     if default_value is not None and not param.valid_assignment(default_value):
       if param.is_categorical:
-        raise BadParamError(
+        raise SigoptValidationError(
           f"`default_value` for parameter {param.name} is invalid - must be a valid categorical value."
         )
       if param.is_grid:
-        raise BadParamError(f"`default_value` for parameter {param.name} is invalid - must be a valid grid value.")
-      raise BadParamError(
+        raise SigoptValidationError(
+          f"`default_value` for parameter {param.name} is invalid - must be a valid grid value."
+        )
+      raise SigoptValidationError(
         f"`default_value` for parameter {param.name} is invalid"
         f" - must be between {param.bounds.minimum} and {param.bounds.maximum}"
       )
@@ -486,7 +490,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     param_type = parameter.param_type
     set_parameter_type_from_json(parameter, parameter_json)
     if parameter.param_type != param_type:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"`type` attribute on parameter {parameter.name}"
         f" must remain {EXPERIMENT_PARAMETER_TYPE_TO_NAME.get(param_type)}"
       )
@@ -531,7 +535,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
         enum_index += 1
 
       if categorical_value.name in seen_names:
-        raise BadParamError(f"Duplicate categorical value {categorical_value.name} for parameter {parameter.name}")
+        raise InvalidValueError(f"Duplicate categorical value {categorical_value.name} for parameter {parameter.name}")
       seen_names.add(categorical_value.name)
 
     for categorical_value in parameter.all_categorical_values:
@@ -539,7 +543,9 @@ class ExperimentsUpdateHandler(ExperimentHandler):
         categorical_value.deleted = True
 
     if len([c for c in parameter.all_categorical_values if not c.deleted]) < 2:
-      raise BadParamError(f"Parameters {parameter.name} must have 2 or more active (not deleted) categorical values")
+      raise InvalidValueError(
+        f"Parameters {parameter.name} must have 2 or more active (not deleted) categorical values"
+      )
 
   def _maybe_set_parameter_default_value(self, parameter, parameter_json):
     if "default_value" not in parameter_json:
@@ -560,14 +566,14 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     original_transformation = parameter.transformation
     set_transformation_from_json(parameter, parameter_json)
     if parameter.transformation != original_transformation:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"`transformation` attribute on parameter {parameter.name}"
         f" must remain {PARAMETER_TRANSFORMATION_TYPE_TO_NAME.get(original_transformation)}"
       )
 
   def update_param(self, parameter, parameter_json, experiment_type):
     if "conditions" in parameter_json:
-      raise BadParamError("Conditions cannot be updated for parameters")
+      raise SigoptValidationError("Conditions cannot be updated for parameters")
 
     self._maybe_set_parameter_type(parameter, parameter_json)
 
@@ -582,5 +588,14 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     self._maybe_set_parameter_prior(parameter, parameter_json)
 
     self._maybe_set_parameter_transformation(parameter, parameter_json)
+
+    if "transformation" in parameter_json:
+      original_transformation = parameter.transformation
+      set_transformation_from_json(parameter, parameter_json)
+      if parameter.transformation != original_transformation:
+        raise SigoptValidationError(
+          f"`transformation` attribute on parameter {parameter.name}"
+          f" must remain {PARAMETER_TRANSFORMATION_TYPE_TO_NAME.get(original_transformation)}"
+        )
 
     parameter.ClearField("deleted")
