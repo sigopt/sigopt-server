@@ -84,7 +84,7 @@ def _validate_task(json_dict, experiment):
   if not key_present(json_dict, "task"):
     return
   if not experiment.is_multitask:
-    raise BadParamError("Only multitask experiments should have a task present.")
+    raise SigoptValidationError("Only multitask experiments should have a task present.")
   if json_dict["task"] is not None:
     # This will error if the task is unacceptable
     extract_task_from_json(experiment, json_dict)

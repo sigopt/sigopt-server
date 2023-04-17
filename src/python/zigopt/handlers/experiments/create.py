@@ -185,15 +185,15 @@ class BaseExperimentsCreateHandler(Handler):
     try:
       return EXPERIMENT_NAME_TO_TYPE[experiment_type_string]
     except KeyError as ke:
-      raise BadParamError(f"Invalid experiment type: {experiment_type_string}") from ke
+      raise InvalidValueError(f"Invalid experiment type: {experiment_type_string}") from ke
 
   @classmethod
   def _check_and_set_grid_experiment_budget(cls, budget_key, budget, experiment_meta):
     if len(experiment_meta.conditionals) > 0:
-      raise BadParamError("Grid search experiments do not support conditional parameters currently.")
+      raise SigoptValidationError("Grid search experiments do not support conditional parameters currently.")
     experiment_meta.observation_budget = GridSampler.observation_budget_from_experiment_meta(experiment_meta)
     if budget is not None and budget != experiment_meta.observation_budget:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"The specified `{budget_key}` of {budget}"
         f" does not match the computed budget of {experiment_meta.observation_budget}"
       )
@@ -201,24 +201,24 @@ class BaseExperimentsCreateHandler(Handler):
   @classmethod
   def _check_budget_required(cls, budget_key, optimized_metrics, has_constraint_metrics, num_solutions):
     if len(optimized_metrics) > 1:
-      raise BadParamError(f"{budget_key} is required for an experiment with more than one optimized metric")
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with more than one optimized metric")
     if has_constraint_metrics:
-      raise BadParamError(f"{budget_key} is required for an experiment with constraint metrics")
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with constraint metrics")
     if num_solutions and num_solutions > 1:
-      raise BadParamError(f"{budget_key} is required for an experiment with more than one solution")
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with more than one solution")
 
   @classmethod
   def _check_conditionals_viability(cls, experiment_meta, num_solutions):
     if len(experiment_meta.conditionals) > 0 and num_solutions and num_solutions > 1:
-      raise BadParamError("Conditional experiments cannot be run with multisolution experiments")
+      raise SigoptValidationError("Conditional experiments cannot be run with multisolution experiments")
 
   @classmethod
   def _check_multisolution_viability(cls, experiment_meta, num_solutions, optimized_metrics):
     if num_solutions and num_solutions > 1:
       if num_solutions > experiment_meta.observation_budget:
-        raise BadParamError("Observation budget needs to be larger than the number of solutions")
+        raise SigoptValidationError("Observation budget needs to be larger than the number of solutions")
       if len(optimized_metrics) != 1:
-        raise BadParamError("Multisolution experiments require exactly one optimized metric")
+        raise SigoptValidationError("Multisolution experiments require exactly one optimized metric")
 
   @classmethod
   def _maybe_set_tasks_for_multitask_experiment(
@@ -235,13 +235,15 @@ class BaseExperimentsCreateHandler(Handler):
     if not tasks:
       return
     if not budget:
-      raise BadParamError(f"{budget_key} is required for an experiment with tasks (multitask)")
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with tasks (multitask)")
     if len(optimized_metrics) > 1:
-      raise BadParamError(f"{cls.user_facing_class_name}s cannot have both tasks and multiple optimized metrics")
+      raise SigoptValidationError(
+        f"{cls.user_facing_class_name}s cannot have both tasks and multiple optimized metrics"
+      )
     if has_constraint_metrics:
-      raise BadParamError(f"{cls.user_facing_class_name}s cannot have both tasks and constraint metrics")
+      raise SigoptValidationError(f"{cls.user_facing_class_name}s cannot have both tasks and constraint metrics")
     if num_solutions and num_solutions > 1:
-      raise BadParamError(f"Multisolution {cls.user_facing_class_name} cannot be multitask")
+      raise SigoptValidationError(f"Multisolution {cls.user_facing_class_name} cannot be multitask")
 
     experiment_meta.tasks.extend(tasks)
 
