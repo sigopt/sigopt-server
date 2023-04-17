@@ -20,25 +20,13 @@ class TestClientServiceFind(ServiceBase):
   client_b: Client
   client_c: Client
 
-  @pytest.fixture(autouse=True)
+  @pytest.fixture(autouse=True, scope="session")
   def setup(self, services):
-    if any(
-      item is None
-      for item in (
-        self.organization_a,
-        self.organization_b,
-        self.client_a,
-        self.client_b,
-        self.client_c,
-      )
-    ):
-      self.organization_a, self.organization_b = (
-        self.make_organization(services, f"Test Organization {i}") for i in (1, 2)
-      )
-      self.client_a, self.client_b = (
-        self.make_client(services, f"Test Client {i}", self.organization_a) for i in (1, 2)
-      )
-      self.client_c = self.make_client(services, "Test Client 3", self.organization_b)
+    self.organization_a, self.organization_b = (
+      self.make_organization(services, f"Test Organization {i}") for i in (1, 2)
+    )
+    self.client_a, self.client_b = (self.make_client(services, f"Test Client {i}", self.organization_a) for i in (1, 2))
+    self.client_c = self.make_client(services, "Test Client 3", self.organization_b)
 
   def test_find_by_ids_or_organization_ids_empty_args(self, services):
     clients = services.client_service.find_by_ids_or_organization_ids(
