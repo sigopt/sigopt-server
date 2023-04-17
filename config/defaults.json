@@ -34,7 +34,6 @@
   "web": {
     "cookiejar_force_path_style": true,
     "cookiejar_region": "us-eeast-1",
-    "scoped_cookie_name": "sigoptlocal-session-id",
     "static_asset_url": "https://sigopt.ninja:4443/static/a/",
     "static_routes": {
       "/static/a": {
