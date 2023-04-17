@@ -91,7 +91,7 @@ from zigopt.handlers.training_runs.create import (
 from zigopt.handlers.training_runs.delete import TrainingRunsDeleteHandler
 from zigopt.handlers.training_runs.detail import TrainingRunsDetailHandler
 from zigopt.handlers.training_runs.files import TrainingRunsCreateFileHandler
-from zigopt.handlers.training_runs.list import (  # type: ignore
+from zigopt.handlers.training_runs.list import (
   ClientsTrainingRunsDetailMultiHandler,
   OrganizationsTrainingRunsDetailMultiHandler,
   ProjectsTrainingRunsDetailMultiHandler,
