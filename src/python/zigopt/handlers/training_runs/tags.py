@@ -98,8 +98,6 @@ class TrainingRunsRemoveTagHandler(BaseTrainingRunsTagHandler):
     return objs
 
   def can_act_on_objects(self, requested_permission, objects):
-    assert self.tag is not None
-
     if not super().can_act_on_objects(requested_permission, objects):
       return False
     tag = objects["tag"]
