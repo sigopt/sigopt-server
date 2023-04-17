@@ -8,10 +8,11 @@ from zigopt.db.util import DeleteClause
 from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.experiments.observations.base import ObservationHandler
 from zigopt.json.builder import ObservationJsonBuilder, PaginationJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.observation.model import Observation
 from zigopt.pagination.paging import Pager
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class ObservationsDetailHandler(ObservationHandler):
@@ -58,13 +59,13 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     if sort.field.startswith("parameter-"):
       param_name = sort.field[len("parameter-") :]
       if param_name not in self.experiment.all_parameters_map:
-        raise BadParamError(f"Unknown parameter: {param_name}")
+        raise SigoptValidationError(f"Unknown parameter: {param_name}")
       parameter = self.experiment.all_parameters_map[param_name]
       return lambda o: (o.get_assignment(parameter), o.id)
     if sort.field == "task":
       optimized_metric_name = self.experiment.optimized_metrics[0].name
       return lambda o: (o.task.cost, o.metric_value(self.experiment, optimized_metric_name), o.id)
-    raise BadParamError(f"Invalid sort: {sort.field}")
+    raise SigoptValidationError(f"Invalid sort: {sort.field}")
 
   def handle(self, args):
     # pylint: disable=too-many-locals,unnecessary-lambda-assignment
@@ -80,7 +81,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     )
 
     if paging.limit is None and total_count > self.MAX_HISTORY_POINTS:
-      raise BadParamError("This experiment has too much data to return a full history.")
+      raise SigoptValidationError("This experiment has too much data to return a full history.")
 
     if sort.field == "id":
 

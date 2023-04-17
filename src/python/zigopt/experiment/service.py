@@ -13,11 +13,11 @@ from zigopt.db.column import JsonPath, jsonb_array_length, jsonb_set, jsonb_stri
 from zigopt.experiment.constraints import InfeasibleConstraintsError, has_feasible_constraints
 from zigopt.experiment.model import Experiment
 from zigopt.math.domain_bounds import get_parameter_domain_bounds
-from zigopt.net.errors import BadParamError
 from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import MetricImportance, MetricImportanceMap
 from zigopt.services.base import Service
 
+from libsigopt.aux.errors import SigoptValidationError
 from libsigopt.aux.samplers import generate_uniform_random_points_rejection_sampling
 
 
@@ -268,7 +268,7 @@ class ExperimentService(Service):
     try:
       has_feasible_constraints(experiment)
     except InfeasibleConstraintsError as e:
-      raise BadParamError(e) from e
+      raise SigoptValidationError(e) from e
 
     if experiment.experiment_meta.conditionals:
       check_all_conditional_values_satisfied(experiment.experiment_meta)

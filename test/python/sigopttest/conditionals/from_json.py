@@ -4,10 +4,9 @@
 import pytest
 
 from zigopt.conditionals.from_json import set_conditional_from_json, set_experiment_conditionals_list_from_json
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentConditional, ExperimentMeta
 
-from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
+from libsigopt.aux.errors import InvalidKeyError, InvalidValueError, MissingJsonKeyError, MissingParamError
 
 
 class TestSetConditionalFromJson:
@@ -47,7 +46,7 @@ class TestSetConditionalFromJson:
     ],
   )
   def test_too_few_values_bad_param(self, conditional, conditional_json):
-    with pytest.raises(BadParamError):
+    with pytest.raises(MissingParamError):
       set_conditional_from_json(conditional, conditional_json)
 
 
@@ -76,7 +75,7 @@ class TestSetConditionalsListFromJson:
     assert len(experiment_meta.conditionals) == 0
 
   def test_duplicate_names(self, experiment_meta):
-    with pytest.raises(BadParamError):
+    with pytest.raises(InvalidKeyError):
       experiment_json = dict(
         conditionals=[
           dict(name="x", values=["10", "25"]),

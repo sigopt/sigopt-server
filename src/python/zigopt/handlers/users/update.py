@@ -9,10 +9,10 @@ from zigopt.handlers.validate.user import validate_user_email, validate_user_nam
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.json.builder import UserJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError, NotFoundError
+from zigopt.net.errors import ForbiddenError, NotFoundError
 from zigopt.user.model import do_password_hash_work_factor_update, password_matches
 
-from libsigopt.aux.errors import MissingParamError
+from libsigopt.aux.errors import MissingParamError, SigoptValidationError
 
 
 class UsersUpdateHandler(UserHandler):
@@ -97,7 +97,7 @@ class UsersUpdateHandler(UserHandler):
     new_email = uploaded_user.email
     if new_email is not None:
       if not user.hashed_password:
-        raise BadParamError("You cannot change your email because your account is externally administered.")
+        raise SigoptValidationError("You cannot change your email because your account is externally administered.")
       if uploaded_user.password is None:
         raise MissingParamError("password")
       if not password_matches(uploaded_user.password, user.hashed_password):

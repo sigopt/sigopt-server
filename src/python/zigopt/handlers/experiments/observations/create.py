@@ -18,7 +18,7 @@ from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 
-from libsigopt.aux.errors import InvalidKeyError
+from libsigopt.aux.errors import InvalidKeyError, SigoptValidationError
 
 
 DEFAULT_MAX_OBSERVATIONS_CREATE_COUNT = 2500
@@ -131,7 +131,7 @@ class ObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler):
 
   def handle(self, request):
     if self.experiment.deleted:
-      raise BadParamError(f"Cannot create observations for deleted experiment {self.experiment.id}")
+      raise SigoptValidationError(f"Cannot create observations for deleted experiment {self.experiment.id}")
 
     if self.experiment.runs_only:
       raise ForbiddenError(
@@ -222,11 +222,11 @@ class ObservationsCreateMultiHandler(CreatesObservationsMixin, ExperimentHandler
     observations = params.observations
 
     if self.experiment.deleted:
-      raise BadParamError(f"Cannot create observations for deleted experiment {self.experiment.id}")
+      raise SigoptValidationError(f"Cannot create observations for deleted experiment {self.experiment.id}")
 
     max_observations = get_default_max_observations(self.services)
     if len(observations) > max_observations:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"You cannot upload more than {max_observations} observations at once."
         " Please separate your observations into multiple API calls."
       )
@@ -245,12 +245,12 @@ class ObservationsCreateMultiHandler(CreatesObservationsMixin, ExperimentHandler
             json_dict=data,
             timestamp=datetime_to_seconds(now),
           )
-        except BadParamError as e:
+        except (BadParamError, SigoptValidationError) as e:
           # Add more information to the message
           message = e.args[0]
           message = f"Error in observation {index+1}/{len(observations)}: {message}"
           e.args = (message,) + e.args[1:]
-          raise BadParamError(e) from e
+          raise SigoptValidationError(e) from e
         new_observations.append(obs)
 
       if not params.dry_run:

@@ -19,12 +19,13 @@ from zigopt.handlers.projects.base import ProjectHandler
 from zigopt.handlers.training_runs.parser import TrainingRunRequestParser
 from zigopt.handlers.validate.validate_dict import ValidationType, get_unvalidated, get_with_validation
 from zigopt.json.builder import PaginationJsonBuilder, TrainingRunJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 from zigopt.training_run.constant import NON_OPTIMIZED_SUGGESTION_TYPES
 from zigopt.training_run.model import TrainingRun
+
+from libsigopt.aux.errors import InvalidKeyError, InvalidValueError, SigoptValidationError
 
 
 Filter = ImmutableStruct("Filter", ["field", "operator", "casted_value"])
@@ -105,7 +106,7 @@ class Field:
       ("values", key, "value_stddev"): (TrainingRun.training_run_data["v"][key]["r"].astext, Cast.NUMERIC),
     }
     if self._parts not in sort_clauses:
-      raise BadParamError(f"Invalid sort: {self.name}")
+      raise InvalidValueError(f"Invalid sort: {self.name}")
     return sort_clauses[self._parts]
 
   @property
@@ -116,7 +117,7 @@ class Field:
   def validate_and_interpret_value(self, value):
     _, cast = self._get_clause_and_cast()
     if not cast.validation_type.get_input_validator().is_instance(value):
-      raise BadParamError(f"Invalid value of type {cast.validation_type.name}: {value}")
+      raise InvalidValueError(f"Invalid value of type {cast.validation_type.name}: {value}")
     value = cast.validation_type.get_input_validator().transform(value)
     parser = TrainingRunRequestParser()
     state_enum_descriptor = TrainingRunData.DESCRIPTOR.enum_types_by_name["TrainingRunState"]
@@ -146,7 +147,7 @@ class Field:
     if self.name == "state":
       if operator_string == OPERATOR_EQ_STRING:
         return sqlalchemy_operator_contains
-      raise BadParamError(f"Only the `{OPERATOR_EQ_STRING}` operator is supported for the `state` field")
+      raise InvalidValueError(f"Only the `{OPERATOR_EQ_STRING}` operator is supported for the `state` field")
     # TODO(SN-1095): Allow comparing to None to find "unset" values?
     # TODO(SN-1096): Do we need to support .has_key?
     return STRING_TO_OPERATOR_DICT.get(operator_string)
@@ -165,13 +166,13 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
     try:
       filter_json = json.loads(filters_param_value)
     except ValueError as e:
-      raise BadParamError("Could not parse JSON for filters") from e
+      raise SigoptValidationError("Could not parse JSON for filters") from e
     if not is_sequence(filter_json):
-      raise BadParamError("Expected JSON array for filters")
+      raise InvalidValueError("Expected JSON array for filters")
     for f in filter_json:
       field = Field(get_with_validation(f, "field", ValidationType.string))
       if field.clause is None:
-        raise BadParamError(f"Invalid field: {field.name}")
+        raise InvalidKeyError("clause", f"Invalid field: {field.name}")
       input_operator = get_with_validation(f, "operator", ValidationType.string)
       resolved_operator = field.interpret_operator(input_operator)
       if resolved_operator is STRING_TO_OPERATOR_DICT["isnull"]:
@@ -182,13 +183,13 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
       # NOTE: We need to use `is` here, since 1 == True
       can_be_ordered = not any(value is v for v in (True, False, None))
       if not can_be_ordered and resolved_operator in ORDERING_OPERATORS:
-        raise BadParamError(f"Cannot filter the value `{input_value}` with the operator `{input_operator}`")
+        raise InvalidValueError(f"Cannot filter the value `{input_value}` with the operator `{input_operator}`")
       if cast is None:
         casted_value = None
       else:
         casted_value = cast.python_cast_func(value)
       if resolved_operator is None:
-        raise BadParamError(f"Invalid operator: {input_operator}")
+        raise InvalidValueError(f"Invalid operator: {input_operator}")
       yield Filter(
         field=field,
         operator=resolved_operator,

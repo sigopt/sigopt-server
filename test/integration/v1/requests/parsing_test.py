@@ -32,4 +32,4 @@ class TestRequestParsing(V1Base):
   def test_json_float_bad_request(self, api_url, invalid_float):
     response = request("POST", f"{api_url}/v1/clients", data=f'{{"name": {invalid_float}}}')
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.json()["message"].startswith("Invalid json")
+    assert response.json()["message"].startswith("Malformed json in request body")

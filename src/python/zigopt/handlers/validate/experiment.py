@@ -14,9 +14,9 @@ from zigopt.experiment.constant import (
 from zigopt.experiment.model import Experiment
 from zigopt.handlers.validate.base import validate_name
 from zigopt.handlers.validate.project import PROJECT_ID_SCHEMA as _PROJECT_ID_SCHEMA
-from zigopt.net.errors import BadParamError
 
 from libsigopt.aux.constant import ConstraintType
+from libsigopt.aux.errors import MissingParamError, SigoptValidationError
 from libsigopt.aux.validate_schema import validate
 
 
@@ -251,11 +251,11 @@ def validate_name_length(obj_type: str, name: Optional[str]) -> str:
     name = validate_name(name)
     max_len = Experiment.CATEGORICAL_VALUE_MAX_LENGTH if obj_type == "Categorical" else Experiment.NAME_MAX_LENGTH
     if not name:
-      raise BadParamError(f"{obj_type} names cannot be empty")
+      raise MissingParamError("names", f"{obj_type} names cannot be empty")
     if len(name) > max_len:
-      raise BadParamError(f"{obj_type} names must be less than {max_len} characters")
+      raise SigoptValidationError(f"{obj_type} names must be less than {max_len} characters")
     return name
-  raise BadParamError(f"Unrecognized object type: {obj_type}")
+  raise SigoptValidationError(f"Unrecognized object type: {obj_type}")
 
 
 def validate_experiment_name(name: Optional[str]) -> str:
@@ -279,7 +279,7 @@ def validate_metric_objective(objective: Optional[str]) -> Optional[int]:
     return METRIC_OBJECTIVE_NAME_TO_TYPE[objective]
   if objective is None:
     return None
-  raise BadParamError(
+  raise SigoptValidationError(
     f"Unrecognized objective type: {objective} (If provided, must be one of {tuple(ALL_METRIC_OBJECTIVE_NAMES)})"
   )
 
@@ -289,7 +289,7 @@ def validate_metric_strategy(strategy: Optional[str]) -> Optional[int]:
     return METRIC_STRATEGY_NAME_TO_TYPE[strategy]
   if strategy is None:
     return None
-  raise BadParamError(
+  raise SigoptValidationError(
     f"Unrecognized strategy: {strategy}. If provided, must be one of {tuple(ALL_METRIC_STRATEGY_NAMES)}"
   )
 
@@ -304,5 +304,5 @@ def validate_conditional_value(name: Optional[str]) -> str:
 
 def validate_state(state: Optional[str]) -> Optional[str]:
   if state and state not in ("deleted", "active"):
-    raise BadParamError(f'Unrecognized state {state} (if provided, must be one of ("deleted", "active")')
+    raise SigoptValidationError(f'Unrecognized state {state} (if provided, must be one of ("deleted", "active")')
   return state
