@@ -103,7 +103,10 @@ export default ({
     devServer: development
       ? {
           client: {
-            webSocketURL: "wss://sigopt.ninja:4443/webpack/ws",
+            webSocketURL: {
+              pathname: "/webpack/ws",
+              port: 0,
+            },
           },
           allowedHosts: "all",
           static: {
