@@ -14,7 +14,6 @@ import {
 
 import LoginState from "../../session/login_state";
 import Preferences from "../user_prefs";
-import Url from "../../net/url";
 import {
   cookieExpiryInSeconds,
   isValidCookieId,
@@ -88,13 +87,9 @@ const removeCookieFromCookiejar = (s3, cookiejarBucket, cookieId) => {
   return deleteFromS3(s3, cookiejarBucket, cookieId);
 };
 
-export const readRequestCookies = function (
-  s3,
-  cookiejarBucket,
-  scopedCookieName,
-) {
+export const readRequestCookies = function (s3, cookiejarBucket, cookieName) {
   return (req, res, next) => {
-    let cookieId = req.cookies[scopedCookieName];
+    let cookieId = req.cookies[cookieName];
     let cookieJarP = Promise.resolve([{}, null]);
     if (isValidCookieId(cookieId)) {
       cookieJarP = readCookieFromCookiejar(s3, cookiejarBucket, cookieId).then(
@@ -120,9 +115,9 @@ export const readRequestCookies = function (
 export const setResponseCookies = function (
   s3,
   cookiejarBucket,
-  scopedCookieName,
+  cookieName,
   disableCookiesKey,
-  scopedCookieSpec,
+  cookieSpec,
 ) {
   return (req, res, next) => {
     const cookieState = {
@@ -152,7 +147,7 @@ export const setResponseCookies = function (
     }
     return cookiejarP
       .then(() => {
-        res.cookie(scopedCookieName, cookieId, scopedCookieSpec);
+        res.cookie(cookieName, cookieId, cookieSpec);
         return next();
       })
       .catch(next);
@@ -160,10 +155,7 @@ export const setResponseCookies = function (
 };
 
 export default function makeCookieHandlers(configBroker) {
-  const scopedCookieName = configBroker.get(
-    "web.scoped_cookie_name",
-    "sigopt-session-id",
-  );
+  const cookieName = configBroker.get("web.cookie_name", "sigopt-session-id");
   const s3Options = {};
   const cookiejarRegion = configBroker.get("web.cookiejar_region", null);
   if (cookiejarRegion) {
@@ -185,21 +177,18 @@ export default function makeCookieHandlers(configBroker) {
     false,
   );
   const s3 = new S3Client(s3Options);
-  const scopedCookieDomain = new Url(configBroker.get("address.app_url"));
-  const scopedCookieSpec = {
+  const cookieSpec = {
     // NOTE: including domain forces browsers to add leading dot, extending cookies to subdomains
     // but, explicitly adding leading dot breaks localhost (doesn't store any cookie at all)
-    domain: scopedCookieDomain.host,
     encode: (v) => v,
     httpOnly: true,
     maxAge: cookieExpiryInSeconds(configBroker),
-    secure: scopedCookieDomain.scheme === "https",
     sameSite: LAX,
   };
   const cookiejarBucket = configBroker.get("web.cookiejar_bucket");
   const cookieReader = () =>
-    readRequestCookies(s3, cookiejarBucket, scopedCookieName);
+    readRequestCookies(s3, cookiejarBucket, cookieName);
   const cookieWriter = () =>
-    setResponseCookies(s3, cookiejarBucket, scopedCookieName, scopedCookieSpec);
+    setResponseCookies(s3, cookiejarBucket, cookieName, cookieSpec);
   return {cookieReader, cookieWriter};
 }
