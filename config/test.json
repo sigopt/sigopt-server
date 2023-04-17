@@ -132,7 +132,6 @@
     "cookiejar_endpoint": "http://minio:9000",
     "enable_decrypt_cookie_endpoint": true,
     "show_exception_trace": true,
-    "static_asset_url": "https://sigopt.ninja:7800/",
     "static_routes": {
       "/static/a": {
         "dir": "artifacts/web/static"

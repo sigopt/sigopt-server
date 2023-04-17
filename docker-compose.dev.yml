@@ -426,7 +426,11 @@ services:
       - -c
       - |
         while true; do
-          yarn -s webpack-dev-server --config=./web/js/webpack/client_side.config.babel.js --env=NODE_ENV=development "--env=sigopt_server_config_file=${sigopt_server_config_file}"
+          yarn -s webpack-dev-server \
+            --config=./web/js/webpack/client_side.config.babel.js \
+            --env=NODE_ENV=development \
+            --env=PUBLIC_PATH=https://sigopt.ninja:4443/webpack/ \
+            "--env=sigopt_server_config_file=${sigopt_server_config_file}"
           sleep 1
         done
     environment:
@@ -477,7 +481,11 @@ services:
       - -c
       - |
         while true; do
-          yarn -s webpack-dev-server --config=./web/js/webpack/server_side.config.babel.js --env=NODE_ENV=development "--env=sigopt_server_config_file=${sigopt_server_config_file}"
+          yarn -s webpack-dev-server \
+            --config=./web/js/webpack/server_side.config.babel.js \
+            --env=NODE_ENV=development \
+            --env=PUBLIC_PATH=https://sigopt.ninja:4443/webpack/ \
+            "--env=sigopt_server_config_file=${sigopt_server_config_file}"
           sleep 1
         done
     environment:

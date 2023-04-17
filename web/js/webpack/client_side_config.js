@@ -102,6 +102,9 @@ export default ({
   return _.extend({}, sharedWebpackOptions, {
     devServer: development
       ? {
+          client: {
+            webSocketURL: "wss://sigopt.ninja:4443/webpack/ws",
+          },
           allowedHosts: "all",
           static: {
             directory: path.join(webArtifactsDir, "static"),
