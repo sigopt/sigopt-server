@@ -7,7 +7,7 @@
 import _ from "underscore";
 import cluster from "cluster";
 import path from "path";
-import {loadConfigBrokerFromDirectory} from "sigopt-config";
+import {ConfigBroker} from "sigopt-config";
 import {program} from "commander";
 
 import GlobalServiceBag from "../services/global";
@@ -40,7 +40,7 @@ export default function main() {
     _.each(_.range(opts.workers || 1), () => cluster.fork());
     return Promise.resolve(null);
   }
-  return loadConfigBrokerFromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR)
+  return ConfigBroker.fromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR)
     .then((configBroker) => {
       const globalServiceBag = new GlobalServiceBag(
         configBroker,

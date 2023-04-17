@@ -7,12 +7,12 @@
 import _ from "underscore";
 import fs from "fs";
 import path from "path";
-import {loadConfigBrokerFromDirectory} from "sigopt-config";
+import {ConfigBroker} from "sigopt-config";
 
 import appRoutes from "../js/server/routes/app";
 import {getRoutes as staticRoutes} from "../js/server/express/static";
 
-loadConfigBrokerFromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR).then(
+ConfigBroker.fromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR).then(
   (configBroker) => {
     fs.mkdirSync(path.join("artifacts", "web", "routes"), {recursive: true});
     fs.writeFileSync(

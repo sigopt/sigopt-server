@@ -8962,7 +8962,7 @@ signal-exit@^3.0.2, signal-exit@^3.0.3, signal-exit@^3.0.7:
 
 "sigopt-config@git+https://github.com/sigopt/sigopt-config.git#reimpl":
   version "2.0.0-dev1"
-  resolved "git+https://github.com/sigopt/sigopt-config.git#fcb76589635a544b3e9e19f5c59a0028a1c7d1b5"
+  resolved "git+https://github.com/sigopt/sigopt-config.git#b7e238ffb6e5883c6b11016f012cbbf3cc67dc89"
   dependencies:
     jmespath "^0.16.0"
     json-merge-patch "^1.0.2"
