@@ -30,7 +30,7 @@ export default class ServerServiceBag extends SerializeableForClientBundle {
     this.legacyApiClient = new LegacyApiClient(this);
     this.apiRequestor = new ApiRequestor(this, {
       apiToken: loginState.apiToken,
-      apiUrl: configBroker.get("address.api_url"),
+      apiUrl: configBroker.get("address.internal_api_url"),
       clientApiUrl: configBroker.get("address.proxy_url"),
       traceId: traceId,
     });
@@ -50,7 +50,7 @@ export default class ServerServiceBag extends SerializeableForClientBundle {
       // NOTE: Because many configs are sensitive, we must carefully choose which
       // configs we are okay with sending to the client
       address: {
-        api_url: configBroker.get("address.api_url"),
+        api_url: configBroker.get("address.api_proxy_url", "/api"),
         app_url: configBroker.get("address.app_url"),
       },
     });
