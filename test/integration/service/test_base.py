@@ -44,11 +44,13 @@ class ServiceBase(BaseTest):
     services.user_service.insert(user)
     return user
 
-  def make_organization(self, services, name):
+  @classmethod
+  def make_organization(cls, services, name):
     organization = Organization(name=name)
     return services.organization_service.insert(organization)
 
-  def make_client(self, services, name, organization, client_meta=None):
+  @classmethod
+  def make_client(cls, services, name, organization, client_meta=None):
     if not client_meta:
       client_meta = ClientMeta()
       client_meta.date_created = unix_timestamp()
@@ -59,7 +61,8 @@ class ServiceBase(BaseTest):
     )
     return services.client_service.insert(client)
 
-  def make_membership(self, services, user, organization, is_owner=False):
+  @classmethod
+  def make_membership(cls, services, user, organization, is_owner=False):
     membership_type = MembershipType.owner if is_owner else MembershipType.member
     return services.membership_service.insert(
       user_id=user.id,
@@ -67,7 +70,8 @@ class ServiceBase(BaseTest):
       membership_type=membership_type,
     )
 
-  def make_permission(self, services, user, client, role):
+  @classmethod
+  def make_permission(cls, services, user, client, role):
     return services.permission_service.upsert_from_role(
       role,
       client,
@@ -75,8 +79,9 @@ class ServiceBase(BaseTest):
       requestor=user,
     )
 
+  @classmethod
   def make_invite(
-    self,
+    cls,
     services,
     email,
     organization,
@@ -93,6 +98,7 @@ class ServiceBase(BaseTest):
     services.invite_service.insert_invite(invite)
     return invite
 
-  def make_pending_permission(self, services, invite, client, role):
+  @classmethod
+  def make_pending_permission(cls, services, invite, client, role):
     pending_permission = services.pending_permission_service.create_pending_permission(invite, client, role)
     return services.pending_permission_service.insert(pending_permission)

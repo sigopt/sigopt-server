@@ -21,12 +21,11 @@ class TestClientServiceFind(ServiceBase):
   client_c: Client
 
   @pytest.fixture(autouse=True, scope="session")
-  def setup(self, services):
-    self.organization_a, self.organization_b = (
-      self.make_organization(services, f"Test Organization {i}") for i in (1, 2)
-    )
-    self.client_a, self.client_b = (self.make_client(services, f"Test Client {i}", self.organization_a) for i in (1, 2))
-    self.client_c = self.make_client(services, "Test Client 3", self.organization_b)
+  @classmethod
+  def setup(cls, services):
+    cls.organization_a, cls.organization_b = (cls.make_organization(services, f"Test Organization {i}") for i in (1, 2))
+    cls.client_a, cls.client_b = (cls.make_client(services, f"Test Client {i}", cls.organization_a) for i in (1, 2))
+    cls.client_c = cls.make_client(services, "Test Client 3", cls.organization_b)
 
   def test_find_by_ids_or_organization_ids_empty_args(self, services):
     clients = services.client_service.find_by_ids_or_organization_ids(
