@@ -329,7 +329,6 @@ services:
       - "daemon off;"
     ports:
       - "127.0.0.1:4443:4443"
-      - "127.0.0.1:7800:7800"
       - "127.0.0.1:9000:9000"
     volumes:
       - "./artifacts/tls:/etc/ssl/sigopt"
