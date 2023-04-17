@@ -20,7 +20,7 @@ from libsigopt.aux.errors import InvalidKeyError, InvalidValueError, MissingPara
 DEFAULT_PAGING_MAX_LIMIT = 1000
 
 
-def validate_api_input_string(input_string):
+def validate_api_input_string(input_string: str) -> str:
   assert isinstance(input_string, str)
   # Postgres treats any string with a NUL-byte (the Unicode code point 0, represented as '\0' in UTF-8)
   # as invalid, even though it is valid UTF-8 string.
