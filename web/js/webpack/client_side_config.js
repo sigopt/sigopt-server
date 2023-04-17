@@ -151,13 +151,14 @@ export default ({
     },
     externals: {
       btoa: "btoa",
+      fs: NULL_JS,
+      path: NULL_JS,
       "utils-copy": NULL_JS,
       yaml: NULL_JS,
     },
     resolve: _.extend({}, sharedWebpackOptions.resolve, {
       alias: {
         lodash: "lodash-es",
-        underscore: "underscore/underscore-esm",
       },
       fallback: {
         buffer: require.resolve("buffer/"),
