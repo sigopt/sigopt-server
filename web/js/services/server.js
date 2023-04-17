@@ -31,7 +31,7 @@ export default class ServerServiceBag extends SerializeableForClientBundle {
     this.apiRequestor = new ApiRequestor(this, {
       apiToken: loginState.apiToken,
       apiUrl: configBroker.get("address.internal_api_url"),
-      clientApiUrl: configBroker.get("address.proxy_url"),
+      clientApiUrl: configBroker.get("address.api_proxy_url", "/api"),
       traceId: traceId,
     });
     this.alertBroker = new CollectingAlertBroker(this);
