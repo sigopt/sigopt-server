@@ -8,5 +8,8 @@
       "max_attempts": 10,
       "window_length": 600
     }
+  },
+  "web": {
+    "cookie_name": "sigoptdevelopment-session-id"
   }
 }

@@ -102,6 +102,12 @@ export default ({
   return _.extend({}, sharedWebpackOptions, {
     devServer: development
       ? {
+          client: {
+            webSocketURL: {
+              pathname: "/webpack/ws",
+              port: 0,
+            },
+          },
           allowedHosts: "all",
           static: {
             directory: path.join(webArtifactsDir, "static"),

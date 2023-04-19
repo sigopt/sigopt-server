@@ -34,10 +34,7 @@ export default function setStandardHeaders() {
     if (process.env.NODE_ENV === "production") {
       csp.push(`script-src 'self' 'sha512-${headCodeHash}'`);
     } else {
-      const assetHost = new URL(
-        req.configBroker.get("web.static_asset_url", "sigopt.ninja"),
-      ).host;
-      csp.push(`connect-src 'self' wss://${assetHost}`);
+      csp.push(`connect-src 'self'`);
       csp.push("script-src 'self' 'unsafe-eval' 'unsafe-inline'");
     }
     res.header("Content-Security-Policy", csp.join("; "));
