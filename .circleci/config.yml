@@ -91,7 +91,7 @@ commands:
   initialize-config-directory:
     steps:
       - run: |
-          ./ci/compose.sh run -i --rm init-config sh -e <<EOF
+          ./ci/compose.sh run -i --rm init-config sh -e \<<EOF
             cp /sigopt-server/config/circleci/* /etc/sigopt/server-config/
           EOF
   integration-test-setup:
