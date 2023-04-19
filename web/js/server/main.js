@@ -12,6 +12,7 @@ import {program} from "commander";
 
 import GlobalServiceBag from "../services/global";
 import makeApp from "./express/app";
+import {DEFAULT_CONFIG_DIR} from "../config/constants";
 import {ENTRY_MANIFEST_FILE_NAME} from "../webpack/constants";
 
 /* eslint-disable no-console */
@@ -40,7 +41,9 @@ export default function main() {
     _.each(_.range(opts.workers || 1), () => cluster.fork());
     return Promise.resolve(null);
   }
-  return ConfigBroker.fromDirectory(process.env.SIGOPT_SERVER_CONFIG_DIR)
+  return ConfigBroker.fromDirectory(
+    process.env.SIGOPT_SERVER_CONFIG_DIR || DEFAULT_CONFIG_DIR,
+  )
     .then((configBroker) => {
       const globalServiceBag = new GlobalServiceBag(
         configBroker,
@@ -55,7 +58,6 @@ export default function main() {
       const nodePort = configBroker.get("express.port", 4000);
       const app = makeApp(globalServiceBag);
       const server = app.listen(nodePort);
-      console.log(`Listening on ${nodePort}`);
       server.keepAliveTimeout = 75 * 1000;
       server.headersTimeout = 75 * 1000;
       return {app, server};
