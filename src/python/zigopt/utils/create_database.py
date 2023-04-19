@@ -12,12 +12,12 @@ from typing import Any
 
 import pg8000
 import sqlalchemy
-from sigopt_config.broker import ConfigBroker
 
 import zigopt.db.all_models  # pylint: disable=unused-import
 from zigopt.common import *
 from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import current_datetime, unix_timestamp
+from zigopt.config import load_config_from_env
 from zigopt.db.declarative import Base
 from zigopt.db.service import DatabaseConnectionService
 from zigopt.experiment.model import Experiment
@@ -464,12 +464,6 @@ def parse_args():
   )
 
   parser.add_argument(
-    "config_dir",
-    type=str,
-    help="config directory for db",
-  )
-
-  parser.add_argument(
     "--fake-data",
     action="store_true",
     default=False,
@@ -503,9 +497,7 @@ def parse_args():
 def main():
   the_args = parse_args()
 
-  config_dir = the_args.config_dir
-
-  config_broker = ConfigBroker.from_directory(config_dir)
+  config_broker = load_config_from_env()
   config_broker.data.setdefault("redis", {})["enabled"] = False
   config_broker.data.setdefault("user_uploads", {}).setdefault("s3", {})["enabled"] = False
   should_populate = setup_db(config_broker=config_broker)
