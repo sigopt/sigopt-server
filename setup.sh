@@ -21,13 +21,21 @@ else
   echo "Could not connect to Docker! It might not be running or you might not have permission to access the Docker socket."
   exit 1
 fi
-MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
-export MINIO_ROOT_PASSWORD
 echo "Building docker images..."
 if docker-compose --file=docker-compose.yml build --progress=quiet api createdb nginx qworker qworker-analytics web-server; then
   echo "Finished building docker images."
 else
   echo "Failed to build docker images. This is most likely because of a disk space error with your docker allocation. You can try running: docker system prune -a to clear up space."
+  exit 1
+fi
+
+MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
+export MINIO_ROOT_PASSWORD
+echo "Initializing configuration directory..."
+if docker-compose --file=docker-compose.yml run -i --rm init-config; then
+  echo "Configuration directory initialized."
+else
+  echo "Failed to initialize the configuration directory"
   exit 1
 fi
 
