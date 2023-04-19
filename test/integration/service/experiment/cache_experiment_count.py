@@ -152,7 +152,7 @@ class TestExperimentCacheCount(ExperimentServiceTestBase):
       with patch.object(services.redis_service, "get") as get_mock:
         get_mock.side_effect = Exception
 
-        services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = False
+        services.config_broker.data.setdefault("features", {})["raiseSoftExceptions"] = False
         count = services.experiment_service.count_by_organization_id_for_billing(
           organization.id,
           time_interval,

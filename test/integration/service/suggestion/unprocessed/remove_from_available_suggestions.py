@@ -48,18 +48,18 @@ class TestProcessRedisSuggestion(
     if not services.redis_service.enabled:
       pytest.skip()
 
-    services.config_broker.setdefault("redis", {})["enabled"] = False
+    services.config_broker.data.setdefault("redis", {})["enabled"] = False
     services.redis_service.redis = None
 
     # Ensure we can serve suggestions without raising error
-    services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = False
+    services.config_broker.data.setdefault("features", {})["raiseSoftExceptions"] = False
     suggestion = services.suggestion_broker.serve_suggestion(
       experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
     )
     assert isinstance(suggestion, Suggestion)
 
     # Ensure we actually are raising a soft exception for logging purposes
-    services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = True
+    services.config_broker.data.setdefault("features", {})["raiseSoftExceptions"] = True
     with pytest.raises(SoftException):
       suggestion = services.suggestion_broker.serve_suggestion(
         experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
@@ -76,7 +76,7 @@ class TestProcessRedisSuggestion(
     with patch.object(services.redis_service, "remove_from_hash") as remove_from_hash_mock:
       remove_from_hash_mock.side_effect = Exception
 
-      services.config_broker.setdefault("features", {})["raiseSoftExceptions"] = False
+      services.config_broker.data.setdefault("features", {})["raiseSoftExceptions"] = False
       suggestion = services.suggestion_broker.serve_suggestion(
         experiment=experiment, processed_suggestion_meta=ProcessedSuggestionMeta(), auth=auth
       )
