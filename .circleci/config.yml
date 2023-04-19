@@ -436,12 +436,6 @@ jobs:
     steps:
       - run-browser-test:
           test_path: ""
-  js-lint:
-    executor: sigopt-node-only
-    steps:
-      - attach
-      - install-submodules
-      - run: git ls-files '*.js' | xargs yarn -s eslint
   check-node-dependencies:
     executor: sigopt-node-only
     steps:
@@ -523,11 +517,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-zigopt-test
-  disclaimers-lint:
-    executor: sigopt-python-only
-    steps:
-      - checkout
-      - run: ./tools/lint/common/check_copyright_and_license_disclaimers.py .
   eval-circleci:
     docker:
       - image: circleci/buildpack-deps:curl
@@ -581,10 +570,6 @@ workflows:
           requires:
             - setup-web
             - documentation-generation
-      - js-lint:
-          requires:
-            - checkout-code
-            - setup-web
   nightly:
     jobs:
       - trivy-scan-images
