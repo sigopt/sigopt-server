@@ -234,6 +234,10 @@ commands:
           path: junit-results
           prefix: junit-results
   generate-openapi-docs:
+    environment:
+      SIGOPT_SWAGGER_PATH: /home/circleci/project/
+      SIGOPT_SWAGGER_FILENAME: swagger.json
+      SIGOPT_SERVER_CONFIG_DIR: ./config/circleci/
     steps:
       - checkout
       - attach
@@ -241,10 +245,6 @@ commands:
       - run:
           name: Generate swagger file
           command: pipenv run ./pp src/python/zigopt/api/documentation.py
-          environment:
-            SIGOPT_SWAGGER_PATH: /home/circleci/project/
-            SIGOPT_SWAGGER_FILENAME: swagger.json
-            SIGOPT_SERVER_CONFIG_DIR: ./config/circleci/
       - persist_to_workspace:
           root: /home/circleci/
           paths:
