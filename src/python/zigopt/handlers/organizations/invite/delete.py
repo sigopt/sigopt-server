@@ -9,8 +9,9 @@ from zigopt.handlers.organizations.base import OrganizationHandler
 from zigopt.handlers.validate.base import validate_email
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class OrganizationsUninviteHandler(OrganizationHandler):
@@ -59,16 +60,16 @@ class OrganizationsUninviteHandler(OrganizationHandler):
     invite = self.services.invite_service.find_by_email_and_organization(email, self.organization.id)
 
     if not uninvitee and not invite:
-      raise BadParamError(f"No invite exists for the email address {email}")
+      raise SigoptValidationError(f"No invite exists for the email address {email}")
 
     if uninvitee and self.services.membership_service.user_is_owner_for_organization(
       user_id=uninvitee.id,
       organization_id=self.organization.id,
     ):
-      raise BadParamError(
+      raise SigoptValidationError(
         "Once it has been accepted, the invite of an organization's owner cannot be modified."
         f" Please see your {PRODUCT_NAME} account team."
       )
 
     if uninvitee and uninvitee.id == self.auth.current_user.id:
-      raise BadParamError("You cannot modify your own role")
+      raise SigoptValidationError("You cannot modify your own role")

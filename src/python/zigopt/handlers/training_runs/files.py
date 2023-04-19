@@ -8,12 +8,14 @@ from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.json.builder import FileJsonBuilder
-from zigopt.net.errors import BadParamError, NotFoundError
+from zigopt.net.errors import NotFoundError
 from zigopt.protobuf.gen.file.filedata_pb2 import FileData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun
 from zigopt.user.model import User
+
+from libsigopt.aux.errors import InvalidKeyError, MissingParamError, SigoptValidationError
 
 
 training_run_files_json_name = TrainingRunData.DESCRIPTOR.fields_by_name["files"].json_name
@@ -52,7 +54,7 @@ class FileCreateHandler(Handler):
     acceptable_params = [key for key, _ in self.REQUIRED_INPUT_PARAMS + self.OPTIONAL_INPUT_PARAMS]
     unaccepted_params = provided_params.keys() - acceptable_params
     if unaccepted_params:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"Unknown parameters: {unaccepted_params}. Only the following parameters are accepted: {acceptable_params}"
       )
     params = {}
@@ -61,9 +63,9 @@ class FileCreateHandler(Handler):
     for key, validator in self.OPTIONAL_INPUT_PARAMS:
       params[key] = get_opt_with_validation(provided_params, key, validator)
       if params[key] and len(params[key]) > MAX_NAME_LENGTH:
-        raise BadParamError(f"{key} must be less than {MAX_NAME_LENGTH} characters long.")
+        raise InvalidKeyError(key, f"{key} must be less than {MAX_NAME_LENGTH} characters long.")
     if not (params.get(self.PARAM_NAME) or params.get(self.PARAM_FILENAME)):
-      raise BadParamError("At least one of ('name', 'filename') is required.")
+      raise MissingParamError("filename", "At least one of ('name', 'filename') is required.")
     return params
 
   def create_file_and_json_builder(self, params, auth, client, created_by):

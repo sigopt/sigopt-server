@@ -4,16 +4,17 @@
 from typing import Optional
 
 from zigopt.invite.constant import ALL_ROLES, NO_ROLE
-from zigopt.net.errors import BadParamError
+
+from libsigopt.aux.errors import InvalidValueError
 
 
 def validate_role(role: Optional[str]) -> Optional[str]:
   if role is None or role in ALL_ROLES:
     return role
-  raise BadParamError(f"Invalid role: `{role}`")
+  raise InvalidValueError(f"Invalid role: `{role}`")
 
 
 def validate_invite_role(role: Optional[str]) -> Optional[str]:
   if role is None or role in ALL_ROLES and role != NO_ROLE:
     return role
-  raise BadParamError(f"Invalid invite role: `{role}`")
+  raise InvalidValueError(f"Invalid invite role: `{role}`")

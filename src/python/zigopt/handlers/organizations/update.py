@@ -10,9 +10,11 @@ from zigopt.handlers.validate.organization import validate_organization_name
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.json.builder import OrganizationJsonBuilder
-from zigopt.net.errors import BadParamError, NotFoundError
+from zigopt.net.errors import NotFoundError
 from zigopt.organization.model import Organization
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, WRITE
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class OrganizationsUpdateHandler(OrganizationHandler):
@@ -49,7 +51,7 @@ class OrganizationsUpdateHandler(OrganizationHandler):
       allow_signup_from_email_domains and not self.organization.organization_meta.allow_signup_from_email_domains
     )
     if did_enable_allow_signup and not self.services.email_verification_service.enabled:
-      raise BadParamError("Email verification is disabled, so signup from email domains cannot be enabled.")
+      raise SigoptValidationError("Email verification is disabled, so signup from email domains cannot be enabled.")
 
     return OrganizationsUpdateHandler.Params(
       name=name,
@@ -88,7 +90,7 @@ class OrganizationsUpdateHandler(OrganizationHandler):
         raise NotFoundError(f"Invalid client ID: {params.client_for_email_signup}")
 
     if meta.allow_signup_from_email_domains and not meta.email_domains:
-      raise BadParamError("If `allow_signup_from_email_domains` is true, `email_domains` must be non-empty")
+      raise SigoptValidationError("If `allow_signup_from_email_domains` is true, `email_domains` must be non-empty")
 
     if meta != self.organization.organization_meta:
       self.organization.organization_meta = meta

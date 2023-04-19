@@ -7,8 +7,9 @@ from zigopt.handlers.projects.base import ProjectHandler
 from zigopt.handlers.validate.aiexperiment import validate_ai_experiment_json_dict_for_create
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.json.builder import AiExperimentJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+
+from libsigopt.aux.errors import MissingJsonKeyError
 
 
 class ClientsProjectsAiExperimentsCreateHandler(ProjectHandler, BaseExperimentsCreateHandler):
@@ -334,14 +335,14 @@ class ClientsProjectsAiExperimentsCreateHandler(ProjectHandler, BaseExperimentsC
   def get_metric_list_from_json(cls, json_dict):
     assert "metric" not in json_dict
     if not json_dict.get("metrics", []):
-      raise BadParamError(f"{cls.user_facing_class_name}s must have at least 1 metric.")
+      raise MissingJsonKeyError("metrics", f"{cls.user_facing_class_name}s must have at least 1 metric.")
     return super().get_metric_list_from_json(json_dict)
 
   @classmethod
   def get_metric_name(cls, metric, seen_names, num_metrics):
     name = super().get_metric_name(metric, seen_names, num_metrics)
     if name is None:
-      raise BadParamError("All metrics require a name")
+      raise MissingJsonKeyError("name", "All metrics require a name")
     return name
 
   @classmethod

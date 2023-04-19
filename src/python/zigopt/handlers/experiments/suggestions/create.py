@@ -7,11 +7,13 @@ from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.handlers.validate.suggestion import validate_suggestion_json_dict_for_create
 from zigopt.json.builder import SuggestionJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError
+from zigopt.net.errors import ForbiddenError
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import ProcessedSuggestionMeta, SuggestionMeta
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.suggestion.from_json import build_suggestion_data_from_json
 from zigopt.suggestion.unprocessed.model import SuggestionMetaProxy
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class SuggestionsCreateHandler(ExperimentHandler):
@@ -26,7 +28,7 @@ class SuggestionsCreateHandler(ExperimentHandler):
     assert self.experiment is not None
 
     if self.experiment.deleted:
-      raise BadParamError(f"Cannot create suggestions for deleted experiment {self.experiment.id}")
+      raise SigoptValidationError(f"Cannot create suggestions for deleted experiment {self.experiment.id}")
 
     if self.experiment.runs_only:
       raise ForbiddenError(

@@ -11,8 +11,10 @@ from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.json.builder import PaginationJsonBuilder, TokenJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError, NotFoundError
+from zigopt.net.errors import ForbiddenError, NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, READ, WRITE, TokenMeta
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class TokenHandler(Handler):
@@ -81,7 +83,7 @@ class ClientsTokensUpdateHandler(TokenHandler):
     new_token_value = params.token
     if new_token_value is not None:
       if new_token_value != "rotate":
-        raise BadParamError('Token must equal "rotate"')
+        raise SigoptValidationError('Token must equal "rotate"')
       self.services.token_service.rotate_token(self.token)
     if params.lasts_forever is not None:
       meta = self.token.meta.copy_protobuf()
@@ -90,7 +92,7 @@ class ClientsTokensUpdateHandler(TokenHandler):
     new_expires_value = params.expires
     if new_expires_value is not None:
       if new_expires_value != "renew":
-        raise BadParamError('Expires must equal "renew"')
+        raise SigoptValidationError('Expires must equal "renew"')
       if self.token.meta.can_renew:
         self.services.token_service.renew_token(self.token)
       else:

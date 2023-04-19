@@ -11,24 +11,24 @@ from flask import Request as RequestBase
 from zigopt.common import *
 from zigopt.api.paging import deserialize_paging_marker
 from zigopt.handlers.validate.validate_dict import ValidationType, validate_type
-from zigopt.net.errors import BadParamError, RequestError
+from zigopt.net.errors import RequestError
 from zigopt.pagination.paging import PagingRequest, SortRequest
 
-from libsigopt.aux.errors import MissingParamError
+from libsigopt.aux.errors import InvalidKeyError, InvalidValueError, MissingParamError, SigoptValidationError
 
 
 DEFAULT_PAGING_MAX_LIMIT = 1000
 
 
-def validate_api_input_string(input_str: str) -> str:
-  assert isinstance(input_str, str)
+def validate_api_input_string(input_string: str) -> str:
+  assert isinstance(input_string, str)
   # Postgres treats any string with a NUL-byte (the Unicode code point 0, represented as '\0' in UTF-8)
   # as invalid, even though it is valid UTF-8 string.
   # We are natively rejecting all other invalid UTF-8 so we just need to reject strings with NUL bytes
   # as a special case.
-  if "\0" in input_str:
-    raise BadParamError(f"Invalid string parameter: {input_str}")
-  return input_str
+  if "\0" in input_string:
+    raise SigoptValidationError(f"Invalid string parameter: {input_string}")
+  return input_string
 
 
 def validate_api_input(val):
@@ -55,12 +55,12 @@ def object_pairs_hook_raise_on_duplicates(ordered_pairs):
     key = validate_api_input(key)
     value = validate_api_input(value)
     if key in output_dict:
-      raise BadParamError(f"Duplicate key value in JSON document: {key}")
+      raise InvalidKeyError(key, f"Duplicate key value in JSON document: {key}")
     output_dict[key] = value
   return output_dict
 
 
-class InvalidJsonValue(BadParamError):
+class InvalidJsonValue(SigoptValidationError):
   pass
 
 
@@ -96,9 +96,9 @@ def as_json(data: bytes, encoding: str = "utf-8"):
       parse_float=parse_float,
     )
   except json.JSONDecodeError as e:
-    raise BadParamError("Invalid json: " + data.decode(encoding)) from e
+    raise SigoptValidationError("Invalid json: " + data.decode(encoding)) from e
   except ValueError as e:
-    raise BadParamError(f"Error parsing json: {e}") from e
+    raise SigoptValidationError(f"Error parsing json: {e}") from e
 
 
 class RequestProxy:
@@ -218,7 +218,7 @@ class Request(RequestBase):
       return {}
     if isinstance(e, RequestError):
       raise e
-    raise BadParamError("Malformed json in request body") from e
+    raise SigoptValidationError("Malformed json in request body") from e
 
   def params(self):
     ret = self._params
@@ -246,10 +246,10 @@ class Request(RequestBase):
         text,
         encoding=encoding,
       )
-    except BadParamError as e:
+    except SigoptValidationError as e:
       return self.on_json_loading_failed(e)
     if not isinstance(ret, dict):
-      raise BadParamError("Request body must be a JSON object")
+      raise SigoptValidationError("Request body must be a JSON object")
     return ret
 
   def optional_param(self, name):
@@ -287,7 +287,7 @@ class Request(RequestBase):
     if param_value is None:
       return None
     if not isinstance(param_value, list):
-      raise BadParamError("Invalid list value: " + param_value)
+      raise SigoptValidationError("Invalid list value: " + param_value)
     return param_value
 
   def get_sort(self, default_field, default_ascending=False):
@@ -306,9 +306,9 @@ class Request(RequestBase):
     if limit is None:
       limit = max_limit
     if limit < 0:
-      raise BadParamError(f"Invalid limit: {limit}")
+      raise InvalidValueError(f"Invalid limit: {limit}")
     if max_limit is not None and limit > max_limit:
-      raise BadParamError(f"Exceeded maximum limit: {max_limit}")
+      raise InvalidValueError(f"Exceeded maximum limit: {max_limit}")
 
     before = self._parse_marker("before")
     after = self._parse_marker("after")
@@ -324,7 +324,7 @@ class Request(RequestBase):
       return True
     if value == "0" or value.lower() == "false":
       return False
-    raise BadParamError("Invalid boolean value: " + value)
+    raise InvalidValueError("Invalid boolean value: " + value)
 
   def sanitized_params(self):
     def _sanitized_params(params):

@@ -13,11 +13,13 @@ from zigopt.handlers.validate.checkpoint import validate_checkpoint_json_dict_fo
 from zigopt.handlers.validate.metadata import validate_metadata
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.json.builder import CheckpointJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError
+from zigopt.net.errors import ForbiddenError
 from zigopt.observation.data import validate_metric_names
 from zigopt.protobuf.gen.checkpoint.checkpoint_data_pb2 import CheckpointData
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationValue
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class CheckpointsCreateHandler(TrainingRunHandler):
@@ -77,7 +79,7 @@ class CheckpointsCreateHandler(TrainingRunHandler):
     assert self.training_run is not None
 
     if self.experiment and self.experiment.deleted:
-      raise BadParamError(f"Cannot create checkpoints for deleted experiment {self.experiment.id}")
+      raise SigoptValidationError(f"Cannot create checkpoints for deleted experiment {self.experiment.id}")
 
     checkpoints = self.services.checkpoint_service.find_by_training_run_id(self.training_run.id)
     max_checkpoints = self._get_max_checkpoints(self.experiment)

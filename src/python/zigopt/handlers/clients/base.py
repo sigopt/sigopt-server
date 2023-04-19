@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.handlers.base.handler import Handler
-from zigopt.net.errors import BadParamError, NotFoundError
+from zigopt.net.errors import NotFoundError
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class ClientHandler(Handler):
@@ -34,7 +36,7 @@ class ClientHandler(Handler):
       )
       if client:
         if client.deleted:
-          raise BadParamError(f"Cannot perform the requested action on deleted client {client_id}")
+          raise SigoptValidationError(f"Cannot perform the requested action on deleted client {client_id}")
         return client
     raise NotFoundError(f"No client {client_id}")
 

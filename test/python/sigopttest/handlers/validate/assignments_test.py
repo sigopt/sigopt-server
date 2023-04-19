@@ -6,8 +6,9 @@ from mock import Mock
 
 from zigopt.experiment.model import Experiment
 from zigopt.handlers.validate.assignments import parameter_conditions_satisfied, validate_assignments_map
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta, ParameterCondition
+
+from libsigopt.aux.errors import MissingParamError, SigoptValidationError
 
 
 class TestParameterConditionsSatisfied:
@@ -135,7 +136,7 @@ class TestValidateAssingmentsMap:
     ],
   )
   def test_missing_parameters(self, experiment, assignments):
-    with pytest.raises(BadParamError):
+    with pytest.raises(MissingParamError):
       validate_assignments_map(assignments, experiment)
 
   @pytest.mark.parametrize(
@@ -156,12 +157,12 @@ class TestValidateAssingmentsMap:
     ],
   )
   def test_missing_satisfied_parameters(self, experiment_with_conditionals, assignments):
-    with pytest.raises(BadParamError):
+    with pytest.raises(MissingParamError):
       validate_assignments_map(assignments, experiment_with_conditionals)
 
   @pytest.mark.parametrize("assignments", [dict(a=0, b=0), dict(a=0), dict(a=-1), dict()])
   def test_missing_conditionals(self, experiment_with_conditionals, assignments):
-    with pytest.raises(BadParamError):
+    with pytest.raises(MissingParamError):
       validate_assignments_map(assignments, experiment_with_conditionals)
 
 
@@ -211,5 +212,5 @@ class TestValidateAssignmentsMapConstraints:
     validate_assignments_map(assignments, experiment)
 
   def test_invalid_assignmnets(self, experiment, invalid_assignments):
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       validate_assignments_map(invalid_assignments, experiment)

@@ -7,8 +7,10 @@ from zigopt.common import *
 from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.json.builder import ExperimentJsonBuilder
-from zigopt.net.errors import BadParamError, ForbiddenError, NotFoundError, RedirectException
+from zigopt.net.errors import ForbiddenError, NotFoundError, RedirectException
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import TokenMeta
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 def maybe_raise_for_incorrect_development_access(auth, experiment, docs_url):
@@ -37,11 +39,13 @@ def get_budget_param(json_dict, runs_only, return_key=False):
   if runs_only:
     key = BUDGET_KEY
     if OBSERVATION_BUDGET_KEY in json_dict:
-      raise BadParamError(f"{OBSERVATION_BUDGET_KEY} is no longer a valid field, please use {BUDGET_KEY} instead.")
+      raise SigoptValidationError(
+        f"{OBSERVATION_BUDGET_KEY} is no longer a valid field, please use {BUDGET_KEY} instead."
+      )
   else:
     key = OBSERVATION_BUDGET_KEY
     if BUDGET_KEY in json_dict:
-      raise BadParamError(f"{BUDGET_KEY} is not a valid field.")
+      raise SigoptValidationError(f"{BUDGET_KEY} is not a valid field.")
   budget = get_with_validation(json_dict, key, ValidationType.positive_integer)
   if return_key:
     return budget, key

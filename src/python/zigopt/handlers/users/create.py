@@ -19,6 +19,8 @@ from zigopt.protobuf.gen.token.tokenmeta_pb2 import NONE, READ, TokenMeta
 from zigopt.protobuf.gen.user.usermeta_pb2 import UserMeta
 from zigopt.user.model import User
 
+from libsigopt.aux.errors import SigoptValidationError
+
 
 class BaseUsersCreateHandler(Handler):
   UserAttributes = ImmutableStruct(
@@ -229,7 +231,7 @@ class UsersCreateHandler(BaseUsersCreateHandler):
 
     if requested_client_id:
       if invite_code:
-        raise BadParamError("Cannot provide both `client` and `invite_code`")
+        raise SigoptValidationError("Cannot provide both `client` and `invite_code`")
       pending_client = self._validate_can_signup_to_client(email, requested_client_id)
     else:
       pending_client = None

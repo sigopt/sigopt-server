@@ -8,9 +8,9 @@ from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-modu
 
 from zigopt.common import *
 from zigopt.experiment.model import Experiment
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.dict import dict_to_protobuf_struct, is_protobuf_struct, protobuf_struct_to_dict
 
+from libsigopt.aux.errors import SigoptValidationError
 from libsigopt.aux.validate_schema import validate
 
 
@@ -30,7 +30,7 @@ def _schema_validate(metadata: dict[str, Any], length: int, key_length: int, max
   for key in metadata:
     if len(key) > key_length:
       key_str = f"{key[:10]}...{key[-10:]}" if len(key) > 20 else key
-      raise BadParamError(f"The length of the metadata key '{key_str}' must be less than {key_length}")
+      raise SigoptValidationError(f"The length of the metadata key '{key_str}' must be less than {key_length}")
 
 
 def validate_custom_json(metadata: dict[str, Any]) -> Optional[str]:

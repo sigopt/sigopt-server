@@ -6,12 +6,13 @@ import itertools
 import numpy
 
 from zigopt.experiment.model import Experiment
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_CATEGORICAL,
   ExperimentCategoricalValue,
   ExperimentParameter,
 )
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 def convert_conditional_to_categorical_parameter(conditional):
@@ -64,4 +65,4 @@ def check_all_conditional_values_satisfied(experiment_meta):
       satisfied_parameter_configurations.add(selected_conditionals)
 
   if len(satisfied_parameter_configurations) != num_conditional_values:
-    raise BadParamError("Need at least one parameter that satisfies each conditional value")
+    raise SigoptValidationError("Need at least one parameter that satisfies each conditional value")

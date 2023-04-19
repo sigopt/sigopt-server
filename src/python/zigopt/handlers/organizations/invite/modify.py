@@ -12,9 +12,11 @@ from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_
 from zigopt.invite.constant import NO_ROLE
 from zigopt.invite.model import Invite
 from zigopt.membership.model import MembershipType
-from zigopt.net.errors import BadParamError, ForbiddenError
+from zigopt.net.errors import ForbiddenError
 from zigopt.permission.pending.model import PendingPermission
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
@@ -39,7 +41,7 @@ class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
     data = request.params()
 
     if "email" in data and get_with_validation(data, "email", ValidationType.string) != self.invite.email:
-      raise BadParamError("You cannot modify the email of an existing invite")
+      raise SigoptValidationError("You cannot modify the email of an existing invite")
 
     email = self.invite.email
 
@@ -56,10 +58,10 @@ class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
     )
 
     if membership_type == MembershipType.owner and updated_client_invites:
-      raise BadParamError("You cannot invite an owner to specific clients")
+      raise SigoptValidationError("You cannot invite an owner to specific clients")
 
     if membership_type != MembershipType.owner and not updated_client_invites:
-      raise BadParamError("The member invite must have at least one client")
+      raise SigoptValidationError("The member invite must have at least one client")
 
     return OrganizationsModifyInviteHandler.Params(
       email=email,
@@ -100,21 +102,25 @@ class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
     invitee = self.services.user_service.find_by_email(email)
 
     if any(InviteHandler.get_id_from_client_invite(invite) not in client_map for invite in client_invites):
-      raise BadParamError(f"Some of the clients aren't in the {self.organization.name} organization")
+      raise SigoptValidationError(f"Some of the clients aren't in the {self.organization.name} organization")
 
     if membership_type != MembershipType.owner and not client_invites:
-      raise BadParamError("The invitee must be invited to at least 1 client if they are not being invited as an owner")
+      raise SigoptValidationError(
+        "The invitee must be invited to at least 1 client if they are not being invited as an owner"
+      )
 
     if membership_type == MembershipType.owner and client_invites:
-      raise BadParamError("The invitee must not be invited to any clients if they are being invited as an owner")
+      raise SigoptValidationError(
+        "The invitee must not be invited to any clients if they are being invited as an owner"
+      )
 
     if not skip_existing:
       existing_invite = self.services.invite_service.find_by_email_and_organization(email, self.organization.id)
       if existing_invite:
-        raise BadParamError("This email address was already invited.")
+        raise SigoptValidationError("This email address was already invited.")
 
     if invitee and invitee.id == self.auth.current_user.id:
-      raise BadParamError("You cannot modify your own role")
+      raise SigoptValidationError("You cannot modify your own role")
 
     invite_membership = self.services.membership_service.find_by_user_and_organization(
       self.auth.current_user.id,

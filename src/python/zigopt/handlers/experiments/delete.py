@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.api.auth import api_token_authentication
 from zigopt.handlers.experiments.base import ExperimentHandler
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class ExperimentsDeleteHandler(ExperimentHandler):
@@ -60,7 +61,7 @@ class ExperimentsDeleteHandler(ExperimentHandler):
     include_runs_option = request.optional_param(self.INCLUDE_RUNS_KEY) or self.INCLUDE_RUNS_OPTION_FALSE
     include_runs_option = include_runs_option.lower()
     if include_runs_option not in self.INCLUDE_RUNS_OPTIONS:
-      raise BadParamError(f"Invalid option for {self.INCLUDE_RUNS_KEY}: {include_runs_option}")
+      raise SigoptValidationError(f"Invalid option for {self.INCLUDE_RUNS_KEY}: {include_runs_option}")
     return {self.INCLUDE_RUNS_KEY: include_runs_option}
 
   def handle(self, params):

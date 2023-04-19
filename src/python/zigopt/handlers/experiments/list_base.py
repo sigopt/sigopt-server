@@ -13,10 +13,11 @@ from zigopt.handlers.validate.base import validate_period
 from zigopt.handlers.validate.experiment import validate_state
 from zigopt.json.builder import AiExperimentJsonBuilder, ExperimentJsonBuilder, PaginationJsonBuilder
 from zigopt.membership.model import Membership, MembershipType
-from zigopt.net.errors import BadParamError
 from zigopt.permission.model import Permission
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 from zigopt.user.model import User
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 EXPERIMENT_RECENCY = "recent"
@@ -246,7 +247,7 @@ class BaseExperimentsListHandler(Handler):
       Field = Experiment.id
       use_having = False
     else:
-      raise BadParamError(f"Invalid sort: {params.sort.field}")
+      raise SigoptValidationError(f"Invalid sort: {params.sort.field}")
     return self.QueryArgs(query, Field, use_having, params.sort.ascending)
 
   def _issue_query(self, query_args, paging):

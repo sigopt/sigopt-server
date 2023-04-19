@@ -5,10 +5,12 @@ from zigopt.api.auth import api_token_authentication
 from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.json.builder import TagJsonBuilder
-from zigopt.net.errors import BadParamError, NotFoundError, UnprocessableEntityError
+from zigopt.net.errors import NotFoundError, UnprocessableEntityError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ, WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 training_run_tags_json_name = TrainingRunData.DESCRIPTOR.fields_by_name["tags"].json_name
@@ -39,7 +41,7 @@ class TrainingRunsAddTagHandler(BaseTrainingRunsTagHandler):
     acceptable_params = [key for key, _ in self.INPUT_PARAMS]
     unaccepted_params = provided_params.keys() - acceptable_params
     if unaccepted_params:
-      raise BadParamError(
+      raise SigoptValidationError(
         f"Unknown parameters: {unaccepted_params}. Only the following parameters are accepted: {acceptable_params}"
       )
     params = {}

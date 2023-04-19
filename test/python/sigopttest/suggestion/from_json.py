@@ -6,7 +6,6 @@ from typing import Any
 import pytest
 
 from zigopt.experiment.model import Experiment
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_DOUBLE,
   Bounds,
@@ -16,7 +15,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
 )
 from zigopt.suggestion.from_json import build_suggestion_data_from_json
 
-from libsigopt.aux.errors import InvalidTypeError
+from libsigopt.aux.errors import InvalidTypeError, SigoptValidationError
 
 
 class TestBuildSuggestionData:
@@ -57,7 +56,7 @@ class TestBuildSuggestionData:
       build_suggestion_data_from_json(experiment, json_dict)
 
     json_dict = {"assignments": {"x": 1.1, "what_is_this_parameter": 12345}}
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       build_suggestion_data_from_json(experiment, json_dict)
 
     json_dict = {"assignments": {"x": 1.1}, "task": {"name": "a"}}

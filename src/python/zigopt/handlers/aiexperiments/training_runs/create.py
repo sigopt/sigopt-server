@@ -19,6 +19,8 @@ from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunDa
 from zigopt.training_run.model import OPTIMIZED_ASSIGNMENT_SOURCE, TrainingRun, is_completed_state
 from zigopt.training_run.util import get_observation_values_dict_from_training_run_values_map
 
+from libsigopt.aux.errors import SigoptValidationError
+
 
 class AiExperimentTrainingRunsCreateHandler(
   AiExperimentHandler,
@@ -46,7 +48,7 @@ class AiExperimentTrainingRunsCreateHandler(
         },
         timestamp=now,
       )
-    except BadParamError:
+    except (SigoptValidationError, BadParamError):
       return None
 
     client = self.services.client_service.find_by_id(self.experiment.client_id)
@@ -111,7 +113,7 @@ class AiExperimentTrainingRunsCreateHandler(
         processed_suggestion_meta=processed_suggestion_meta,
         automatic=True,
       )
-    except BadParamError:
+    except (SigoptValidationError, BadParamError):
       return None
 
   def maybe_create_suggestion(self, training_run_params):
@@ -139,7 +141,7 @@ class AiExperimentTrainingRunsCreateHandler(
     assert self.experiment is not None
 
     if self.experiment.deleted:
-      raise BadParamError(f"Cannot create training runs for deleted experiment {self.experiment.id}")
+      raise SigoptValidationError(f"Cannot create training runs for deleted experiment {self.experiment.id}")
 
     project = self.services.project_service.find_by_client_and_id(
       self.experiment.client_id,

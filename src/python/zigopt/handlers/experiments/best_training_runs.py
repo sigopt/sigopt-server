@@ -5,9 +5,10 @@ from zigopt.api.auth import api_token_authentication
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.json.builder import PaginationJsonBuilder, TrainingRunJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 from zigopt.training_run.model import TrainingRun
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 # NOTE: easier to sort by ID which is monotonically increasing, so that's an appropriate proxy for created
@@ -38,7 +39,7 @@ class ExperimentsBestTrainingRunsHandler(ExperimentHandler):
     try:
       Field = SORT_FIELDS[sort.field]
     except KeyError as e:
-      raise BadParamError(f"Invalid sort: {sort.field}") from e
+      raise SigoptValidationError(f"Invalid sort: {sort.field}") from e
     return self.Params(
       paging=request.get_paging(),
       sort=sort,

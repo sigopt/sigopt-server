@@ -9,10 +9,10 @@ from zigopt.common import *
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.handlers.validate.web_data.ag_run_view import ag_run_view_schema
 from zigopt.handlers.validate.web_data.run_view import run_view_schema
-from zigopt.net.errors import BadParamError
 from zigopt.web_data.lib import validate_web_data_dict
 from zigopt.web_data.model import MAX_DISPLAY_NAME_LENGTH, web_data_types_by_resource
 
+from libsigopt.aux.errors import SigoptValidationError
 from libsigopt.aux.validate_schema import validate
 
 
@@ -70,7 +70,9 @@ validate_web_data_dict(parent_id_validator_by_resource, depth=1)
 def validate_resource_exists(parent_resource_type, web_data_type):
   test = schema_by_resource.get(parent_resource_type, {}).get(web_data_type, None)
   if test is None:
-    raise BadParamError(f"Could not find web data type: `{web_data_type}` for resource: `{parent_resource_type}`")
+    raise SigoptValidationError(
+      f"Could not find web data type: `{web_data_type}` for resource: `{parent_resource_type}`"
+    )
 
 
 def validate_web_data_parent_resource_id(params):
