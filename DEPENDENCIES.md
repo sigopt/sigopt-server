@@ -38,7 +38,7 @@ one for analytics messages, and one for optimization messages.
 
 We use postgres 11.2 as the DBMS for most of our persistent data.
 The `"db":{}` section of the config file points at the DB.
-The database is initially set up by running `python -m zigopt.utils.create_database PATH_TO_CONFIG_FILE`.
+The database is initially set up by running `python -m zigopt.utils.create_database`.
 `--fake-data` will populate the database with placeholder data,
 but it critically creates a user with email `owner@sigopt.ninja` and password `owner`
 which can be used to invite other users.

@@ -85,11 +85,8 @@ services:
       - python
       - -m
       - zigopt.utils.create_database
-    command:
-      - --drop-tables
     environment:
       - *server-config-env
-      - "sigopt.clients.client.user.password=$OWNER_PASSWORD"
     read_only: true
     security_opt:
       - "no-new-privileges:true"

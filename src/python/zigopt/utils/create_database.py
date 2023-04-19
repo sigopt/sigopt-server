@@ -219,7 +219,6 @@ def get_root_engine(config_broker, superuser=None, superuser_password=None, echo
 
 
 def create_db(
-  config_dir,
   config_broker,
   fake_data,
   drop_tables,
@@ -228,6 +227,7 @@ def create_db(
   allow_list=True,
   initialize_data=True,
   echo=False,
+  user_password=None,
 ):
   # pylint: disable=too-many-locals,too-many-statements
   root_engine = get_root_engine(
@@ -293,8 +293,12 @@ def create_db(
         )
         services.project_service.create_example_for_client(client_id=sibling_client.id)
 
-      if config_broker.get("clients.client.user"):
-        user = create_user(services, config_broker.get("clients.client.user"))
+      user_config = config_broker.get("clients.client.user")
+      if user_config is not None:
+        assert isinstance(user_config, dict)
+        if user_password is not None:
+          user_config["password"] = user_password
+        user = create_user(services, user_config)
         create_owner(
           services=services,
           user_id=user.id,
@@ -491,6 +495,11 @@ def parse_args():
   )
   parser.set_defaults(initialize_data=True)
 
+  parser.add_argument(
+    "--user-password",
+    help="the password for the default user",
+  )
+
   return parser.parse_args()
 
 
@@ -506,12 +515,12 @@ def main():
   if should_populate or the_args.fake_data or the_args.drop_tables:
     logging.info("Populating db")
     create_db(
-      config_dir=the_args.config_dir,
       config_broker=config_broker,
       fake_data=the_args.fake_data,
       drop_tables=the_args.drop_tables,
       initialize_data=the_args.initialize_data,
       echo=True,
+      user_password=the_args.user_password,
     )
 
 

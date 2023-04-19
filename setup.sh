@@ -7,7 +7,6 @@ set -e
 set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server
-export SIGOPT_SERVER_CONFIG_DIR="${SIGOPT_SERVER_CONFIG_DIR:-./config/sigopt/}"
 sigopt_server_version="git:$(git rev-parse HEAD)"
 export sigopt_server_version
 echo "Preparing submodules..."
@@ -60,16 +59,16 @@ else
 fi
 
 echo "Starting required services..."
+docker-compose --file=docker-compose.yml stop minio &>/dev/null || true
 if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then
   echo "Required services have started."
 else
   echo "Failed to start required services!"
   exit 1
 fi
-OWNER_PASSWORD="$(./tools/secure/generate_random_string.sh 16)"
-export OWNER_PASSWORD
+USER_PASSWORD="$(./tools/secure/generate_random_string.sh 16)"
 echo "Initializing database..."
-if docker-compose --file=docker-compose.yml run --rm createdb; then
+if docker-compose --file=docker-compose.yml run --rm createdb --drop-tables --user-password="$USER_PASSWORD"; then
   echo "Database ready."
 else
   echo "Failed to initialize database!"
@@ -93,4 +92,4 @@ fi
 echo "Setup complete. You are now ready to start SigOpt Server with ./start.sh"
 echo "First time log in credentials:"
 echo "  email: owner@sigopt.ninja"
-echo "  password: $OWNER_PASSWORD"
+echo "  password: $USER_PASSWORD"

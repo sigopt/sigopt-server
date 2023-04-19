@@ -118,6 +118,7 @@ services:
     logging:
       <<: *logging
     environment:
+      - SIGOPT_SERVER_CONFIG_DIR
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
     stdin_open: true
     tty: true

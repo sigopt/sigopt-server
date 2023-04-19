@@ -6,7 +6,6 @@ set -e
 set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server
-export SIGOPT_SERVER_CONFIG_DIR="${SIGOPT_SERVER_CONFIG_DIR:-./config/sigopt/}"
 MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
 export MINIO_ROOT_PASSWORD
 sigopt_server_version="git:$(git rev-parse HEAD)"
