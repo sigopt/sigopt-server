@@ -96,6 +96,7 @@ commands:
             ./ci/compose.sh run -Ti --rm init-config sh -e \<<EOF
               cp /sigopt-server/config/circleci/* /etc/sigopt/server-config/
             EOF
+            echo CHANGEME123 >/etc/minio/password.txt
   integration-test-setup:
     steps:
       - run: ./ci/create_development_tls_certs.sh
