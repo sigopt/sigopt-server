@@ -59,7 +59,7 @@ class TestCookie(WebBase):
   ):
     response = web_connection.get("/cookie").response
     session_id = response.cookies.get(scoped_cookie_name)
-    assert json.load(s3_client.get(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
+    assert json.load(s3_client.get_object(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
     s3_client.put_object(Bucket=cookiejar_bucket, Key=session_id, Body="invalid json")
     web_connection.get("/")
     response = web_connection.get("/cookie").response
