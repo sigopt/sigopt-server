@@ -13,10 +13,11 @@ from zigopt.handlers.validate.base import validate_period
 from zigopt.handlers.validate.experiment import validate_state
 from zigopt.json.builder import AiExperimentJsonBuilder, ExperimentJsonBuilder, PaginationJsonBuilder
 from zigopt.membership.model import Membership, MembershipType
-from zigopt.net.errors import BadParamError
 from zigopt.permission.model import Permission
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 from zigopt.user.model import User
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 EXPERIMENT_RECENCY = "recent"
@@ -113,6 +114,58 @@ class BaseExperimentsListHandler(Handler):
   def additional_query_filters(self, query):
     return query
 
+  def _maybe_filter_project(self, query_args, project):
+    if project is not None:
+      query_args.query = query_args.query.filter(Experiment.project_id == project.id)
+
+  def _maybe_filter_created_by(self, query_args, created_by):
+    if created_by is not None:
+      query_args.query = query_args.query.filter(Experiment.created_by.in_(as_tuple(created_by)))
+
+  def _maybe_reject_ai(self, query_args, params):
+    if params.include_ai is False:
+      query_args.query = query_args.query.filter(~Experiment.experiment_meta.runs_only.as_boolean())
+
+  def _maybe_search(self, query_args, params, client_ids):
+    if params.search is None:
+      return
+    keyword = params.search.lower().strip()
+    matching_user_ids = set(
+      u_id
+      for (u_id,) in flatten(
+        [
+          self.services.database_service.all(
+            self.services.database_service.query(Permission.user_id)
+            .filter(Permission.client_id.in_(client_ids))
+            .join(User, Permission.user_id == User.id)
+            .filter(User.name.ilike(f"%{keyword}%"))
+          ),
+          self.services.database_service.all(
+            self.services.database_service.query(Membership.user_id)
+            .join(Client, Membership.organization_id == Client.organization_id)
+            .join(User, Membership.user_id == User.id)
+            .filter(Client.id.in_(client_ids))
+            .filter(User.name.ilike(f"%{keyword}%"))
+            .filter(Membership.membership_type == MembershipType.owner)
+          ),
+        ]
+      )
+    )
+
+    # TODO(SN-1088): Consider optimization of search ordering
+    if matching_user_ids:
+      search_filter = or_(Experiment.created_by.in_(matching_user_ids), Experiment.name.ilike(f"%{keyword}%"))
+    else:
+      search_filter = Experiment.name.ilike(f"%{keyword}%")
+
+    query_args.query = query_args.query.filter(search_filter)
+
+  def _maybe_filter_period(self, query_args, params):
+    if params.period_start:
+      query_args.query = query_args.query.filter(Experiment.date_created >= seconds_to_datetime(params.period_start))
+    if params.period_end:
+      query_args.query = query_args.query.filter(Experiment.date_created < seconds_to_datetime(params.period_end))
+
   def do_handle(self, params, client_ids, created_by, project=None):
     # pylint: disable=too-many-locals
     query_args = self._get_sorted_query(params)
@@ -144,51 +197,11 @@ class BaseExperimentsListHandler(Handler):
         .filter(Experiment.deleted.in_(deleted))
         .filter(Experiment.experiment_meta.development.as_boolean().in_(developments))
       )
-      if project is not None:
-        query_args.query = query_args.query.filter(Experiment.project_id == project.id)
-
-      if created_by is not None:
-        query_args.query = query_args.query.filter(Experiment.created_by.in_(as_tuple(created_by)))
-      if params.include_ai is False:
-        query_args.query = query_args.query.filter(~Experiment.experiment_meta.runs_only.as_boolean())
-
-      if params.search is not None:
-        keyword = params.search.lower().strip()
-        matching_user_ids = set(
-          u_id
-          for (u_id,) in flatten(
-            [
-              self.services.database_service.all(
-                self.services.database_service.query(Permission.user_id)
-                .filter(Permission.client_id.in_(client_ids))
-                .join(User, Permission.user_id == User.id)
-                .filter(User.name.ilike(f"%{keyword}%"))
-              ),
-              self.services.database_service.all(
-                self.services.database_service.query(Membership.user_id)
-                .join(Client, Membership.organization_id == Client.organization_id)
-                .join(User, Membership.user_id == User.id)
-                .filter(Client.id.in_(client_ids))
-                .filter(User.name.ilike(f"%{keyword}%"))
-                .filter(Membership.membership_type == MembershipType.owner)
-              ),
-            ]
-          )
-        )
-
-        # TODO(SN-1088): Consider optimization of search ordering
-        if matching_user_ids:
-          search_filter = or_(Experiment.created_by.in_(matching_user_ids), Experiment.name.ilike(f"%{keyword}%"))
-        else:
-          search_filter = Experiment.name.ilike(f"%{keyword}%")
-
-        query_args.query = query_args.query.filter(search_filter)
-
-      if params.period_start:
-        query_args.query = query_args.query.filter(Experiment.date_created >= seconds_to_datetime(params.period_start))
-
-      if params.period_end:
-        query_args.query = query_args.query.filter(Experiment.date_created < seconds_to_datetime(params.period_end))
+      self._maybe_filter_project(query_args, project)
+      self._maybe_filter_created_by(query_args, created_by)
+      self._maybe_reject_ai(query_args, params)
+      self._maybe_search(query_args, params, client_ids)
+      self._maybe_filter_period(query_args, params)
 
       query_args.query = self.additional_query_filters(query_args.query)
 
@@ -229,7 +242,7 @@ class BaseExperimentsListHandler(Handler):
       Field = Experiment.id
       use_having = False
     else:
-      raise BadParamError(f"Invalid sort: {params.sort.field}")
+      raise SigoptValidationError(f"Invalid sort: {params.sort.field}")
     return self.QueryArgs(query, Field, use_having, params.sort.ascending)
 
   def _issue_query(self, query_args, paging):

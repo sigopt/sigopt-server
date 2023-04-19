@@ -8,10 +8,11 @@ from zigopt.db.util import DeleteClause
 from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.experiments.observations.base import ObservationHandler
 from zigopt.json.builder import ObservationJsonBuilder, PaginationJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.observation.model import Observation
 from zigopt.pagination.paging import Pager
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class ObservationsDetailHandler(ObservationHandler):
@@ -39,6 +40,33 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
       deleted=deleted,
     )
 
+  def _get_sort_key(self, sort):
+    # pylint: disable=too-many-return-statements
+    if sort.field == "timestamp":
+      return lambda o: (o.timestamp, o.id)
+    if sort.field == "value":
+      metric_name = self.experiment.all_metrics[0].name
+      return lambda o: (o.metric_value(self.experiment, metric_name), o.id)
+    if sort.field.startswith("value-"):
+      name = sort.field[len("value-") :]
+      return lambda o: (o.metric_value(self.experiment, name), o.id)
+    if sort.field == "value_stddev":
+      metric_name = self.experiment.all_metrics[0].name
+      return lambda o: (o.metric_value_var(self.experiment, metric_name), o.id)
+    if sort.field.startswith("value_stddev-"):
+      name = sort.field[len("value_stddev-") :]
+      return lambda o: (o.metric_value_var(self.experiment, name), o.id)
+    if sort.field.startswith("parameter-"):
+      param_name = sort.field[len("parameter-") :]
+      if param_name not in self.experiment.all_parameters_map:
+        raise SigoptValidationError(f"Unknown parameter: {param_name}")
+      parameter = self.experiment.all_parameters_map[param_name]
+      return lambda o: (o.get_assignment(parameter), o.id)
+    if sort.field == "task":
+      optimized_metric_name = self.experiment.optimized_metrics[0].name
+      return lambda o: (o.task.cost, o.metric_value(self.experiment, optimized_metric_name), o.id)
+    raise SigoptValidationError(f"Invalid sort: {sort.field}")
+
   def handle(self, args):
     # pylint: disable=too-many-locals,unnecessary-lambda-assignment
     paging = args.paging
@@ -53,7 +81,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     )
 
     if paging.limit is None and total_count > self.MAX_HISTORY_POINTS:
-      raise BadParamError("This experiment has too much data to return a full history.")
+      raise SigoptValidationError("This experiment has too much data to return a full history.")
 
     if sort.field == "id":
 
@@ -70,31 +98,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
       observations, new_before, new_after = Pager(fetch_page).fetch(paging, Observation.id, ascending=sort.ascending)
     else:
       all_observations = self.services.observation_service.all_data(self.experiment)
-      if sort.field == "timestamp":
-        key = lambda o: (o.timestamp, o.id)
-      elif sort.field == "value":
-        metric_name = self.experiment.all_metrics[0].name
-        key = lambda o: (o.metric_value(self.experiment, metric_name), o.id)
-      elif sort.field.startswith("value-"):
-        name = sort.field[len("value-") :]
-        key = lambda o: (o.metric_value(self.experiment, name), o.id)
-      elif sort.field == "value_stddev":
-        metric_name = self.experiment.all_metrics[0].name
-        key = lambda o: (o.metric_value_var(self.experiment, metric_name), o.id)
-      elif sort.field.startswith("value_stddev-"):
-        name = sort.field[len("value_stddev-") :]
-        key = lambda o: (o.metric_value_var(self.experiment, name), o.id)
-      elif sort.field.startswith("parameter-"):
-        param_name = sort.field[len("parameter-") :]
-        if param_name not in self.experiment.all_parameters_map:
-          raise BadParamError(f"Unknown parameter: {param_name}")
-        parameter = self.experiment.all_parameters_map[param_name]
-        key = lambda o: (o.get_assignment(parameter), o.id)
-      elif sort.field == "task":
-        optimized_metric_name = self.experiment.optimized_metrics[0].name
-        key = lambda o: (o.task.cost, o.metric_value(self.experiment, optimized_metric_name), o.id)
-      else:
-        raise BadParamError(f"Invalid sort: {sort.field}")
+      key = self._get_sort_key(sort)
 
       if deleted is not None:
         all_observations = [o for o in all_observations if o.deleted is deleted]

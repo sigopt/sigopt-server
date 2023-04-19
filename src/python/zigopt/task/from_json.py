@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
-from zigopt.net.errors import BadParamError
+
+from libsigopt.aux.errors import InvalidKeyError, SigoptValidationError
 
 
 def extract_task_from_json(experiment, json_dict):
@@ -16,11 +17,11 @@ def extract_task_from_json(experiment, json_dict):
   else:
     task_name = task_field
   if task_name is None:
-    raise BadParamError("A task name must be defined when creating suggestions for a multitask experiment.")
+    raise InvalidKeyError("name", "A task name must be defined when creating suggestions for a multitask experiment.")
 
   try:
     task = experiment.get_task_by_name(task_name)
   except ValueError as e:
-    raise BadParamError(str(e)) from e
+    raise SigoptValidationError(str(e)) from e
 
   return task.copy_protobuf()

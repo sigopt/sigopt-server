@@ -42,6 +42,7 @@ subjectAltName = @alt_names
 [ alt_names ]
 DNS.1 = $CN
 DNS.2 = *.$CN
+DNS.3 = 127.0.0.1
 EOF
 
 "${EDITOR:-vi}" "$CONFIG"

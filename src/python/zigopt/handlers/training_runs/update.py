@@ -12,10 +12,11 @@ from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.handlers.training_runs.parser import TrainingRunRequestParams, TrainingRunRequestParser
 from zigopt.handlers.validate.training_run import validate_assignments_meta
 from zigopt.json.builder.training_run import TrainingRunJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun, is_completed_state
+
+from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
 
 
 class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
@@ -94,7 +95,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
   def parse_params(self, request):
     unaccepted_params = request.params().keys() - TrainingRunRequestParams.valid_fields
     if unaccepted_params:
-      raise BadParamError(f"Unknown parameters: {unaccepted_params}")
+      raise SigoptValidationError(f"Unknown parameters: {unaccepted_params}")
 
     method = request.method.lower()
     assert method in ("put", "merge")
@@ -107,7 +108,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
 
   def _ensure_field_cannot_be_removed(self, params, user_name):
     if params.training_run_params.field_is_explicitly_null(user_name):
-      raise BadParamError(f"Cannot remove {user_name} from a run")
+      raise SigoptValidationError(f"Cannot remove {user_name} from a run")
 
   def _create_observation_from_suggestion(self, training_run, updated_timestamp):
     client = self.services.client_service.find_by_id(training_run.client_id)
@@ -171,7 +172,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
       if new_project and self.auth.can_act_on_project(self.services, WRITE, new_project):
         update_clause[TrainingRun.project_id] = new_project.id
       else:
-        raise BadParamError(f"Unknown project ID: {params.training_run_params.project}")
+        raise InvalidValueError(f"Unknown project ID: {params.training_run_params.project}")
 
     if params.training_run_params.training_run_data_json:
       update_clause[TrainingRun.training_run_data] = self.create_update_clause(

@@ -111,7 +111,7 @@ class TestApiBase(V1Base):
       data="{",
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert "Invalid json" in response.json()["message"]
+    assert "Malformed json in request body" in response.json()["message"]
 
   def test_post_read_params_json(self, api_url, headers, auth):
     response = secure_request(

@@ -106,7 +106,7 @@ class WebConnection:
     browser_cookies = []
     for cookie_name, cookie_value in self.cookies.items():
       full_domain = domain
-      sigopt_cookie = config_broker.get("web.scoped_cookie_name", "sigopt-session-id")
+      sigopt_cookie = config_broker.get("web.cookie_name", "sigopt-session-id")
       is_local = "localhost" in domain or "127.0.0.1" in domain
       if not is_local and cookie_name == sigopt_cookie:
         full_domain = "." + domain

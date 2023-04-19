@@ -5,9 +5,10 @@ from zigopt.api.auth import api_token_authentication
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.clients.base import ClientHandler
 from zigopt.json.builder import PaginationJsonBuilder, TagJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 from zigopt.tag.model import Tag
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 class ClientsTagsListHandler(ClientHandler):
@@ -27,7 +28,7 @@ class ClientsTagsListHandler(ClientHandler):
     try:
       Field = self.sort_fields[sort.field]
     except KeyError as e:
-      raise BadParamError(f"Invalid sort: {sort.field}") from e
+      raise SigoptValidationError(f"Invalid sort: {sort.field}") from e
     return self.Params(
       paging=paging,
       sort=sort,

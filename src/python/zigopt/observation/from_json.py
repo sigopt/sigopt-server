@@ -6,9 +6,10 @@ from enum import Enum
 from zigopt.assignments.build import set_assignments_map_from_json, set_assignments_map_from_proxy
 from zigopt.handlers.validate.assignments import validate_assignments_map
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
-from zigopt.net.errors import BadParamError
 from zigopt.protobuf.lib import CopyFrom
 from zigopt.task.from_json import extract_task_from_json
+
+from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
 
 
 # This allows someone to pass just the task of a MT observation, not necessarily the assignments.
@@ -26,25 +27,27 @@ def set_observation_data_assignments_task_from_json(
 
   if suggestion_json is None and assignments_json is None:
     if experiment.is_multitask:
-      raise BadParamError("Either `suggestion` or `assignments`+`task` must be provided when creating an observation")
-    raise BadParamError("Must provide values for one of `suggestion` or `assignments`")
+      raise SigoptValidationError(
+        "Either `suggestion` or `assignments`+`task` must be provided when creating an observation"
+      )
+    raise SigoptValidationError("Must provide values for one of `suggestion` or `assignments`")
   if suggestion_json is not None and assignments_json is not None:
-    raise BadParamError("Cannot provide values for both `suggestion` and `assignments`")
+    raise SigoptValidationError("Cannot provide values for both `suggestion` and `assignments`")
   if suggestion_json is not None and assignments_json is None:
     if task_field_present:
-      raise BadParamError("Cannot provide/update `task` when `suggestion` is provided")
+      raise SigoptValidationError("Cannot provide/update `task` when `suggestion` is provided")
     set_observation_suggestion_from_json(observation_data, observation, suggestion_json, experiment, suggestion)
   else:
     set_observation_data_assignments_map_from_json(observation_data, json_dict, experiment)
     if experiment.is_multitask:
       if not task_field_present:
-        raise BadParamError("Must provide `assignments` and `task` when creating observations manually")
+        raise SigoptValidationError("Must provide `assignments` and `task` when creating observations manually")
       set_observation_data_task_from_json(observation_data, json_dict, experiment)
 
 
 def set_observation_suggestion_from_json(observation_data, observation, suggestion_json, experiment, suggestion):
   if suggestion is None or suggestion.experiment_id != experiment.id:
-    raise BadParamError(f"No suggestion: {suggestion_json} for experiment: {experiment.id}")
+    raise InvalidValueError(f"No suggestion: {suggestion_json} for experiment: {experiment.id}")
 
   observation.processed_suggestion_id = suggestion.id
   observation_data.ClearField("assignments_map")
@@ -58,7 +61,7 @@ def set_observation_data_assignments_map_from_json(observation_data, json_dict, 
   assignments_json = get_opt_with_validation(json_dict, "assignments", ValidationType.object)
 
   if not assignments_json:
-    raise BadParamError("Cannot provide null or empty `assignments`")
+    raise SigoptValidationError("Cannot provide null or empty `assignments`")
 
   observation_data.ClearField("assignments_map")
   set_assignments_map_from_json(observation_data, assignments_json, experiment)
@@ -78,6 +81,58 @@ class SuggestionAssignmentUpdates(Enum):
   ASSIGNMENTS_ONLY = 4
 
 
+def _get_suggestion_assignments_update_type(update_suggestion: bool, update_assignments: bool):
+  return (
+    {
+      (True, True): SuggestionAssignmentUpdates.BOTH,
+      (True, False): SuggestionAssignmentUpdates.SUGGESTION_ONLY,
+      (False, True): SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY,
+    }
+  ).get((update_suggestion, update_assignments), SuggestionAssignmentUpdates.NEITHER)
+
+
+def _check_suggestion_assignments_update(update, suggestion_json, assignments_json, observation):
+  if update is SuggestionAssignmentUpdates.BOTH:
+    if suggestion_json is None and assignments_json is None:
+      raise SigoptValidationError("Cannot provide null for both `suggestion` and `assignments`")
+    if suggestion_json is not None and assignments_json is not None:
+      raise SigoptValidationError("Cannot set values for both `suggestion` and `assignments`")
+    return
+  if update is SuggestionAssignmentUpdates.SUGGESTION_ONLY:
+    if observation.has_suggestion and suggestion_json is None:
+      raise SigoptValidationError("Cannot provide null for `suggestion` without providing `assignments`")
+    if not observation.has_suggestion and suggestion_json is not None:
+      raise SigoptValidationError("Cannot provide `suggestion` without providing null for `assignments`")
+    return
+  if update is SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY:
+    if not observation.has_suggestion and assignments_json is None:
+      raise SigoptValidationError("Cannot provide null for `assignments` without providing `suggestion`")
+    if observation.has_suggestion and assignments_json is not None:
+      raise SigoptValidationError("Cannot provide `assignments` without providing null not `suggestion`")
+    return
+
+
+def _check_task_update(json_dict, experiment, suggestion_json, assignments_json, observation):
+  task_field_present = "task" in json_dict
+  if experiment.is_multitask:
+    observation_has_processed_suggestion = observation.processed_suggestion_id is not None
+    if task_field_present:
+      if assignments_json is None and json_dict["task"] is not None:
+        if suggestion_json is None and observation_has_processed_suggestion:
+          raise SigoptValidationError(
+            "Cannot provide `task` for observation update for observation with associated suggestion"
+          )
+        if suggestion_json is not None:
+          raise SigoptValidationError("Cannot provide `task` when updating observation to change associated suggestion")
+    else:
+      if observation_has_processed_suggestion and suggestion_json is None and assignments_json is not None:
+        raise SigoptValidationError(
+          "Most provide both `task` and `assignments` when updating observation to remove suggestion"
+        )
+  elif task_field_present:
+    raise SigoptValidationError(f"Cannot provide `task` for experiment {experiment.id} which is not multitask")
+
+
 def update_observation_data_assignments_task_from_json(
   observation_data,
   observation,
@@ -85,52 +140,17 @@ def update_observation_data_assignments_task_from_json(
   experiment,
   suggestion,
 ):
-  # pylint: disable=too-many-statements
   assignments_json = get_opt_with_validation(json_dict, "assignments", ValidationType.object)
   suggestion_json = get_opt_with_validation(json_dict, "suggestion", ValidationType.id)
 
   update_suggestion = "suggestion" in json_dict
   update_assignments = "assignments" in json_dict
 
-  if update_suggestion and update_assignments:
-    update = SuggestionAssignmentUpdates.BOTH
-  elif update_suggestion and not update_assignments:
-    update = SuggestionAssignmentUpdates.SUGGESTION_ONLY
-  elif not update_suggestion and update_assignments:
-    update = SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY
-  else:
-    update = SuggestionAssignmentUpdates.NEITHER
+  update = _get_suggestion_assignments_update_type(update_suggestion, update_assignments)
 
-  if update is SuggestionAssignmentUpdates.BOTH:
-    if suggestion_json is None and assignments_json is None:
-      raise BadParamError("Cannot provide null for both `suggestion` and `assignments`")
-    if suggestion_json is not None and assignments_json is not None:
-      raise BadParamError("Cannot set values for both `suggestion` and `assignments`")
-  elif update is SuggestionAssignmentUpdates.SUGGESTION_ONLY:
-    if observation.has_suggestion and suggestion_json is None:
-      raise BadParamError("Cannot provide null for `suggestion` without providing `assignments`")
-    if not observation.has_suggestion and suggestion_json is not None:
-      raise BadParamError("Cannot provide `suggestion` without providing null for `assignments`")
-  elif update is SuggestionAssignmentUpdates.ASSIGNMENTS_ONLY:
-    if not observation.has_suggestion and assignments_json is None:
-      raise BadParamError("Cannot provide null for `assignments` without providing `suggestion`")
-    if observation.has_suggestion and assignments_json is not None:
-      raise BadParamError("Cannot provide `assignments` without providing null not `suggestion`")
+  _check_suggestion_assignments_update(update, suggestion_json, assignments_json, observation)
 
-  task_field_present = "task" in json_dict
-  if experiment.is_multitask:
-    observation_has_processed_suggestion = observation.processed_suggestion_id is not None
-    if task_field_present:
-      if assignments_json is None and json_dict["task"] is not None:
-        if suggestion_json is None and observation_has_processed_suggestion:
-          raise BadParamError("Cannot provide `task` for observation update for observation with associated suggestion")
-        if suggestion_json is not None:
-          raise BadParamError("Cannot provide `task` when updating observation to change associated suggestion")
-    else:
-      if observation_has_processed_suggestion and suggestion_json is None and assignments_json is not None:
-        raise BadParamError("Most provide both `task` and `assignments` when updating observation to remove suggestion")
-  elif task_field_present:
-    raise BadParamError(f"Cannot provide `task` for experiment {experiment.id} which is not multitask")
+  _check_task_update(json_dict, experiment, suggestion_json, assignments_json, observation)
 
   if suggestion_json is not None:
     if (
@@ -154,5 +174,5 @@ def update_observation_data_assignments_task_from_json(
           json_dict,
           experiment,
         )
-    if task_field_present:
+    if "task" in json_dict:
       set_observation_data_task_from_json(observation_data, json_dict, experiment)

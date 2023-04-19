@@ -12,8 +12,10 @@ from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import NO_ROLE
 from zigopt.json.builder import PendingPermissionJsonBuilder
 from zigopt.membership.model import MembershipType
-from zigopt.net.errors import BadParamError, ForbiddenError
+from zigopt.net.errors import ForbiddenError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN
+
+from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
 
 
 class BaseSetPermissionHandler(ClientHandler):
@@ -21,13 +23,13 @@ class BaseSetPermissionHandler(ClientHandler):
     validate_role(invite_role)
 
     if user_id == self.auth.current_user.id:
-      raise BadParamError("You cannot modify your own role")
+      raise SigoptValidationError("You cannot modify your own role")
 
     if self.services.membership_service.user_is_owner_for_organization(
       user_id=user_id,
       organization_id=self.client.organization_id,
     ):
-      raise BadParamError("The role of the client's owner cannot be modified.")
+      raise SigoptValidationError("The role of the client's owner cannot be modified.")
 
 
 class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
@@ -66,7 +68,7 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
 
     if existing_invite:
       if existing_invite.membership_type == MembershipType.owner:
-        raise BadParamError("This email was already invited as an owner")
+        raise InvalidValueError("This email was already invited as an owner")
 
       existing_pending_permissions = self.services.pending_permission_service.find_by_invite_id(existing_invite.id)
       new_client_invites = InviteHandler.get_updated_client_invites(

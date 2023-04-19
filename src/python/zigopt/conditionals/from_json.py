@@ -3,10 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.handlers.validate.experiment import validate_conditional_value
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
-from zigopt.net.errors import BadParamError
 from zigopt.parameters.from_json import set_parameter_name_from_json
 
-from libsigopt.aux.errors import InvalidValueError
+from libsigopt.aux.errors import InvalidKeyError, InvalidValueError, MissingParamError
 
 
 def set_experiment_conditionals_list_from_json(experiment_meta, experiment_json):
@@ -25,7 +24,7 @@ def set_experiment_conditionals_list_from_json(experiment_meta, experiment_json)
     set_conditional_from_json(conditional, conditional_json)
 
     if conditional.name in seen_names:
-      raise BadParamError(f"Duplicate conditional name {conditional.name}")
+      raise InvalidKeyError(conditional.name, f"Duplicate conditional name {conditional.name}")
     seen_names.add(conditional.name)
 
 
@@ -56,8 +55,7 @@ def set_conditional_values_from_json(conditional, conditional_json):
         f"Duplicate conditional value {conditional_value.name} for conditional named {conditional.name}"
       )
     seen_values.add(conditional_value.name)
-
   if not conditional.values:
-    raise BadParamError(f"No values provided for conditional {conditional.name}")
+    raise MissingParamError(conditional.name, f"No values provided for conditional {conditional.name}")
   if len(conditional.values) < 2:
-    raise BadParamError(f"Conditional {conditional.name} must have at least 2 values")
+    raise MissingParamError(conditional.name, f"Conditional {conditional.name} must have at least 2 values")

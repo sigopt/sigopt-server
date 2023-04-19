@@ -7,7 +7,9 @@ from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import NO_ROLE, permission_to_role
 from zigopt.json.builder import MembershipJsonBuilder
 from zigopt.membership.model import MembershipType
-from zigopt.net.errors import BadParamError, ConflictingDataError
+from zigopt.net.errors import ConflictingDataError
+
+from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
 
 
 class InviteHandler(Handler):
@@ -64,7 +66,7 @@ class InviteHandler(Handler):
     inviter = self.auth.current_user
 
     if not self.services.invite_service.email_is_permitted_by_organization_for_invite(organization, email, inviter):
-      raise BadParamError(
+      raise SigoptValidationError(
         "You can only invite users with emails from the following domains:"
         f' {",".join(self.services.invite_service.eligible_domains_for_invite(organization, inviter))}.'
       )
@@ -92,7 +94,7 @@ class InviteHandler(Handler):
       self.update_existing_user(invite, organization, invitee, client_invites, skip_email, skip_check, inviter)
     else:
       if self.services.invite_service.find_by_email_and_organization(invite.email, organization.id):
-        raise BadParamError(f"The email address {invite.email} was already invited.")
+        raise SigoptValidationError(f"The email address {invite.email} was already invited.")
 
       self.services.invite_service.insert_invite(invite)
       self.create_pending_permissions(invite, client_invites, client_map, insert=True)
@@ -133,21 +135,77 @@ class InviteHandler(Handler):
 
     return list(client_invite_map.values())
 
-  def update_existing_user(self, invite, organization, invitee, client_invites, skip_email, skip_check, inviter):
-    # pylint: disable=too-many-locals
-    if not skip_check:
-      for client_invite in client_invites:
-        invitee_permission = self.services.permission_service.find_by_client_and_user(
-          client_id=InviteHandler.get_id_from_client_invite(client_invite),
-          user_id=invitee.id,
+  def _maybe_check_role_synchonization(self, skip_check, invitee, client_invites):
+    if skip_check:
+      return
+
+    for client_invite in client_invites:
+      invitee_permission = self.services.permission_service.find_by_client_and_user(
+        client_id=InviteHandler.get_id_from_client_invite(client_invite),
+        user_id=invitee.id,
+      )
+      expected_role = permission_to_role(invitee_permission)
+      old_role = InviteHandler.get_old_role_from_client_invite(client_invite)
+      if InviteHandler.get_old_role_from_client_invite(client_invite) != expected_role:
+        raise ConflictingDataError(
+          f"Current permission state out of sync - old role `{old_role}` does not match expected role `{expected_role}`"
         )
-        expected_role = permission_to_role(invitee_permission)
-        old_role = InviteHandler.get_old_role_from_client_invite(client_invite)
-        if InviteHandler.get_old_role_from_client_invite(client_invite) != expected_role:
-          raise ConflictingDataError(
-            "Current permission state out of sync"
-            f" - old role `{old_role}` does not match expected role `{expected_role}`"
-          )
+
+  def _update_current_membership(self, current_membership, invite, invitee, organization):
+    # NOTE: Currently only handle elevating members to owners, not the other way around
+    if current_membership.membership_type == MembershipType.owner:
+      raise SigoptValidationError("Owners cannot have their memberships updated")
+
+    if invite.membership_type == MembershipType.owner:
+      self.services.membership_service.elevate_to_owner(current_membership)
+      self.services.permission_service.delete_by_organization_and_user(
+        organization.id,
+        invitee.id,
+      )
+      self.services.iam_logging_service.log_iam(
+        requestor=self.auth.current_user,
+        event_name=IamEvent.MEMBERSHIP_UPDATE,
+        request_parameters={
+          "user_id": invitee.id,
+          "membership_type": MembershipType.owner.value,
+          "organization_id": organization.id,
+        },
+        response_element=MembershipJsonBuilder.json(current_membership, organization, invitee),
+        response_status=IamResponseStatus.SUCCESS,
+      )
+
+  def _create_new_membership(self, invite, invitee, organization):
+    membership = self.services.membership_service.insert(
+      user_id=invitee.id,
+      organization_id=organization.id,
+      membership_type=invite.membership_type,
+    )
+    self.services.iam_logging_service.log_iam(
+      requestor=self.auth.current_user,
+      event_name=IamEvent.MEMBERSHIP_CREATE,
+      request_parameters={
+        "user_id": invitee.id,
+        "membership_type": membership.membership_type.value,
+        "organization_id": organization.id,
+      },
+      response_element=MembershipJsonBuilder.json(membership, organization, invitee),
+      response_status=IamResponseStatus.SUCCESS,
+    )
+
+  def _send_invite_emails(self, skip_email, invite, invitee, organization, clients):
+    if skip_email:
+      code = self.services.email_verification_service.set_email_verification_code_without_save(invitee)
+      self.services.user_service.update_meta(invitee, invitee.user_meta)
+      invite_link = self.services.email_templates.verify_email_link(code, invitee.email)
+      if invite.membership_type == MembershipType.owner:
+        self.send_reprompt_owner_email(organization, invitee, invite_link)
+      else:
+        self.send_reprompt_email(organization, clients, invitee, invite_link)
+    elif self.services.email_verification_service.has_verified_email_if_needed(invitee):
+      self.send_existing_user_invite(invite, organization, clients, invitee)
+
+  def update_existing_user(self, invite, organization, invitee, client_invites, skip_email, skip_check, inviter):
+    self._maybe_check_role_synchonization(skip_check, invitee, client_invites)
 
     client_ids = [InviteHandler.get_id_from_client_invite(inv) for inv in client_invites]
     clients = self.services.client_service.find_by_ids(client_ids)
@@ -161,45 +219,9 @@ class InviteHandler(Handler):
       inviter=inviter,
     ):
       if current_membership:
-        # NOTE: Currently only handle elevating members to owners, not the other way around
-        if current_membership.membership_type == MembershipType.owner:
-          raise BadParamError("Owners cannot have their memberships updated")
-
-        if invite.membership_type == MembershipType.owner:
-          self.services.membership_service.elevate_to_owner(current_membership)
-          self.services.permission_service.delete_by_organization_and_user(
-            organization.id,
-            invitee.id,
-          )
-          self.services.iam_logging_service.log_iam(
-            requestor=self.auth.current_user,
-            event_name=IamEvent.MEMBERSHIP_UPDATE,
-            request_parameters={
-              "user_id": invitee.id,
-              "membership_type": MembershipType.owner.value,
-              "organization_id": organization.id,
-            },
-            response_element=MembershipJsonBuilder.json(current_membership, organization, invitee),
-            response_status=IamResponseStatus.SUCCESS,
-          )
-
+        self._update_current_membership(current_membership, invite, invitee, organization)
       else:
-        membership = self.services.membership_service.insert(
-          user_id=invitee.id,
-          organization_id=organization.id,
-          membership_type=invite.membership_type,
-        )
-        self.services.iam_logging_service.log_iam(
-          requestor=self.auth.current_user,
-          event_name=IamEvent.MEMBERSHIP_CREATE,
-          request_parameters={
-            "user_id": invitee.id,
-            "membership_type": membership.membership_type.value,
-            "organization_id": organization.id,
-          },
-          response_element=MembershipJsonBuilder.json(membership, organization, invitee),
-          response_status=IamResponseStatus.SUCCESS,
-        )
+        self._create_new_membership(invite, invitee, organization)
 
       for client_invite in client_invites:
         self.services.permission_service.upsert_from_role(
@@ -213,23 +235,13 @@ class InviteHandler(Handler):
         self.send_existing_user_invite(invite, organization, clients, invitee)
 
     elif self.services.invite_service.find_by_email_and_organization(invite.email, organization.id):
-      raise BadParamError(f"The email address {invite.email} was already invited.")
+      raise InvalidValueError(f"The email address {invite.email} was already invited.")
 
     else:
       self.services.invite_service.insert_invite(invite)
       self.create_pending_permissions(invite, client_invites, client_map, insert=True)
 
-      if not skip_email:
-        if self.services.email_verification_service.has_verified_email_if_needed(invitee):
-          self.send_existing_user_invite(invite, organization, clients, invitee)
-      else:
-        code = self.services.email_verification_service.set_email_verification_code_without_save(invitee)
-        self.services.user_service.update_meta(invitee, invitee.user_meta)
-        invite_link = self.services.email_templates.verify_email_link(code, invitee.email)
-        if invite.membership_type == MembershipType.owner:
-          self.send_reprompt_owner_email(organization, invitee, invite_link)
-        else:
-          self.send_reprompt_email(organization, clients, invitee, invite_link)
+      self._send_invite_emails(skip_email, invite, invitee, organization, clients)
 
   def send_existing_user_invite(self, invite, organization, clients, invitee):
     if invite.membership_type == MembershipType.owner:

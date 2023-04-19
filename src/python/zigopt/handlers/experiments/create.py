@@ -36,7 +36,6 @@ from zigopt.handlers.validate.validate_dict import (
   key_present,
 )
 from zigopt.json.builder import ExperimentJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.parameters.from_json import set_experiment_parameter_list_from_json
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   PARAMETER_DOUBLE,
@@ -52,7 +51,7 @@ from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.suggestion.sampler.grid import GridSampler
 
 from libsigopt.aux.constant import MAX_NUM_INT_CONSTRAINT_VARIABLES
-from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError
+from libsigopt.aux.errors import InvalidValueError, MissingJsonKeyError, MissingParamError, SigoptValidationError
 
 
 class BaseExperimentsCreateHandler(Handler):
@@ -107,7 +106,9 @@ class BaseExperimentsCreateHandler(Handler):
     experiment_meta = params.meta
 
     if experiment_meta.runs_only and project is None:
-      raise BadParamError(f"{self.user_facing_class_name}s must be placed in a project by defining the `project` field")
+      raise MissingParamError(
+        "project", f"{self.user_facing_class_name}s must be placed in a project by defining the `project` field"
+      )
 
     now = current_datetime()
     experiment = Experiment(
@@ -150,7 +151,7 @@ class BaseExperimentsCreateHandler(Handler):
         reference_id=reference_id,
       )
       if project is None:
-        raise BadParamError(f"Could not assign to project `{reference_id}`, the project does not exist.")
+        raise InvalidValueError(f"Could not assign to project `{reference_id}`, the project does not exist.")
       return project
     return default
 
@@ -178,19 +179,83 @@ class BaseExperimentsCreateHandler(Handler):
     return budget_key, budget
 
   @classmethod
+  def _get_experiment_type(cls, experiment_type_string):
+    if experiment_type_string is None:
+      return ExperimentMeta.OFFLINE
+    try:
+      return EXPERIMENT_NAME_TO_TYPE[experiment_type_string]
+    except KeyError as ke:
+      raise InvalidValueError(f"Invalid experiment type: {experiment_type_string}") from ke
+
+  @classmethod
+  def _check_and_set_grid_experiment_budget(cls, budget_key, budget, experiment_meta):
+    if len(experiment_meta.conditionals) > 0:
+      raise SigoptValidationError("Grid search experiments do not support conditional parameters currently.")
+    experiment_meta.observation_budget = GridSampler.observation_budget_from_experiment_meta(experiment_meta)
+    if budget is not None and budget != experiment_meta.observation_budget:
+      raise SigoptValidationError(
+        f"The specified `{budget_key}` of {budget}"
+        f" does not match the computed budget of {experiment_meta.observation_budget}"
+      )
+
+  @classmethod
+  def _check_budget_required(cls, budget_key, optimized_metrics, has_constraint_metrics, num_solutions):
+    if len(optimized_metrics) > 1:
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with more than one optimized metric")
+    if has_constraint_metrics:
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with constraint metrics")
+    if num_solutions and num_solutions > 1:
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with more than one solution")
+
+  @classmethod
+  def _check_conditionals_viability(cls, experiment_meta, num_solutions):
+    if len(experiment_meta.conditionals) > 0 and num_solutions and num_solutions > 1:
+      raise SigoptValidationError("Conditional experiments cannot be run with multisolution experiments")
+
+  @classmethod
+  def _check_multisolution_viability(cls, experiment_meta, num_solutions, optimized_metrics):
+    if num_solutions and num_solutions > 1:
+      if num_solutions > experiment_meta.observation_budget:
+        raise SigoptValidationError("Observation budget needs to be larger than the number of solutions")
+      if len(optimized_metrics) != 1:
+        raise SigoptValidationError("Multisolution experiments require exactly one optimized metric")
+
+  @classmethod
+  def _maybe_set_tasks_for_multitask_experiment(
+    cls,
+    json_dict,
+    budget_key,
+    budget,
+    optimized_metrics,
+    has_constraint_metrics,
+    num_solutions,
+    experiment_meta,
+  ):
+    tasks = cls.get_tasks_from_json(json_dict)
+    if not tasks:
+      return
+    if not budget:
+      raise SigoptValidationError(f"{budget_key} is required for an experiment with tasks (multitask)")
+    if len(optimized_metrics) > 1:
+      raise SigoptValidationError(
+        f"{cls.user_facing_class_name}s cannot have both tasks and multiple optimized metrics"
+      )
+    if has_constraint_metrics:
+      raise SigoptValidationError(f"{cls.user_facing_class_name}s cannot have both tasks and constraint metrics")
+    if num_solutions and num_solutions > 1:
+      raise SigoptValidationError(f"Multisolution {cls.user_facing_class_name} cannot be multitask")
+
+    experiment_meta.tasks.extend(tasks)
+
+  @classmethod
   def make_experiment_meta_from_json(
     cls,
     json_dict,
     experiment_type_string,
     development,
   ):
-    # pylint: disable=too-many-locals,too-many-statements
-    if experiment_type_string is None:
-      experiment_type = ExperimentMeta.OFFLINE
-    else:
-      experiment_type = EXPERIMENT_NAME_TO_TYPE.get(experiment_type_string)
-      if experiment_type is None:
-        raise BadParamError(f"Invalid experiment type: {experiment_type_string}")
+    # pylint: disable=too-many-locals
+    experiment_type = cls._get_experiment_type(experiment_type_string)
 
     experiment_meta = ExperimentMeta()
     experiment_meta.experiment_type = experiment_type
@@ -226,35 +291,15 @@ class BaseExperimentsCreateHandler(Handler):
     budget_key, budget = cls.get_budget_key_and_value(json_dict, experiment_meta.runs_only)
 
     if experiment_type == ExperimentMeta.GRID:
-      if len(experiment_meta.conditionals) > 0:
-        raise BadParamError("Grid search experiments do not support conditional parameters currently.")
-      experiment_meta.observation_budget = GridSampler.observation_budget_from_experiment_meta(experiment_meta)
-      if budget is not None and budget != experiment_meta.observation_budget:
-        raise BadParamError(
-          f"The specified `{budget_key}` of {budget}"
-          f" does not match the computed budget of {experiment_meta.observation_budget}"
-        )
+      cls._check_and_set_grid_experiment_budget(budget_key, budget, experiment_meta)
     elif budget is None:
-      if len(optimized_metrics) > 1:
-        raise BadParamError(f"{budget_key} is required for an experiment with more than one optimized metric")
-      if has_constraint_metrics:
-        raise BadParamError(f"{budget_key} is required for an experiment with constraint metrics")
-      if num_solutions and num_solutions > 1:
-        raise BadParamError(f"{budget_key} is required for an experiment with more than one solution")
+      cls._check_budget_required(budget_key, optimized_metrics, has_constraint_metrics, num_solutions)
     else:
       experiment_meta.observation_budget = budget
 
-    # Check feature viability with conditionals
-    if len(experiment_meta.conditionals) > 0:
-      if num_solutions and num_solutions > 1:
-        raise BadParamError("Conditional experiments cannot be run with multisolution experiments")
+    cls._check_conditionals_viability(experiment_meta, num_solutions)
 
-    # Check feature viability with multisolution experiments
-    if num_solutions and num_solutions > 1:
-      if num_solutions > experiment_meta.observation_budget:
-        raise BadParamError("Observation budget needs to be larger than the number of solutions")
-      if len(optimized_metrics) != 1:
-        raise BadParamError("Multisolution experiments require exactly one optimized metric")
+    cls._check_multisolution_viability(experiment_meta, num_solutions, optimized_metrics)
 
     client_provided_data = cls.get_client_provided_data(json_dict)
     experiment_meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
@@ -262,20 +307,17 @@ class BaseExperimentsCreateHandler(Handler):
     )
 
     if not (has_optimization_metrics or has_constraint_metrics):
-      raise BadParamError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")
+      raise SigoptValidationError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")
 
-    tasks = cls.get_tasks_from_json(json_dict)
-    if tasks:
-      if not budget:
-        raise BadParamError(f"{budget_key} is required for an experiment with tasks (multitask)")
-      if len(optimized_metrics) > 1:
-        raise BadParamError(f"{cls.user_facing_class_name}s cannot have both tasks and multiple optimized metrics")
-      if has_constraint_metrics:
-        raise BadParamError(f"{cls.user_facing_class_name}s cannot have both tasks and constraint metrics")
-      if num_solutions and num_solutions > 1:
-        raise BadParamError(f"Multisolution {cls.user_facing_class_name} cannot be multitask")
-
-      experiment_meta.tasks.extend(tasks)
+    cls._maybe_set_tasks_for_multitask_experiment(
+      json_dict,
+      budget_key,
+      budget,
+      optimized_metrics,
+      has_constraint_metrics,
+      num_solutions,
+      experiment_meta,
+    )
 
     return ExperimentMetaProxy(experiment_meta)
 
@@ -291,7 +333,7 @@ class BaseExperimentsCreateHandler(Handler):
     objective = get_opt_with_validation(metric, "objective", ValidationType.string)
     if key_present(metric, "objective"):
       if objective is None:
-        raise BadParamError(f"Objective field, if specified, must be one of {tuple(ALL_METRIC_OBJECTIVE_NAMES)}")
+        raise InvalidValueError(f"Objective field, if specified, must be one of {tuple(ALL_METRIC_OBJECTIVE_NAMES)}")
     objective = validate_metric_objective(objective)
     return objective
 
@@ -299,7 +341,7 @@ class BaseExperimentsCreateHandler(Handler):
   def get_metric_name(cls, metric, seen_names, num_metrics):
     name = get_opt_with_validation(metric, "name", ValidationType.string)
     if name is None and num_metrics > 1:
-      raise BadParamError("Multimetric experiments do not support unnamed metrics")
+      raise SigoptValidationError("Multimetric experiments do not support unnamed metrics")
     if name in seen_names:
       raise InvalidValueError(f"Duplicate metric name: {name}")
     return name
@@ -311,16 +353,16 @@ class BaseExperimentsCreateHandler(Handler):
     has_threshold_field_and_valid_value = key_present(metric, "threshold") and threshold is not None
     if metric_strategy == ExperimentMetric.OPTIMIZE:
       if num_optimized_metrics == 1 and has_threshold_field_and_valid_value:
-        raise BadParamError(
+        raise SigoptValidationError(
           "Thresholds are only supported for experiments with more than one optimized metric."
           " Try an All-Constraint experiment instead by setting `strategy` to `constraint`."
         )
     elif metric_strategy == ExperimentMetric.CONSTRAINT:
       if not has_threshold_field_and_valid_value:
-        raise BadParamError("Constraint metrics must have the threshold field defined")
+        raise SigoptValidationError("Constraint metrics must have the threshold field defined")
     else:  # metric_strategy == ExperimentMetric.STORE
       if has_threshold_field_and_valid_value:
-        raise BadParamError("Thresholds cannot be specified on stored metrics")
+        raise SigoptValidationError("Thresholds cannot be specified on stored metrics")
 
     return threshold
 
@@ -329,7 +371,9 @@ class BaseExperimentsCreateHandler(Handler):
     metric_strategy = get_opt_with_validation(metric, "strategy", ValidationType.string)
     if key_present(metric, "strategy"):
       if metric_strategy is None:
-        raise BadParamError(f"Metric strategy field, if specified, must be one of {tuple(ALL_METRIC_STRATEGY_NAMES)}")
+        raise InvalidValueError(
+          f"Metric strategy field, if specified, must be one of {tuple(ALL_METRIC_STRATEGY_NAMES)}"
+        )
     metric_strategy = validate_metric_strategy(metric_strategy)
     return metric_strategy
 
@@ -345,16 +389,18 @@ class BaseExperimentsCreateHandler(Handler):
       assert MAX_OPTIMIZED_METRICS >= 1
       return [ExperimentMetric()]
     if not metrics:
-      raise BadParamError("The `metrics` list must contain a metric")
+      raise InvalidValueError("The `metrics` list must contain a metric")
     if len(metrics) > MAX_METRICS_ANY_STRATEGY:
-      raise BadParamError(f"Cannot have more then {MAX_METRICS_ANY_STRATEGY} metrics")
+      raise InvalidValueError(f"Cannot have more then {MAX_METRICS_ANY_STRATEGY} metrics")
     strategy_to_metrics_map = group_metric_strategies_from_json(metrics)
     optimized_metrics = strategy_to_metrics_map.get(MetricStrategyNames.OPTIMIZE, [])
     if len(optimized_metrics) > MAX_OPTIMIZED_METRICS:
-      raise BadParamError(f"{cls.user_facing_class_name}s must have at most {MAX_OPTIMIZED_METRICS} optimized metrics")
+      raise InvalidValueError(
+        f"{cls.user_facing_class_name}s must have at most {MAX_OPTIMIZED_METRICS} optimized metrics"
+      )
     constraint_metrics = strategy_to_metrics_map.get(MetricStrategyNames.CONSTRAINT, [])
     if len(constraint_metrics) > MAX_CONSTRAINT_METRICS:
-      raise BadParamError(
+      raise InvalidValueError(
         f"{cls.user_facing_class_name}s must have at most {MAX_CONSTRAINT_METRICS} constraint metrics"
       )
     seen_names = []
@@ -392,6 +438,72 @@ class BaseExperimentsCreateHandler(Handler):
     return metric_list
 
   @classmethod
+  def _extract_parameter_info(
+    cls,
+    parameter,
+    parameter_names,
+    grid_param_names,
+    double_params_names,
+    integer_params_names,
+    unconditioned_params_names,
+    log_transform_params_names,
+  ):
+    name = parameter.name
+    parameter_names.append(name)
+    if parameter.grid_values:
+      grid_param_names.append(name)
+    if parameter.param_type == PARAMETER_DOUBLE:
+      double_params_names.append(name)
+    if parameter.param_type == PARAMETER_INT:
+      integer_params_names.append(name)
+    if parameter.param_type in [PARAMETER_DOUBLE, PARAMETER_INT]:
+      if not parameter.conditions:
+        unconditioned_params_names.append(name)
+      if parameter.transformation == ExperimentParameter.TRANSFORMATION_LOG:
+        log_transform_params_names.append(name)
+
+  @classmethod
+  def _add_constraint_term(
+    cls,
+    term,
+    term_list,
+    parameter_names,
+    integer_params_names,
+    double_params_names,
+    unconditioned_params_names,
+    log_transform_params_names,
+    grid_param_names,
+    constrained_integer_variables,
+    constraint_var_set,
+  ):
+    coeff = get_opt_with_validation(term, "weight", ValidationType.number)
+    if coeff == 0:
+      return
+    name = get_opt_with_validation(term, "name", ValidationType.string)
+    name = validate_variable_name(name)
+    if name in integer_params_names:
+      constrained_integer_variables.add(name)
+    if len(constrained_integer_variables) > MAX_NUM_INT_CONSTRAINT_VARIABLES:
+      raise InvalidValueError(
+        f"SigOpt allows no more than {MAX_NUM_INT_CONSTRAINT_VARIABLES} integer constraint variables"
+      )
+    if name not in parameter_names:
+      raise InvalidValueError(f"Variable {name} is not a known parameter")
+    if name not in double_params_names and name not in integer_params_names:
+      raise InvalidValueError(f"Variable {name} is not a parameter of type `double` or type `int`")
+    if name not in unconditioned_params_names:
+      raise InvalidValueError(f"Constraint cannot be defined on a conditioned parameter {name}")
+    if name in log_transform_params_names:
+      raise InvalidValueError(f"Constraint cannot be defined on a log-transformed parameter {name}")
+    if name in grid_param_names:
+      raise InvalidValueError(f"Constraint cannot be defined on a grid parameter {name}")
+    if name in constraint_var_set:
+      raise InvalidValueError(f"Duplicate variable name: {name}")
+    constraint_var_set.add(name)
+
+    term_list.append(Term(coeff=coeff, name=name))
+
+  @classmethod
   def get_constraints_from_json(cls, json_dict, parameters):
     # pylint: disable=too-many-locals,too-many-statements
     constraints = get_opt_with_validation(
@@ -409,18 +521,15 @@ class BaseExperimentsCreateHandler(Handler):
     log_transform_params_names = []
     grid_param_names = []
     for p in parameters:
-      parameter_names.append(p.name)
-      if p.grid_values:
-        grid_param_names.append(p.name)
-      if p.param_type == PARAMETER_DOUBLE:
-        double_params_names.append(p.name)
-      if p.param_type == PARAMETER_INT:
-        integer_params_names.append(p.name)
-      if p.param_type in [PARAMETER_DOUBLE, PARAMETER_INT]:
-        if not p.conditions:
-          unconditioned_params_names.append(p.name)
-        if p.transformation == ExperimentParameter.TRANSFORMATION_LOG:
-          log_transform_params_names.append(p.name)
+      cls._extract_parameter_info(
+        p,
+        parameter_names,
+        grid_param_names,
+        double_params_names,
+        integer_params_names,
+        unconditioned_params_names,
+        log_transform_params_names,
+      )
 
     constraint_lst = []
     constrained_integer_variables = set()
@@ -439,32 +548,18 @@ class BaseExperimentsCreateHandler(Handler):
       if len(set(term_types)) > 1:
         raise InvalidValueError("Constraint functions cannot mix integers and doubles. One or the other only.")
       for term in terms:
-        coeff = get_opt_with_validation(term, "weight", ValidationType.number)
-        if coeff == 0:
-          continue
-        name = get_opt_with_validation(term, "name", ValidationType.string)
-        name = validate_variable_name(name)
-        if name in integer_params_names:
-          constrained_integer_variables.add(name)
-        if len(constrained_integer_variables) > MAX_NUM_INT_CONSTRAINT_VARIABLES:
-          raise InvalidValueError(
-            f"SigOpt allows no more than {MAX_NUM_INT_CONSTRAINT_VARIABLES} integer constraint variables"
-          )
-        if name not in parameter_names:
-          raise InvalidValueError(f"Variable {name} is not a known parameter")
-        if name not in double_params_names and name not in integer_params_names:
-          raise InvalidValueError(f"Variable {name} is not a parameter of type `double` or type `int`")
-        if name not in unconditioned_params_names:
-          raise InvalidValueError(f"Constraint cannot be defined on a conditioned parameter {name}")
-        if name in log_transform_params_names:
-          raise InvalidValueError(f"Constraint cannot be defined on a log-transformed parameter {name}")
-        if name in grid_param_names:
-          raise InvalidValueError(f"Constraint cannot be defined on a grid parameter {name}")
-        if name in constraint_var_set:
-          raise InvalidValueError(f"Duplicate variable name: {name}")
-        constraint_var_set.add(name)
-
-        term_lst.append(Term(coeff=coeff, name=name))
+        cls._add_constraint_term(
+          term,
+          term_lst,
+          parameter_names,
+          integer_params_names,
+          double_params_names,
+          unconditioned_params_names,
+          log_transform_params_names,
+          grid_param_names,
+          constrained_integer_variables,
+          constraint_var_set,
+        )
       constraint_lst.append(ExperimentConstraint(type=constraint_type, terms=term_lst, rhs=rhs))
     return constraint_lst
 
@@ -489,18 +584,18 @@ class BaseExperimentsCreateHandler(Handler):
       cost = get_opt_with_validation(task, "cost", ValidationType.number)
       tasks.append(Task(name=name, cost=cost))
       if cost <= 0 or cost > 1:
-        raise BadParamError("For multitask experiments, costs must all be positive and less than or equal to 1.")
+        raise InvalidValueError("For multitask experiments, costs must all be positive and less than or equal to 1.")
 
     distinct_costs = distinct([t.cost for t in tasks])
     distinct_names = distinct([t.name for t in tasks])
     if 1 not in distinct_costs:
-      raise BadParamError("For multitask experiments, exactly one task must have cost == 1 (none present).")
+      raise InvalidValueError("For multitask experiments, exactly one task must have cost == 1 (none present).")
     if len(distinct_costs) != len(tasks):
-      raise BadParamError("For multitask experiments, all task costs must be distinct.")
+      raise InvalidValueError("For multitask experiments, all task costs must be distinct.")
     if len(distinct_names) != len(tasks):
-      raise BadParamError("For multitask experiments, all task names must be distinct.")
+      raise InvalidValueError("For multitask experiments, all task names must be distinct.")
     if len(tasks) < 2:
-      raise BadParamError("For multitask experiments, at least 2 tasks must be present.")
+      raise InvalidValueError("For multitask experiments, at least 2 tasks must be present.")
 
     return tasks
 

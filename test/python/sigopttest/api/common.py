@@ -8,7 +8,9 @@ import json
 import pytest
 
 from zigopt.api import request
-from zigopt.net.errors import BadParamError
+from zigopt.api.request import InvalidJsonValue
+
+from libsigopt.aux.errors import InvalidKeyError, SigoptValidationError
 
 
 class TestJsonHandling:
@@ -21,11 +23,11 @@ class TestJsonHandling:
 
     assert request.object_pairs_hook_raise_on_duplicates(no_dupes) == dict(no_dupes)
 
-    with pytest.raises(BadParamError):
+    with pytest.raises(InvalidKeyError):
       request.object_pairs_hook_raise_on_duplicates(dupes)
 
   def test_overflow_json_value(self):
-    with pytest.raises(BadParamError):
+    with pytest.raises(InvalidJsonValue):
       request.as_json('{"a":1e+400}'.encode())
 
   def test_as_json(self):
@@ -41,11 +43,11 @@ class TestJsonHandling:
     dupes_json = json.loads(dupes_str)
     assert dupes_json["hi"] == 3
 
-    with pytest.raises(BadParamError):
+    with pytest.raises(InvalidKeyError):
       request.as_json(dupes_str.encode())
 
     bad_str = b"{"
-    with pytest.raises(BadParamError):
+    with pytest.raises(SigoptValidationError):
       request.as_json(bad_str)
 
   def test_unicode(self):

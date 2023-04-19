@@ -5,9 +5,10 @@ from zigopt.api.auth import api_token_authentication
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.clients.base import ClientHandler
 from zigopt.json.builder import PaginationJsonBuilder, ProjectJsonBuilder
-from zigopt.net.errors import BadParamError
 from zigopt.project.model import Project
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
+
+from libsigopt.aux.errors import SigoptValidationError
 
 
 SORT_FIELD_CREATED = "created"
@@ -92,7 +93,7 @@ class ClientsProjectsListHandler(ClientHandler):
     try:
       Field = SORT_FIELDS[sort.field]
     except KeyError as e:
-      raise BadParamError(f"Invalid sort: {sort.field}") from e
+      raise SigoptValidationError(f"Invalid sort: {sort.field}") from e
     return self.Params(
       paging=request.get_paging(),
       sort=sort,
