@@ -88,9 +88,16 @@ commands:
     steps:
       - run: make submodules
       - sigopt-ninja-dns
+  initialize-config-directory:
+    steps:
+      run: |
+        ./ci/compose.sh run -i --rm init-config sh -e <<EOF
+          cp /sigopt-server/config/circleci/* /etc/sigopt/server-config/
+        EOF
   integration-test-setup:
     steps:
       - run: ./ci/create_development_tls_certs.sh
+      - initialize-config-directory
       - run: ./ci/compose.sh build --progress=plain test-runner
       - start-service:
           description: PostgreSQL
