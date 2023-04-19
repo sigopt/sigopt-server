@@ -334,7 +334,7 @@ services:
       - -e
       - -c
       - |
-        export MINIO_ROOT_PASSWORD="$(cat /root/.minio/password.txt)"
+        export MINIO_ROOT_PASSWORD="$$(cat /root/.minio/password.txt)"
         exec /usr/bin/docker-entrypoint.sh server /var/lib/minio/data
     environment:
       - MINIO_ROOT_USER=ROOTUSER
