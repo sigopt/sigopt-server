@@ -36,6 +36,7 @@ services:
         - PYTHON_MAJOR
         - PYTHON_MINOR
     environment:
+      - &server-config-env SIGOPT_SERVER_CONFIG_DIR
       - ALLOW_SLOW=1
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
@@ -87,6 +88,7 @@ services:
     command:
       - --drop-tables
     environment:
+      - *server-config-env
       - "sigopt.clients.client.user.password=$OWNER_PASSWORD"
     read_only: true
     security_opt:
@@ -136,6 +138,7 @@ services:
       - 0.0.0.0:5000
       - zigopt.api.main:GUNICORN_ENTRY_POINT
     environment: &zigopt_environment
+      - *server-config-env
       - sigopt_server_version
     volumes:
       - *sigopt-config-volume
@@ -174,6 +177,7 @@ services:
       args:
         - NODE_MAJOR
     environment:
+      - *server-config-env
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
       - sigopt_server_version
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
