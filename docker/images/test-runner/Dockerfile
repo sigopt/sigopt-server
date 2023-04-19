@@ -29,7 +29,7 @@ COPY scripts/compile/generate_routes.sh /sigopt-server/scripts/compile/generate_
 COPY .babelrc /sigopt-server/.babelrc
 COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.js
 
-RUN ./scripts/compile/generate_routes.sh config/defaults.json
+RUN ./scripts/compile/generate_routes.sh config/
 
 
 FROM ubuntu:jammy-20230308 AS test-runner-base
