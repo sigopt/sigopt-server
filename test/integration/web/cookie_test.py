@@ -64,7 +64,7 @@ class TestCookie(WebBase):
     web_connection.get("/")
     response = web_connection.get("/cookie").response
     session_id = response.cookies.get(scoped_cookie_name)
-    assert json.load(s3_client.get(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
+    assert json.load(s3_client.get_object(Bucket=cookiejar_bucket, Key=session_id)["Body"]) == response.json()
 
   def check_cookie_was_deleted(self, s3_client, session_id, cookiejar_bucket):
     with pytest.raises(AWSError) as aws_error:
