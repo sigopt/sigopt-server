@@ -102,10 +102,11 @@ class TestSourceFunctionality(UnitTestBase):
 
   @pytest.mark.parametrize("max_gp_observations", (5, 7, 8))
   def test_suggestions_in_conditional_assignments(self, services, experiment, max_gp_observations):
-    services.config_broker["model.max_simultaneous_af_points"] = 10
-    services.config_broker["model.nonzero_mean_default"] = "automatic"
-    services.config_broker["model.num_suggestions"] = 1
-    services.config_broker["model.gp_cutoff_observation_count"] = max_gp_observations
+    model = services.config_broker.data.setdefault("model", {})
+    model["max_simultaneous_af_points"] = 10
+    model["nonzero_mean_default"] = "automatic"
+    model["num_suggestions"] = 1
+    model["gp_cutoff_observation_count"] = max_gp_observations
 
     num_suggestions = 7
     source = ConditionalOptimizationSource(services, experiment)

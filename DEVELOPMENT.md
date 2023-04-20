@@ -228,7 +228,7 @@ Note that the creation script for both certs will pause in your default editor, 
 ## How to run everything locally
 
 ```bash
-./scripts/launch/all_live.sh [optional_config_file]
+./scripts/launch/all_live.sh
 ```
 
 This will start Web, API and message processors (qworkers) in development mode,

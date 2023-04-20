@@ -38,8 +38,6 @@ class SwaggerApp(Flask):
     self.profiler = NullProfiler()
     self.tracer = NullTracer()
 
-    config_broker.log_configs()
-
     self.global_services = self.ServiceBag(config_broker=config_broker)
     self.request_local_services_factory = self.RequestLocalServiceBag
 

@@ -3,13 +3,12 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from mock import Mock
+from sigopt_config.broker import ConfigBroker
 
 from zigopt.exception.logger import ExceptionLogger
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 from zigopt.suggestion.broker.queued import SuggestionBroker
 from zigopt.suggestion.lib import SuggestionException
-
-from sigopttest.base.config_broker import StrictAccessConfigBroker
 
 
 class CustomException(Exception):
@@ -24,7 +23,7 @@ class TestNextSuggestion:
   @pytest.fixture
   def services(self):
     services = Mock()
-    services.config_broker = StrictAccessConfigBroker.from_configs(
+    services.config_broker = ConfigBroker(
       {
         "features": {"raiseSoftExceptions": False},
         "model": {"force_spe": False},
@@ -61,8 +60,8 @@ class TestNextSuggestion:
     random_fallback,
     suggestion_broker,
   ):
-    services.config_broker["queue.forbid_random_fallback"] = random_fallback
-    services.config_broker["features.raiseSoftExceptions"] = True
+    services.config_broker.data.setdefault("queue", {})["forbid_random_fallback"] = random_fallback
+    services.config_broker.data.setdefault("features", {})["raiseSoftExceptions"] = True
     suggestion_broker.suggestion_to_serve_next = Mock(side_effect=CustomException())
     with pytest.raises(CustomException):
       suggestion_broker.next_suggestion(

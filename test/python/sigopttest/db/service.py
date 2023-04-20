@@ -3,11 +3,10 @@
 # SPDX-License-Identifier: Apache License 2.0
 import mock
 import pytest
+from sigopt_config.broker import ConfigBroker
 
 from zigopt.common import *
 from zigopt.db.service import DatabaseConnection, DatabaseConnectionService
-
-from sigopttest.base.config_broker import StrictAccessConfigBroker
 
 
 USERNAME = "fakeproduser"
@@ -63,8 +62,7 @@ class TestDatabaseConnectionService:
     assert engine.url.database == PATH
 
   def test_connection(self, service, services):
-    config_broker = StrictAccessConfigBroker.from_configs({"db": CONFIG})
-    engine = service.make_engine(config_broker.get_object("db"))
+    engine = service.make_engine(CONFIG)
     assert engine.url.username == USERNAME
     assert engine.url.password == PASSWORD
     assert engine.url.host == HOST
@@ -77,10 +75,12 @@ class TestDatabaseConnectionService:
     class OurException(Exception):
       pass
 
-    services.config_broker = StrictAccessConfigBroker.from_configs(
-      {
-        "db": CONFIG,
-      }
+    services.config_broker = ConfigBroker.from_configs(
+      [
+        {
+          "db": CONFIG,
+        }
+      ]
     )
     with mock.patch("pg8000.connect", side_effect=OurException()):
       with pytest.raises(OurException):

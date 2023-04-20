@@ -5,6 +5,28 @@ networks:
     driver: bridge
 
 services:
+  init-config:
+    image: busybox
+    command:
+      - sh
+      - -e
+      - -c
+      - |
+        rm -rf /etc/sigopt/server-config/*
+        cp /sigopt-server/config/sigopt/* /etc/sigopt/server-config/
+        cat <<'EOF' >/etc/sigopt/server-config/00_secrets.yml
+        user_uploads:
+          s3:
+            aws_secret_access_key: '$MINIO_ROOT_PASSWORD'
+        web:
+          cookiejar_credentials:
+            secretAccessKey: '$MINIO_ROOT_PASSWORD'
+        EOF
+        echo '$MINIO_ROOT_PASSWORD' >/etc/minio/password.txt
+    volumes:
+      - ./config:/sigopt-server/config
+      - minio-config:/etc/minio
+      - server-config:/etc/sigopt/server-config
   test-runner:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
@@ -14,12 +36,13 @@ services:
         - PYTHON_MAJOR
         - PYTHON_MINOR
     environment:
+      - &server-config-env SIGOPT_SERVER_CONFIG_DIR
       - ALLOW_SLOW=1
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
     volumes:
       - &rootca-volume ./artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
-      - &sigopt-config-volume ./config:/sigopt-server/config
+      - &sigopt-config-volume server-config:/etc/sigopt/server-config
       - ./junit-results:/sigopt-server/junit-results
       - ./screenshots/failure:/sigopt-server/screenshots/failure
       - ./failure_console_logs:/sigopt-server/failure_console_logs
@@ -62,11 +85,8 @@ services:
       - python
       - -m
       - zigopt.utils.create_database
-      - &config-file "$sigopt_server_config_file"
-    command:
-      - --drop-tables
     environment:
-      - "sigopt.clients.client.user.password=$OWNER_PASSWORD"
+      - *server-config-env
     read_only: true
     security_opt:
       - "no-new-privileges:true"
@@ -115,8 +135,7 @@ services:
       - 0.0.0.0:5000
       - zigopt.api.main:GUNICORN_ENTRY_POINT
     environment: &zigopt_environment
-      - "sigopt.user_uploads.s3.aws_secret_access_key=$MINIO_ROOT_PASSWORD"
-      - "sigopt_server_config_file=$sigopt_server_config_file"
+      - *server-config-env
       - sigopt_server_version
     volumes:
       - *sigopt-config-volume
@@ -155,8 +174,7 @@ services:
       args:
         - NODE_MAJOR
     environment:
-      - "sigopt.web.cookiejar_credentials.secretAccessKey=$MINIO_ROOT_PASSWORD"
-      - "sigopt_server_config_file=$sigopt_server_config_file"
+      - *server-config-env
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
       - sigopt_server_version
       - ALLOW_DECRYPT_COOKIE_ENDPOINT=1
@@ -311,15 +329,18 @@ services:
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
+    entrypoint:
+      - sh
+      - -e
+      - -c
+      - |
+        export MINIO_ROOT_PASSWORD="$$(cat /root/.minio/password.txt)"
+        exec /usr/bin/docker-entrypoint.sh server /var/lib/minio/data
     environment:
       - MINIO_ROOT_USER=ROOTUSER
-      - MINIO_ROOT_PASSWORD
     volumes:
       - minio-data:/var/lib/minio/data
       - minio-config:/root/.minio
-    command:
-      - "server"
-      - "/var/lib/minio/data"
     deploy:
       resources:
         limits:
@@ -366,3 +387,4 @@ volumes:
   pg-sock: {}
   redis-run: {}
   sigopt-python: {}
+  server-config: {}

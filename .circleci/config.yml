@@ -88,9 +88,19 @@ commands:
     steps:
       - run: make submodules
       - sigopt-ninja-dns
+  initialize-config-directory:
+    steps:
+      - run:
+          name: Initialize SigOpt Server config directory
+          command: |
+            ./ci/compose.sh run -Ti --rm init-config sh -e \<<EOF
+              cp /sigopt-server/config/circleci/* /etc/sigopt/server-config/
+              echo CHANGEME123 >/etc/minio/password.txt
+            EOF
   integration-test-setup:
     steps:
       - run: ./ci/create_development_tls_certs.sh
+      - initialize-config-directory
       - run: ./ci/compose.sh build --progress=plain test-runner
       - start-service:
           description: PostgreSQL
@@ -230,11 +240,10 @@ commands:
       - install-python-libraries
       - run:
           name: Generate swagger file
-          command: pipenv run ./pp src/python/zigopt/api/documentation.py
+          command: pipenv run env SIGOPT_SERVER_CONFIG_DIR=./config/circleci ./pp src/python/zigopt/api/documentation.py
           environment:
             SIGOPT_SWAGGER_PATH: /home/circleci/project/
             SIGOPT_SWAGGER_FILENAME: swagger.json
-            sigopt_server_config_file: ./config/circleci.json
       - persist_to_workspace:
           root: /home/circleci/
           paths:
@@ -500,6 +509,7 @@ jobs:
     steps:
       - checkout
       - docker-test-setup
+      - initialize-config-directory
       - start-service:
           description: PostgreSQL
           service: postgres

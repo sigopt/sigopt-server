@@ -1,0 +1,9 @@
+clients:
+  client:
+    id: 1
+    name: SigOpt
+    user:
+      email: owner@sigopt.ninja
+      has_verified_email: true
+      name: Default Owner
+  enabled: true

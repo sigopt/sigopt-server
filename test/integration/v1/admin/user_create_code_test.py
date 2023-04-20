@@ -36,8 +36,8 @@ class TestUserCreateCode(V1Base):
     )
     invite_code = extract_signup_code(inbox, email)
     if role == MembershipType.owner and invite_code is None:
-      assert config_broker.get_bool("email.verify") is False
-      assert config_broker.get_bool("email.enabled") is False
+      assert config_broker.get("email.verify") is False
+      assert config_broker.get("email.enabled") is False
       pytest.skip()
     return invite_code
 

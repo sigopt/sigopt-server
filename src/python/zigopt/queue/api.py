@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 
-from zigopt.config.broker import ConfigBroker
+from zigopt.config import load_config_from_env
 from zigopt.log.base import base_logger_setup, configure_loggers
 from zigopt.profile.profile import NullProfiler, Profiler
 from zigopt.queue.exceptions import WorkerInterruptedException
@@ -29,10 +29,8 @@ parser.add_argument("--interrupted-exit-code", type=int, default=0)
 if __name__ == "__main__":
   base_logger_setup()
   args = parser.parse_args()
-  config_file = os.environ["sigopt_server_config_file"]
-  config_broker = ConfigBroker.from_file(config_file)
+  config_broker = load_config_from_env()
   configure_loggers(config_broker)
-  config_broker.log_configs()
 
   profiler = NullProfiler()
   if args.profile:

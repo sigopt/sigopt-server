@@ -6,9 +6,9 @@ from collections import defaultdict
 
 import mock
 import pytest
+from sigopt_config.broker import ConfigBroker
 
 from zigopt.assignments.model import make_experiment_assignment_value_array
-from zigopt.config.broker import ConfigBroker
 from zigopt.experiment.model import Experiment
 from zigopt.observation.model import Observation
 from zigopt.optimize.sources.base import OptimizationSource
@@ -28,7 +28,7 @@ class UnitTestBase:
   @pytest.fixture
   def services(self):
     return mock.Mock(
-      config_broker=ConfigBroker.from_configs({}),
+      config_broker=ConfigBroker({}),
       sc_adapter=SCAdapter(mock.Mock()),
     )
 
@@ -158,8 +158,9 @@ class TestSourceFunctionality(UnitTestBase):
       assert scored_suggestion.suggestion in suggestions
 
   def test_categorical_scoring(self, services, experiment):
-    services.config_broker["model.max_simultaneous_af_points"] = 1000
-    services.config_broker["model.nonzero_mean_default"] = "automatic"
+    model = services.config_broker.data.setdefault("model", {})
+    model["max_simultaneous_af_points"] = 1000
+    model["nonzero_mean_default"] = "automatic"
     source = CategoricalOptimizationSource(services, experiment)
     suggestions = self.sample_suggestions(services, experiment, 10)
     observations = self.form_random_observations_from_suggestions(experiment, suggestions)
@@ -237,9 +238,14 @@ class TestSourcesGetSuggestionsLogScale(UnitTestBase):
     )
 
   def test_categorical_suggestions_with_parameter_log_transform(self, services, experiment):
-    services.config_broker["model.max_simultaneous_af_points"] = 10
-    services.config_broker["model.nonzero_mean_default"] = "automatic"
-    services.config_broker["model.num_suggestions"] = 1
+    model = services.config_broker.data.setdefault("model", {})
+    model.update(
+      {
+        "max_simultaneous_af_points": 10,
+        "nonzero_mean_default": "automatic",
+        "num_suggestions": 1,
+      }
+    )
 
     source = CategoricalOptimizationSource(services, experiment)
     suggestions = self.sample_suggestions(services, experiment, 7)
@@ -260,7 +266,7 @@ class TestSourcesGetSuggestionsLogScale(UnitTestBase):
 
   @pytest.mark.parametrize("num_observations", [3, 20, 50, 90])
   def test_spe_suggestions_with_parameter_log_transform(self, services, experiment, num_observations):
-    services.config_broker["model.num_suggestions"] = 2
+    services.config_broker.data.setdefault("model", {})["num_suggestions"] = 2
 
     source = SPEOptimizationSource(services, experiment)
     services.sc_adapter = SCAdapter(services)

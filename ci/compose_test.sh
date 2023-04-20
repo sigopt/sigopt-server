@@ -18,7 +18,7 @@ shift
 
 ./ci/compose.sh run --name=test-runner test-runner \
   python -m test.test_runner \
-    --config-file config/circleci.json \
+    --config-dir /sigopt-server/config/circleci/ \
     --skip-compile \
     --junitxml="junit-results/$SUITE/junit.xml" \
     "$@"

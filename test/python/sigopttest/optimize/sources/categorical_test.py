@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from mock import Mock
+from sigopt_config.broker import ConfigBroker
 
-from zigopt.config.broker import ConfigBroker
 from zigopt.experiment.model import Experiment
 from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.optimize.sources.categorical import CategoricalOptimizationSource
@@ -57,7 +57,7 @@ class TestExperimentProgress:
     experiment_meta = BaseExperimentsCreateHandler.make_experiment_meta_from_json(json_dict, "offline", False)
     experiment = Experiment(experiment_meta=experiment_meta)
     services = Mock()
-    services.config_broker = ConfigBroker.from_configs([{}])
+    services.config_broker = ConfigBroker({})
     source = CategoricalOptimizationSource(services, experiment)
     assert experiment.dimension <= DEFAULT_USE_SPE_BEYOND_THIS_MANY_DIMENSIONS
     assert source.is_suitable_at_this_point(0)

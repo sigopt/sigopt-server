@@ -17,7 +17,7 @@ import zigopt.db.all_models  # pylint: disable=unused-import
 from zigopt.common import *
 from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import current_datetime, unix_timestamp
-from zigopt.config.broker import ConfigBroker
+from zigopt.config import load_config_from_env
 from zigopt.db.declarative import Base
 from zigopt.db.service import DatabaseConnectionService
 from zigopt.experiment.model import Experiment
@@ -97,7 +97,7 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
     "password": superuser_password,
     "host": config_broker.get("db.host"),
     "port": config_broker.get("db.port"),
-    **(config_broker.get_object("db.query") or {}),
+    **(config_broker.get("db.query") or {}),
   }
   conn = pg8000.connect(**remove_nones(args))
   try:
@@ -211,7 +211,7 @@ def purge_redis_database(services):
 
 def get_root_engine(config_broker, superuser=None, superuser_password=None, echo=False):
   return DatabaseConnectionService.make_engine(
-    config_broker.get_object("db"),
+    config_broker.get("db"),
     user=superuser or "postgres",
     password=superuser_password,
     echo=echo,
@@ -219,7 +219,6 @@ def get_root_engine(config_broker, superuser=None, superuser_password=None, echo
 
 
 def create_db(
-  config_file_name,
   config_broker,
   fake_data,
   drop_tables,
@@ -228,11 +227,9 @@ def create_db(
   allow_list=True,
   initialize_data=True,
   echo=False,
+  user_password=None,
 ):
   # pylint: disable=too-many-locals,too-many-statements
-  if "production" in config_file_name:
-    raise Exception("whoa whoa whoa, this is probably a bad idea on the prod database")
-
   root_engine = get_root_engine(
     config_broker,
     superuser=superuser,
@@ -256,7 +253,7 @@ def create_db(
   database = config_broker.get("db.path")
   username = config_broker.get("db.user")
   password = config_broker.get("db.password")
-  query = config_broker.get_object("db.query")
+  query = config_broker.get("db.query")
   if allow_list:
     assert username in USERNAME_ALLOW_LIST
   make_produser(
@@ -276,7 +273,7 @@ def create_db(
   services.database_service.start_session()
 
   if initialize_data:
-    if config_broker.get_object("clients.client"):
+    if config_broker.get("clients.client"):
       client_name = config_broker["clients.client.name"]
       client_id = config_broker["clients.client.id"]
       client_meta = ClientMeta()
@@ -290,14 +287,18 @@ def create_db(
       ).fetchall()
       root_engine.execute(f"REVOKE UPDATE ON SEQUENCE clients_id_seq FROM {username}")
 
-      for sibling_name in config_broker.get_array("clients.siblings", []):
+      for sibling_name in config_broker.get("clients.siblings", []):
         sibling_client = services.client_service.insert(
           Client(organization_id=client.organization_id, name=sibling_name)
         )
         services.project_service.create_example_for_client(client_id=sibling_client.id)
 
-      if config_broker.get_object("clients.client.user"):
-        user = create_user(services, config_broker.get_object("clients.client.user"))
+      user_config = config_broker.get("clients.client.user")
+      if user_config is not None:
+        assert isinstance(user_config, dict)
+        if user_password is not None:
+          user_config["password"] = user_password
+        user = create_user(services, user_config)
         create_owner(
           services=services,
           user_id=user.id,
@@ -467,12 +468,6 @@ def parse_args():
   )
 
   parser.add_argument(
-    "config_file",
-    type=str,
-    help="config json file for db",
-  )
-
-  parser.add_argument(
     "--fake-data",
     action="store_true",
     default=False,
@@ -500,31 +495,32 @@ def parse_args():
   )
   parser.set_defaults(initialize_data=True)
 
+  parser.add_argument(
+    "--user-password",
+    help="the password for the default user",
+  )
+
   return parser.parse_args()
 
 
 def main():
   the_args = parse_args()
 
-  config_file = the_args.config_file
-  if "production" in config_file:
-    raise Exception("This should not be run on the prod db.")
-
-  config_broker = ConfigBroker.from_file(config_file)
-  config_broker["redis.enabled"] = False
-  config_broker["user_uploads.s3.enabled"] = False
+  config_broker = load_config_from_env()
+  config_broker.data.setdefault("redis", {})["enabled"] = False
+  config_broker.data.setdefault("user_uploads", {}).setdefault("s3", {})["enabled"] = False
   should_populate = setup_db(config_broker=config_broker)
 
   # Won't try to populate db unless explicitly told or a new db was created
   if should_populate or the_args.fake_data or the_args.drop_tables:
     logging.info("Populating db")
     create_db(
-      config_file_name=the_args.config_file,
       config_broker=config_broker,
       fake_data=the_args.fake_data,
       drop_tables=the_args.drop_tables,
       initialize_data=the_args.initialize_data,
       echo=True,
+      user_password=the_args.user_password,
     )
 
 
