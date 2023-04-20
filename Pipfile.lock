@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "97045f39512b71194e70abc534938db2fad443508d7c4be2a5fd2fc63e7ac370"
+            "sha256": "b65692fb395e868019da68b14df291765e36c03a7e45ded7172f79182e85925a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,19 +59,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:2272a060005bf8299f7342cbf1344304eb44b7060cddba6784f676e3bc737bb8",
-                "sha256:deb53ad15ff0e75ae0be6d7115a2d34e4bafb0541484485f0feb61dabdfb5513"
+                "sha256:40d6fb099f7e6041ddcc72aadc37d2eaae6f32d1f7cf2ef5c02199a114be60a3",
+                "sha256:bfb16f1978be69fdee39b692fe639b5f9c430d33843d282889a59e61ae132051"
             ],
             "index": "pypi",
-            "version": "==1.26.115"
+            "version": "==1.26.116"
         },
         "botocore": {
             "hashes": [
-                "sha256:58eee8cf8f4f3e515df29f6dc535dd86ed3f4cea40999c5bc74640ff40bdc71f",
-                "sha256:dff327977d7c9f98f2dc54b51b8f70326952dd50ae23b885fdfa8bfeec014b76"
+                "sha256:907dec71437386867000912c2427845f482feef5327e7c659e3e81766aac3d34",
+                "sha256:c058baa1d374111ad2036e1f7d9fe715571b6d66d180a224208fc7fef9bc3c80"
             ],
             "index": "pypi",
-            "version": "==1.29.115"
+            "version": "==1.29.116"
         },
         "cffi": {
             "hashes": [
@@ -755,15 +755,15 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:257de92a9d50a60b8e22abfcbb771571fde0dbf3ec234463212027a4eeecbe9a",
-                "sha256:e728ca814a823bf7bf60162daf9db95b93d532948c4c0bea762ce62f60189078"
+                "sha256:888be97fde8cc3afd60f7784e678fa29ee13c4e5362daa7104a93bba33646c50",
+                "sha256:b7e53a01c6c654d26d2999ee033d8c6125e5fa55f03b7b193f937ae7ac999f22"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==67.6.1"
+            "version": "==67.7.0"
         },
         "sigopt-config": {
             "git": "https://github.com/sigopt/sigopt-config.git",
-            "ref": "b7e238ffb6e5883c6b11016f012cbbf3cc67dc89"
+            "ref": "5fa4a377a7f121f2c4b31e024379e5ca99ec72cd"
         },
         "six": {
             "hashes": [
@@ -2111,11 +2111,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:257de92a9d50a60b8e22abfcbb771571fde0dbf3ec234463212027a4eeecbe9a",
-                "sha256:e728ca814a823bf7bf60162daf9db95b93d532948c4c0bea762ce62f60189078"
+                "sha256:888be97fde8cc3afd60f7784e678fa29ee13c4e5362daa7104a93bba33646c50",
+                "sha256:b7e53a01c6c654d26d2999ee033d8c6125e5fa55f03b7b193f937ae7ac999f22"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==67.6.1"
+            "version": "==67.7.0"
         },
         "sigopt": {
             "git": "https://github.com/sigopt/sigopt-python.git",
@@ -2247,11 +2247,11 @@
         },
         "virtualenv": {
             "hashes": [
-                "sha256:31712f8f2a17bd06234fa97fdf19609e789dd4e3e4bf108c3da71d710651adbc",
-                "sha256:f50e3e60f990a0757c9b68333c9fdaa72d7188caa417f96af9e52407831a3b68"
+                "sha256:278753c47aaef1a0f14e6db8a4c5e1e040e90aea654d0fc1dc7e0d8a42616cc3",
+                "sha256:48fd3b907b5149c5aab7c23d9790bea4cac6bc6b150af8635febc4cfeab1275a"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==20.21.0"
+            "version": "==20.22.0"
         },
         "vulture": {
             "hashes": [
