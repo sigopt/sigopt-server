@@ -25,7 +25,7 @@ class TestCookie(WebBase):
     url = config_broker.get("web.cookiejar_endpoint")
     if url:
       options["endpoint_url"] = url
-    access_credentials = config_broker.get_object("web.cookiejar_credentials")
+    access_credentials = config_broker.get("web.cookiejar_credentials")
     if access_credentials:
       options["aws_access_key_id"] = access_credentials["accessKeyId"]
       options["aws_secret_access_key"] = access_credentials["secretAccessKey"]

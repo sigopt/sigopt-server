@@ -142,7 +142,7 @@ class DatabaseConnectionService(Service):
 
   def warmup_db(self):
     if self.services.config_broker.get("db.enabled", True):
-      config = self.services.config_broker.get_object("db")
+      config = self.services.config_broker.get("db")
       db_connection = DatabaseConnection(
         self.make_engine(config),
         logger_factory=self.services.logging_service,

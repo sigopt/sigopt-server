@@ -55,7 +55,7 @@ setup-filestorage:
 	@./scripts/launch/compose.sh run --rm init-minio-filestorage
 
 fix-db: docker-protocompile
-	@./scripts/dev/createdb_in_docker.sh config/development.json --fake-data --drop-tables
+	@./scripts/dev/createdb_in_docker.sh config/development/ --fake-data --drop-tables
 
 setup-cookiejar:
 	@./scripts/launch/compose.sh run --rm init-minio-cookiejar

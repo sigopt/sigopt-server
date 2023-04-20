@@ -1,9 +1,10 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from sigopt_config.broker import ConfigBroker
+
 from zigopt.common import *
 from zigopt.authorization.empty import EmptyAuthorization
-from zigopt.config.broker import ConfigBroker
 from zigopt.invite.service import Invite
 from zigopt.json.builder.json_builder import JsonBuilder, ValidationType, field
 
@@ -25,8 +26,8 @@ class BaseInviteJsonBuilder(JsonBuilder):
   # we must include it.
   # TODO(SN-1111): This should use email_verification_service
   def _should_hide_invite_code(self) -> bool:
-    require_email_verification = self._config_broker.get_bool("email.verify", default=True)
-    email_enabled = self._config_broker.get_bool("email.enabled", default=True)
+    require_email_verification = bool(self._config_broker.get("email.verify", default=True))
+    email_enabled = bool(self._config_broker.get("email.enabled", default=True))
     if not require_email_verification and not email_enabled:
       return False
     return True

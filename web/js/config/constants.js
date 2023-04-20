@@ -1,7 +1,7 @@
 /**
- * Copyright © 2022 Intel Corporation
+ * Copyright © 2023 Intel Corporation
  *
  * SPDX-License-Identifier: Apache License 2.0
  */
 
-export const NOT_AVAILABLE = Symbol("NOT_AVAILABLE");
+export const DEFAULT_CONFIG_DIR = "/etc/sigopt/server-config/";

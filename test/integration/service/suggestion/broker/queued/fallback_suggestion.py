@@ -1,12 +1,13 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from sigopt_config.broker import ConfigBroker
+
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 from zigopt.suggestion.model import Suggestion
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 from integration.service.suggestion.broker.test_base import SuggestionBrokerTestBase
-from sigopttest.base.config_broker import StrictAccessConfigBroker
 
 
 class TestFallbackSuggestion(SuggestionBrokerTestBase):
@@ -29,10 +30,12 @@ class TestFallbackSuggestion(SuggestionBrokerTestBase):
       assert suggestion.client_provided_data is None
 
   def test_has_conditionals(self, services, processed_suggestion_meta):
-    services.config_broker = StrictAccessConfigBroker.from_configs(
-      {
-        "queue": {"forbid_random_fallback": False},
-      }
+    services.config_broker = ConfigBroker.from_configs(
+      [
+        {
+          "queue": {"forbid_random_fallback": False},
+        }
+      ]
     )
     experiment_meta = ExperimentMeta(
       all_parameters_unsorted=[

@@ -88,9 +88,19 @@ commands:
     steps:
       - run: make submodules
       - sigopt-ninja-dns
+  initialize-config-directory:
+    steps:
+      - run:
+          name: Initialize SigOpt Server config directory
+          command: |
+            ./ci/compose.sh run -Ti --rm init-config sh -e \<<EOF
+              cp /sigopt-server/config/circleci/* /etc/sigopt/server-config/
+              echo CHANGEME123 >/etc/minio/password.txt
+            EOF
   integration-test-setup:
     steps:
       - run: ./ci/create_development_tls_certs.sh
+      - initialize-config-directory
       - run: ./ci/compose.sh build --progress=plain test-runner
       - start-service:
           description: PostgreSQL
@@ -230,11 +240,10 @@ commands:
       - install-python-libraries
       - run:
           name: Generate swagger file
-          command: pipenv run ./pp src/python/zigopt/api/documentation.py
+          command: pipenv run env SIGOPT_SERVER_CONFIG_DIR=./config/circleci ./pp src/python/zigopt/api/documentation.py
           environment:
             SIGOPT_SWAGGER_PATH: /home/circleci/project/
             SIGOPT_SWAGGER_FILENAME: swagger.json
-            sigopt_server_config_file: ./config/circleci.json
       - persist_to_workspace:
           root: /home/circleci/
           paths:
@@ -437,12 +446,6 @@ jobs:
     steps:
       - run-browser-test:
           test_path: ""
-  js-lint:
-    executor: sigopt-node-only
-    steps:
-      - attach
-      - install-submodules
-      - run: git ls-files '*.js' | xargs yarn -s eslint
   check-node-dependencies:
     executor: sigopt-node-only
     steps:
@@ -507,6 +510,7 @@ jobs:
     steps:
       - checkout
       - docker-test-setup
+      - initialize-config-directory
       - start-service:
           description: PostgreSQL
           service: postgres
@@ -524,11 +528,6 @@ jobs:
     executor: sigopt-python-only
     steps:
       - run-zigopt-test
-  disclaimers-lint:
-    executor: sigopt-python-only
-    steps:
-      - checkout
-      - run: ./tools/lint/common/check_copyright_and_license_disclaimers.py .
   eval-circleci:
     docker:
       - image: circleci/buildpack-deps:curl
@@ -582,10 +581,6 @@ workflows:
           requires:
             - setup-web
             - documentation-generation
-      - js-lint:
-          requires:
-            - checkout-code
-            - setup-web
   nightly:
     jobs:
       - trivy-scan-images

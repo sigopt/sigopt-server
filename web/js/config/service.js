@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: Apache License 2.0
  */
 
-import ObjectSource from "./object";
+import {ConfigBroker} from "sigopt-config";
+
 import Service from "../services/base";
 import {coalesce} from "../utils";
 
 export default class ClientsideConfigBrokerService extends Service {
   constructor(services, options) {
     super(services, options);
-    this._source = new ObjectSource(options);
+    this._source = new ConfigBroker(options);
   }
 
   get(key, defaultValue = undefined) {

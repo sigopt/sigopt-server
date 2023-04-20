@@ -20,8 +20,8 @@ We store data in the following:
 ## Services
 
 This lists the services we use to run SigOpt.
-The configuration of these services in specfied in the appropriate config file
-(such as config/development.json for development).
+The configuration of these services in specfied in the appropriate config directory
+(such as config/development/ for development).
 Most of these can be disabled to run in a minimal environment.
 
 We use redis for queues and storing unprocessed suggestions.
@@ -38,7 +38,7 @@ one for analytics messages, and one for optimization messages.
 
 We use postgres 11.2 as the DBMS for most of our persistent data.
 The `"db":{}` section of the config file points at the DB.
-The database is initially set up by running `python -m zigopt.utils.create_database PATH_TO_CONFIG_FILE`.
+The database is initially set up by running `python -m zigopt.utils.create_database`.
 `--fake-data` will populate the database with placeholder data,
 but it critically creates a user with email `owner@sigopt.ninja` and password `owner`
 which can be used to invite other users.

@@ -5,8 +5,8 @@
 set -e
 set -o pipefail
 
-CONFIG_FILE="${1:?Missing config file as first argument}"
+CONFIG_DIR="${1:?Missing config dir as first argument}"
 
 echo "Generating route manifest for tests"
 yarn -s webpack --config=./webpack.config.script.babel.js --env=SCRIPT=./web/scripts/generate_routes.js
-sigopt_server_config_file="$CONFIG_FILE" node artifacts/js_script/generate_routes.js
+SIGOPT_SERVER_CONFIG_DIR="$CONFIG_DIR" node artifacts/js_script/generate_routes.js

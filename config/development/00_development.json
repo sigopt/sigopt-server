@@ -1,5 +1,4 @@
 {
-  "extends": "test.json",
   "features": {
     "maxObservationsCreateCount": 2500
   },

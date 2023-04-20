@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 from mock import Mock
+from sigopt_config.broker import ConfigBroker
 
 from zigopt.api.auth import _api_token_authentication as api_token_authentication
 from zigopt.api.auth import _client_token_authentication as client_token_authentication
@@ -11,7 +12,6 @@ from zigopt.api.auth import _user_token_authentication as user_token_authenticat
 from zigopt.membership.model import Membership, MembershipType
 from zigopt.net.errors import ForbiddenError, UnauthorizedError
 
-from sigopttest.base.config_broker import StrictAccessConfigBroker
 from sigopttest.base.utils import generate_ids
 
 
@@ -177,7 +177,7 @@ class _TestAuthCore:
   def services(self, find_role, find_membership):
     return Mock(
       client_service=Mock(find_by_id=dummy_find_client_by_id(self.client, self.deleted_client)),
-      config_broker=StrictAccessConfigBroker.from_configs({"address": {"app_url": "https://fakeapp.example.com"}}),
+      config_broker=ConfigBroker.from_configs([{"address": {"app_url": "https://fakeapp.example.com"}}]),
       user_service=Mock(find_by_id=dummy_find_user_by_id(self.user, self.deleted_user)),
       membership_service=Mock(
         find_by_user_and_organization=find_membership(

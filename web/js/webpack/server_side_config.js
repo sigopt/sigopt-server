@@ -86,7 +86,7 @@ export default ({
         ? (() => {
             const DevNodeServer = require("../webpack/dev_node_server").default;
             return new DevNodeServer({
-              env: {sigopt_server_config_file: env.sigopt_server_config_file},
+              env: _.pick(env, "SIGOPT_SERVER_CONFIG_DIR"),
               serverBundlePath: path.join(
                 webArtifactsDir,
                 "server",

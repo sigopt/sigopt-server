@@ -7,7 +7,6 @@ set -e
 set -o pipefail
 
 export COMPOSE_PROJECT_NAME=sigopt-server
-export sigopt_server_config_file="${sigopt_server_config_file:-config/sigopt.yml}"
 sigopt_server_version="git:$(git rev-parse HEAD)"
 export sigopt_server_version
 echo "Preparing submodules..."
@@ -21,13 +20,21 @@ else
   echo "Could not connect to Docker! It might not be running or you might not have permission to access the Docker socket."
   exit 1
 fi
-MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
-export MINIO_ROOT_PASSWORD
 echo "Building docker images..."
 if docker-compose --file=docker-compose.yml build --progress=quiet api createdb nginx qworker qworker-analytics web-server; then
   echo "Finished building docker images."
 else
   echo "Failed to build docker images. This is most likely because of a disk space error with your docker allocation. You can try running: docker system prune -a to clear up space."
+  exit 1
+fi
+
+MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
+export MINIO_ROOT_PASSWORD
+echo "Initializing configuration directory..."
+if docker-compose --file=docker-compose.yml run -i --rm init-config; then
+  echo "Configuration directory initialized."
+else
+  echo "Failed to initialize the configuration directory"
   exit 1
 fi
 
@@ -52,16 +59,16 @@ else
 fi
 
 echo "Starting required services..."
+docker-compose --file=docker-compose.yml stop minio &>/dev/null || true
 if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then
   echo "Required services have started."
 else
   echo "Failed to start required services!"
   exit 1
 fi
-OWNER_PASSWORD="$(./tools/secure/generate_random_string.sh 16)"
-export OWNER_PASSWORD
+USER_PASSWORD="$(./tools/secure/generate_random_string.sh 16)"
 echo "Initializing database..."
-if docker-compose --file=docker-compose.yml run --rm createdb; then
+if docker-compose --file=docker-compose.yml run --rm createdb --drop-tables --user-password="$USER_PASSWORD"; then
   echo "Database ready."
 else
   echo "Failed to initialize database!"
@@ -85,4 +92,4 @@ fi
 echo "Setup complete. You are now ready to start SigOpt Server with ./start.sh"
 echo "First time log in credentials:"
 echo "  email: owner@sigopt.ninja"
-echo "  password: $OWNER_PASSWORD"
+echo "  password: $USER_PASSWORD"

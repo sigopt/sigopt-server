@@ -8,8 +8,9 @@ import sys
 import warnings
 
 import pytest
+from sigopt_config.broker import ConfigBroker
 
-from zigopt.config.broker import ConfigBroker
+from zigopt.config import DEFAULT_CONFIG_DIR
 from zigopt.log.base import base_logger_setup, configure_loggers
 
 
@@ -18,18 +19,14 @@ if __name__ == "__main__":
   warnings.simplefilter("error", append=True)
 
   parser = argparse.ArgumentParser()
-  parser.add_argument("--config-file", type=str, default="config/development.json")
+  parser.add_argument("--config-dir", type=str, default=DEFAULT_CONFIG_DIR)
   parser.add_argument("--ssh-args", type=str, default="")
   parser.add_argument("--test-target-name", type=str, default=None)
   parser.add_argument("suite", nargs="?", default="test/integration")
   args, unknown_args = parser.parse_known_args()
 
-  config_broker = ConfigBroker.from_file(args.config_file)
+  config_broker = ConfigBroker.from_directory(args.config_dir)
   configure_loggers(config_broker)
-  if config_broker.get("smtp.test_launch", True):
-    config_broker["smtp.host"] = None
-  if args.test_target_name:
-    config_broker["test_target_name"] = args.test_target_name
 
   pytest_args = list(unknown_args)
 
@@ -39,8 +36,8 @@ if __name__ == "__main__":
       "--strict-markers",
       "--durations",
       "5",
-      "--config-file",
-      args.config_file,
+      "--config-dir",
+      args.config_dir,
       args.suite,
     ]
   )

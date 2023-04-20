@@ -29,6 +29,7 @@ redis = ">=4.5.4,<5"
 scikit-learn = ">=1.1.1,<2"
 scipy = ">=1.10.1,<2"
 sqlalchemy = {version = ">=1.3.23,<1.4", extras = ["postgresql_pg8000"]}
+sigopt-config = {ref = "v2.0.0", git = "https://github.com/sigopt/sigopt-config.git"}
 
 [dev-packages]
 aiosmtpd = "==1.4.2"

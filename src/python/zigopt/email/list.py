@@ -13,13 +13,13 @@ from zigopt.services.base import Service
 class EmailTemplates(Service):
   def __init__(self, services):
     super().__init__(services)
-    self.from_address = self.services.config_broker.get_string(
+    self.from_address = self.services.config_broker.get(
       "email.from_address",
       "noreply@sigopt.ninja",
     )
-    self.team_name = self.services.config_broker.get_string("email.team_name", PRODUCT_NAME)
+    self.team_name = self.services.config_broker.get("email.team_name", PRODUCT_NAME)
     self.sign_off = "Happy modeling,"
-    self.base_template = self.services.config_broker.get_string("email.base_template")
+    self.base_template = self.services.config_broker.get("email.base_template")
 
   @property
   def base_url(self):

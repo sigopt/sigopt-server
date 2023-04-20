@@ -9,9 +9,9 @@ import pytest
 import redis
 import requests
 import werkzeug
+from sigopt_config.broker import ConfigBroker
 
 from zigopt.common import *
-from zigopt.config.broker import ConfigBroker
 from zigopt.profile.profile import NullProfiler, Profiler
 from zigopt.queue.message_groups import MessageGroup
 from zigopt.services.api import ApiRequestLocalServiceBag, ApiServiceBag
@@ -64,8 +64,8 @@ def fixture_profiler(request):
 
 @pytest.fixture(name="config_broker", scope="session")
 def fixture_config_broker(request):
-  config_file = request.config.getoption("--config-file")
-  return ConfigBroker.from_file(config_file)
+  config_dir = request.config.getoption("--config-dir")
+  return ConfigBroker.from_directory(config_dir)
 
 
 @pytest.fixture(name="api_url", scope="session")
@@ -274,8 +274,8 @@ def fixture_inbox(base_inbox):
 
 def pytest_addoption(parser):
   parser.addoption(
-    "--config-file",
-    help="config json file for db",
+    "--config-dir",
+    help="config directory for db",
   )
 
   parser.addoption(

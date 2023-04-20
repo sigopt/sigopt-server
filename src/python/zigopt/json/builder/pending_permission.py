@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Literal
 
+from sigopt_config.broker import ConfigBroker
+
 from zigopt.authorization.empty import EmptyAuthorization
 from zigopt.client.model import Client
-from zigopt.config.broker import ConfigBroker
 from zigopt.invite.model import Invite
 from zigopt.json.builder.invite_base import BaseInviteJsonBuilder
 from zigopt.json.builder.json_builder import ValidationType, field
