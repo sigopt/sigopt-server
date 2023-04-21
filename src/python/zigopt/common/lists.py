@@ -212,16 +212,6 @@ def recursively_omit_keys(json: _Any, keys: _Sequence) -> _Any:
   return recursively_filter_keys(lambda key: key not in keys, json)
 
 
-def distinct_counts(lis: _Sequence[lists_GHashable]) -> dict[lists_GHashable, int]:
-  """
-    Returns the number of times each element occurs in `lis`.
-    """
-  ret: dict[lists_GHashable, int] = {}
-  for l in lis:
-    ret[l] = (ret.get(l) or 0) + 1
-  return ret
-
-
 def partition(lis: _Sequence[lists_T], predicate: _Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
   """
     Splits a list into two lists based on a predicate. The first list will contain

@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections import Counter
+
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.common.sigopt_datetime import current_datetime
@@ -250,7 +252,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     if not parameters_json:
       raise SigoptValidationError("Experiments must have at least one parameter.")
 
-    name_counts = distinct_counts(remove_nones([p.get("name") for p in parameters_json]))
+    name_counts = Counter(p.get("name") for p in parameters_json if p.get("name") is not None)
     duplicates = [key for (key, value) in name_counts.items() if value > 1]
     if len(duplicates) > 0:
       raise InvalidValueError(f"Duplicate parameter names: {duplicates}")
