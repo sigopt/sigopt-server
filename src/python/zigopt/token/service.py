@@ -14,7 +14,7 @@ from zigopt.token.token_types import TokenType
 
 class TokenService(Service):
   def _reject_expired(self, tokens: Sequence[Token]):
-    expired, valid = partition(remove_nones_sequence(tokens, list), lambda t: t.expired)
+    expired, valid = partition(remove_nones_sequence(tokens), lambda t: t.expired)
     if expired:
       self.delete_tokens(expired)
     return valid
@@ -68,7 +68,7 @@ class TokenService(Service):
     # pylint: disable=protobuf-undefined-attribute
     meta.SetFieldIfNotNone(  # type: ignore
       "ttl_seconds",
-      min_option(remove_nones_sequence(ttl_options, list)),
+      min_option(remove_nones_sequence(ttl_options)),
     )
     # pylint: enable=protobuf-undefined-attribute
     return meta

@@ -118,7 +118,6 @@ class QueueMonitor(Service):
             queue_status.get(LAST_DEQUEUE),
             queue_status.get(LAST_EMPTY),
           ),
-          list,
         )
       )
       last_enqueue = queue_status.get(LAST_ENQUEUE)

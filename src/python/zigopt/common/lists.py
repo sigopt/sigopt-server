@@ -136,16 +136,15 @@ def remove_nones_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> 
 
 def remove_nones_sequence(
   lis: _Sequence[_Optional[lists_T]],
-  cls: type[list] | type[tuple] = list,
 ) -> list[lists_T] | tuple[lists_T, ...]:
-  return cls(l for l in lis if l is not None)
+  return [l for l in lis if l is not None]
 
 
 def coalesce(*args: _Any) -> _Any:
   """
     Returns the first non-None value, or None if no such value exists
     """
-  return list_get(remove_nones_sequence(args, tuple), 0)
+  return list_get(remove_nones_sequence(args), 0)
 
 
 def map_dict(func: _Callable[[lists_T], lists_R], d: dict[lists_GHashable, lists_T]) -> dict[lists_GHashable, lists_R]:
