@@ -99,7 +99,7 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
     "port": config_broker.get("db.port"),
     **(config_broker.get("db.query") or {}),
   }
-  conn = pg8000.connect(**remove_nones(args))
+  conn = pg8000.connect(**remove_nones_mapping(args))
   try:
     conn.autocommit = True
     with conn.cursor() as cursor:

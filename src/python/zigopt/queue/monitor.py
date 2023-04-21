@@ -88,7 +88,7 @@ class QueueMonitor(Service):
     return self.services.redis_key_service.create_queue_name_key("queue-monitor", queue_name, ":")
 
   def _get_status(self, queue_name):
-    return remove_nones(
+    return remove_nones_mapping(
       {
         key.decode(): napply(value, float)
         for key, value in self.services.redis_service.get_all_hash_fields(self._queue_monitor_name(queue_name)).items()
@@ -97,7 +97,7 @@ class QueueMonitor(Service):
 
   def _update_status(self, queue_name, status):
     with self.services.exception_logger.tolerate_exceptions(RedisServiceError):
-      status = remove_nones(status)
+      status = remove_nones_mapping(status)
       if status:
         self.services.redis_service.set_hash_fields(self._queue_monitor_name(queue_name), status)
 

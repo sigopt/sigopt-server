@@ -22,7 +22,7 @@ def time_function(logger_name, log_attributes=lambda *args, **kwargs: None):
         services = getattr(f_self, "services", None)
         logger.debug(
           json.dumps(
-            remove_nones(
+            remove_nones_mapping(
               dict(
                 className=type(f_self).__name__,
                 functionName=f.__name__,

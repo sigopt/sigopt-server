@@ -290,7 +290,7 @@ class DatabaseService(Service):
   def upsert(self, obj, where=None, skip_none=False):
     column_values = self._get_column_values(obj)
     if skip_none:
-      column_values = remove_nones(column_values)
+      column_values = remove_nones_sequence(column_values)
     self.execute(
       postgresql_insert(obj.__table__)
       .values(**column_values)
