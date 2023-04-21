@@ -113,7 +113,7 @@ def compact_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[
   return {k: v for k, v in dct.items() if v}
 
 
-def compact_sequence(lis: _Sequence[_Optional[lists_T]]) -> _Sequence[lists_T]:
+def compact_sequence(lis: _Sequence[_Optional[lists_T]]) -> list[lists_T]:
   return [l for l in lis if l]
 
 
