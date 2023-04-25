@@ -75,7 +75,7 @@ repos:
           - types-redis==4.5.3.0
           - types-requests==2.28.11.2
   - repo: https://github.com/pre-commit/mirrors-prettier.git
-    rev: "v3.0.0-alpha.6"
+    rev: "v3.0.0-alpha.9-for-vscode"
     hooks:
       - id: prettier
         additional_dependencies:
