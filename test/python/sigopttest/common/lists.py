@@ -90,52 +90,56 @@ class TestLists:
     with pytest.raises(ValueError):
       compact(numpy.array([]))  # type: ignore
 
-  def test_remove_nones(self):
-    assert remove_nones(()) == ()
-    assert remove_nones((False, None, [], 0, {})) == (False, [], 0, {})
-    assert remove_nones((False, None, [], 0, {}, 1, 2, 3, True, [1])) == (False, [], 0, {}, 1, 2, 3, True, [1])
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ((), []),
+      ((False, None, [], 0, {}), [False, [], 0, {}]),
+      ((False, None, [], 0, {}, 1, 2, 3, True, [1]), [False, [], 0, {}, 1, 2, 3, True, [1]]),
+      ([], []),
+      ([False, None, [], 0, {}], [False, [], 0, {}]),
+      ([False, None, [], 0, {}, 1, 2, 3, True, [1]], [False, [], 0, {}, 1, 2, 3, True, [1]]),
+    ],
+  )
+  def test_remove_nones_sequence(self, input_data, expected):
+    assert remove_nones_sequence(input_data) == expected
 
-    assert remove_nones([]) == []
-    assert remove_nones([False, None, [], 0, {}]) == [False, [], 0, {}]
-    assert remove_nones([False, None, [], 0, {}, 1, 2, 3, True, [1]]) == [False, [], 0, {}, 1, 2, 3, True, [1]]
-    assert remove_nones({}) == {}
-    assert remove_nones({"a": False, "b": None, "c": [], "d": 0, "e": {}}) == {
-      "a": False,
-      "c": [],
-      "d": 0,
-      "e": {},
-    }
-    assert remove_nones({"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True}) == {
-      "a": False,
-      "c": [],
-      "d": 0,
-      "e": {},
-      "f": 1,
-      "g": True,
-    }
-    assert remove_nones({"a": {"b": None}}) == {
-      "a": {
-        "b": None,
-      },
-    }
-    assert remove_nones(set((1, "a", None))) == set((1, "a"))
-    assert remove_nones(set((1, "a"))) == set((1, "a"))
-    assert remove_nones(set()) == set()
-
-    with pytest.raises(ValueError):
-      remove_nones(None)  # type: ignore
-
-    with pytest.raises(ValueError):
-      remove_nones(1)  # type: ignore
-
-    with pytest.raises(ValueError):
-      remove_nones("abc")  # type: ignore
-
-    with pytest.raises(ValueError):
-      remove_nones(b"abc")  # type: ignore
-
-    with pytest.raises(ValueError):
-      remove_nones(numpy.array([]))  # type: ignore
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ({}, {}),
+      (
+        {"a": False, "b": None, "c": [], "d": 0, "e": {}},
+        {
+          "a": False,
+          "c": [],
+          "d": 0,
+          "e": {},
+        },
+      ),
+      (
+        {"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True},
+        {
+          "a": False,
+          "c": [],
+          "d": 0,
+          "e": {},
+          "f": 1,
+          "g": True,
+        },
+      ),
+      (
+        {"a": {"b": None}},
+        {
+          "a": {
+            "b": None,
+          },
+        },
+      ),
+    ],
+  )
+  def test_remove_nones_mapping(self, input_data, expected):
+    assert remove_nones_mapping(input_data) == expected
 
   def test_coalesce(self):
     assert coalesce() is None

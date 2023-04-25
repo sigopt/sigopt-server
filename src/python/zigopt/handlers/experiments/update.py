@@ -264,7 +264,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     if not parameters_json:
       raise SigoptValidationError("Experiments must have at least one parameter.")
 
-    name_counts: dict[str, int] = distinct_counts(remove_nones_sequence([p.get("name") for p in parameters_json], list))
+    name_counts: dict[str, int] = distinct_counts(remove_nones_sequence([p.get("name") for p in parameters_json]))
     duplicates = [key for (key, value) in name_counts.items() if value > 1]
     if len(duplicates) > 0:
       raise InvalidValueError(f"Duplicate parameter names: {duplicates}")

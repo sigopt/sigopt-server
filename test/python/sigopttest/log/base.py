@@ -10,7 +10,7 @@ import pytest
 from freezegun import freeze_time
 from mock import Mock
 
-from zigopt.common import remove_nones
+from zigopt.common import remove_nones_mapping
 from zigopt.log.base import JsonFormatter, SyslogFormatter
 
 
@@ -132,7 +132,7 @@ class TestSyslogFormatter:
 
   @freeze_time("2018-01-01", tz_offset=0)
   def test_format(self, record):
-    assert remove_nones(self.as_json(SyslogFormatter().format(record))) == {
+    assert remove_nones_mapping(self.as_json(SyslogFormatter().format(record))) == {
       "environment": "unknown",
       "level": "WARNING",
       "loggerName": "sigopt.log",

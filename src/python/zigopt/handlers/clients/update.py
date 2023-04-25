@@ -54,7 +54,7 @@ class ClientsUpdateHandler(ClientHandler):
     self.services.iam_logging_service.log_iam(
       requestor=self.auth.current_user,
       event_name=IamEvent.CLIENT_UPDATE,
-      request_parameters=remove_nones(
+      request_parameters=remove_nones_mapping(
         {
           "name": name,
           "client_security": client_security,

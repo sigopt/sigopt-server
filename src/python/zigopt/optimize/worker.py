@@ -47,7 +47,7 @@ class ExperimentWorker(QueueWorker):
         timing_info["time_avail"] = start_time - self.enqueue_time
       logger.info(
         json.dumps(
-          remove_nones(
+          remove_nones_mapping(
             dict(
               state="processing",
               **logging_info,
@@ -83,7 +83,7 @@ class ExperimentWorker(QueueWorker):
       logger.info("Finished processing for experiment %s", experiment.id)
       logger.info(
         json.dumps(
-          remove_nones(
+          remove_nones_mapping(
             dict(
               state="finished",
               **logging_info,
@@ -99,7 +99,7 @@ class ExperimentWorker(QueueWorker):
       logger.warning("Skipping unneeded processing for experiment %s", experiment_id)
       logger.warning(
         json.dumps(
-          remove_nones(
+          remove_nones_mapping(
             dict(
               state="skipped",
               **logging_info,

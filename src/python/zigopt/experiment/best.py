@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from zigopt.common import is_number, max_option, remove_nones
+from zigopt.common import is_number, max_option, remove_nones_sequence
 from zigopt.experiment.util import get_experiment_default_metric_name
 from zigopt.services.base import Service
 
@@ -84,5 +84,5 @@ class ExperimentBestObservationService(Service):
       best_observations = self.multiple_solutions_best(experiment, observations)
     else:
       best_observation = self.single_metric_best(experiment, observations, cost=1)
-      best_observations = remove_nones([best_observation])
+      best_observations = remove_nones_sequence([best_observation])
     return best_observations

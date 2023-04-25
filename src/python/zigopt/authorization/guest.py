@@ -83,7 +83,6 @@ class GuestAuthorization(EmptyAuthorization):
           napply(experiment, lambda e: e.project_id),
           napply(training_run, lambda t: t.project_id),
         ],
-        list,
       )
     )
     if len(project_ids) != 1:

@@ -68,7 +68,7 @@ class UsersUpdateHandler(UserHandler):
     self.services.iam_logging_service.log_iam(
       requestor=self.auth.current_user,
       event_name=IamEvent.USER_UPDATE,
-      request_parameters=remove_nones(
+      request_parameters=remove_nones_mapping(
         {
           "user_id": self.user.id,
           "name": uploaded_user.name,

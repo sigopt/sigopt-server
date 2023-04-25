@@ -6,7 +6,7 @@ from datetime import timedelta
 
 import pytest
 
-from zigopt.common import remove_nones
+from zigopt.common import remove_nones_mapping
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.common.strings import random_string
 from zigopt.experiment.model import Experiment
@@ -101,7 +101,7 @@ class TestListAiExperiments(ExperimentsTestBase):
       connection.as_client_only().aiexperiments().fetch,
       connection.clients(project1.client_id).projects(project1.reference_id).aiexperiments().fetch,
     ):
-      paging = func(**remove_nones(params))
+      paging = func(**remove_nones_mapping(params))
       assert paging.count == 2
       if ascending:
         assert paging.paging.after is None
@@ -136,7 +136,7 @@ class TestListAiExperiments(ExperimentsTestBase):
       connection.as_client_only().aiexperiments().fetch,
       connection.clients(project1.client_id).projects(project1.reference_id).aiexperiments().fetch,
     ):
-      page = func(**remove_nones(params))
+      page = func(**remove_nones_mapping(params))
       assert page.count == 2
       assert len(page.data) == 1
       ids = [page.data[0].id]
@@ -145,7 +145,7 @@ class TestListAiExperiments(ExperimentsTestBase):
         next_page_params["after"] = page.paging.after
       else:
         next_page_params["before"] = page.paging.before
-      page = func(**remove_nones(next_page_params))
+      page = func(**remove_nones_mapping(next_page_params))
       assert page.count == 2
       assert len(page.data) == 1
       if ascending:

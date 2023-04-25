@@ -29,7 +29,7 @@ class OrganizationsClientsListDetailHandler(OrganizationHandler):
     )
     clients = self.services.client_service.find_clients_in_organizations_visible_to_user(
       user=self.auth.current_user,
-      memberships=remove_nones([membership]),
+      memberships=remove_nones_sequence([membership]),
     )
 
     return PaginationJsonBuilder(data=[ClientJsonBuilder(c) for c in clients])

@@ -19,7 +19,6 @@ from typing import Mapping as _Mapping
 from typing import Optional as _Optional
 from typing import ParamSpec as _ParamSpec
 from typing import Sequence as _Sequence
-from typing import Set as _Set
 from typing import TypeVar as _TypeVar
 
 import numpy as _numpy
@@ -135,38 +134,17 @@ def remove_nones_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> 
   return {k: v for k, v in dct.items() if v is not None}
 
 
-def remove_nones_set(lis: _Set[_Optional[lists_T]]) -> _Set[lists_T]:
-  return {v for v in lis if v is not None}
-
-
 def remove_nones_sequence(
-  lis: _Sequence[_Optional[lists_T]], cls: type[list] | type[tuple]
+  lis: _Sequence[_Optional[lists_T]],
 ) -> list[lists_T] | tuple[lists_T, ...]:
-  return cls(l for l in lis if l is not None)
-
-
-def remove_nones(
-  lis: _Sequence[_Optional[lists_T]] | _Mapping[lists_GHashable, _Optional[lists_T]] | _Set[_Optional[lists_T]]
-) -> _Sequence[lists_T] | _Mapping[lists_GHashable, lists_T] | _Set[lists_T]:
-  """
-    Returns a copy of this object with all `None` values removed.
-    """
-  if is_mapping(lis):
-    assert isinstance(lis, _collectionsabc.Mapping)
-    return remove_nones_mapping(lis)
-  if is_set(lis):
-    assert isinstance(lis, _collectionsabc.Set)
-    return remove_nones_set(lis)
-  if isinstance(lis, list | tuple):
-    return remove_nones_sequence(lis, type(lis))
-  raise ValueError(f"Invalid type for remove_nones: {type(lis)}")
+  return [l for l in lis if l is not None]
 
 
 def coalesce(*args: _Any) -> _Any:
   """
     Returns the first non-None value, or None if no such value exists
     """
-  return list_get(remove_nones_sequence(args, tuple), 0)
+  return list_get(remove_nones_sequence(args), 0)
 
 
 def map_dict(func: _Callable[[lists_T], lists_R], d: dict[lists_GHashable, lists_T]) -> dict[lists_GHashable, lists_R]:

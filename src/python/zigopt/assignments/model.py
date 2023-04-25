@@ -75,7 +75,7 @@ class HasAssignmentsMap(Proxy):
       # TODO(SN-1070): This calls make_experiment_assignment_value_array again redundantly, which
       # could be more efficient.
       assignments.update(self.get_conditional_assignments(experiment))
-    return remove_nones(assignments)
+    return remove_nones_mapping(assignments)
 
   def get_conditional_assignments(self, experiment):
     conditional_values = self._get_assignments_as_value_array(experiment.conditionals)
