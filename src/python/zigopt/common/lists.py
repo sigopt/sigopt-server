@@ -108,26 +108,12 @@ def flatten(lis: _Iterable[_Iterable[lists_T]]) -> list[lists_T]:
   return [l for sublist in lis for l in sublist]
 
 
-def compact_map(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:
+def compact_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:
   return {k: v for k, v in dct.items() if v}
 
 
-def compact_sequence(lis: _Sequence[_Optional[lists_T]], cls: type[list] | type[tuple]) -> _Sequence[lists_T]:
-  return cls(l for l in lis if l)
-
-
-def compact(
-  lis: _Mapping[lists_GHashable, _Optional[lists_T]] | _Sequence[_Optional[lists_T]]
-) -> dict[lists_GHashable, lists_T] | _Sequence[lists_T]:
-  """
-    Returns a copy of this object with all falsy values removed.
-    """
-  if is_mapping(lis):
-    assert isinstance(lis, _collectionsabc.Mapping)
-    return compact_map(lis)
-  if isinstance(lis, list | tuple):
-    return compact_sequence(lis, type(lis))
-  raise ValueError(f"Invalid type for compact: {type(lis)}")
+def compact_sequence(lis: _Sequence[_Optional[lists_T]]) -> list[lists_T]:
+  return [l for l in lis if l]
 
 
 def remove_nones_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:

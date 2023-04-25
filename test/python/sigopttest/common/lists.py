@@ -42,53 +42,53 @@ class TestLists:
     with pytest.raises(Exception):
       tail([1, 2, 3], None)
 
-  def test_compact(self):
-    assert compact(()) == ()
-    assert compact((False, None, [], 0, {})) == ()
-    assert compact((False, None, [], 0, {}, 1, 2, 3, True, [1])) == (1, 2, 3, True, [1])
-    assert compact([]) == []
-    assert compact([False, None, [], 0, {}]) == []
-    assert compact([False, None, [], 0, {}, 1, 2, 3, True, [1]]) == [1, 2, 3, True, [1]]
-    assert compact({}) == {}
-    assert (
-      compact(
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ((), []),
+      ((False, None, [], 0, {}), []),
+      ((False, None, [], 0, {}, 1, 2, 3, True, [1]), [1, 2, 3, True, [1]]),
+      ([], []),
+      ([False, None, [], 0, {}], []),
+      ([False, None, [], 0, {}, 1, 2, 3, True, [1]], [1, 2, 3, True, [1]]),
+    ],
+  )
+  def test_compact_sequence(self, input_data, expected):
+    assert compact_sequence(input_data) == expected
+
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ({}, {}),
+      (
         {
           "a": False,
           "b": None,
           "c": [],
           "d": 0,
           "e": {},
-        }
-      )
-      == {}
-    )
-    assert compact({"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True}) == {
-      "f": 1,
-      "g": True,
-    }
-    assert compact({"a": {"b": None}}) == {
-      "a": {
-        "b": None,
-      },
-    }
-
-    with pytest.raises(ValueError):
-      compact(set([]))  # type: ignore
-
-    with pytest.raises(ValueError):
-      compact(None)  # type: ignore
-
-    with pytest.raises(ValueError):
-      compact(1)  # type: ignore
-
-    with pytest.raises(ValueError):
-      compact("abc")  # type: ignore
-
-    with pytest.raises(ValueError):
-      compact(b"abc")  # type: ignore
-
-    with pytest.raises(ValueError):
-      compact(numpy.array([]))  # type: ignore
+        },
+        {},
+      ),
+      (
+        {"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True},
+        {
+          "f": 1,
+          "g": True,
+        },
+      ),
+      (
+        {"a": {"b": None}},
+        {
+          "a": {
+            "b": None,
+          },
+        },
+      ),
+    ],
+  )
+  def test_compact_mapping(self, input_data, expected):
+    assert compact_mapping(input_data) == expected
 
   @pytest.mark.parametrize(
     "input_data,expected",

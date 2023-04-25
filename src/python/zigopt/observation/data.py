@@ -30,8 +30,8 @@ def validate_metric_names(values, experiment):
     if count >= 2:
       raise InvalidKeyError("name", f"Duplicate name: {name}")
 
-  names = list(name_counts.keys())
-  non_empty_names: list[str] = compact_sequence(names, list)  # type: ignore
+  names: list[str | None] = list(name_counts.keys())
+  non_empty_names: list[str] = compact_sequence(names)
   if len(names) >= 2 and len(names) > len(non_empty_names):
     raise InvalidKeyError("A name must be specified for all values.")
 
