@@ -1,1 +1,1 @@
-CVE-2023-2251
+CVE-2023-2251  # vulnerable yaml is pinned by react-select and depcheck, both are non-concerns
