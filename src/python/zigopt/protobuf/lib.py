@@ -1,47 +1,36 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Any, TypeVar
+
 from google.protobuf.message import Message
 
 from zigopt.common import *
 
 
-# sigoptlint: disable=ProtobufMethodsRule
+MessageT = TypeVar("MessageT", bound=Message)
 
 
-def CopyFrom(base, other):
-  # NOTE: Soon this will be replaced with a safer implementat, but add a stub and lint rule
-  # for now to make merging easier
-  return base.CopyFrom(other)
-
-
-def MergeFrom(base, other):
-  # NOTE: Soon this will be replaced with a safer implementat, but add a stub and lint rule
-  # for now to make merging easier
-  return base.MergeFrom(other)
-
-
-def GetFieldOrNone(underlying, name):
-  if name in underlying.DESCRIPTOR.oneofs_by_name:
+def GetField(proto: MessageT, name: str) -> Any:
+  if name in proto.DESCRIPTOR.oneofs_by_name:
     raise ValueError(f"Cannot call GetFieldOrNone on oneof field: {name}")
-  if underlying.HasField(name):
-    return getattr(underlying, name)
+  if proto.HasField(name):
+    return getattr(proto, name)
   return None
 
 
-def SetFieldIfNotNone(underlying, name, value):
+def SetField(proto: MessageT, name: str, value: Any) -> None:
   # Ensure that we always raise on invalid attributes, even if value is None
-  if not hasattr(underlying, name):
+  if not hasattr(proto, name):
     raise AttributeError(name)
 
-  if value is not None:
-    setattr(underlying, name, value)
+  setattr(proto, name, value)
 
 
-def GetOneofValueOrNone(underlying, name):
-  which_oneof = underlying.WhichOneof(name)
+def GetOneofValue(proto: MessageT, name: str) -> None:
+  which_oneof = proto.WhichOneof(name)
   if which_oneof is not None:
-    return getattr(underlying, which_oneof)
+    return getattr(proto, which_oneof)
   return None
 
 
