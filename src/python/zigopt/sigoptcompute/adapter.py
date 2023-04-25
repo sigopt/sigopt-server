@@ -11,7 +11,6 @@ from zigopt.experiment.constant import METRIC_OBJECTIVE_TYPE_TO_NAME
 from zigopt.experiment.constraints import parse_experiment_constraints_to_func_list
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import Prior
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData
-from zigopt.protobuf.lib import CopyFrom
 from zigopt.services.base import Service
 from zigopt.sigoptcompute.constant import (
   ACTIVATE_LINEAR_MEAN,
@@ -517,7 +516,7 @@ class SCAdapter(Service):
           assignment = round(assignment)
         data.assignments_map[parameter.name] = assignment
       if task_cost is not None:
-        CopyFrom(data.task, experiment.get_task_by_cost(task_cost).copy_protobuf())
+        data.task.CopyFrom(experiment.get_task_by_cost(task_cost).copy_protobuf())
 
       yield SuggestionDataProxy(data)
 

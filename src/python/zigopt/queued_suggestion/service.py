@@ -4,7 +4,6 @@
 from zigopt.common import *
 from zigopt.assignments.build import set_assignments_map_from_proxy
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData, SuggestionMeta
-from zigopt.protobuf.lib import CopyFrom
 from zigopt.queued_suggestion.model import QueuedSuggestion
 from zigopt.services.base import Service
 from zigopt.suggestion.processed.model import ProcessedSuggestion
@@ -55,7 +54,7 @@ class QueuedSuggestionService(Service):
     suggestion_data = SuggestionData()
     set_assignments_map_from_proxy(suggestion_data, queued_suggestion, experiment)
     if experiment.is_multitask:
-      CopyFrom(suggestion_data.task, queued_suggestion.task.copy_protobuf())
+      suggestion_data.task.CopyFrom(queued_suggestion.task)
     unprocessed_suggestion = UnprocessedSuggestion(
       experiment_id=experiment.id,
       source=UnprocessedSuggestion.Source.QUEUED_SUGGESTION,
