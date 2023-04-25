@@ -11,22 +11,6 @@ from zigopt.common import *
 MessageT = TypeVar("MessageT", bound=Message)
 
 
-def get_field(proto: MessageT, name: str) -> Any:
-  if name in proto.DESCRIPTOR.oneofs_by_name:
-    raise ValueError(f"Cannot call GetFieldOrNone on oneof field: {name}")
-  if proto.HasField(name):
-    return getattr(proto, name)
-  return None
-
-
-def set_field(proto: MessageT, name: str, value: Any) -> None:
-  # Ensure that we always raise on invalid attributes, even if value is None
-  if not hasattr(proto, name):
-    raise AttributeError(name)
-
-  setattr(proto, name, value)
-
-
 def get_oneof_value(proto: MessageT, name: str) -> None:
   which_oneof = proto.WhichOneof(name)
   if which_oneof is not None:
