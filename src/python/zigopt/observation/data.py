@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections import Counter
+
 from zigopt.common import *
 from zigopt.common.numbers import *
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
@@ -25,7 +27,7 @@ def value_from_json(json_dict, default=None):
 
 
 def validate_metric_names(values, experiment):
-  name_counts = distinct_counts([v.get("name") for v in values])
+  name_counts = Counter(v.get("name") for v in values)
   for name, count in name_counts.items():
     if count >= 2:
       raise InvalidKeyError("name", f"Duplicate name: {name}")

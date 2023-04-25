@@ -143,12 +143,6 @@ class TestLists:
     assert coalesce(None, 0, 5) == 0
     assert coalesce(None, 1, 5) == 1
 
-  def test_distinct_counts(self):
-    assert distinct_counts([]) == {}
-    assert distinct_counts([1, 2]) == {1: 1, 2: 1}
-    assert distinct_counts([1, 1, 2]) == {1: 2, 2: 1}
-    assert distinct_counts((i for i in range(3))) == {0: 1, 1: 1, 2: 1}
-
   def test_partition(self):
     assert partition([], lambda x: True) == ([], [])
     assert partition([], lambda x: False) == ([], [])
