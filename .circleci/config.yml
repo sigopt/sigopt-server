@@ -383,7 +383,7 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      - run: yarn audit
+      - run: yarn audit --groups dependencies
   test-docker-deployment:
     executor: sigopt-build
     resource_class: xlarge

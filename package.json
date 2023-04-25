@@ -63,7 +63,7 @@
     "react-grid-layout": "^0.18.2",
     "react-is": "^16.13.1",
     "react-redux": "^7.2.0",
-    "react-select": "^3.1.0",
+    "react-select": "^5.7.2",
     "react-transition-group": "^2.4.0",
     "react-uid": "^2.3.0",
     "sigopt-config": "git+https://github.com/sigopt/sigopt-config.git#v2.0.0",
