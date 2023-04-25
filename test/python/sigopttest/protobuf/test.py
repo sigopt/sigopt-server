@@ -9,7 +9,6 @@ from google.protobuf.message import Message
 
 from zigopt.protobuf.dict import dict_to_protobuf, protobuf_to_dict
 from zigopt.protobuf.gen.test.message_pb2 import Child, Parent
-from zigopt.protobuf.lib import MergeFrom
 
 
 def test_copy_from():
@@ -22,7 +21,7 @@ def test_copy_from():
   assert_reference_values((p))
 
   p = Parent()
-  MergeFrom(p, reference_value.copy_protobuf())
+  p.MergeFrom(reference_value)
   assert_reference_values((p))
 
 
