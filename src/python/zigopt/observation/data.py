@@ -27,7 +27,7 @@ def value_from_json(json_dict, default=None):
 
 
 def validate_metric_names(values, experiment):
-  name_counts = Counter(v.get("name") for v in values if v.get("name") is not None)
+  name_counts = Counter(v.get("name") for v in values)
   for name, count in name_counts.items():
     if count >= 2:
       raise InvalidKeyError("name", f"Duplicate name: {name}")
