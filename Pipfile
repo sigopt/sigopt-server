@@ -7,7 +7,7 @@ name = "pypi"
 python_version = "3.10"
 
 [packages]
-Flask = ">=2.1.1,<3"
+Flask = ">=2.2.3,<2.3"
 PyYAML = ">=5.4.1,<7"
 backoff = ">=1.10.0,<3"
 bcrypt = ">=3.2.0,<5"
@@ -18,7 +18,6 @@ greenlet = ">=2.0.1,<3"
 gunicorn = ">=19.10.0"
 hiredis = ">=1.0.0,<3"  # Grants a performance improvement to redis
 jsonschema = ">=3.0.1,<4"
-libsigopt = {ref = "main", git = "http://github.com/sigopt/libsigopt"}
 mako = ">=1.2.2,<2"
 numpy = ">=1.22.4,<1.23"
 pg8000 = ">=1.15.2,<2"
@@ -30,6 +29,7 @@ scikit-learn = ">=1.1.1,<2"
 scipy = ">=1.10.1,<2"
 sqlalchemy = {version = ">=1.3.23,<1.4", extras = ["postgresql_pg8000"]}
 sigopt-config = {ref = "v2.0.0", git = "https://github.com/sigopt/sigopt-config.git"}
+libsigopt = {ref = "main", git = "https://github.com/sigopt/libsigopt"}
 
 [dev-packages]
 aiosmtpd = "==1.4.2"
