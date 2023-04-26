@@ -272,7 +272,7 @@ class _ProtobufColumnType(TypeDecorator):
             f"It is unsafe to compare fields with {operator_name} - descriptor is not terminal: {self._descrioptor}"
           )
         cast_type = self._get_cast_from_descriptor(self._descriptor)
-        return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(cast_type)))
+        return self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(cast_type)))
       if operator not in OPERATORS_FORBIDDING_DEFAULTS:
         # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
         # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
