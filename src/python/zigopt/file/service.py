@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from sqlalchemy import BigInteger, func
+from sqlalchemy import func
 
 from zigopt.client.model import Client
 from zigopt.file.model import File
@@ -38,12 +38,7 @@ class FileService(Service):
     return self.services.database_service.scalar(
       self.services.database_service.query(
         func.coalesce(
-          func.sum(
-            func.coalesce(
-              File.data.content_length.real_astext.cast(BigInteger),
-              0,
-            )
-          ),
+          func.sum(File.data.content_length),
           0,
         )
       )
