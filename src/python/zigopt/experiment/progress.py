@@ -95,7 +95,7 @@ class ExperimentProgressService(Service):
         func.sum(Observation.data.task.cost.as_numeric()),  # type: ignore
       )
       .filter(Observation.experiment_id.in_([e.id for e in experiments]))
-      .filter(~Observation.data.deleted.as_boolean())  # type: ignore
+      .filter(~Observation.data.deleted)
       .group_by(Observation.experiment_id)
     ):
       last_observations[eid] = last
@@ -139,8 +139,8 @@ class ExperimentProgressService(Service):
                   func.rank().over(partition_by=Observation.experiment_id, order_by=v_clause).label("rank"),
                 )
                 .filter(Observation.experiment_id.in_([e.id for e in exp_list]))
-                .filter(~Observation.data.deleted.as_boolean())  # type: ignore
-                .filter(~Observation.data.reported_failure.as_boolean())  # type: ignore
+                .filter(~Observation.data.deleted)
+                .filter(~Observation.data.reported_failure)
                 .filter(Observation.data.task.cost.as_numeric() == 1)  # type: ignore
                 .subquery("q")
               )

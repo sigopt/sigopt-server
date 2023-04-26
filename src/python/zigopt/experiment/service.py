@@ -53,7 +53,7 @@ class ExperimentService(Service):
       self.services.database_service.query(Experiment.id)
       .join(Client, Experiment.client_id == Client.id)
       .filter(Client.organization_id == organization_id)
-      .filter(~Experiment.experiment_meta.development.as_boolean())
+      .filter(~Experiment.experiment_meta.development)
     )
     if lenient:
       query = (

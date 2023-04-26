@@ -122,11 +122,11 @@ class ObservationService(Service):
   def get_observation_counts(self, experiment_id):
     failure_count, observation_count, max_observation_id = self.services.database_service.one_or_none(
       self.services.database_service.query(
-        func.sum(case([(Observation.data.reported_failure.as_boolean(), 1)], else_=0)),  # type: ignore
+        func.sum(case([(Observation.data.reported_failure, 1)], else_=0)),
         func.count(Observation.id),
         func.max(Observation.id),
       )
-      .filter(~Observation.data.deleted.as_boolean())  # type: ignore
+      .filter(~Observation.data.deleted)
       .filter(Observation.experiment_id == experiment_id)
       .group_by(Observation.experiment_id)
     ) or (0, 0, 0)
@@ -142,8 +142,8 @@ class ObservationService(Service):
   def find_valid_observations(self, experiment):
     return self.services.database_service.all(
       self.services.database_service.query(Observation)
-      .filter(~Observation.data.deleted.as_boolean())  # type: ignore
-      .filter(~Observation.data.reported_failure.as_boolean())  # type: ignore
+      .filter(~Observation.data.deleted)
+      .filter(~Observation.data.reported_failure)
       .filter(Observation.experiment_id == experiment.id)
     )
 
@@ -206,13 +206,13 @@ class ObservationService(Service):
 
   def _include_deleted_clause_deprecated(self, include_deleted, q):
     if not include_deleted:
-      return q.filter(~Observation.data.deleted.as_boolean())  # type: ignore
+      return q.filter(~Observation.data.deleted)
     return q
 
   def _include_deleted_clause(self, deleted, q):
     if deleted is DeleteClause.NOT_DELETED:
-      return q.filter(~Observation.data.deleted.as_boolean())  # type: ignore
+      return q.filter(~Observation.data.deleted)
     if deleted is DeleteClause.DELETED:
-      return q.filter(Observation.data.deleted.as_boolean())  # type: ignore
+      return q.filter(Observation.data.deleted)
     assert deleted is DeleteClause.ALL
     return q
