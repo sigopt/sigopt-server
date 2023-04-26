@@ -182,9 +182,7 @@ class TokenService(Service):
   def renew_token(self, token):
     now = unix_timestamp()
     updated = self.services.database_service.update_one_or_none(
-      self.services.database_service.query(Token)
-      .filter(Token.token == token.token)
-      .filter(Token.meta.can_renew.as_boolean()),
+      self.services.database_service.query(Token).filter(Token.token == token.token).filter(~~Token.meta.can_renew),
       {Token.meta: jsonb_set(Token.meta, JsonPath(*unwind_json_path(Token.meta.date_renewed)), now)},
     )
     if updated:

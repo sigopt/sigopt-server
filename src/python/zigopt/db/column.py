@@ -230,9 +230,6 @@ class _ProtobufColumnType(TypeDecorator):
     def as_string(self):
       return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Text)))
 
-    def as_boolean(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Boolean)))
-
     def as_numeric(self):
       return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Numeric)))
 

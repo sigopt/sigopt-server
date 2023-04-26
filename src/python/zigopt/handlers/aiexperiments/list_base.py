@@ -47,4 +47,4 @@ class BaseAiExperimentsListHandler(BaseExperimentsListHandler):
     return (True, False)
 
   def additional_query_filters(self, query):
-    return query.filter(Experiment.experiment_meta.runs_only.as_boolean())
+    return query.filter(~~Experiment.experiment_meta.runs_only)

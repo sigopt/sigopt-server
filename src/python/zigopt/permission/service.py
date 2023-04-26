@@ -213,7 +213,7 @@ class PermissionService(Service):
     meta_clause = jsonb_set(meta_clause, path, client.allow_users_to_see_experiments_by_others)
     return self.services.database_service.update(
       self.services.database_service.query(Permission)
-      .filter(~Permission.permission_meta.can_admin.as_boolean())
+      .filter(~Permission.permission_meta.can_admin)
       .filter(Permission.client_id == client.id),
       {Permission.permission_meta: meta_clause},
     )

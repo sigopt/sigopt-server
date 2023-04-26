@@ -79,7 +79,7 @@ class ClientService(Service):
 
   def _include_deleted_clause(self, include_deleted, q):
     if not include_deleted:
-      return q.filter(~Client.client_meta.deleted.as_boolean())
+      return q.filter(~Client.client_meta.deleted)
     return q
 
   def insert(self, client):
