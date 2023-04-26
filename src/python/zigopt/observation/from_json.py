@@ -6,6 +6,7 @@ from enum import Enum
 from zigopt.assignments.build import set_assignments_map_from_json, set_assignments_map_from_proxy
 from zigopt.handlers.validate.assignments import validate_assignments_map
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.task.from_json import extract_task_from_json
 
 from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
@@ -53,7 +54,7 @@ def set_observation_suggestion_from_json(observation_data, observation, suggesti
   set_assignments_map_from_proxy(observation_data, suggestion, experiment)
 
   if experiment.is_multitask:
-    observation_data.task.CopyFrom(suggestion.task)
+    observation_data.task.CopyFrom(copy_protobuf(suggestion.task))
 
 
 def set_observation_data_assignments_map_from_json(observation_data, json_dict, experiment):
