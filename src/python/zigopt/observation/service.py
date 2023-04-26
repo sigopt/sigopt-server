@@ -10,6 +10,7 @@ from zigopt.db.util import DeleteClause
 from zigopt.observation.data import *
 from zigopt.observation.model import Observation
 from zigopt.profile.timing import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 
 
@@ -162,7 +163,7 @@ class ObservationService(Service):
   def set_delete(self, experiment, observation_id, deleted=True):
     now = current_datetime()
     observation = self.find_by_id(observation_id, include_deleted=True)
-    new_data = observation.data.copy_protobuf()
+    new_data = copy_protobuf(observation.data)
     new_data.deleted = deleted
     new_data.timestamp = datetime_to_seconds(now)
     self.services.database_service.update_one(
@@ -180,7 +181,7 @@ class ObservationService(Service):
         self.services.database_service.query(Observation).filter(Observation.experiment_id == experiment.id),
       )
     ):
-      new_observation = old_observation.data.copy_protobuf()
+      new_observation = copy_protobuf(old_observation.data)
       new_observation.deleted = True
       new_observation.timestamp = datetime_to_seconds(now)
       updated_observations.append({"id": old_observation.id, "data": new_observation})

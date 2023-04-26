@@ -8,6 +8,7 @@ import requests
 from flaky import flaky
 
 from zigopt.common import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.token.model import Token
 
 from integration.base import RaisesHttpError
@@ -150,7 +151,7 @@ class TestGuestWebInvalidate(GuestWebTestBase):
     web_connection.get(experiment_guest_url)
     web_connection.get("/experiment/" + experiment.id)
     token = db_connection.first(db_connection.query(Token).filter(Token.token == experiment_guest_token))
-    meta = token.meta.copy_protobuf()
+    meta = copy_protobuf(token.meta)
     meta.date_created = 1
     token.meta = meta
     db_connection.upsert(token)

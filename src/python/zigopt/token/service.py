@@ -7,6 +7,7 @@ from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.db.column import JsonPath, jsonb_set, unwind_json_path
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ, TokenMeta
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.token.model import MAX_CONCURRENT_SESSIONS, USER_TOKEN_EXPIRY_SECONDS, Token
 from zigopt.token.token_types import TokenType
@@ -185,7 +186,7 @@ class TokenService(Service):
       {Token.meta: jsonb_set(Token.meta, JsonPath(*unwind_json_path(Token.meta.date_renewed)), now)},
     )
     if updated:
-      meta = token.meta.copy_protobuf()
+      meta = copy_protobuf(token.meta)
       meta.date_renewed = now
       token.meta = meta
       return token

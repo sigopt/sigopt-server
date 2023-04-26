@@ -11,6 +11,7 @@ from zigopt.common.sigopt_datetime import unix_timestamp_with_microseconds
 from zigopt.exception.logger import AlreadyLoggedException
 from zigopt.profile.timing import time_function
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionMeta
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.suggestion.lib import DuplicateUnprocessedSuggestionError
 from zigopt.suggestion.model import Suggestion
@@ -71,7 +72,7 @@ class UnprocessedSuggestionService(Service):
         UnprocessedSuggestion.experiment_id == experiment.id
       )
     ):
-      new_suggestion_meta = old_suggestion.suggestion_meta.copy_protobuf()
+      new_suggestion_meta = copy_protobuf(old_suggestion.suggestion_meta)
       new_suggestion_meta.deleted = True
       updated_suggestions.append({"id": old_suggestion.id, "suggestion_meta": new_suggestion_meta})
     self.services.database_service.update_all(UnprocessedSuggestion, updated_suggestions)
@@ -79,7 +80,7 @@ class UnprocessedSuggestionService(Service):
   def delete_by_id(self, experiment, suggestion_id):
     suggestion = self.find_by_id(suggestion_id)
     if suggestion:
-      new_meta = suggestion.suggestion_meta.copy_protobuf()
+      new_meta = copy_protobuf(suggestion.suggestion_meta)
       new_meta.deleted = True
       self.services.database_service.update_one(
         self.services.database_service.query(UnprocessedSuggestion)

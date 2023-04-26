@@ -12,6 +12,7 @@ from zigopt.db.column import JsonPath, jsonb_set
 from zigopt.experiment.model import Experiment
 from zigopt.protobuf.dict import protobuf_to_dict
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.protobuf.proxy import Proxy
 
 from integration.service.db.test_base import DatabaseServiceBase
@@ -233,7 +234,7 @@ class TestProtobufColumn(DatabaseServiceBase):
       experiment.id, {getattr(Experiment.experiment_meta, key): getattr(Experiment.experiment_meta, key)}
     )
     new_experiment = experiment_service.find_by_id(experiment.id)
-    assert experiment.experiment_meta.copy_protobuf() == (new_experiment.experiment_meta.copy_protobuf())
+    assert copy_protobuf(experiment.experiment_meta) == (copy_protobuf(new_experiment.experiment_meta))
 
   def test_jsonb_increment(self, database_service, experiment_service, experiment):
     old_budget = experiment_service.find_by_id(experiment.id).experiment_meta.observation_budget

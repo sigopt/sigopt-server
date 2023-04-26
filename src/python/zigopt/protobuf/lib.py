@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Any, TypeVar
+from typing import Any, Generic, TypeVar
 
 from google.protobuf.message import Message
 
@@ -18,16 +18,20 @@ def get_oneof_value(proto: MessageT, name: str) -> Any | None:
   return None
 
 
-class BaseProxyClass:
+class BaseProxyClass(Generic[MessageT]):
   # Used to avoid cirucular import caused by is_protobuf and Proxy
-  pass
+  underlying: MessageT
 
 
 def is_protobuf(val: Any) -> bool:
   return isinstance(val, (Message, BaseProxyClass))
 
 
-def copy_protobuf(proto: MessageT) -> MessageT:
-  copy = proto.__class__()
-  copy.CopyFrom(proto)
+def copy_protobuf(proto: MessageT | BaseProxyClass[MessageT]) -> MessageT:
+  if isinstance(proto, BaseProxyClass):
+    actual_proto = proto.underlying
+  else:
+    actual_proto = proto
+  copy = actual_proto.__class__()
+  copy.CopyFrom(actual_proto)
   return copy

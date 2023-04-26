@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.common.strings import random_string
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.user.model import password_hash
 
@@ -21,7 +22,7 @@ class EmailVerificationService(Service):
     return True
 
   def set_email_verification_code_without_save(self, user):
-    meta = user.user_meta.copy_protobuf()
+    meta = copy_protobuf(user.user_meta)
     email_verification_code = random_string()
     meta.hashed_email_verification_code = password_hash(email_verification_code)
     meta.email_verification_timestamp = unix_timestamp()
@@ -30,7 +31,7 @@ class EmailVerificationService(Service):
     return email_verification_code
 
   def declare_email_verified(self, user):
-    user_meta = user.user_meta.copy_protobuf()
+    user_meta = copy_protobuf(user.user_meta)
     update_user_meta = False
     if not user_meta.has_verified_email:
       self.services.email_router.send(self.services.email_templates.welcome_email(user))

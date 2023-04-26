@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 
 
@@ -11,7 +12,7 @@ DIVIDER = ":"
 class MessageGrouper:
   def validate_unpersisted_deserialized_message(self, deserialized_message, group_key):
     self.parse_group_key(group_key)
-    self.apply_to_deserialized_message(deserialized_message.copy_protobuf(), group_key)
+    self.apply_to_deserialized_message(copy_protobuf(deserialized_message), group_key)
 
   def parse_group_key(self, group_key):
     raise NotImplementedError()

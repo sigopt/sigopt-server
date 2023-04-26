@@ -17,6 +17,7 @@ from zigopt.optimize.sources.search import SearchOptimizationSource
 from zigopt.optimize.sources.spe import SPEOptimizationSource
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData, ObservationValue
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.sampler.random import RandomSampler
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
@@ -256,7 +257,7 @@ class TestSourcesGetSuggestionsLogScale(UnitTestBase):
     for u in unprocessed:
       assert u.experiment_id == experiment.id
       assert u.source == UnprocessedSuggestion.Source.GP_CATEGORICAL
-      has_assignments = u.suggestion_meta.suggestion_data.copy_protobuf()
+      has_assignments = copy_protobuf(u.suggestion_meta.suggestion_data)
       values_dict = has_assignments.assignments_map
       assert len(values_dict) == 2
       assert "double" in values_dict
@@ -277,7 +278,7 @@ class TestSourcesGetSuggestionsLogScale(UnitTestBase):
     for u in unprocessed:
       assert u.experiment_id == experiment.id
       assert u.source == UnprocessedSuggestion.Source.SPE
-      has_assignments = u.suggestion_meta.suggestion_data.copy_protobuf()
+      has_assignments = copy_protobuf(u.suggestion_meta.suggestion_data)
       values_dict = has_assignments.assignments_map
       assert len(values_dict) == 2
       assert "double" in values_dict

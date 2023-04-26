@@ -39,6 +39,7 @@ from zigopt.parameters.from_json import (
 )
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta, ExperimentMetric
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+from zigopt.protobuf.lib import copy_protobuf
 
 from libsigopt.aux.errors import InvalidTypeError, InvalidValueError, MissingJsonKeyError, SigoptValidationError
 
@@ -299,7 +300,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
 
     update_meta_fields = {}
     update_experiment_fields = {}
-    new_meta = self.experiment.experiment_meta.copy_protobuf()
+    new_meta = copy_protobuf(self.experiment.experiment_meta)
     if not new_meta.metrics:
       new_meta.metrics.extend([ExperimentMetric(name=None)])
 

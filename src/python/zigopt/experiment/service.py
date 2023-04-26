@@ -15,6 +15,7 @@ from zigopt.experiment.model import Experiment
 from zigopt.math.domain_bounds import get_parameter_domain_bounds
 from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import MetricImportance, MetricImportanceMap
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 
 from libsigopt.aux.errors import SigoptValidationError
@@ -170,7 +171,7 @@ class ExperimentService(Service):
       experiment.id,
       {Experiment.experiment_meta.force_hitandrun_sampling: force},
     )
-    meta = experiment.experiment_meta.copy_protobuf()
+    meta = copy_protobuf(experiment.experiment_meta)
     meta.force_hitandrun_sampling = force
     experiment.experiment_meta = meta
     return ret

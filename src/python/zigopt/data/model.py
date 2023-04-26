@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.protobuf.proxy import Proxy
 
 
@@ -9,14 +10,14 @@ class BaseHasMeasurementsProxy(Proxy):
   def get_all_measurements(self, experiment):
     measurements = self.sorted_measurements()
     if len(measurements) == 1 and not experiment.has_multiple_metrics:
-      only_measurement = measurements[0].copy_protobuf()
+      only_measurement = copy_protobuf(measurements[0])
       if experiment.all_metrics[0].HasField("name"):
         only_measurement.name = experiment.all_metrics[0].name
       measurements = [(only_measurement)]
     return measurements
 
   def get_all_measurements_for_maximization(self, experiment):
-    all_measurements = [v.copy_protobuf() for v in self.get_all_measurements(experiment)]
+    all_measurements = [copy_protobuf(v) for v in self.get_all_measurements(experiment)]
     for i, metric in enumerate(experiment.all_metrics):
       if metric.is_minimized:
         all_measurements[i].value = -all_measurements[i].value

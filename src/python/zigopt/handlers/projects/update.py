@@ -10,6 +10,7 @@ from zigopt.handlers.validate.project import validate_project_json_dict_for_upda
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.json.builder import ProjectJsonBuilder
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+from zigopt.protobuf.lib import copy_protobuf
 
 
 class ClientsProjectsUpdateHandler(ProjectHandler):
@@ -120,7 +121,7 @@ class ClientsProjectsUpdateHandler(ProjectHandler):
   def handle(self, params):
     data = None
     if params.metadata is not self._NO_METADATA:
-      data = self.project.data.copy_protobuf()
+      data = copy_protobuf(self.project.data)
       if params.metadata is None:
         data.ClearField("metadata")
       else:

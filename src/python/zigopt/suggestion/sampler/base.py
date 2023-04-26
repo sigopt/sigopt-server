@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.profile.timing import *
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionMeta
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
@@ -31,7 +32,7 @@ class SuggestionSampler:
     return UnprocessedSuggestion(
       experiment_id=self.experiment.id,
       source=source or self.source,
-      suggestion_meta=SuggestionMeta(suggestion_data=data.copy_protobuf()),
+      suggestion_meta=SuggestionMeta(suggestion_data=copy_protobuf(data)),
     )
 
   @property
@@ -51,7 +52,7 @@ class SuggestionSampler:
     for unprocessed_suggestion in suggestions:
       if unprocessed_suggestion.task:
         continue
-      suggestion_meta = unprocessed_suggestion.suggestion_meta.copy_protobuf()
+      suggestion_meta = copy_protobuf(unprocessed_suggestion.suggestion_meta)
       suggestion_meta.suggestion_data.task.CopyFrom(self._default_task)
       unprocessed_suggestion.suggestion_meta = suggestion_meta
 

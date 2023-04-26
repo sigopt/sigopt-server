@@ -21,7 +21,7 @@ from zigopt.common import *
 from zigopt.common.sigopt_datetime import aware_datetime_to_naive_datetime, naive_datetime_to_aware_datetime
 from zigopt.protobuf.dict import protobuf_to_dict
 from zigopt.protobuf.json import emit_json_with_descriptor, get_json_key, parse_json_with_descriptor
-from zigopt.protobuf.lib import is_protobuf
+from zigopt.protobuf.lib import copy_protobuf, is_protobuf
 
 
 def recursive_copy_protobuf(v):
@@ -30,7 +30,7 @@ def recursive_copy_protobuf(v):
   if is_mapping(v):
     return map_dict(recursive_copy_protobuf, dict(v))
   if is_protobuf(v):
-    return v.copy_protobuf()
+    return copy_protobuf(v)
   return v
 
 

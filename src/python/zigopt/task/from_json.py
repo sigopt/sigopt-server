@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
+from zigopt.protobuf.lib import copy_protobuf
 
 from libsigopt.aux.errors import InvalidKeyError, SigoptValidationError
 
@@ -24,4 +25,4 @@ def extract_task_from_json(experiment, json_dict):
   except ValueError as e:
     raise SigoptValidationError(str(e)) from e
 
-  return task.copy_protobuf()
+  return copy_protobuf(task)

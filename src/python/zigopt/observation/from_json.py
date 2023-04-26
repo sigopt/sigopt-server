@@ -53,7 +53,7 @@ def set_observation_suggestion_from_json(observation_data, observation, suggesti
   set_assignments_map_from_proxy(observation_data, suggestion, experiment)
 
   if experiment.is_multitask:
-    observation_data.task.CopyFrom(suggestion.task.copy_protobuf())
+    observation_data.task.CopyFrom(suggestion.task)
 
 
 def set_observation_data_assignments_map_from_json(observation_data, json_dict, experiment):

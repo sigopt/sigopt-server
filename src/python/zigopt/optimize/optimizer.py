@@ -12,6 +12,7 @@ from zigopt.optimize.sources.categorical import CategoricalOptimizationSource
 from zigopt.optimize.sources.conditional import ConditionalOptimizationSource
 from zigopt.optimize.sources.search import SearchOptimizationSource
 from zigopt.optimize.sources.spe import SPEOptimizationSource
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.redis.service import RedisServiceTimeoutError
 from zigopt.services.base import Service
 
@@ -149,7 +150,7 @@ class OptimizerService(Service):
     if not suggestions:
       return []
 
-    parameters = [p.copy_protobuf() for p in experiment.all_parameters]
+    parameters = [copy_protobuf(p) for p in experiment.all_parameters]
 
     suggestion_matrix = numpy.empty((len(suggestions), len(parameters)))
     for row, s in enumerate(suggestions):

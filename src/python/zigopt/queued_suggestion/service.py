@@ -4,6 +4,7 @@
 from zigopt.common import *
 from zigopt.assignments.build import set_assignments_map_from_proxy
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData, SuggestionMeta
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.queued_suggestion.model import QueuedSuggestion
 from zigopt.services.base import Service
 from zigopt.suggestion.processed.model import ProcessedSuggestion
@@ -37,7 +38,7 @@ class QueuedSuggestionService(Service):
   def delete_by_id(self, experiment_id, queued_id):
     suggestion = self.find_by_id(experiment_id, queued_id)
     if suggestion:
-      meta = suggestion.meta.copy_protobuf()
+      meta = copy_protobuf(suggestion.meta)
       meta.deleted = True
       self.services.database_service.update_one(
         self.services.database_service.query(QueuedSuggestion).filter_by(experiment_id=experiment_id, id=queued_id),

@@ -7,6 +7,7 @@ from zigopt.common import *
 from zigopt.client.model import Client
 from zigopt.permission.model import Permission
 from zigopt.protobuf.gen.client.clientmeta_pb2 import ClientMeta
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.token.model import Token
 
@@ -88,7 +89,7 @@ class ClientService(Service):
     return client
 
   def update_security(self, client, allow_users_to_see_experiments_by_others):
-    meta = client.client_meta.copy_protobuf() if client.client_meta else ClientMeta()
+    meta = copy_protobuf(client.client_meta) if client.client_meta else ClientMeta()
     meta.client_security.allow_users_to_see_experiments_by_others = allow_users_to_see_experiments_by_others
 
     self.services.database_service.update_one(
@@ -104,7 +105,7 @@ class ClientService(Service):
         Not a true DB delete, just sets the deleted flag.
         There's a race condition here... not a big deal if we are deleting though.
         """
-    new_meta = client.client_meta.copy_protobuf() if client.client_meta else ClientMeta()
+    new_meta = copy_protobuf(client.client_meta) if client.client_meta else ClientMeta()
     new_meta.deleted = True
     client.client_meta = new_meta
     self.services.database_service.upsert(client)

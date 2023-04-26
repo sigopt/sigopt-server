@@ -9,7 +9,7 @@ from google.protobuf.message import Message
 
 from zigopt.protobuf.dict import dict_to_protobuf, protobuf_to_dict
 from zigopt.protobuf.gen.test.message_pb2 import Child, Parent
-from zigopt.protobuf.lib import get_oneof_value
+from zigopt.protobuf.lib import copy_protobuf, get_oneof_value
 
 
 def test_copy_from():
@@ -80,18 +80,18 @@ def test_copy_protobuf():
   ref = Parent()
   set_reference_values(ref)
   assert_reference_values((ref))
-  ref2 = ref.copy_protobuf()
+  ref2 = copy_protobuf(ref)
   assert_reference_values(((ref2)))
   assert_eq((ref), ((ref2)))
   ref2.repeated_string_field.append("abc")
-  assert ref2 != ref.copy_protobuf()
+  assert ref2 != copy_protobuf(ref)
   assert (ref2) != ref
-  assert ref.copy_protobuf() != ref2
+  assert copy_protobuf(ref) != ref2
   assert ref != (ref2)
 
   empty = Parent()
-  mutable_empty_1 = empty.copy_protobuf()
-  mutable_empty_2 = empty.copy_protobuf()
+  mutable_empty_1 = copy_protobuf(empty)
+  mutable_empty_2 = copy_protobuf(empty)
   assert_eq((mutable_empty_1), empty)
   assert_eq((mutable_empty_2), empty)
   assert mutable_empty_1 == mutable_empty_2

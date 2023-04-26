@@ -80,13 +80,13 @@ class Token(Base):
 
   @property
   def expiration_timestamp(self):
-    if not self.meta.HasField("ttl_seconds"):
+    if self.ttl_seconds is None:
       return None
     if self.meta.HasField("date_renewed"):
       start_date = self.meta.date_renewed
     else:
       start_date = self.meta.date_created
-    return start_date + self.meta.ttl_seconds
+    return start_date + self.ttl_seconds
 
   @property
   def expired(self):

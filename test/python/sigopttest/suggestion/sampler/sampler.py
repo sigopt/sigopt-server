@@ -29,6 +29,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   Prior,
 )
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.sampler.categorical import CategoricalOnlySampler
 from zigopt.suggestion.sampler.grid import GridSampler
@@ -121,7 +122,7 @@ class TestSuggestSampler:
     else:
       parameter.name = name
     parameter.param_type = PARAMETER_CATEGORICAL
-    parameter.all_categorical_values.extend([v.copy_protobuf() for v in values])
+    parameter.all_categorical_values.extend([copy_protobuf(v) for v in values])
     if isinstance(grid, list):
       parameter.grid_values.extend(grid)
     if conditions:
@@ -148,9 +149,9 @@ class TestSuggestSampler:
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
         all_parameters_unsorted=[
-          int_parameter.copy_protobuf(),
-          double_parameter.copy_protobuf(),
-          categorical_parameter.copy_protobuf(),
+          copy_protobuf(int_parameter),
+          copy_protobuf(double_parameter),
+          copy_protobuf(categorical_parameter),
         ],
       ),
     )
@@ -277,12 +278,12 @@ class TestSuggestSampler:
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
         all_parameters_unsorted=[
-          int_parameter_1.copy_protobuf(),
-          int_parameter_2.copy_protobuf(),
-          double_parameter_1.copy_protobuf(),
-          double_parameter_2.copy_protobuf(),
-          categorical_parameter_1.copy_protobuf(),
-          categorical_parameter_2.copy_protobuf(),
+          copy_protobuf(int_parameter_1),
+          copy_protobuf(int_parameter_2),
+          copy_protobuf(double_parameter_1),
+          copy_protobuf(double_parameter_2),
+          copy_protobuf(categorical_parameter_1),
+          copy_protobuf(categorical_parameter_2),
         ],
         constraints=constraints,
       ),
@@ -358,12 +359,12 @@ class TestSuggestSampler:
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
         all_parameters_unsorted=[
-          int_parameter_1.copy_protobuf(),
-          int_parameter_2.copy_protobuf(),
-          double_parameter_1.copy_protobuf(),
-          double_parameter_2.copy_protobuf(),
-          categorical_parameter_1.copy_protobuf(),
-          categorical_parameter_2.copy_protobuf(),
+          copy_protobuf(int_parameter_1),
+          copy_protobuf(int_parameter_2),
+          copy_protobuf(double_parameter_1),
+          copy_protobuf(double_parameter_2),
+          copy_protobuf(categorical_parameter_1),
+          copy_protobuf(categorical_parameter_2),
         ],
         constraints=constraints,
       ),
@@ -669,7 +670,7 @@ class TestSuggestSampler:
     )
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
-        all_parameters_unsorted=[p1.copy_protobuf(), p2.copy_protobuf()],
+        all_parameters_unsorted=[copy_protobuf(p1), copy_protobuf(p2)],
       )
     )
     observations = []
@@ -750,9 +751,9 @@ class TestSuggestSampler:
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
         all_parameters_unsorted=[
-          int_parameter.copy_protobuf(),
-          double_parameter.copy_protobuf(),
-          categorical_parameter.copy_protobuf(),
+          copy_protobuf(int_parameter),
+          copy_protobuf(double_parameter),
+          copy_protobuf(categorical_parameter),
         ],
       ),
     )
@@ -770,7 +771,7 @@ class TestSuggestSampler:
     double_parameter = self.double_parameter(1e-5, 1, log_scale=True)
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
-        all_parameters_unsorted=[double_parameter.copy_protobuf()],
+        all_parameters_unsorted=[copy_protobuf(double_parameter)],
       ),
     )
 
@@ -791,7 +792,7 @@ class TestSuggestSampler:
     grid_parameter = self.double_parameter(0, 1, grid=grid_values)
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
-        all_parameters_unsorted=[grid_parameter.copy_protobuf()],
+        all_parameters_unsorted=[copy_protobuf(grid_parameter)],
       ),
     )
 
@@ -811,7 +812,7 @@ class TestSuggestSampler:
     parameter = self.categorical_parameter(real_values + [deleted_value])
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
-        all_parameters_unsorted=[parameter.copy_protobuf()],
+        all_parameters_unsorted=[copy_protobuf(parameter)],
       ),
     )
 
@@ -845,11 +846,11 @@ class TestSuggestSampler:
     experiment = Experiment(
       experiment_meta=ExperimentMeta(
         all_parameters_unsorted=[
-          int_parameter.copy_protobuf(),
-          double_parameter.copy_protobuf(),
-          categorical_parameter.copy_protobuf(),
+          copy_protobuf(int_parameter),
+          copy_protobuf(double_parameter),
+          copy_protobuf(categorical_parameter),
         ],
-        conditionals=[conditional_parameter.copy_protobuf()],  # pylint: disable=protobuf-undefined-attribute
+        conditionals=[copy_protobuf(conditional_parameter)],  # pylint: disable=protobuf-undefined-attribute
       ),
     )
 
@@ -866,7 +867,7 @@ class TestSuggestSampler:
         assert suggestion.get_assignment(double_parameter) in ClosedInterval(0, 1)
         assert len(suggestion.get_assignments(experiment)) == 4
       else:
-        has_assignments = suggestion.suggestion_meta.suggestion_data.copy_protobuf()
+        has_assignments = copy_protobuf(suggestion.suggestion_meta.suggestion_data)
         values_dict = has_assignments.assignments_map
         assert double_parameter.name not in values_dict
         assert len(suggestion.get_assignments(experiment)) == 3
@@ -905,7 +906,7 @@ class TestSuggestSampler:
         assert suggestion.get_assignment(double_parameter) in ClosedInterval(0, 1)
         assert len(suggestion.get_assignments(experiment)) == 4
       else:
-        has_assignments = suggestion.suggestion_meta.suggestion_data.copy_protobuf()
+        has_assignments = copy_protobuf(suggestion.suggestion_meta.suggestion_data)
         values_dict = has_assignments.assignments_map
         assert double_parameter.name not in values_dict
         assert len(suggestion.get_assignments(experiment)) == 3
