@@ -299,16 +299,16 @@ class _ProtobufColumnType(TypeDecorator):
     def _get_field_descriptor(self, key):
       return self._descriptor.fields_by_name[key]
 
-    def _get_value_from_descriptor(self, key):
+    def _get_value_from_descriptor(self, key, with_default):
       try:
         field_descriptor = self._get_field_descriptor(key)
       except KeyError as e:
         raise AttributeError(f"Invalid descriptor attribute: {key}") from e
       json_name = field_descriptor.json_name
-      return self._real_getitem(json_name, with_default=False)
+      return self._real_getitem(json_name, with_default=with_default)
 
     def HasField(self, key):
-      return self._get_value_from_descriptor(key).real_isnot(None)
+      return self._get_value_from_descriptor(key, with_default=False).real_isnot(None)
 
     def is_(self, other):
       _raise_for_is_usage()
@@ -333,7 +333,7 @@ class _ProtobufColumnType(TypeDecorator):
       return self.operate(operator, right_expr, result_type=JSONB)
 
     def __getattr__(self, name):
-      return self._get_value_from_descriptor(name)
+      return self._get_value_from_descriptor(name, with_default=True)
 
 
 class ImpliedUTCDateTime(TypeDecorator):

@@ -48,7 +48,7 @@ class ExperimentParameterProxy(Proxy):
 
   @property
   def has_prior(self):
-    return self.prior is not None
+    return self.HasField("prior")
 
   @property
   def active_categorical_values(self):

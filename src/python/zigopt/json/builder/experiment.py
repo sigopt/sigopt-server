@@ -21,6 +21,7 @@ from zigopt.project.model import Project
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentConditional,
   ExperimentConstraint,
+  ExperimentMeta,
   ExperimentMetric,
   Term,
 )
@@ -99,7 +100,7 @@ class MetricJsonBuilder(JsonBuilder):
 
   @field(ValidationType.number)
   def threshold(self) -> Optional[float]:
-    return self._metric.threshold
+    return self._metric.threshold if self._metric.HasField("threshold") else None
 
   @field(ValidationType.string)
   def strategy(self) -> str:
@@ -228,9 +229,15 @@ class ExperimentJsonBuilder(JsonBuilder):
   def name(self) -> str:
     return self._experiment.name
 
+  @property
+  def meta(self) -> ExperimentMeta:
+    return self._experiment.experiment_meta
+
   @field(ValidationType.positive_integer)
   def num_solutions(self) -> Optional[int]:
-    return self._experiment.experiment_meta.num_solutions
+    if self.meta.HasField("num_solutions"):
+      return self.meta.num_solutions
+    return None
 
   def hide_observation_budget(self) -> bool:
     return self._experiment.runs_only
@@ -248,7 +255,9 @@ class ExperimentJsonBuilder(JsonBuilder):
 
   @field(ValidationType.positive_integer)
   def parallel_bandwidth(self) -> Optional[int]:
-    return self._experiment.experiment_meta.parallel_bandwidth
+    if self.meta.HasField("parallel_bandwidth"):
+      return self.meta.parallel_bandwidth
+    return None
 
   @field(ValidationType.string)
   def project(self) -> Optional[str]:

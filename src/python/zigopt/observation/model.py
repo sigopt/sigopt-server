@@ -71,11 +71,15 @@ class Observation(Base):
 
   @property
   def timestamp(self):
-    return self.data.timestamp
+    if self.data.HasField("timestamp"):
+      return self.data.timestamp
+    return None
 
   @property
   def client_provided_data(self):
-    return self.data.client_provided_data
+    if self.data.HasField("client_provided_data"):
+      return self.data.client_provided_data
+    return None
 
   @property
   def deleted(self):
@@ -87,7 +91,9 @@ class Observation(Base):
 
   @property
   def task(self):
-    return self.data.task
+    if self.data.HasField("task"):
+      return self.data.task
+    return None
 
   @property
   def has_suggestion(self):

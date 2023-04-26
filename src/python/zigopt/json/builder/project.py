@@ -45,7 +45,9 @@ class ProjectJsonBuilder(JsonBuilder):
 
   @field(ValidationType.metadata)
   def metadata(self) -> Optional[Struct]:
-    return self._project.data.metadata
+    if self._project.data.HasField("metadata"):
+      return self._project.data.metadata
+    return None
 
   @field(ValidationType.integer)
   def experiment_count(self) -> int:

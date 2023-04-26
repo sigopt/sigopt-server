@@ -472,7 +472,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
           " Or if you are using the web dashboard fill out the Default Value field."
         )
     default_value = param.replacement_value_if_missing
-    if default_value is not None and not param.valid_assignment(default_value):
+    if param.HasField("replacement_value_if_missing") and not param.valid_assignment(default_value):
       if param.is_categorical:
         raise SigoptValidationError(
           f"`default_value` for parameter {param.name} is invalid - must be a valid categorical value."

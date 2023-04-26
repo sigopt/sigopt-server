@@ -27,10 +27,13 @@ def test_copy_from():
 
 
 def assert_all_fields_unset(immutable):
-  assert immutable.optional_double_field is None
-  assert immutable.optional_string_field is None
-  assert immutable.optional_composite_field is None
-  assert immutable.optional_recursive_field is None
+  for field in [
+    "optional_double_field",
+    "optional_string_field",
+    "optional_composite_field",
+    "optional_recursive_field",
+  ]:
+    assert not immutable.HasField(field)
 
 
 def set_reference_values(builder):
@@ -182,7 +185,7 @@ def test_get_oneof_value():
     get_oneof_value(Parent(), "map_field")
 
   for message in (Parent(), Parent(oneof_double_field=1.0)):
-    with pytest.raises(ValueError):
+    with pytest.raises(AttributeError):
       message.oneof_value  # type: ignore
 
 

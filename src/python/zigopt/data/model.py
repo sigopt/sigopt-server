@@ -29,19 +29,19 @@ class BaseHasMeasurementsProxy(Proxy):
 
   def value_for_maximization(self, experiment, name):
     value = find(self.get_all_measurements_for_maximization(experiment), lambda v: v.name == name)
-    if value:
+    if value and value.HasField("value"):
       return value.value
     return None
 
   def metric_value(self, experiment, name):
     measurement = find(self.get_all_measurements(experiment), lambda v: v.name == name)
-    if measurement:
+    if measurement and measurement.HasField("value"):
       return measurement.value
     return None
 
   def metric_value_var(self, experiment, name):
     measurement = find(self.get_all_measurements(experiment), lambda v: v.name == name)
-    if measurement:
+    if measurement and measurement.HasField("value"):
       return measurement.value_var
     return None
 
@@ -50,7 +50,7 @@ class BaseHasMeasurementsProxy(Proxy):
     num_expected_metrics = len(experiment.all_metrics)
     assert self.reported_failure or len(measurements) == num_expected_metrics
 
-    attr_fields = [getattr(m, attr) for m in measurements]
+    attr_fields = [getattr(m, attr) if m.HasField(attr) else None for m in measurements]
     if not attr_fields or any(f is None for f in attr_fields):
       return None
     return attr_fields

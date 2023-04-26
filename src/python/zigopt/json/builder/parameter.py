@@ -127,7 +127,7 @@ class ExperimentParameterJsonBuilder(JsonBuilder):
 
   @field(JsonBuilderValidationType())
   def prior(self) -> Optional[BasePriorJsonBuilder]:
-    if self._param.prior is not None:
+    if self._param.HasField("prior"):
       type_to_builder = {
         Prior.NORMAL: lambda p: NormalPriorJsonBuilder(p.normal_prior),
         Prior.BETA: lambda p: BetaPriorJsonBuilder(p.beta_prior),
@@ -145,12 +145,15 @@ class ExperimentParameterJsonBuilder(JsonBuilder):
 
   @field(JsonBuilderValidationType())
   def bounds(self) -> Optional[BoundsJsonBuilder]:
-    return napply(self._param.bounds, BoundsJsonBuilder)
+    if self._param.HasField("bounds"):
+      return BoundsJsonBuilder(self._param.bounds)
+    return None
 
   @field(ValidationType.assignment)
   def default_value(self) -> Optional[int | float | str]:
-    replacement_value: Optional[float] = self._param.replacement_value_if_missing
-    return napply(replacement_value, lambda rep: render_param_value(self._param, rep))
+    if self._param.HasField("replacement_value_if_missing"):
+      return render_param_value(self._param, self._param.replacement_value_if_missing)
+    return None
 
   def hide_grid(self):
     return not self._param.grid_values

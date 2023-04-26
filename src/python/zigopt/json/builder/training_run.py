@@ -18,6 +18,7 @@ from zigopt.protobuf.gen.training_run.training_run_data_pb2 import (
   Log,
   SourceCode,
   SysMetadata,
+  TrainingRunData,
   TrainingRunModel,
 )
 from zigopt.training_run.constant import TRAINING_RUN_STATE_TO_JSON
@@ -78,7 +79,9 @@ class LogJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def content(self) -> Optional[str]:
-    return self._log.content
+    if self._log.HasField("content"):
+      return self._log.content
+    return None
 
 
 class TrainingRunModelJsonBuilder(JsonBuilder):
@@ -89,7 +92,9 @@ class TrainingRunModelJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def type(self) -> Optional[str]:
-    return self._training_run_model.type
+    if self._training_run_model.HasField("type"):
+      return self._training_run_model.type
+    return None
 
 
 class SourceCodeJsonBuilder(JsonBuilder):
@@ -100,11 +105,15 @@ class SourceCodeJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def content(self) -> Optional[str]:
-    return self._source_code.content
+    if self._source_code.HasField("content"):
+      return self._source_code.content
+    return None
 
   @field(ValidationType.string)
   def hash(self) -> Optional[str]:
-    return self._source_code.hash
+    if self._source_code.HasField("hash"):
+      return self._source_code.hash
+    return None
 
 
 # TODO(SN-1112): Only used in MPM endpoints for now, can port over to
@@ -146,9 +155,15 @@ class TrainingRunJsonBuilder(JsonBuilder):
   def checkpoint_count(self) -> int:
     return self._checkpoint_count
 
+  @property
+  def data(self) -> TrainingRunData:
+    return self._training_run.training_run_data
+
   @field(ValidationType.metadata)
   def metadata(self) -> Optional[Struct]:
-    return self._training_run.training_run_data.metadata
+    if self.data.HasField("metadata"):
+      return self.data.metadata
+    return None
 
   @field(ValidationType.metadata)
   def dev_metadata(self) -> Optional[Struct]:
@@ -211,7 +226,9 @@ class TrainingRunJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def name(self) -> Optional[str]:
-    return self._training_run.training_run_data.name
+    if self.data.HasField("name"):
+      return self.data.name
+    return None
 
   @field(ValidationType.id_string)
   def project(self) -> Optional[str]:
