@@ -11,11 +11,11 @@ from zigopt.common import *
 MessageT = TypeVar("MessageT", bound=Message)
 
 
-def get_oneof_value(proto: MessageT, name: str) -> Any | None:
+def get_oneof_value(proto: MessageT, name: str) -> Any:
   which_oneof = proto.WhichOneof(name)
   if which_oneof is not None:
     return getattr(proto, which_oneof)
-  return None
+  raise TypeError(f"No value set for oneof: {name}")
 
 
 class BaseProxyClass(Generic[MessageT]):

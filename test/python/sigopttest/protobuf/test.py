@@ -163,7 +163,8 @@ def test_setattr():
 def test_get_oneof_value():
   # pylint: disable=pointless-statement
   message = Parent()
-  assert get_oneof_value(message, "oneof_value") is None
+  with pytest.raises(TypeError):
+    get_oneof_value(message, "oneof_value")
 
   message.oneof_double_field = 1.0
   assert get_oneof_value(message, "oneof_value") == message.oneof_double_field == 1.0
@@ -173,7 +174,8 @@ def test_get_oneof_value():
   assert get_oneof_value(message, "oneof_value") == message.oneof_composite_field == Child(value=1.0)
 
   message.ClearField("oneof_value")
-  assert get_oneof_value(message, "oneof_value") is None
+  with pytest.raises(TypeError):
+    assert get_oneof_value(message, "oneof_value")
 
   with pytest.raises(ValueError):
     get_oneof_value(Parent(), "optional_double_field")
