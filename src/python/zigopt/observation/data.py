@@ -68,17 +68,15 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
     if old_values_by_name and old_v is None:
       raise SigoptValidationError(f"Invalid metric name {name}")
 
-    val = v_var = None
-    if old_v is not None:
-      val = value_from_json(
-        v,
-        default=old_v.value if old_v.HasField("value") else None,
-      )
-      v_var = value_var_from_json(
-        v,
-        experiment,
-        default=old_v.value_var if old_v.HasField("value_var") else None,
-      )
+    val = value_from_json(
+      v,
+      default=old_v.value if old_v and old_v.HasField("value") else None,
+    )
+    v_var = value_var_from_json(
+      v,
+      experiment,
+      default=old_v.value_var if old_v and old_v.HasField("value_var") else None,
+    )
 
     if val is None:
       raise SigoptValidationError(
