@@ -215,41 +215,22 @@ class _ProtobufColumnType(TypeDecorator):
       default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
       return sql_coalesce(clause, default_value) if self._with_default else clause
 
-    @property
-    def astext(self):
-      raise NotImplementedError(
-        "Do not call `astext` on ProtobufColumns - prefer `as_string()` if you want a string value."
-      )
-
-    @property
-    def real_astext(self):
-      return super().astext
-
-    # TODO(SN-1077): It might be possible to remove these casts in the future by inferring
-    # the types from the protobuf record...
-    def as_string(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Text)))
-
-    def as_boolean(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Boolean)))
-
-    def as_numeric(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Numeric)))
-
-    def as_integer(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Integer)))
+    @classmethod
+    def _get_cast_from_descriptor(cls, descriptor):
+      assert cls._is_terminal_descriptor(descriptor)
+      if descriptor is str:
+        return sqlalchemy.types.Text
+      if descriptor is bool:
+        return sqlalchemy.types.Boolean
+      if descriptor is float:
+        return sqlalchemy.types.Numeric
+      if descriptor is int:
+        return sqlalchemy.types.Integer
+      raise NotImplementedError(f"descriptor cast not implemented: {descriptor}")
 
     def cast_with_descriptor(self, descriptor):
-      assert self._is_terminal_descriptor(descriptor)
-      if descriptor is str:
-        return self.as_string()
-      if descriptor is bool:
-        return self.as_boolean()
-      if descriptor is float:
-        return self.as_numeric()
-      if descriptor is int:
-        return self.as_integer()
-      raise NotImplementedError(f"Not implemented descriptor cast: {descriptor}")
+      cast_type = self._get_cast_from_descriptor(descriptor)
+      return self._maybe_with_default(super().astext.cast(extend_with_forbid_is_clause(cast_type)))
 
     def operate(self, operator, *other, **kwargs):
       OPERATORS_REQUIRING_DEFAULTS = (
