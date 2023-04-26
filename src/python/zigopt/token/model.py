@@ -75,13 +75,13 @@ class Token(Base):
     if self.meta.lasts_forever:
       return None
     return coalesce(
-      self.meta.GetFieldOrNone("ttl_seconds"),
+      self.meta.ttl_seconds,
       Token.default_ttl_seconds(self.token_type, can_renew=self.meta.can_renew),
     )
 
   @property
   def expiration_timestamp(self):
-    start_date = coalesce(self.meta.GetFieldOrNone("date_renewed"), self.meta.date_created)
+    start_date = coalesce(self.meta.date_renewed, self.meta.date_created)
     return napply(self.ttl_seconds, lambda t: start_date + t)
 
   @property

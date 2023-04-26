@@ -78,7 +78,7 @@ class LogJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def content(self) -> Optional[str]:
-    return self._log.GetFieldOrNone("content")  # type: ignore
+    return self._log.content
 
 
 class TrainingRunModelJsonBuilder(JsonBuilder):
@@ -89,7 +89,7 @@ class TrainingRunModelJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def type(self) -> Optional[str]:
-    return self._training_run_model.GetFieldOrNone("type")  # type: ignore
+    return self._training_run_model.type
 
 
 class SourceCodeJsonBuilder(JsonBuilder):
@@ -100,11 +100,11 @@ class SourceCodeJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def content(self) -> Optional[str]:
-    return self._source_code.GetFieldOrNone("content")  # type: ignore
+    return self._source_code.content
 
   @field(ValidationType.string)
   def hash(self) -> Optional[str]:
-    return self._source_code.GetFieldOrNone("hash")  # type: ignore
+    return self._source_code.hash
 
 
 # TODO(SN-1112): Only used in MPM endpoints for now, can port over to
@@ -148,7 +148,7 @@ class TrainingRunJsonBuilder(JsonBuilder):
 
   @field(ValidationType.metadata)
   def metadata(self) -> Optional[Struct]:
-    return self._training_run.training_run_data.GetFieldOrNone("metadata")
+    return self._training_run.training_run_data.metadata
 
   @field(ValidationType.metadata)
   def dev_metadata(self) -> Optional[Struct]:
@@ -211,7 +211,7 @@ class TrainingRunJsonBuilder(JsonBuilder):
 
   @field(ValidationType.string)
   def name(self) -> Optional[str]:
-    return self._training_run.training_run_data.GetFieldOrNone("name")
+    return self._training_run.training_run_data.name
 
   @field(ValidationType.id_string)
   def project(self) -> Optional[str]:

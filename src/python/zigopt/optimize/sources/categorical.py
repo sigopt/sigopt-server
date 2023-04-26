@@ -129,7 +129,7 @@ class CategoricalOptimizationSource(OptimizationSource):
   def _extract_cat_hyperparameter_dict(self, optimization_args, hyperparameters, use_auto_noise):
     length_scale_map = dict(((l.parameter_name, l.length_list) for l in hyperparameters.hyperparameter_lengths))
 
-    alpha = hyperparameters.GetFieldOrNone("hyperparameter_alpha") or DEFAULT_HYPERPARAMETER_ALPHA
+    alpha = hyperparameters.hyperparameter_alpha or DEFAULT_HYPERPARAMETER_ALPHA
 
     length_scales = []
     for p in self.experiment.all_parameters_sorted:
@@ -140,11 +140,11 @@ class CategoricalOptimizationSource(OptimizationSource):
 
     tikhonov = None
     if use_auto_noise:
-      tikhonov = hyperparameters.GetFieldOrNone("hyperparameter_tikhonov") or DEFAULT_HYPERPARAMETER_TIKHONOV
+      tikhonov = hyperparameters.hyperparameter_tikhonov or DEFAULT_HYPERPARAMETER_TIKHONOV
 
     task_length = None
     if self.should_have_task_length():
-      task_length = hyperparameters.GetFieldOrNone("task_length") or DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE
+      task_length = hyperparameters.task_length or DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE
 
     return {
       "alpha": alpha,

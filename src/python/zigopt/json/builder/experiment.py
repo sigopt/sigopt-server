@@ -99,7 +99,7 @@ class MetricJsonBuilder(JsonBuilder):
 
   @field(ValidationType.number)
   def threshold(self) -> Optional[float]:
-    return self._metric.GetFieldOrNone("threshold")  # type: ignore
+    return self._metric.threshold
 
   @field(ValidationType.string)
   def strategy(self) -> str:
@@ -230,7 +230,7 @@ class ExperimentJsonBuilder(JsonBuilder):
 
   @field(ValidationType.positive_integer)
   def num_solutions(self) -> Optional[int]:
-    return self._experiment.experiment_meta.GetFieldOrNone("num_solutions")
+    return self._experiment.experiment_meta.num_solutions
 
   def hide_observation_budget(self) -> bool:
     return self._experiment.runs_only
@@ -248,7 +248,7 @@ class ExperimentJsonBuilder(JsonBuilder):
 
   @field(ValidationType.positive_integer)
   def parallel_bandwidth(self) -> Optional[int]:
-    return self._experiment.experiment_meta.GetFieldOrNone("parallel_bandwidth")
+    return self._experiment.experiment_meta.parallel_bandwidth
 
   @field(ValidationType.string)
   def project(self) -> Optional[str]:

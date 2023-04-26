@@ -55,4 +55,4 @@ class ProcessedSuggestion(Base):
 
   @property
   def client_provided_data(self):
-    return self.processed_suggestion_meta.GetFieldOrNone("client_provided_data")
+    return self.processed_suggestion_meta.client_provided_data

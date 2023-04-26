@@ -299,18 +299,16 @@ class _ProtobufColumnType(TypeDecorator):
     def _get_field_descriptor(self, key):
       return self._descriptor.fields_by_name[key]
 
-    def GetFieldOrNone(self, key):
+    def _get_value_from_descriptor(self, key):
       try:
         field_descriptor = self._get_field_descriptor(key)
       except KeyError as e:
-        raise ValueError(f"Invalid key: {key}\nCause by {e}") from e
-      if field_descriptor.label == google.protobuf.descriptor.FieldDescriptor.LABEL_REPEATED:
-        raise ValueError(f'Protocol message has no non-repeated field "{key}"')
+        raise AttributeError(f"Invalid descriptor attribute: {key}") from e
       json_name = field_descriptor.json_name
       return self._real_getitem(json_name, with_default=False)
 
     def HasField(self, key):
-      return self.GetFieldOrNone(key).real_isnot(None)
+      return self._get_value_from_descriptor(key).real_isnot(None)
 
     def is_(self, other):
       _raise_for_is_usage()
@@ -334,16 +332,8 @@ class _ProtobufColumnType(TypeDecorator):
       operator, right_expr, _ = self._setup_getitem(key)  # pylint: disable=no-value-for-parameter
       return self.operate(operator, right_expr, result_type=JSONB)
 
-    def protobuf_getattr(self, key):
-      field_descriptor = self._get_field_descriptor(key)
-      json_name = field_descriptor.json_name
-      return self._real_getitem(json_name, with_default=True)
-
-    def __getattr__(self, key):
-      try:
-        return self.protobuf_getattr(key)
-      except KeyError as e:
-        raise AttributeError(e) from e
+    def __getattr__(self, name):
+      return self._get_value_from_descriptor(name)
 
 
 class ImpliedUTCDateTime(TypeDecorator):
@@ -372,7 +362,6 @@ class ProtobufColumn(sqlalchemy.Column):
 
       - field acceses (including returning default values for unset fields)
       - HasField
-      - GetFieldOrNone
     """
 
   _constructor = sqlalchemy.Column

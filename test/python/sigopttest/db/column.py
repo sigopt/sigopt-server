@@ -131,7 +131,7 @@ class TestDbColumn:
     ],
   )
   def test_valid_fields(self, field):
-    Model.protobuf_column.GetFieldOrNone(field)
+    getattr(Model.protobuf_column, field)
     Model.protobuf_column.HasField(field)
 
   @pytest.mark.parametrize(
@@ -147,7 +147,7 @@ class TestDbColumn:
   )
   def test_invalid_fields(self, field):
     with pytest.raises(ValueError):
-      Model.protobuf_column.GetFieldOrNone(field)
+      getattr(Model.protobuf_column, field)
     with pytest.raises(ValueError):
       Model.protobuf_column.HasField(field)
 

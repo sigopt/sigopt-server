@@ -42,7 +42,7 @@ class TestProcess(UnprocessedSuggestionServiceTestBase):
     assert suggestion.experiment_id == experiment.id
     assert suggestion.get_assignments(experiment) == dict(p1=0)
     assert suggestion.source == unprocessed_suggestion.source
-    assert suggestion.client_provided_data == processed_suggestion_meta.GetFieldOrNone("client_provided_data")
+    assert suggestion.client_provided_data == processed_suggestion_meta.client_provided_data
     assert suggestion.state == "open"
     assert suggestion.processed.queued_id is None
 
@@ -74,7 +74,7 @@ class TestProcess(UnprocessedSuggestionServiceTestBase):
     assert suggestion.experiment_id == experiment.id
     assert suggestion.get_assignments(experiment) == dict(p1=0)
     assert suggestion.source == unprocessed_suggestion.source
-    assert suggestion.client_provided_data == processed_suggestion_meta.GetFieldOrNone("client_provided_data")
+    assert suggestion.client_provided_data == processed_suggestion_meta.client_provided_data
     assert suggestion.state == "open"
     assert suggestion.processed.queued_id is None
 

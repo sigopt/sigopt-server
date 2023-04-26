@@ -127,14 +127,14 @@ class ExperimentParameterJsonBuilder(JsonBuilder):
 
   @field(JsonBuilderValidationType())
   def prior(self) -> Optional[BasePriorJsonBuilder]:
-    if self._param.GetFieldOrNone("prior") is not None:
+    if self._param.prior is not None:
       type_to_builder = {
         Prior.NORMAL: lambda p: NormalPriorJsonBuilder(p.normal_prior),
         Prior.BETA: lambda p: BetaPriorJsonBuilder(p.beta_prior),
       }
       # TODO(SN-988): we probably want to know if we can't find a builder
       # should this raise a soft exception?
-      builder = type_to_builder.get(self._param.prior.GetFieldOrNone("prior_type"))
+      builder = type_to_builder.get(self._param.prior.prior_type)
       if builder:
         return builder(self._param.prior)
     return None
@@ -145,11 +145,11 @@ class ExperimentParameterJsonBuilder(JsonBuilder):
 
   @field(JsonBuilderValidationType())
   def bounds(self) -> Optional[BoundsJsonBuilder]:
-    return napply(self._param.GetFieldOrNone("bounds"), BoundsJsonBuilder)
+    return napply(self._param.bounds, BoundsJsonBuilder)
 
   @field(ValidationType.assignment)
   def default_value(self) -> Optional[int | float | str]:
-    replacement_value: Optional[float] = self._param.GetFieldOrNone("replacement_value_if_missing")
+    replacement_value: Optional[float] = self._param.replacement_value_if_missing
     return napply(replacement_value, lambda rep: render_param_value(self._param, rep))
 
   def hide_grid(self):

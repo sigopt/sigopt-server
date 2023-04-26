@@ -64,7 +64,7 @@ class OrganizationJsonBuilder(JsonBuilder):
 
   @field(ValidationType.id)
   def client_for_email_signup(self) -> Optional[int]:
-    return self._organization.organization_meta.GetFieldOrNone("client_for_email_signup")
+    return self._organization.organization_meta.client_for_email_signup
 
   @field(ValidationType.boolean)
   def allow_signup_from_email_domains(self) -> bool:

@@ -26,11 +26,10 @@ def test_copy_from():
 
 
 def assert_all_fields_unset(immutable):
-  assert immutable.GetFieldOrNone("optional_double_field") is None
-  assert immutable.GetFieldOrNone("optional_string_field") is None
-  assert immutable.GetFieldOrNone("optional_composite_field") is None
-  assert immutable.GetFieldOrNone("optional_recursive_field") is None
-  assert immutable.optional_recursive_field.GetFieldOrNone("optional_double_field") is None
+  assert immutable.optional_double_field is None
+  assert immutable.optional_string_field is None
+  assert immutable.optional_composite_field is None
+  assert immutable.optional_recursive_field is None
 
 
 def set_reference_values(builder):
@@ -52,21 +51,21 @@ def set_reference_values(builder):
 
 
 def assert_reference_values(immutable):
-  assert_eq(immutable.GetFieldOrNone("optional_double_field"), 1.0)
-  assert_eq(immutable.GetFieldOrNone("optional_string_field"), "test")
+  assert_eq(immutable.optional_double_field, 1.0)
+  assert_eq(immutable.optional_string_field, "test")
 
-  assert_eq(immutable.optional_composite_field.GetFieldOrNone("name"), "name1")
-  assert_eq(immutable.optional_composite_field.GetFieldOrNone("value"), 2.0)
-  assert_eq(immutable.optional_composite_field.recursive.GetFieldOrNone("name"), "name2")
+  assert_eq(immutable.optional_composite_field.name, "name1")
+  assert_eq(immutable.optional_composite_field.value, 2.0)
+  assert_eq(immutable.optional_composite_field.recursive.name, "name2")
 
   assert_eq(
-    immutable.GetFieldOrNone("optional_composite_field"),
+    immutable.optional_composite_field,
     (Child(name="name1", value=2.0, recursive=Child(name="name2"))),
   )
 
-  assert_eq(immutable.optional_recursive_field.optional_recursive_field.GetFieldOrNone("optional_double_field"), 5.0)
+  assert_eq(immutable.optional_recursive_field.optional_recursive_field.optional_double_field, 5.0)
   assert_eq(
-    immutable.optional_recursive_field.GetFieldOrNone("optional_recursive_field"),
+    immutable.optional_recursive_field.optional_recursive_field,
     (Parent(optional_double_field=5.0)),
   )
 
@@ -181,7 +180,7 @@ def test_GetOneofValueOrNone():
 
   for message in (Parent(), Parent(oneof_double_field=1.0)):
     with pytest.raises(ValueError):
-      message.GetFieldOrNone("oneof_value")
+      message.oneof_value  # pylint: disable=pointless-statement
 
 
 def assert_eq(v1, v2):

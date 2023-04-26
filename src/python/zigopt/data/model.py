@@ -30,19 +30,19 @@ class BaseHasMeasurementsProxy(Proxy):
   def value_for_maximization(self, experiment, name):
     value = find(self.get_all_measurements_for_maximization(experiment), lambda v: v.name == name)
     if value:
-      return value.GetFieldOrNone("value")
+      return value.value
     return None
 
   def metric_value(self, experiment, name):
     measurement = find(self.get_all_measurements(experiment), lambda v: v.name == name)
     if measurement:
-      return measurement.GetFieldOrNone("value")
+      return measurement.value
     return None
 
   def metric_value_var(self, experiment, name):
     measurement = find(self.get_all_measurements(experiment), lambda v: v.name == name)
     if measurement:
-      return measurement.GetFieldOrNone("value_var")
+      return measurement.value_var
     return None
 
   def _sorted_attributes(self, experiment, attr):
@@ -50,7 +50,7 @@ class BaseHasMeasurementsProxy(Proxy):
     num_expected_metrics = len(experiment.all_metrics)
     assert self.reported_failure or len(measurements) == num_expected_metrics
 
-    attr_fields = [m.GetFieldOrNone(attr) for m in measurements]
+    attr_fields = [getattr(m, attr) for m in measurements]
     if not attr_fields or any(f is None for f in attr_fields):
       return None
     return attr_fields

@@ -71,11 +71,11 @@ class Observation(Base):
 
   @property
   def timestamp(self):
-    return self.data.GetFieldOrNone("timestamp")  # pylint: disable=protobuf-undefined-attribute
+    return self.data.timestamp
 
   @property
   def client_provided_data(self):
-    return self.data.GetFieldOrNone("client_provided_data")  # pylint: disable=protobuf-undefined-attribute
+    return self.data.client_provided_data
 
   @property
   def deleted(self):
@@ -87,7 +87,7 @@ class Observation(Base):
 
   @property
   def task(self):
-    return self.data.GetFieldOrNone("task")  # pylint: disable=protobuf-undefined-attribute
+    return self.data.task
 
   @property
   def has_suggestion(self):

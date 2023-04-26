@@ -471,7 +471,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
           " Please add a default_value field to the new parameter(s)."
           " Or if you are using the web dashboard fill out the Default Value field."
         )
-    default_value = param.GetFieldOrNone("replacement_value_if_missing")
+    default_value = param.replacement_value_if_missing
     if default_value is not None and not param.valid_assignment(default_value):
       if param.is_categorical:
         raise SigoptValidationError(

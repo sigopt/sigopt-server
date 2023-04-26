@@ -38,4 +38,4 @@ class CheckpointJsonBuilder(JsonBuilder):
 
   @field(ValidationType.metadata)
   def metadata(self) -> Optional[Struct]:
-    return self._checkpoint.data.GetFieldOrNone("metadata")
+    return self._checkpoint.data.metadata

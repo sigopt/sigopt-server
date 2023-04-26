@@ -63,7 +63,7 @@ class User(Base):
 
   @property
   def date_created(self):
-    return self.user_meta.GetFieldOrNone("date_created")
+    return self.user_meta.date_created
 
   @property
   def deleted(self):
@@ -75,15 +75,15 @@ class User(Base):
 
   @property
   def hashed_password_reset_code(self):
-    return self.user_meta.GetFieldOrNone("hashed_password_reset_code")
+    return self.user_meta.hashed_password_reset_code
 
   @property
   def password_reset_timestamp(self):
-    return self.user_meta.GetFieldOrNone("password_reset_timestamp")
+    return self.user_meta.password_reset_timestamp
 
   @property
   def hashed_email_verification_code(self):
-    return self.user_meta.GetFieldOrNone("hashed_email_verification_code")
+    return self.user_meta.hashed_email_verification_code
 
   @property
   def email_verification_timestamp(self):

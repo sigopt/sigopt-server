@@ -514,9 +514,9 @@ class SCAdapter(Service):
           assignment = 10**assignment
         if parameter.is_integer or parameter.is_categorical:
           assignment = round(assignment)
-        data.assignments_map[parameter.name] = assignment
+        data.assignments_map[parameter.name] = assignment  # pylint: disable=no-member
       if task_cost is not None:
-        data.task.CopyFrom(experiment.get_task_by_cost(task_cost).copy_protobuf())
+        data.task.CopyFrom(experiment.get_task_by_cost(task_cost).copy_protobuf())  # pylint: disable=no-member
 
       yield SuggestionDataProxy(data)
 
@@ -580,7 +580,7 @@ class SCAdapter(Service):
       return var_type, elements, name
 
     def parameter_to_prior_info(p):
-      prior_type = p.prior.GetFieldOrNone("prior_type")
+      prior_type = p.prior.prior_type
       if prior_type == Prior.NORMAL:
         assert p.is_double
         name = ParameterPriorNames.NORMAL

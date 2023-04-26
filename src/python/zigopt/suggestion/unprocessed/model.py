@@ -165,4 +165,4 @@ class UnprocessedSuggestion(Base):
   # TODO(RTL-125): Should this be a function that requires passing the experiment ??  Is None a good default ??
   @property
   def task(self):
-    return self.suggestion_meta.suggestion_data.GetFieldOrNone("task")
+    return self.suggestion_meta.suggestion_data.task
