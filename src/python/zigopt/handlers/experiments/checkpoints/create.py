@@ -39,11 +39,11 @@ class CheckpointsCreateHandler(TrainingRunHandler):
     validate_metric_names(values, self.experiment)
     for value_dict in values:
       observation_value = ObservationValue()
-      observation_value.SetFieldIfNotNone("name", get_with_validation(value_dict, "name", ValidationType.string))
-      observation_value.SetFieldIfNotNone("value", get_with_validation(value_dict, "value", ValidationType.number))
+      observation_value.name = get_with_validation(value_dict, "name", ValidationType.string)
+      observation_value.value = get_with_validation(value_dict, "value", ValidationType.number)
       value_stddev = get_opt_with_validation(value_dict, "value_stddev", ValidationType.number)
       value_var = napply(value_stddev, lambda stddev: stddev * stddev)
-      observation_value.SetFieldIfNotNone("value_var", value_var)
+      observation_value.value_var = value_var
       yield observation_value
 
   def parse_params(self, request):

@@ -22,12 +22,15 @@ def patch_protobuf_class(message_cls: type[Message]):
       return original_getattribute(self, name)
     return None
 
-  def Message_setattr(self: object, name: str, value: Any) -> None:
+  def Message_setattr(self: object, name: str, value: Any | None) -> None:
     # Ensure that we always raise on invalid attributes, even if value is None
     if not hasattr(self, name):
       raise AttributeError(name)
 
-    original_setattr(self, name, value)
+    if value is None:
+      delattr(self, name)
+    else:
+      original_setattr(self, name, value)
 
   message_cls.__getattribute__ = Message_getattribute  # type: ignore
   message_cls.__setattr__ = Message_setattr  # type: ignore

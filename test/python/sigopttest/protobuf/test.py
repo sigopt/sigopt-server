@@ -134,25 +134,26 @@ def test_large_floats():
   assert dict_to_protobuf(Parent, j).optional_double_field == float(number_too_big_for_precise_int)
 
 
-def test_SetFieldIfNotNone():
+def test_setattr():
+  # pylint: disable=assigning-non-slot,protobuf-type-error
   empty = Parent()
   assert not empty.HasField("optional_double_field")
   assert not empty.optional_composite_field.HasField("name")
-  empty.SetFieldIfNotNone("optional_double_field", None)
-  empty.optional_composite_field.SetFieldIfNotNone("name", None)
+  empty.optional_double_field = None  # type: ignore
+  empty.optional_composite_field.name = None  # type: ignore
   assert not empty.HasField("optional_double_field")
   assert not empty.optional_composite_field.HasField("name")
-  empty.SetFieldIfNotNone("optional_double_field", 1.0)
-  empty.optional_composite_field.SetFieldIfNotNone("name", "abc")
+  empty.optional_double_field = 1.0
+  empty.optional_composite_field.name = "abc"
   assert empty.HasField("optional_double_field")
   assert empty.optional_double_field == 1.0
   assert empty.optional_composite_field.HasField("name")
   assert empty.optional_composite_field.name == "abc"
 
   with pytest.raises(AttributeError):
-    empty.SetFieldIfNotNone("fake_field", 1)
+    empty.fake_field = 1  # type: ignore
   with pytest.raises(AttributeError):
-    empty.SetFieldIfNotNone("fake_field", None)
+    empty.fake_field = None  # type: ignore
 
 
 def test_GetOneofValueOrNone():

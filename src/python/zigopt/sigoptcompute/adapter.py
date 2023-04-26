@@ -514,9 +514,9 @@ class SCAdapter(Service):
           assignment = 10**assignment
         if parameter.is_integer or parameter.is_categorical:
           assignment = round(assignment)
-        data.assignments_map[parameter.name] = assignment  # pylint: disable=no-member
+        data.assignments_map[parameter.name] = assignment
       if task_cost is not None:
-        data.task.CopyFrom(experiment.get_task_by_cost(task_cost).copy_protobuf())  # pylint: disable=no-member
+        data.task.CopyFrom(experiment.get_task_by_cost(task_cost).copy_protobuf())
 
       yield SuggestionDataProxy(data)
 

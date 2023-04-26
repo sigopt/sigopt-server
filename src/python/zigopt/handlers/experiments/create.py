@@ -280,12 +280,12 @@ class BaseExperimentsCreateHandler(Handler):
       json_dict,
       experiment_meta.all_parameters_unsorted,
     )
-    experiment_meta.SetFieldIfNotNone("num_solutions", num_solutions)  # pylint: disable=protobuf-undefined-attribute
+    if num_solutions is not None:
+      experiment_meta.num_solutions = num_solutions
 
     parallel_bandwidth = cls.get_parallel_bandwidth_from_json(json_dict)
-    experiment_meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
-      "parallel_bandwidth", parallel_bandwidth
-    )
+    if parallel_bandwidth is not None:
+      experiment_meta.parallel_bandwidth = parallel_bandwidth
 
     # Set observation budget if present and check to see which features require a budget
     budget_key, budget = cls.get_budget_key_and_value(json_dict, experiment_meta.runs_only)
@@ -302,9 +302,8 @@ class BaseExperimentsCreateHandler(Handler):
     cls._check_multisolution_viability(experiment_meta, num_solutions, optimized_metrics)
 
     client_provided_data = cls.get_client_provided_data(json_dict)
-    experiment_meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
-      "client_provided_data", client_provided_data
-    )
+    if client_provided_data is not None:
+      experiment_meta.client_provided_data = client_provided_data
 
     if not (has_optimization_metrics or has_constraint_metrics):
       raise SigoptValidationError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")
