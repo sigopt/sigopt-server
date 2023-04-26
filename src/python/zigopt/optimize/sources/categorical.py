@@ -5,7 +5,6 @@ import numpy
 
 from zigopt.optimize.sources.base import OptimizationSource
 from zigopt.protobuf.gen.optimize.sources_pb2 import CategoricalHyperparameters, MultimetricHyperparameters
-from zigopt.protobuf.lib import copy_protobuf
 from zigopt.sigoptcompute.constant import (
   DEFAULT_AUTO_NOISE_ACTIVATED,
   DEFAULT_EI_WHEN_UNCOMPUTABLE,
@@ -172,7 +171,7 @@ class CategoricalOptimizationSource(OptimizationSource):
       mmhpv = ret.multimetric_hyperparameter_value.add()
       mmhpv.metric_name = str(metric.name)
       mmhpv.categorical_hyperparameters.CopyFrom(
-        copy_protobuf(self.build_cat_hyperparameter_protobuf_from_dict(hyperparameter_dict[i]))
+        self.build_cat_hyperparameter_protobuf_from_dict(hyperparameter_dict[i])
       )
     return ret
 

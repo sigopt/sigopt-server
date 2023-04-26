@@ -53,7 +53,7 @@ class SuggestionSampler:
       if unprocessed_suggestion.task:
         continue
       suggestion_meta = copy_protobuf(unprocessed_suggestion.suggestion_meta)
-      suggestion_meta.suggestion_data.task.CopyFrom(copy_protobuf(self._default_task))
+      suggestion_meta.suggestion_data.task.CopyFrom(self._default_task)
       unprocessed_suggestion.suggestion_meta = suggestion_meta
 
     return suggestions

@@ -517,7 +517,7 @@ class SCAdapter(Service):
           assignment = round(assignment)
         data.assignments_map[parameter.name] = assignment
       if task_cost is not None:
-        data.task.CopyFrom(copy_protobuf(experiment.get_task_by_cost(task_cost)))
+        data.task.CopyFrom(experiment.get_task_by_cost(task_cost))
 
       yield SuggestionDataProxy(data)
 
