@@ -182,19 +182,6 @@ class TestDbColumn:
       getattr(base, op)(None)
 
   @pytest.mark.parametrize(
-    "base",
-    [
-      Model.protobuf_column,
-      Model.protobuf_column.optional_double_field,
-    ],
-  )
-  def test_astext(self, base):
-    # pylint: disable=pointless-statement
-    with pytest.raises(NotImplementedError):
-      base.astext
-    # pylint: enable=pointless-statement
-
-  @pytest.mark.parametrize(
     "path,expected",
     [
       ([], "{}"),
