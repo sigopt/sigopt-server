@@ -41,9 +41,10 @@ class CheckpointsCreateHandler(TrainingRunHandler):
       observation_value = ObservationValue()
       observation_value.name = get_with_validation(value_dict, "name", ValidationType.string)
       observation_value.value = get_with_validation(value_dict, "value", ValidationType.number)
-      value_stddev = get_opt_with_validation(value_dict, "value_stddev", ValidationType.number)
+      value_stddev: float | None = get_opt_with_validation(value_dict, "value_stddev", ValidationType.number)
       value_var = napply(value_stddev, lambda stddev: stddev * stddev)
-      observation_value.value_var = value_var
+      if value_var is not None:
+        observation_value.value_var = value_var
       yield observation_value
 
   def parse_params(self, request):
