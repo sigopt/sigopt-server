@@ -215,26 +215,15 @@ class _ProtobufColumnType(TypeDecorator):
       default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
       return sql_coalesce(clause, default_value) if self._with_default else clause
 
-    @property
-    def astext(self):
-      raise NotImplementedError(
-        "Do not call `astext` on ProtobufColumns - prefer `as_string()` if you want a string value."
-      )
-
-    @property
-    def real_astext(self):
-      return super().astext
-
-    # TODO(SN-1077): It might be possible to remove these casts in the future by inferring
-    # the types from the protobuf record...
-    def as_string(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Text)))
+    def as_primitive(self):
+      cast_type = self._get_cast_from_descriptor(self._descriptor)
+      return self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(cast_type)))
 
     def as_numeric(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Numeric)))
+      return self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Numeric)))
 
     def as_integer(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Integer)))
+      return self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Integer)))
 
     @classmethod
     def _get_cast_from_descriptor(cls, descriptor):

@@ -174,7 +174,7 @@ class TestDbColumn:
       Model.protobuf_column,
       Model.protobuf_column.optional_double_field,
       Model.protobuf_column.optional_double_field.as_numeric(),
-      Model.protobuf_column.optional_double_field.as_string(),
+      Model.protobuf_column.optional_double_field.as_primitive(),
     ],
   )
   @pytest.mark.parametrize("op", ["is_", "isnot"])
