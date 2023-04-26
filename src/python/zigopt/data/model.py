@@ -42,7 +42,7 @@ class BaseHasMeasurementsProxy(Proxy):
 
   def metric_value_var(self, experiment, name):
     measurement = find(self.get_all_measurements(experiment), lambda v: v.name == name)
-    if measurement and measurement.HasField("value"):
+    if measurement and measurement.HasField("value_var"):
       return measurement.value_var
     return None
 
