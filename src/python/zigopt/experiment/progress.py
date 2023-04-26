@@ -92,7 +92,7 @@ class ExperimentProgressService(Service):
         func.max(Observation.id),
         func.min(Observation.id),
         func.count(Observation.id),
-        func.sum(Observation.data.task.cost.as_numeric()),  # type: ignore
+        func.sum(Observation.data.task.cost),
       )
       .filter(Observation.experiment_id.in_([e.id for e in experiments]))
       .filter(~Observation.data.deleted)
@@ -109,7 +109,7 @@ class ExperimentProgressService(Service):
       if experiments_eligible_for_best:
         experiments_by_optimized_index = as_grouped_dict(
           experiments_eligible_for_best,
-          lambda e: find_index(e.all_metrics, lambda m: m.strategy == ExperimentMetric.OPTIMIZE),
+          lambda e: find_index(e.all_metrics, lambda m: m.strategy == ExperimentMetric.OPTIMIZE) or 0,
         )
 
         num_indexes = len(experiments_by_optimized_index)
@@ -128,7 +128,7 @@ class ExperimentProgressService(Service):
           # it may be worth considering denormalizing the best observation somewhere, or
           # reconsidering our need for this query in prod
           min_exps, max_exps = partition(experiments_eligible_for_best, lambda e: e.optimized_metrics[0].is_minimized)
-          value_clause = Observation.data.values[optimized_metric_index].value.as_numeric()  # type: ignore
+          value_clause = Observation.data.values[optimized_metric_index].value
 
           for v_clause, exp_list in [(desc(value_clause), max_exps), (value_clause, min_exps)]:
             if exp_list:
@@ -141,7 +141,7 @@ class ExperimentProgressService(Service):
                 .filter(Observation.experiment_id.in_([e.id for e in exp_list]))
                 .filter(~Observation.data.deleted)
                 .filter(~Observation.data.reported_failure)
-                .filter(Observation.data.task.cost.as_numeric() == 1)  # type: ignore
+                .filter(Observation.data.task.cost == 1)
                 .subquery("q")
               )
               for eid, best, _ in self.services.database_service.all(
