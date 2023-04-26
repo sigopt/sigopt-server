@@ -16,7 +16,16 @@ class InvalidPathError(ValueError):
 _NO_ARG = object()
 
 
-class OurEnumDescriptor:
+class ZigoptDescriptor:
+  python_type: type
+
+  def __call__(self, *args, **kwargs):
+    raise NotImplementedError
+
+
+class OurEnumDescriptor(ZigoptDescriptor):
+  python_type = int
+
   def __init__(self, descriptor):
     self.descriptor = descriptor
 
@@ -34,6 +43,15 @@ class OurEnumDescriptor:
     if serialized_value is None:
       raise ValueError(f"Unknown number for enum {self.descriptor.enum_type.name}: {enum_value}")
     return serialized_value.name
+
+
+class DescriptorWithDefault(ZigoptDescriptor):
+  def __init__(self, type_, default):
+    self.python_type = type_
+    self.default_value = default
+
+  def __call__(self):
+    return self.python_type(self.default_value)
 
 
 def next_descriptor_for_field_descriptor(descriptor):
@@ -70,7 +88,7 @@ def field_descriptor_to_scalar_descriptor(field_descriptor):
     raise NotImplementedError("message types are not supported in this function")
   python_type = next_descriptor_for_field_descriptor(field_descriptor)
   if field_descriptor.has_default_value:
-    return lambda: python_type(field_descriptor.default_value)
+    return DescriptorWithDefault(python_type, field_descriptor.default_value)
   return python_type
 
 

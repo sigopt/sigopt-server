@@ -151,20 +151,6 @@ class TestProtobufColumn(DatabaseServiceBase):
     experiment = experiment_service.find_by_id(experiment.id)
     assert experiment.experiment_meta.unused_int64_key_for_testing == value_too_big_for_float
 
-  def test_safe_comparison(self, database_service, experiment_service, experiment):
-    comparison_value = 100
-    with pytest.raises(ValueError):
-      database_service.first(
-        database_service.query(Experiment)
-        .filter(Experiment.id == experiment.id)
-        .filter(Experiment.experiment_meta.unused_int64_key_for_testing < comparison_value)
-      )
-    database_service.first(
-      database_service.query(Experiment)
-      .filter(Experiment.id == experiment.id)
-      .filter(Experiment.experiment_meta.unused_int64_key_for_testing < comparison_value)
-    )
-
   def test_long_value_comparison(self, database_service, experiment_service, experiment):
     # Since int64s are stored as strings, ensure that they are compared as ints
     smaller_value = 100

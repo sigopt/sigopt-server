@@ -20,7 +20,7 @@ from sqlalchemy.types import DateTime, TypeDecorator
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import aware_datetime_to_naive_datetime, naive_datetime_to_aware_datetime
 from zigopt.protobuf.dict import protobuf_to_dict
-from zigopt.protobuf.json import emit_json_with_descriptor, get_json_key, parse_json_with_descriptor
+from zigopt.protobuf.json import ZigoptDescriptor, emit_json_with_descriptor, get_json_key, parse_json_with_descriptor
 from zigopt.protobuf.lib import is_protobuf
 
 
@@ -222,13 +222,18 @@ class _ProtobufColumnType(TypeDecorator):
     @classmethod
     def _get_cast_from_descriptor(cls, descriptor):
       assert cls._is_terminal_descriptor(descriptor)
-      if descriptor is str:
+      python_type: type
+      if isinstance(descriptor, ZigoptDescriptor):
+        python_type = descriptor.python_type
+      else:
+        python_type = descriptor
+      if python_type is str:
         return sqlalchemy.types.Text
-      if descriptor is bool:
+      if python_type is bool:
         return sqlalchemy.types.Boolean
-      if descriptor is float:
+      if python_type is float:
         return sqlalchemy.types.Numeric
-      if descriptor is int:
+      if python_type is int:
         return sqlalchemy.types.Integer
       raise NotImplementedError(f"terminal descriptor is not supported: {descriptor}")
 
