@@ -97,7 +97,8 @@ class OrganizationService(Service):
     meta = ClientMeta()
     meta.date_created = unix_timestamp()
 
-    meta.client_security.allow_users_to_see_experiments_by_others = allow_users_to_see_experiments_by_others
+    if allow_users_to_see_experiments_by_others is not None:
+      meta.client_security.allow_users_to_see_experiments_by_others = allow_users_to_see_experiments_by_others
 
     client = Client(
       organization_id=organization.id,
