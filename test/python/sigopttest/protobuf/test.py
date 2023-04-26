@@ -9,6 +9,7 @@ from google.protobuf.message import Message
 
 from zigopt.protobuf.dict import dict_to_protobuf, protobuf_to_dict
 from zigopt.protobuf.gen.test.message_pb2 import Child, Parent
+from zigopt.protobuf.lib import get_oneof_value
 
 
 def test_copy_from():
@@ -156,32 +157,33 @@ def test_setattr():
     empty.fake_field = None  # type: ignore
 
 
-def test_GetOneofValueOrNone():
+def test_get_oneof_value():
+  # pylint: disable=pointless-statement
   message = Parent()
-  assert message.GetOneofValueOrNone("oneof_value") is None
+  assert get_oneof_value(message, "oneof_value") is None
 
   message.oneof_double_field = 1.0
-  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_double_field == 1.0
+  assert get_oneof_value(message, "oneof_value") == message.oneof_double_field == 1.0
   message.oneof_string_field = "abc"
-  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_string_field == "abc"
+  assert get_oneof_value(message, "oneof_value") == message.oneof_string_field == "abc"
   message.oneof_composite_field.value = 1.0
-  assert message.GetOneofValueOrNone("oneof_value") == message.oneof_composite_field == Child(value=1.0)
+  assert get_oneof_value(message, "oneof_value") == message.oneof_composite_field == Child(value=1.0)
 
   message.ClearField("oneof_value")
-  assert message.GetOneofValueOrNone("oneof_value") is None
+  assert get_oneof_value(message, "oneof_value") is None
 
   with pytest.raises(ValueError):
-    Parent().GetOneofValueOrNone("optional_double_field")
+    get_oneof_value(Parent(), "optional_double_field")
 
   with pytest.raises(ValueError):
-    Parent().GetOneofValueOrNone("optional_recursive_field")
+    get_oneof_value(Parent(), "optional_recursive_field")
 
   with pytest.raises(ValueError):
-    Parent().GetOneofValueOrNone("map_field")
+    get_oneof_value(Parent(), "map_field")
 
   for message in (Parent(), Parent(oneof_double_field=1.0)):
     with pytest.raises(ValueError):
-      message.oneof_value  # pylint: disable=pointless-statement
+      message.oneof_value  # type: ignore
 
 
 def assert_eq(v1, v2):

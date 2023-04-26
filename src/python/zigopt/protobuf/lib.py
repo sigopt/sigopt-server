@@ -11,7 +11,7 @@ from zigopt.common import *
 MessageT = TypeVar("MessageT", bound=Message)
 
 
-def get_oneof_value(proto: MessageT, name: str) -> None:
+def get_oneof_value(proto: MessageT, name: str) -> Any | None:
   which_oneof = proto.WhichOneof(name)
   if which_oneof is not None:
     return getattr(proto, which_oneof)
