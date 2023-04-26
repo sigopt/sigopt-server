@@ -68,6 +68,27 @@ RUN : \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
+ENV CHROMEDRIVER_VERSION "112.0.5615.28"
+
+RUN : \
+  ; apt-get update -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests gnupg=2.2.* >/dev/null \
+  ; curl -fSs https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add \
+  ; apt-get purge -yqq --autoremove gnupg2 >/dev/null \
+  ; rm -rf /var/lib/apt/lists/* \
+  ; echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list \
+  ; apt-get update -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      google-chrome-stable=112.* \
+      unzip=6.* \
+  ; rm -rf /var/lib/apt/lists/* \
+  ; curl -fSsL -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
+  ; mkdir -p /tmp/chromedriver \
+  ; unzip /tmp/chromedriver.zip -d /tmp/chromedriver \
+  ; install /tmp/chromedriver/chromedriver /usr/local/bin/chromedriver \
+  ; rm -r /tmp/chromedriver \
+  ; :
+
 ARG PROTOBUF_VERSION
 COPY tools/protobuf/install.sh /install_protobuf.sh
 RUN set -ex \
@@ -130,31 +151,11 @@ ENV MKL_NUM_THREADS 1
 ENV VECLIB_MAXIMUM_THREADS 1
 ENV NUMEXPR_NUM_THREADS 1
 
-ENV CHROMEDRIVER_VERSION "112.0.5615.28"
-
-RUN : \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests gnupg=2.2.* >/dev/null \
-  ; curl -fSs https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add \
-  ; apt-get purge -yqq --autoremove gnupg2 >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      google-chrome-stable=112.* \
-      unzip=6.* \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; curl -fSsL -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
-  ; mkdir -p /tmp/chromedriver \
-  ; unzip /tmp/chromedriver.zip -d /tmp/chromedriver \
-  ; install /tmp/chromedriver/chromedriver /usr/local/bin/chromedriver \
-  ; rm -r /tmp/chromedriver \
-  ; :
-
 
 FROM test-runner-base
 
 COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /sigopt-server/artifacts/web/routes/
+COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /routes/
 
 COPY docker/images/test-runner/start-x11vnc.sh /start-x11vnc.sh
 COPY docker/images/test-runner/entrypoint.py /entrypoint.py
