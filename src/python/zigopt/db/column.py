@@ -239,6 +239,18 @@ class _ProtobufColumnType(TypeDecorator):
     def as_integer(self):
       return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Integer)))
 
+    def cast_with_descriptor(self, descriptor):
+      assert self._is_terminal_descriptor(descriptor)
+      if descriptor is str:
+        return self.as_string()
+      if descriptor is bool:
+        return self.as_boolean()
+      if descriptor is float:
+        return self.as_numeric()
+      if descriptor is int:
+        return self.as_integer()
+      raise NotImplementedError(f"Not implemented descriptor cast: {descriptor}")
+
     def operate(self, operator, *other, **kwargs):
       OPERATORS_REQUIRING_DEFAULTS = (
         json_operators.ASTEXT,
@@ -293,8 +305,12 @@ class _ProtobufColumnType(TypeDecorator):
         next_cls = get_json_key(self._descriptor, key, json=True)
       except ValueError as e:
         raise KeyError(key) from e
+
       next_type = _ProtobufColumnType(next_cls, self._message_factory, with_default=with_default)
-      return self.operate(operator, right_expr, result_type=next_type)
+      result = self.operate(operator, right_expr, result_type=next_type)
+      if self._is_terminal_descriptor(next_cls):
+        return result.cast_with_descriptor(next_cls)
+      return result
 
     def _get_field_descriptor(self, key):
       return self._descriptor.fields_by_name[key]
