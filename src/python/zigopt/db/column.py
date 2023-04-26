@@ -239,6 +239,19 @@ class _ProtobufColumnType(TypeDecorator):
     def as_integer(self):
       return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Integer)))
 
+    @classmethod
+    def _get_cast_from_descriptor(cls, descriptor):
+      assert cls._is_terminal_descriptor(descriptor)
+      if descriptor is str:
+        return sqlalchemy.types.Text
+      if descriptor is bool:
+        return sqlalchemy.types.Boolean
+      if descriptor is float:
+        return sqlalchemy.types.Numeric
+      if descriptor is int:
+        return sqlalchemy.types.Integer
+      raise NotImplementedError(f"terminal descriptor is not supported: {descriptor}")
+
     def operate(self, operator, *other, **kwargs):
       OPERATORS_REQUIRING_DEFAULTS = (
         json_operators.ASTEXT,
@@ -258,6 +271,7 @@ class _ProtobufColumnType(TypeDecorator):
         operators.ge,
         operators.gt,
         operators.ilike_op,
+        operators.inv,
         operators.le,
         operators.like_op,
         operators.lt,
@@ -273,9 +287,12 @@ class _ProtobufColumnType(TypeDecorator):
         o = default_comparator.operator_lookup[operator.__name__]
         return o[0](with_default, operator, *(other + o[1:]), **kwargs)
       if operator in OPERATORS_REQUIRING_CAST:
-        raise ValueError(
-          f"It is unsafe to compare fields with {operator_name} - cast values using `as_X` before comparing."
-        )
+        if not self._is_terminal_descriptor(self._descriptor):
+          raise ValueError(
+            f"It is unsafe to compare fields with {operator_name} - descriptor is not terminal: {self._descrioptor}"
+          )
+        cast_type = self._get_cast_from_descriptor(self._descriptor)
+        return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(cast_type)))
       if operator not in OPERATORS_FORBIDDING_DEFAULTS:
         # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
         # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
