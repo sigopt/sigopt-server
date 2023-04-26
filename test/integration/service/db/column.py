@@ -244,10 +244,9 @@ class TestProtobufColumn(DatabaseServiceBase):
     experiment = experiment_service.find_by_id(experiment.id)
     assert experiment.observation_budget == old_budget + 1
 
-  def _compare_protobuf_values_to_db_values(self, experiment, database_service, select, cast):
+  def _compare_protobuf_values_to_db_values(self, experiment, database_service, select):
     expected_value = select((experiment.experiment_meta))
-    cast = cast or identity
-    clause = cast(select(Experiment.experiment_meta))
+    clause = select(Experiment.experiment_meta)
     ((obj_id, value),) = database_service.all(
       database_service.query(Experiment.id, clause).filter_by(id=experiment.id).filter(clause == expected_value)
     )
@@ -262,77 +261,71 @@ class TestProtobufColumn(DatabaseServiceBase):
     ]
 
   @pytest.mark.parametrize(
-    "i,select,cast",
-    [
-      (i, select, cast)
-      for (i, (select, cast)) in enumerate(
-        [
-          (lambda meta: meta, None),
-          (lambda meta: meta.experiment_type, None),
-          (lambda meta: meta.GetFieldOrNone("experiment_type"), None),
-          (lambda meta: meta.HasField("experiment_type"), None),
-          (lambda meta: meta.development, None),
-          (lambda meta: meta.GetFieldOrNone("development"), None),
-          (lambda meta: meta.HasField("development"), None),
-          (lambda meta: meta.force_hitandrun_sampling, None),
-          (lambda meta: meta.GetFieldOrNone("force_hitandrun_sampling"), None),
-          (lambda meta: meta.HasField("force_hitandrun_sampling"), None),
-          (lambda meta: meta.num_solutions, None),
-          (lambda meta: meta.GetFieldOrNone("num_solutions"), None),
-          (lambda meta: meta.HasField("num_solutions"), None),
-          (lambda meta: meta.metrics, None),
-          (lambda meta: meta.importance_maps, None),
-          (lambda meta: meta.importance_maps[""], None),
-          (lambda meta: meta.importance_maps[""].importances, None),
-          (lambda meta: meta.importance_maps[""].importances["param1"], None),
-          (lambda meta: meta.importance_maps[""].importances["param1"].importance, None),
-          (lambda meta: meta.all_parameters_unsorted, None),
-          (lambda meta: meta.conditionals, None),
-          (lambda meta: meta.observation_budget, None),
-          (lambda meta: meta.unused_int64_key_for_testing, None),
-          (lambda meta: meta.GetFieldOrNone("observation_budget"), None),
-          (lambda meta: meta.HasField("observation_budget"), None),
-        ]
-      )
-    ],
+    "i,select",
+    enumerate(
+      [
+        (lambda meta: meta),
+        (lambda meta: meta.experiment_type),
+        (lambda meta: meta.GetFieldOrNone("experiment_type")),
+        (lambda meta: meta.HasField("experiment_type")),
+        (lambda meta: meta.development),
+        (lambda meta: meta.GetFieldOrNone("development")),
+        (lambda meta: meta.HasField("development")),
+        (lambda meta: meta.force_hitandrun_sampling),
+        (lambda meta: meta.GetFieldOrNone("force_hitandrun_sampling")),
+        (lambda meta: meta.HasField("force_hitandrun_sampling")),
+        (lambda meta: meta.num_solutions),
+        (lambda meta: meta.GetFieldOrNone("num_solutions")),
+        (lambda meta: meta.HasField("num_solutions")),
+        (lambda meta: meta.metrics),
+        (lambda meta: meta.importance_maps),
+        (lambda meta: meta.importance_maps[""]),
+        (lambda meta: meta.importance_maps[""].importances),
+        (lambda meta: meta.importance_maps[""].importances["param1"]),
+        (lambda meta: meta.importance_maps[""].importances["param1"].importance),
+        (lambda meta: meta.all_parameters_unsorted),
+        (lambda meta: meta.conditionals),
+        (lambda meta: meta.observation_budget),
+        (lambda meta: meta.unused_int64_key_for_testing),
+        (lambda meta: meta.GetFieldOrNone("observation_budget")),
+        (lambda meta: meta.HasField("observation_budget")),
+      ]
+    ),
   )
-  def test_jsonb_field_access(self, i, database_service, experiment_service, select, cast):
-    self._compare_protobuf_values_to_db_values(self.full_experiment(database_service), database_service, select, cast)
-    self._compare_protobuf_values_to_db_values(self.empty_experiment(database_service), database_service, select, cast)
+  def test_jsonb_field_access(self, i, database_service, experiment_service, select):
+    self._compare_protobuf_values_to_db_values(self.full_experiment(database_service), database_service, select)
+    self._compare_protobuf_values_to_db_values(self.empty_experiment(database_service), database_service, select)
 
   @pytest.mark.parametrize(
-    "i,select,cast",
-    [
-      (i, select, cast)
-      for (i, (select, cast)) in enumerate(
-        [
-          (lambda meta: meta.all_parameters_unsorted[0], None),
-          (lambda meta: meta.all_parameters_unsorted[0].name, None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds, None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.minimum, None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("minimum"), None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("minimum"), None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.maximum, None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("maximum"), None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("maximum"), None),
-          (lambda meta: meta.conditionals[0], None),
-          (lambda meta: meta.conditionals[0].name, None),
-          (lambda meta: meta.conditionals[0].GetFieldOrNone("name"), None),
-          (lambda meta: meta.conditionals[0].HasField("name"), None),
-          (lambda meta: meta.conditionals[0].values, None),
-          (lambda meta: meta.conditionals[0].values[0], None),
-          (lambda meta: meta.conditionals[0].values[0].name, None),
-          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("name"), None),
-          (lambda meta: meta.conditionals[0].values[0].HasField("name"), None),
-          (lambda meta: meta.conditionals[0].values[0].enum_index, None),
-          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("enum_index"), None),
-          (lambda meta: meta.conditionals[0].values[0].HasField("enum_index"), None),
-        ]
-      )
-    ],
+    "i,select",
+    enumerate(
+      [
+        (lambda meta: meta.all_parameters_unsorted[0]),
+        (lambda meta: meta.all_parameters_unsorted[0].name),
+        (lambda meta: meta.all_parameters_unsorted[0].bounds),
+        (lambda meta: meta.all_parameters_unsorted[0].bounds.minimum),
+        (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("minimum")),
+        (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("minimum")),
+        (lambda meta: meta.all_parameters_unsorted[0].bounds.maximum),
+        (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("maximum")),
+        (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("maximum")),
+        (lambda meta: meta.conditionals[0]),
+        (lambda meta: meta.conditionals[0].name),
+        (lambda meta: meta.conditionals[0].GetFieldOrNone("name")),
+        (lambda meta: meta.conditionals[0].HasField("name")),
+        (lambda meta: meta.conditionals[0].values),
+        (lambda meta: meta.conditionals[0].values[0]),
+        (lambda meta: meta.conditionals[0].values[0].name),
+        (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("name")),
+        (lambda meta: meta.conditionals[0].values[0].HasField("name")),
+        (lambda meta: meta.conditionals[0].values[0].enum_index),
+        (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("enum_index")),
+        (lambda meta: meta.conditionals[0].values[0].HasField("enum_index")),
+      ]
+    ),
   )
-  def test_jsonb_array_access(self, i, database_service, experiment_service, select, cast):
-    self._compare_protobuf_values_to_db_values(self.full_experiment(database_service), database_service, select, cast)
+  def test_jsonb_array_access(self, i, database_service, experiment_service, select):
+    self._compare_protobuf_values_to_db_values(self.full_experiment(database_service), database_service, select)
 
 
 class TestImpliedUTCDateTimeColumn(DatabaseServiceBase):
