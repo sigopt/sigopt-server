@@ -11,7 +11,7 @@ def patch_protobuf_class(message_cls: type[Message]):
 
   def Message_setattr(self: Message, name: str, value: Any | None) -> None:
     if name in self.DESCRIPTOR.fields_by_name and value is None:
-      return self.ClearField(name)
+      return None
     return original_setattr(self, name, value)
 
   message_cls.__setattr__ = Message_setattr  # type: ignore
