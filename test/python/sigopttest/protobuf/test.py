@@ -143,8 +143,10 @@ def test_setattr():
   empty = Parent()
   assert not empty.HasField("optional_double_field")
   assert not empty.optional_composite_field.HasField("name")
-  empty.optional_double_field = None  # type: ignore
-  empty.optional_composite_field.name = None  # type: ignore
+  with pytest.raises(TypeError):
+    empty.optional_double_field = None  # type: ignore
+  with pytest.raises(TypeError):
+    empty.optional_composite_field.name = None  # type: ignore
   assert not empty.HasField("optional_double_field")
   assert not empty.optional_composite_field.HasField("name")
   empty.optional_double_field = 1.0

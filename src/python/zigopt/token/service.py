@@ -151,7 +151,8 @@ class TokenService(Service):
   ):
     meta = self._make_guest_token_meta(session_expiration=session_expiration, creating_user_id=creating_user_id)
     meta.guest_training_run_id = training_run_id
-    meta.guest_experiment_id = experiment_id
+    if experiment_id is not None:
+      meta.guest_experiment_id = experiment_id
     new = Token(token_type=TokenType.GUEST, client_id=client_id, user_id=None, meta=meta)
     self.services.database_service.insert(new)
     return new
