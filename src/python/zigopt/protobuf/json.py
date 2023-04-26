@@ -22,6 +22,9 @@ class ZigoptDescriptor:
   def __call__(self, *args, **kwargs):
     raise NotImplementedError
 
+  def serialize(self, value):
+    raise NotImplementedError
+
 
 class OurEnumDescriptor(ZigoptDescriptor):
   python_type = int
@@ -38,10 +41,10 @@ class OurEnumDescriptor(ZigoptDescriptor):
       raise ValueError(f"Unknown name for enum {self.descriptor.enum_type.name}: {serialized_value}")
     return enum_value.number
 
-  def serialize(self, enum_value):
-    serialized_value = self.descriptor.enum_type.values_by_number.get(enum_value)
+  def serialize(self, value):
+    serialized_value = self.descriptor.enum_type.values_by_number.get(value)
     if serialized_value is None:
-      raise ValueError(f"Unknown number for enum {self.descriptor.enum_type.name}: {enum_value}")
+      raise ValueError(f"Unknown number for enum {self.descriptor.enum_type.name}: {value}")
     return serialized_value.name
 
 
@@ -52,6 +55,9 @@ class DescriptorWithDefault(ZigoptDescriptor):
 
   def __call__(self):
     return self.python_type(self.default_value)
+
+  def serialize(self, value):
+    return self.python_type(value)
 
 
 def next_descriptor_for_field_descriptor(descriptor):
@@ -190,7 +196,7 @@ def emit_json_with_descriptor(value, descriptor):
     if is_valid_field_descriptor_for_value(value, descriptor, is_emit=True):
       return protobuf_to_dict(value) if is_protobuf(value) else value
     raise ValueError(f"Invalid value for field descriptor {descriptor.full_name}: {value}")
-  if isinstance(descriptor, OurEnumDescriptor):
+  if isinstance(descriptor, ZigoptDescriptor):
     return descriptor.serialize(value)
   if is_valid_scalar_descriptor_for_value(value, descriptor):
     return value
