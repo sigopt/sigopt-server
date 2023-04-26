@@ -5,7 +5,7 @@ message S3StorageMethod {
 }
 
 message FileData {
-  optional int64 content_length = 1 [json_name='l'];
+  optional int64 content_length = 1 [json_name='l', default=0];
   optional bytes content_md5 = 2 [json_name='m'];
   optional string content_type = 3 [json_name='t'];
   oneof storage_method {

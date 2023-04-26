@@ -234,7 +234,7 @@ class _ProtobufColumnType(TypeDecorator):
       if python_type is float:
         return sqlalchemy.types.Numeric
       if python_type is int:
-        return sqlalchemy.types.Integer
+        return sqlalchemy.types.BigInteger
       raise NotImplementedError(f"terminal descriptor is not supported: {descriptor}")
 
     def operate(self, operator, *other, **kwargs):
