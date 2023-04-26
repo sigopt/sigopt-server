@@ -77,6 +77,8 @@ class BaseExperimentsCreateHandler(Handler):
     validate_experiment_json_dict_for_create(data)
 
   def parse_validated_params(self, data):
+    assert self.auth is not None
+
     experiment_name = validate_experiment_name(get_with_validation(data, "name", ValidationType.string))
     experiment_type_string = get_opt_with_validation(data, "type", ValidationType.string)
     client = self.get_client()
@@ -99,6 +101,8 @@ class BaseExperimentsCreateHandler(Handler):
     return self.parse_validated_params(data)
 
   def handle(self, params):
+    assert self.auth is not None
+
     experiment_name = params.name
     project = params.project
     client = params.client
@@ -280,12 +284,14 @@ class BaseExperimentsCreateHandler(Handler):
       json_dict,
       experiment_meta.all_parameters_unsorted,
     )
-    experiment_meta.SetFieldIfNotNone("num_solutions", num_solutions)  # pylint: disable=protobuf-undefined-attribute
+    # pylint: disable=protobuf-undefined-attribute
+    experiment_meta.SetFieldIfNotNone("num_solutions", num_solutions)  # type: ignore
+    # pylint: enable=protobuf-undefined-attribute
 
     parallel_bandwidth = cls.get_parallel_bandwidth_from_json(json_dict)
-    experiment_meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
-      "parallel_bandwidth", parallel_bandwidth
-    )
+    # pylint: disable=protobuf-undefined-attribute
+    experiment_meta.SetFieldIfNotNone("parallel_bandwidth", parallel_bandwidth)  # type: ignore
+    # pylint: enable=protobuf-undefined-attribute
 
     # Set observation budget if present and check to see which features require a budget
     budget_key, budget = cls.get_budget_key_and_value(json_dict, experiment_meta.runs_only)
@@ -302,9 +308,9 @@ class BaseExperimentsCreateHandler(Handler):
     cls._check_multisolution_viability(experiment_meta, num_solutions, optimized_metrics)
 
     client_provided_data = cls.get_client_provided_data(json_dict)
-    experiment_meta.SetFieldIfNotNone(  # pylint: disable=protobuf-undefined-attribute
-      "client_provided_data", client_provided_data
-    )
+    # pylint: disable=protobuf-undefined-attribute
+    experiment_meta.SetFieldIfNotNone("client_provided_data", client_provided_data)  # type: ignore
+    # pylint: enable=protobuf-undefined-attribute
 
     if not (has_optimization_metrics or has_constraint_metrics):
       raise SigoptValidationError(f"{cls.user_facing_class_name}s must have optimized or constraint metrics")
@@ -403,7 +409,7 @@ class BaseExperimentsCreateHandler(Handler):
       raise InvalidValueError(
         f"{cls.user_facing_class_name}s must have at most {MAX_CONSTRAINT_METRICS} constraint metrics"
       )
-    seen_names = []
+    seen_names: list[str] = []
     metric_list = []
     for metric in metrics:
       if is_string(metric):
@@ -514,12 +520,12 @@ class BaseExperimentsCreateHandler(Handler):
     if not constraints:
       return []
 
-    parameter_names = []
-    double_params_names = []
-    integer_params_names = []
-    unconditioned_params_names = []
-    log_transform_params_names = []
-    grid_param_names = []
+    parameter_names: list[str] = []
+    double_params_names: list[str] = []
+    integer_params_names: list[str] = []
+    unconditioned_params_names: list[str] = []
+    log_transform_params_names: list[str] = []
+    grid_param_names: list[str] = []
     for p in parameters:
       cls._extract_parameter_info(
         p,
@@ -532,15 +538,15 @@ class BaseExperimentsCreateHandler(Handler):
       )
 
     constraint_lst = []
-    constrained_integer_variables = set()
+    constrained_integer_variables: set[str] = set()
 
     for c in constraints:
       constraint_type = get_opt_with_validation(c, "type", ValidationType.string)
       terms = get_opt_with_validation(c, "terms", ValidationType.arrayOf(ValidationType.object))
       rhs = get_opt_with_validation(c, "threshold", ValidationType.number)
 
-      term_lst = []
-      constraint_var_set = set()
+      term_lst: list = []
+      constraint_var_set: set[str] = set()
       if len(terms) < 1:
         raise InvalidValueError("Constraint must have at least one term")
 
@@ -944,9 +950,13 @@ class ExperimentsCreateHandler(BaseExperimentsCreateHandler):
   required_permissions = WRITE
 
   def get_client(self):
+    assert self.auth is not None
+
     return self.auth.current_client
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return (
       super().can_act_on_objects(requested_permission, objects)
       and self.auth.current_client

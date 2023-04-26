@@ -38,7 +38,7 @@ class TrainingRunHandler(Handler):
     experiment = self._maybe_find_experiment(self.experiment_id)
     return extend_dict(
       super().find_objects(),
-      remove_nones(
+      remove_nones_mapping(
         {
           "client": client,
           "experiment": experiment,
@@ -71,6 +71,8 @@ class TrainingRunHandler(Handler):
     raise NotFoundError(f"Client {client_id} not found")
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     training_run = objects["training_run"]
     experiment = objects.get("experiment")
     return (
@@ -91,6 +93,8 @@ class TrainingRunHandler(Handler):
     return meta_clause
 
   def emit_update(self, update_clause):
+    assert self.training_run is not None
+
     return self.services.database_service.update(
       self.services.database_service.query(TrainingRun).filter(TrainingRun.id == self.training_run.id),
       update_clause,

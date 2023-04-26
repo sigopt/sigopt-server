@@ -5,6 +5,7 @@ from collections import defaultdict
 
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication, user_token_authentication
+from zigopt.client.model import Client
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.users.base import UserHandler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
@@ -26,6 +27,8 @@ class UsersPermissionsHandler(UserHandler):
     return self.Params(organization=organization)
 
   def handle(self, params):
+    assert self.user is not None
+
     owner_memberships = self.services.membership_service.find_owners_by_user_id(self.user.id)
     owned_organization_ids = frozenset(membership.organization_id for membership in owner_memberships)
     permissions = sorted(self.services.permission_service.find_by_user_id(self.user.id), key=lambda x: x.id)
@@ -56,7 +59,7 @@ class UsersPermissionsHandler(UserHandler):
           (
             PermissionJsonBuilder(
               permission,
-              client=client_id_map.get(permission.client_id),
+              client=client_id_map[permission.client_id],
               user=self.user,
             )
             for permission in permissions
@@ -77,7 +80,7 @@ class UsersRequestPermissionsHandler(UserHandler):
   def handle(self, client_id):
     if not self.services.email_verification_service.has_verified_email_if_needed(self.user):
       raise ForbiddenError("You must verify your email")
-    client = self.services.client_service.find_by_id(client_id)
+    client: Client | None = self.services.client_service.find_by_id(client_id)
     organization = napply(client, lambda c: self.services.organization_service.find_by_id(c.organization_id))
     could_signup, _ = self.services.invite_service.signup_to_client_if_permitted(
       user=self.user,

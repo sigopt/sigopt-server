@@ -75,7 +75,7 @@ class ExceptionLogger(Service):
   def _update_extra(self, extra):
     extra = extend_dict({}, self._extra, extra or {})
     extra.update(
-      remove_nones(
+      remove_nones_mapping(
         {
           "request_id": self.services.logging_service.request_id,
           "trace_id": self.services.logging_service.trace_id,

@@ -6,6 +6,7 @@ from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.common.sigopt_datetime import current_datetime, datetime_to_seconds
 from zigopt.common.struct import ImmutableStruct
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.handlers.validate.observation import validate_observation_json_dict_for_create
@@ -17,6 +18,7 @@ from zigopt.observation.from_json import set_observation_data_assignments_task_f
 from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+from zigopt.services.api import ApiRequestLocalServiceBag
 
 from libsigopt.aux.errors import InvalidKeyError, SigoptValidationError
 
@@ -32,6 +34,9 @@ def get_default_max_observations(services):
 
 
 class CreatesObservationsMixin:
+  experiment: Experiment | None
+  services: ApiRequestLocalServiceBag
+
   def observation_from_json(
     self,
     json_dict,
@@ -41,6 +46,8 @@ class CreatesObservationsMixin:
     observation_data_create_update_handler=create_observation_data,
     assignments_handler=set_observation_data_assignments_task_from_json,
   ):
+    assert self.experiment is not None
+
     failed = get_opt_with_validation(json_dict, "failed", ValidationType.boolean)
     values = get_opt_with_validation(json_dict, "values", ValidationType.array)
     suggestion_id = get_opt_with_validation(json_dict, "suggestion", ValidationType.id)
@@ -81,6 +88,8 @@ class CreatesObservationsMixin:
     )
 
   def create_observation(self, json_dict, timestamp):
+    assert self.experiment is not None
+
     validate_observation_json_dict_for_create(json_dict, self.experiment)
     observation = Observation(experiment_id=self.experiment.id)
     observation_data = ObservationData()
@@ -130,6 +139,9 @@ class ObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler):
     return request
 
   def handle(self, request):
+    assert self.auth is not None
+    assert self.experiment is not None
+
     if self.experiment.deleted:
       raise SigoptValidationError(f"Cannot create observations for deleted experiment {self.experiment.id}")
 
@@ -159,7 +171,7 @@ class ObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler):
     if bad_keys:
       raise InvalidKeyError(f"Unknown keys were provided for observation create: {bad_keys}")
 
-    observation_json = remove_nones(observation_json)
+    observation_json = remove_nones_mapping(observation_json)
 
     new_observation = self.create_observation(json_dict=observation_json, timestamp=datetime_to_seconds(now))
     no_optimize = get_opt_with_validation(params, "no_optimize", ValidationType.boolean) or False
@@ -219,6 +231,8 @@ class ObservationsCreateMultiHandler(CreatesObservationsMixin, ExperimentHandler
     )
 
   def handle(self, params):
+    assert self.experiment is not None
+
     observations = params.observations
 
     if self.experiment.deleted:

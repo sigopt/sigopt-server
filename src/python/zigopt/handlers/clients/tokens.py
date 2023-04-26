@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication, user_token_authentication
+from zigopt.authorization.empty import EmptyAuthorization
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.clients.base import ClientHandler
@@ -29,6 +30,8 @@ class TokenHandler(Handler):
     return extend_dict(super().find_objects(), {"token": self._find_token(self.token_value)})
 
   def _find_token(self, token_value):
+    assert self.auth is not None
+
     if token_value == "self":
       token = self.auth.api_token
     else:
@@ -38,6 +41,8 @@ class TokenHandler(Handler):
     raise NotFoundError("Token not found")
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return super().can_act_on_objects(requested_permission, objects) and self.auth.can_act_on_token(
       self.services, requested_permission, objects["token"]
     )
@@ -48,6 +53,7 @@ class ClientsTokensDeleteHandler(TokenHandler):
   required_permissions = WRITE
 
   def handle(self):
+    assert self.token is not None
     if not self.token.expiration_timestamp and self.token.all_experiments:
       raise ForbiddenError("Cannot delete root token")
     success = self.services.token_service.delete_token(self.token)
@@ -71,6 +77,9 @@ class ClientsTokensUpdateHandler(TokenHandler):
     )
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.token is not None
+
     new_token_value = params.token
     if new_token_value is not None:
       if new_token_value != "rotate":
@@ -99,6 +108,9 @@ class ClientsTokensDetailHandler(TokenHandler):
   permitted_scopes = (TokenMeta.ALL_ENDPOINTS, TokenMeta.SHARED_EXPERIMENT_SCOPE)
 
   def handle(self):
+    assert self.auth is not None
+    assert self.token is not None
+
     client = self.services.client_service.find_by_id(self.token.client_id, current_client=self.auth.current_client)
     return TokenJsonBuilder.json(self.token, client)
 
@@ -109,6 +121,9 @@ class ExperimentsTokensCreateHandler(ExperimentHandler):
   required_permissions = WRITE
 
   def handle(self):
+    assert self.auth is not None
+    assert self.experiment is not None
+
     if not self.services.config_broker.get("features.shareLinks", True):
       raise ForbiddenError("You cannot create guest tokens.")
 
@@ -129,6 +144,9 @@ class TrainingRunsTokensCreateHandler(TrainingRunHandler):
   required_permissions = WRITE
 
   def handle(self):
+    assert self.auth is not None
+    assert self.training_run is not None
+
     if not self.services.config_broker.get("features.shareLinks", True):
       raise ForbiddenError("You cannot create guest tokens.")
     token = self.services.token_service.create_guest_training_run_token(
@@ -147,7 +165,11 @@ class ClientsTokensCreateHandler(ClientHandler):
   authenticator = user_token_authentication
   required_permissions = ADMIN
 
+  auth: EmptyAuthorization
+
   def handle(self):
+    assert self.auth is not None
+    assert self.client is not None
     token = self.services.token_service.get_or_create_client_signup_token(
       self.client.id,
       creating_user_id=self.auth.current_user.id,
@@ -163,9 +185,13 @@ class ClientsTokensListDetailHandler(ClientHandler):
   # Ensure that the user has a role token, since users who were created before the introduction
   # of role tokens might not have one yet
   def ensure_includes_role_token(self, tokens):
+    assert self.auth is not None
+    auth = self.auth
+    assert self.client is not None
+    client = self.client
     role_token = find(
       tokens,
-      lambda t: t.user_id == self.auth.current_user.id and t.client_id == self.client.id and t.development is False,
+      lambda t: t.user_id == auth.current_user.id and t.client_id == client.id and t.development is False,
     )
     if role_token is None:
       role_token = self.services.token_service.get_or_create_role_token(
@@ -176,9 +202,14 @@ class ClientsTokensListDetailHandler(ClientHandler):
     return tokens
 
   def ensure_includes_development_role_token(self, tokens):
+    assert self.auth is not None
+    current_user = self.auth.current_user
+    assert current_user is not None
+    assert self.client is not None
+    client = self.client
     development_token = find(
       tokens,
-      lambda t: t.user_id == self.auth.current_user.id and t.client_id == self.client.id and t.development is True,
+      lambda t: t.user_id == current_user.id and t.client_id == client.id and t.development is True,
     )
     if development_token is None:
       development_token = self.services.token_service.get_or_create_development_role_token(
@@ -189,6 +220,8 @@ class ClientsTokensListDetailHandler(ClientHandler):
     return tokens
 
   def handle(self):
+    assert self.auth is not None
+    assert self.client is not None
     created_guest_tokens = self.services.token_service.find_guest_tokens(
       client_id=self.client.id,
       creating_user_id=self.auth.current_user.id,

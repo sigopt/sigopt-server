@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication, login_authentication
+from zigopt.client.model import Client
 from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
@@ -14,11 +15,16 @@ from zigopt.protobuf.gen.token.tokenmeta_pb2 import NONE, READ, TokenMeta
 
 class BaseSessionHandler(Handler):
   def get_client_for_user(self, user, preferred_client_id=None):
+    assert self.auth is not None
+
     memberships = self.services.membership_service.find_by_user_id(user.id)
-    clients = self.services.client_service.find_clients_in_organizations_visible_to_user(user, memberships)
+    clients: list[Client] = self.services.client_service.find_clients_in_organizations_visible_to_user(
+      user,
+      memberships,
+    )
     client = find(clients, lambda c: c.id == preferred_client_id)
     if client is None:
-      client = min(clients, key=lambda c: c.id, default=None)
+      client = min(clients, key=lambda c: (c.id if c else 0), default=None)
 
     if client:
       if not self.auth.can_act_on_client(self.services, READ, client):
@@ -30,6 +36,8 @@ class BaseSessionHandler(Handler):
     return client
 
   def verify_email(self, user):
+    assert self.auth is not None
+
     # NOTE: Important to set has_email_verified up front, since the invite logic
     # checks that the user has verified their email. We make sure to pull off the pending_client_id
     # first since that field is cleared when the email is verified
@@ -54,7 +62,7 @@ class BaseSessionHandler(Handler):
       )
       (_, _, client) = list_get(clients, 0) or (None, None, None)
     elif pending_client_id:
-      pending_client = self.services.client_service.find_by_id(pending_client_id)
+      pending_client: Client | None = self.services.client_service.find_by_id(pending_client_id)
       pending_organization = napply(
         pending_client,
         lambda c: self.services.organization_service.find_by_id(c.organization_id),
@@ -103,6 +111,8 @@ class BaseSessionHandler(Handler):
     )
 
   def log_iam_log_in_success(self, user):
+    assert self.auth is not None
+
     event_names = [IamEvent.USER_LOG_IN]
     if self.services.membership_service.find_owners_by_user_id(user.id):
       event_names.append(IamEvent.ORGANIZATION_ADMIN_ROOT_LOG_IN)
@@ -122,6 +132,8 @@ class CreateSessionHandler(BaseSessionHandler):
   required_permissions = NONE
 
   def handle(self):
+    assert self.auth is not None
+
     user = self.auth.current_user
     client = None
     if self.auth.authenticated_from_email_link:
@@ -147,6 +159,8 @@ class SessionHandler(BaseSessionHandler):
     return preferred_client_id
 
   def handle(self, preferred_client_id):
+    assert self.auth is not None
+
     if self.auth.api_token:
       return SessionJsonBuilder.json(
         self.user_session(

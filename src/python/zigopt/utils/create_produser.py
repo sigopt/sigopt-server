@@ -24,7 +24,7 @@ def make_db_connection(host, port, database, query, user, password):
     "password": password,
     **(query or {}),
   }
-  conn = pg8000.connect(**remove_nones(options))
+  conn = pg8000.connect(**remove_nones_mapping(options))
   try:
     conn.autocommit = True
     yield conn

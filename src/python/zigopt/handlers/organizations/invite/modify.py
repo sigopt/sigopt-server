@@ -32,10 +32,12 @@ class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
     ),
   )
 
-  invite: Invite
-  pending_permissions: list[PendingPermission]
+  invite: Invite | None
+  pending_permissions: list[PendingPermission] | None
 
   def parse_params(self, request):
+    assert self.invite is not None
+
     data = request.params()
 
     if "email" in data and get_with_validation(data, "email", ValidationType.string) != self.invite.email:
@@ -68,6 +70,8 @@ class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
     )
 
   def unpack_params(self, params):
+    assert self.organization is not None
+
     email = params.email
     membership_type = params.membership_type or MembershipType.member
     client_invites = params.client_invites
@@ -92,6 +96,9 @@ class OrganizationsModifyInviteHandler(OrganizationHandler, InviteHandler):
     ]
 
   def check_can_invite(self, email, client_invites, client_map, membership_type, skip_existing=False):
+    assert self.auth is not None
+    assert self.organization is not None
+
     invitee = self.services.user_service.find_by_email(email)
 
     if any(InviteHandler.get_id_from_client_invite(invite) not in client_map for invite in client_invites):

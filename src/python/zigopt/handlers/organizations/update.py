@@ -32,6 +32,8 @@ class OrganizationsUpdateHandler(OrganizationHandler):
   )
 
   def parse_params(self, request):
+    assert self.organization is not None
+
     data = request.params()
     name = get_opt_with_validation(data, "name", ValidationType.string)
     name = validate_organization_name(name) if name else None
@@ -59,6 +61,9 @@ class OrganizationsUpdateHandler(OrganizationHandler):
     )
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.organization is not None
+
     update_clause = {}
 
     if params.name is not None:
@@ -115,7 +120,7 @@ class OrganizationsUpdateHandler(OrganizationHandler):
       requestor=self.auth.current_user,
       event_name=IamEvent.ORGANIZATION_UPDATE,
       # TODO(SN-987): refactor some of this code to stop repeating all these attributes everywhere
-      request_parameters=compact(
+      request_parameters=compact_mapping(
         {
           "organization_id": self.organization.id,
           "allow_signup_from_email_domains": params.allow_signup_from_email_domains,

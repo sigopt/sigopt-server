@@ -16,7 +16,9 @@ class TestCopy(ExperimentWebBase):
   def copy_experiment(self, old_id, api_connection, logged_in_web_connection, include_observations):
     params = {"include_observations": "on"} if include_observations else {}
     response = logged_in_web_connection.post(f"/experiment/{old_id}/copy", params, allow_redirects=False)
-    new_id = re.search("experiment/([0-9]*)", response.redirect_url).group(1)
+    match = re.search("experiment/([0-9]*)", response.redirect_url)
+    assert match
+    new_id = match.group(1)
     assert str(new_id) != str(old_id)
     return api_connection.experiments(new_id).fetch()
 
@@ -88,13 +90,13 @@ class TestCopy(ExperimentWebBase):
       )
       try:
         e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
-      except HTTPError as e:
+      except HTTPError as http_error:
         raise Exception(
           f"Encountered an issue copying the experiment: {e}\n"
           f"HTTPError content: {e.response.content}\n"
           f"Observation 1: {o1}\n"
           f"Observation 2: {o2}"
-        ) from e
+        ) from http_error
       assert e2.progress.observation_count == 2
       assert e2.progress.observation_budget_consumed == (o1.task.cost + o2.task.cost if e2.tasks else 2.0)
       assert api_connection.experiments(e.id).suggestions().fetch().count == 2

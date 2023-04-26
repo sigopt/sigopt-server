@@ -58,9 +58,11 @@ class AiExperimentsListHandler(BaseAiExperimentsListHandler):
   required_permissions = READ
 
   def handle(self, params):
+    assert self.auth is not None
     return self.do_handle(params, [self.auth.current_client.id], params.user)
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
     return (
       super().can_act_on_objects(requested_permission, objects)
       and self.auth.current_client
@@ -119,6 +121,7 @@ class ClientsAiExperimentsListHandler(ClientHandler, BaseAiExperimentsListHandle
   required_permissions = READ
 
   def handle(self, params):
+    assert self.client is not None
     return self.do_handle(params, [self.client.id], params.user)
 
 

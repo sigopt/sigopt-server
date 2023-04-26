@@ -225,7 +225,7 @@ class TestTrainingRunsList(V1Base):
     return self.connection.training_runs(run_id).update(**kwargs)
 
   def test_filter_name_field(self, string_values):
-    string_values = compact(string_values)
+    string_values = compact_sequence(string_values)
 
     for value in string_values:
       self.create_training_run(name=value)
@@ -238,7 +238,7 @@ class TestTrainingRunsList(V1Base):
     assert self.fetch_training_runs(**equals("name", UNUSED_VALUE)).count == 0
 
   def test_sort_name_field(self, string_values):
-    string_values = compact(string_values)
+    string_values = compact_sequence(string_values)
     random.shuffle(string_values)
 
     for value in string_values:

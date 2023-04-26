@@ -3,12 +3,13 @@
 # SPDX-License-Identifier: Apache License 2.0
 from copy import deepcopy
 from http import HTTPStatus
+from typing import Any
 
 from integration.base import RaisesApiException
 from integration.v1.test_base import V1Base
 
 
-DEFAULT_MULTICRITERIA_EXPERIMENT_META = {
+DEFAULT_MULTICRITERIA_EXPERIMENT_META: dict[str, Any] = {
   "type": "offline",
   "name": "offline experiment",
   "metrics": [{"name": "value1"}, {"name": "value2"}],
@@ -20,7 +21,7 @@ DEFAULT_MULTICRITERIA_EXPERIMENT_META = {
   ],
 }
 
-DEFAULT_EXPERIMENT_META_NO_METRIC = {
+DEFAULT_EXPERIMENT_META_NO_METRIC: dict[str, Any] = {
   "type": "offline",
   "name": "offline experiment",
   "observation_budget": 30,
@@ -31,7 +32,7 @@ DEFAULT_EXPERIMENT_META_NO_METRIC = {
   ],
 }
 
-DEFAULT_OBSERVATION_VALUES = [
+DEFAULT_OBSERVATION_VALUES: list[dict[str, Any]] = [
   {"name": "value1", "value": 1.1, "value_stddev": 0.1},
   {"name": "value2", "value": 2.2, "value_stddev": 0.2},
 ]

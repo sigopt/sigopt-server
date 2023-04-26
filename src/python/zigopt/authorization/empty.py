@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.token.model import Token
 
 
 class EmptyAuthorization:
@@ -14,7 +15,7 @@ class EmptyAuthorization:
     return None
 
   @property
-  def api_token(self):
+  def api_token(self) -> Token | None:
     return None
 
   @property

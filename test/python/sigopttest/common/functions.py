@@ -13,7 +13,7 @@ class TestFunctions:
 
   @pytest.mark.parametrize("value", [1, (1, 3, 2), "hello"])
   def test_napply_applies(self, value):
-    returned = []
+    returned: list = []
 
     def should_run(obj):
       assert obj is value

@@ -34,6 +34,8 @@ class UserHandler(Handler):
     raise NotFoundError(f"No user {user_id}")
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return super().can_act_on_objects(requested_permission, objects) and self.auth.can_act_on_user(
       self.services, requested_permission, objects["user"]
     )

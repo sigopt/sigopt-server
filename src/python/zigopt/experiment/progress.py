@@ -92,10 +92,10 @@ class ExperimentProgressService(Service):
         func.max(Observation.id),
         func.min(Observation.id),
         func.count(Observation.id),
-        func.sum(Observation.data.task.cost.as_numeric()),
+        func.sum(Observation.data.task.cost.as_numeric()),  # type: ignore
       )
       .filter(Observation.experiment_id.in_([e.id for e in experiments]))
-      .filter(~Observation.data.deleted.as_boolean())
+      .filter(~Observation.data.deleted.as_boolean())  # type: ignore
       .group_by(Observation.experiment_id)
     ):
       last_observations[eid] = last
@@ -128,7 +128,7 @@ class ExperimentProgressService(Service):
           # it may be worth considering denormalizing the best observation somewhere, or
           # reconsidering our need for this query in prod
           min_exps, max_exps = partition(experiments_eligible_for_best, lambda e: e.optimized_metrics[0].is_minimized)
-          value_clause = Observation.data.values[optimized_metric_index].value.as_numeric()
+          value_clause = Observation.data.values[optimized_metric_index].value.as_numeric()  # type: ignore
 
           for v_clause, exp_list in [(desc(value_clause), max_exps), (value_clause, min_exps)]:
             if exp_list:
@@ -139,9 +139,9 @@ class ExperimentProgressService(Service):
                   func.rank().over(partition_by=Observation.experiment_id, order_by=v_clause).label("rank"),
                 )
                 .filter(Observation.experiment_id.in_([e.id for e in exp_list]))
-                .filter(~Observation.data.deleted.as_boolean())
-                .filter(~Observation.data.reported_failure.as_boolean())
-                .filter(Observation.data.task.cost.as_numeric() == 1)
+                .filter(~Observation.data.deleted.as_boolean())  # type: ignore
+                .filter(~Observation.data.reported_failure.as_boolean())  # type: ignore
+                .filter(Observation.data.task.cost.as_numeric() == 1)  # type: ignore
                 .subquery("q")
               )
               for eid, best, _ in self.services.database_service.all(

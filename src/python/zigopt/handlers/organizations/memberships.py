@@ -29,6 +29,8 @@ class OrganizationsMembershipsListDetailHandler(OrganizationHandler):
     return self.Params(membership_type)
 
   def handle(self, params):
+    assert self.organization is not None
+
     query = self.services.database_service.query(Membership).filter_by(organization_id=self.organization.id)
 
     if params.membership_type:
@@ -45,7 +47,7 @@ class OrganizationsMembershipsListDetailHandler(OrganizationHandler):
         MembershipJsonBuilder(
           membership,
           self.organization,
-          user_map.get(membership.user_id),
+          user_map[membership.user_id],
         )
         for membership in memberships
         if membership.user_id in user_map

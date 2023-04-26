@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import random
+from typing import Any
 
 import pytest
 
@@ -66,7 +67,7 @@ class TestFieldsInfoExtractor(V1Base):
   @pytest.mark.parametrize("field_details", fields_details)
   def test_extract_info(self, field_details, connection):
     client_id = connection.client_id
-    model_field = {field_details.api_name: example_values[field_details.api_name]}
+    model_field: dict[str, Any] = {field_details.api_name: example_values[field_details.api_name]}
     if field_details.type == FieldType.primitive:
       model_instance = TrainingRun(client_id=client_id, **model_field)
     else:

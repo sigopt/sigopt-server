@@ -8,7 +8,6 @@ from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-modu
 from zigopt.common import *
 from zigopt.checkpoint.model import Checkpoint
 from zigopt.common.sigopt_datetime import datetime_to_seconds
-from zigopt.experiment.model import Experiment
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.observation import ValueJsonBuilder
 
@@ -16,9 +15,8 @@ from zigopt.json.builder.observation import ValueJsonBuilder
 class CheckpointJsonBuilder(JsonBuilder):
   object_name = "checkpoint"
 
-  def __init__(self, checkpoint: Checkpoint, experiment: Experiment):
+  def __init__(self, checkpoint: Checkpoint):
     self._checkpoint: Checkpoint = checkpoint
-    self._experiment = experiment
 
   @field(ValidationType.id)
   def id(self) -> int:

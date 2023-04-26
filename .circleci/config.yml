@@ -336,6 +336,7 @@ jobs:
       - run: pipenv run pre-commit validate-config
       - run: pipenv run pre-commit run --all-files eslint
       - run: pipenv run pre-commit run --all-files hadolint-docker
+      - run: pipenv run pre-commit run --all-files mypy
       - run: pipenv run pre-commit run --all-files pylint
       - run: pipenv run pre-commit run --all-files shellcheck
       - run: git diff

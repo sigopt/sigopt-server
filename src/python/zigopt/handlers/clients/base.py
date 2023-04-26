@@ -26,6 +26,8 @@ class ClientHandler(Handler):
     )
 
   def _find_client(self, client_id):
+    assert self.auth is not None
+
     if client_id:
       client = self.services.client_service.find_by_id(
         client_id,
@@ -39,6 +41,8 @@ class ClientHandler(Handler):
     raise NotFoundError(f"No client {client_id}")
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     return super().can_act_on_objects(requested_permission, objects) and self.auth.can_act_on_client(
       self.services, requested_permission, objects["client"]
     )

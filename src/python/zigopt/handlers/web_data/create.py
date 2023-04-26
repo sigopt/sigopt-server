@@ -40,7 +40,7 @@ class WebDataCreateHandler(WebDataBaseHandler):
       parent_resource_id=parent_resource_id,
       display_name=display_name,
       payload=payload,
-      created_by=(self.auth.current_user and self.auth.current_user.id),
+      created_by=(self.auth and self.auth.current_user and self.auth.current_user.id),
     )
 
     self.services.database_service.insert(new_web_data)

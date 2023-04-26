@@ -33,6 +33,8 @@ class ProjectHandler(ClientHandler):
     return project
 
   def can_act_on_objects(self, requested_permission, objects):
+    assert self.auth is not None
+
     project = objects["project"]
     client = objects["client"]
     return (

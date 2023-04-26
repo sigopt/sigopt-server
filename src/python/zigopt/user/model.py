@@ -107,7 +107,7 @@ def password_matches(plaintext, hashed):
 # Default work_factor is 14, which is currently recognized as sufficiently slow to thwart brute-forcing
 # It should not be lower than that, but we expose this parameter to make hashing faster for testing
 DEFAULT_WORK_FACTOR = 14
-PREVIOUS_WORK_FACTORS = []
+PREVIOUS_WORK_FACTORS: list = []
 
 
 def _get_work_factor(work_factor=None):

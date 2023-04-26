@@ -11,14 +11,20 @@ from zigopt.protobuf.gen.test.message_pb2 import Parent
 
 class TestLists:
   # pylint: disable=too-many-public-methods
-  def test_flatten(self):
-    assert flatten([]) == []
-    assert flatten([[]]) == []
-    assert flatten([[1]]) == [1]
-    assert flatten([[1, 3]]) == [1, 3]
-    assert flatten([[1, 3], [], [], [2]]) == [1, 3, 2]
-    assert flatten([[1, 3], [], [], [2, [4]]]) == [1, 3, 2, [4]]
-    assert flatten(([i] for i in range(5))) == list(range(5))
+  @pytest.mark.parametrize(
+    "input_list,expected",
+    [
+      ([], []),
+      ([[]], []),
+      ([[1]], [1]),
+      ([[1, 3]], [1, 3]),
+      ([[1, 3], [], [], [2]], [1, 3, 2]),
+      ([[1, 3], [], [], [2, [4]]], [1, 3, 2, [4]]),
+      (([i] for i in range(5)), list(range(5))),
+    ],
+  )
+  def test_flatten(self, input_list, expected):
+    assert flatten(input_list) == expected
 
   def test_tail(self):
     assert tail([], 0) == []
@@ -36,100 +42,104 @@ class TestLists:
     with pytest.raises(Exception):
       tail([1, 2, 3], None)
 
-  def test_compact(self):
-    assert compact(()) == ()
-    assert compact((False, None, [], 0, {})) == ()
-    assert compact((False, None, [], 0, {}, 1, 2, 3, True, [1])) == (1, 2, 3, True, [1])
-    assert compact([]) == []
-    assert compact([False, None, [], 0, {}]) == []
-    assert compact([False, None, [], 0, {}, 1, 2, 3, True, [1]]) == [1, 2, 3, True, [1]]
-    assert compact({}) == {}
-    assert (
-      compact(
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ((), []),
+      ((False, None, [], 0, {}), []),
+      ((False, None, [], 0, {}, 1, 2, 3, True, [1]), [1, 2, 3, True, [1]]),
+      ([], []),
+      ([False, None, [], 0, {}], []),
+      ([False, None, [], 0, {}, 1, 2, 3, True, [1]], [1, 2, 3, True, [1]]),
+    ],
+  )
+  def test_compact_sequence(self, input_data, expected):
+    assert compact_sequence(input_data) == expected
+
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ({}, {}),
+      (
         {
           "a": False,
           "b": None,
           "c": [],
           "d": 0,
           "e": {},
-        }
-      )
-      == {}
-    )
-    assert compact({"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True}) == {
-      "f": 1,
-      "g": True,
-    }
-    assert compact({"a": {"b": None}}) == {
-      "a": {
-        "b": None,
-      },
-    }
+        },
+        {},
+      ),
+      (
+        {"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True},
+        {
+          "f": 1,
+          "g": True,
+        },
+      ),
+      (
+        {"a": {"b": None}},
+        {
+          "a": {
+            "b": None,
+          },
+        },
+      ),
+    ],
+  )
+  def test_compact_mapping(self, input_data, expected):
+    assert compact_mapping(input_data) == expected
 
-    with pytest.raises(ValueError):
-      compact(set([]))
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ((), []),
+      ((False, None, [], 0, {}), [False, [], 0, {}]),
+      ((False, None, [], 0, {}, 1, 2, 3, True, [1]), [False, [], 0, {}, 1, 2, 3, True, [1]]),
+      ([], []),
+      ([False, None, [], 0, {}], [False, [], 0, {}]),
+      ([False, None, [], 0, {}, 1, 2, 3, True, [1]], [False, [], 0, {}, 1, 2, 3, True, [1]]),
+    ],
+  )
+  def test_remove_nones_sequence(self, input_data, expected):
+    assert remove_nones_sequence(input_data) == expected
 
-    with pytest.raises(ValueError):
-      compact(None)
-
-    with pytest.raises(ValueError):
-      compact(1)
-
-    with pytest.raises(ValueError):
-      compact("abc")
-
-    with pytest.raises(ValueError):
-      compact(b"abc")
-
-    with pytest.raises(ValueError):
-      compact(numpy.array([]))
-
-  def test_remove_nones(self):
-    assert remove_nones(()) == ()
-    assert remove_nones((False, None, [], 0, {})) == (False, [], 0, {})
-    assert remove_nones((False, None, [], 0, {}, 1, 2, 3, True, [1])) == (False, [], 0, {}, 1, 2, 3, True, [1])
-
-    assert remove_nones([]) == []
-    assert remove_nones([False, None, [], 0, {}]) == [False, [], 0, {}]
-    assert remove_nones([False, None, [], 0, {}, 1, 2, 3, True, [1]]) == [False, [], 0, {}, 1, 2, 3, True, [1]]
-    assert remove_nones({}) == {}
-    assert remove_nones({"a": False, "b": None, "c": [], "d": 0, "e": {}}) == {
-      "a": False,
-      "c": [],
-      "d": 0,
-      "e": {},
-    }
-    assert remove_nones({"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True}) == {
-      "a": False,
-      "c": [],
-      "d": 0,
-      "e": {},
-      "f": 1,
-      "g": True,
-    }
-    assert remove_nones({"a": {"b": None}}) == {
-      "a": {
-        "b": None,
-      },
-    }
-    assert remove_nones(set((1, "a", None))) == set((1, "a"))
-    assert remove_nones(set((1, "a"))) == set((1, "a"))
-    assert remove_nones(set()) == set()
-
-    with pytest.raises(ValueError):
-      remove_nones(None)
-
-    with pytest.raises(ValueError):
-      remove_nones(1)
-
-    with pytest.raises(ValueError):
-      remove_nones("abc")
-
-    with pytest.raises(ValueError):
-      remove_nones(b"abc")
-
-    with pytest.raises(ValueError):
-      remove_nones(numpy.array([]))
+  @pytest.mark.parametrize(
+    "input_data,expected",
+    [
+      ({}, {}),
+      (
+        {"a": False, "b": None, "c": [], "d": 0, "e": {}},
+        {
+          "a": False,
+          "c": [],
+          "d": 0,
+          "e": {},
+        },
+      ),
+      (
+        {"a": False, "b": None, "c": [], "d": 0, "e": {}, "f": 1, "g": True},
+        {
+          "a": False,
+          "c": [],
+          "d": 0,
+          "e": {},
+          "f": 1,
+          "g": True,
+        },
+      ),
+      (
+        {"a": {"b": None}},
+        {
+          "a": {
+            "b": None,
+          },
+        },
+      ),
+    ],
+  )
+  def test_remove_nones_mapping(self, input_data, expected):
+    assert remove_nones_mapping(input_data) == expected
 
   def test_coalesce(self):
     assert coalesce() is None
@@ -165,19 +175,19 @@ class TestLists:
     assert distinct((1, 1, 2)) == (1, 2)
 
     with pytest.raises(ValueError):
-      distinct({})
+      distinct({})  # type: ignore
 
     with pytest.raises(ValueError):
-      distinct(set([]))
+      distinct(set([]))  # type: ignore
 
     with pytest.raises(ValueError):
-      distinct("abc")
+      distinct("abc")  # type: ignore
 
     with pytest.raises(ValueError):
-      distinct(None)
+      distinct(None)  # type: ignore
 
   def test_distinct_by(self):
-    assert distinct_by((), key=lambda x: x) == ()
+    assert distinct_by((), key=lambda x: x) == ()  # type: ignore
     assert distinct_by((1, 2), key=lambda x: x) == (1, 2)
     assert distinct_by((1, 1, 2), key=lambda x: x) == (1, 2)
 
@@ -209,7 +219,7 @@ class TestLists:
     assert find((i for i in range(1, 5)), lambda x: x % 2 == 0) == 2
 
   def test_as_grouped_dict(self):
-    assert as_grouped_dict([], lambda x: x) == {}
+    assert as_grouped_dict([], lambda x: x) == {}  # type: ignore
     assert as_grouped_dict([1], lambda x: x) == {1: [1]}
     assert as_grouped_dict([1, 2], lambda x: x) == {1: [1], 2: [2]}
     assert as_grouped_dict([1, 2], lambda x: x % 2) == {1: [1], 0: [2]}
@@ -217,7 +227,7 @@ class TestLists:
     assert as_grouped_dict((i for i in range(1, 5)), lambda x: x % 2) == {1: [1, 3], 0: [2, 4]}
 
   def test_to_map_by_key(self):
-    assert to_map_by_key([], lambda x: x) == {}
+    assert to_map_by_key([], lambda x: x) == {}  # type: ignore
     assert to_map_by_key([1], lambda x: x) == {1: 1}
     assert to_map_by_key([1, 2], lambda x: x) == {1: 1, 2: 2}
     assert to_map_by_key([1, 2], lambda x: x % 2) == {1: 1, 0: 2}
@@ -225,7 +235,7 @@ class TestLists:
     assert to_map_by_key((i for i in range(1, 5)), lambda x: x % 2) == {1: 3, 0: 4}
 
   def test_map_dict(self):
-    assert map_dict(lambda x: x, {}) == {}
+    assert map_dict(lambda x: x, {}) == {}  # type: ignore
     assert map_dict(lambda x: x * 2, {}) == {}
     assert map_dict(lambda x: x * 2, {"a": 1}) == {"a": 2}
 
@@ -265,7 +275,7 @@ class TestLists:
     assert recursively_map_dict(lambda x: 1, e) == {"o": [{"r": 1}]}
 
   def test_filter_keys(self):
-    assert filter_keys(lambda k: 1 / 0, {}) == {}
+    assert filter_keys(lambda k: bool(1 / 0), {}) == {}
     assert filter_keys(lambda k: k == "y", {"h": 4, "y": 2}) == {"y": 2}
     assert filter_keys(lambda k: k.startswith("h"), {"hello": 1, "goodbye": 2}) == {"hello": 1}
 
@@ -273,8 +283,8 @@ class TestLists:
     assert recursively_filter_keys(lambda k: k, []) == []
     assert recursively_filter_keys(lambda k: k, {}) == {}
     assert recursively_filter_keys(lambda k: k, [{}, [], [{}]]) == [{}, [], [{}]]
-    assert recursively_filter_keys(len, [{"a": 2}, {"": 3}, {}]) == [{"a": 2}, {}, {}]
-    assert recursively_filter_keys(len, [{"": 1, "a": 2}, {"": 3}, {}]) == [{"a": 2}, {}, {}]
+    assert recursively_filter_keys(lambda x: bool(len(x)), [{"a": 2}, {"": 3}, {}]) == [{"a": 2}, {}, {}]
+    assert recursively_filter_keys(lambda x: bool(len(x)), [{"": 1, "a": 2}, {"": 3}, {}]) == [{"a": 2}, {}, {}]
     assert recursively_filter_keys(lambda k: k, [{True: 1, False: {True: 1}}, {True: {True: [{False: 3}]}}]) == [
       {True: 1},
       {True: {True: [{}]}},
@@ -294,25 +304,25 @@ class TestLists:
     assert extend_dict({}, {}, {}) == {}
 
     assert extend_dict({"a": 1, "b": 2}) == {"a": 1, "b": 2}
-    assert extend_dict({}, {"a": 1, "b": 2}) == {"a": 1, "b": 2}
+    assert extend_dict({}, {"a": 1, "b": 2}) == {"a": 1, "b": 2}  # type: ignore
     assert extend_dict({"a": 1, "b": 2}, {"a": 3, "c": 4}) == {"a": 3, "b": 2, "c": 4}
-    assert extend_dict({}, {"a": 1, "b": 2}, {"a": 3, "c": 4}) == {"a": 3, "b": 2, "c": 4}
+    assert extend_dict({}, {"a": 1, "b": 2}, {"a": 3, "c": 4}) == {"a": 3, "b": 2, "c": 4}  # type: ignore
 
     a = {"d": 1}
     extend_dict(a, {"e": 2})
     assert a["d"] == 1
     assert a["e"] == 2
-    extend_dict({}, a, {"e": 3})
+    extend_dict({}, a, {"e": 3})  # type: ignore
     assert a["e"] == 2
 
     with pytest.raises(AssertionError):
-      extend_dict(1, 1)
+      extend_dict(1, 1)  # type: ignore
 
     with pytest.raises(AssertionError):
-      extend_dict([], [])
+      extend_dict([], [])  # type: ignore
 
     with pytest.raises(AssertionError):
-      extend_dict(set([]), set([]))
+      extend_dict(set([]), set([]))  # type: ignore
 
   def test_invert_dict(self):
     assert invert_dict({}) == {}
@@ -323,7 +333,7 @@ class TestLists:
     assert invert_dict(invert_dict(d)) == d
 
     with pytest.raises(AssertionError):
-      invert_dict([])
+      invert_dict([])  # type: ignore
 
     with pytest.raises(ValueError):
       invert_dict({"a": 1, "b": 1})
@@ -435,18 +445,18 @@ class TestLists:
     assert as_tuple("abc") == ("abc",)
     assert as_tuple(0) == (0,)
     assert as_tuple(50) == (50,)
-    assert as_tuple([1, 2, 3]) == (1, 2, 3)
-    assert as_tuple((1, 2, 3)) == (1, 2, 3)
-    assert as_tuple([1]) == (1,)
-    assert as_tuple((1,)) == (1,)
-    assert as_tuple([[[1]]]) == ([[1]],)
-    assert as_tuple(range(4)) == (0, 1, 2, 3)
-    assert as_tuple((i for i in range(4))) == (0, 1, 2, 3)
+    assert as_tuple([1, 2, 3]) == (1, 2, 3)  # type: ignore
+    assert as_tuple((1, 2, 3)) == (1, 2, 3)  # type: ignore
+    assert as_tuple([1]) == (1,)  # type: ignore
+    assert as_tuple((1,)) == (1,)  # type: ignore
+    assert as_tuple([[[1]]]) == ([[1]],)  # type: ignore
+    assert as_tuple(range(4)) == (0, 1, 2, 3)  # type: ignore
+    assert as_tuple((i for i in range(4))) == (0, 1, 2, 3)  # type: ignore
 
   def test_omit(self):
     assert omit({}) == {}
-    assert omit({}, "a") == {}
-    assert omit({}, "a", "b") == {}
+    assert omit({}, "a") == {}  # type: ignore
+    assert omit({}, "a", "b") == {}  # type: ignore
     assert omit({"a": 1}) == {"a": 1}
     assert omit({"a": 1}, "a") == {}
     assert omit({"a": 1}, "b") == {"a": 1}
@@ -455,8 +465,8 @@ class TestLists:
 
   def test_pick(self):
     assert pick({}) == {}
-    assert pick({}, "a") == {}
-    assert pick({}, "a", "b") == {}
+    assert pick({}, "a") == {}  # type: ignore
+    assert pick({}, "a", "b") == {}  # type: ignore
     assert pick({"a": 1}) == {}
     assert pick({"a": 1}, "a") == {"a": 1}
     assert pick({"a": 1}, "b") == {}

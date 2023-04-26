@@ -4,6 +4,7 @@
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.common.sigopt_datetime import current_datetime, datetime_to_seconds
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.aiexperiments.base import AiExperimentHandler
 from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.experiments.observations.create import CreatesObservationsMixin
@@ -32,7 +33,11 @@ class AiExperimentTrainingRunsCreateHandler(
 
   make_suggestion_meta_from_json = SuggestionsCreateHandler.make_suggestion_meta_from_json
 
+  experiment: Experiment | None
+
   def maybe_create_observation_from_data(self, assignments, values, failed):
+    assert self.experiment is not None
+
     now = datetime_to_seconds(current_datetime())
     try:
       observation = self.create_observation(
@@ -54,6 +59,8 @@ class AiExperimentTrainingRunsCreateHandler(
     return observation
 
   def get_assignments_relevant_to_experiment(self, training_run_params):
+    assert self.experiment is not None
+
     provided_assignments = dict(training_run_params.training_run_data.assignments_struct)
     filtered_assignments = {}
     for name in self.experiment.all_parameters_map:
@@ -65,6 +72,8 @@ class AiExperimentTrainingRunsCreateHandler(
     return filtered_assignments
 
   def get_observation_values(self, training_run_params):
+    assert self.experiment is not None
+
     if training_run_params.training_run_data.state == TrainingRunData.FAILED:
       return None, True
     values = get_observation_values_dict_from_training_run_values_map(
@@ -75,6 +84,8 @@ class AiExperimentTrainingRunsCreateHandler(
     return None, True
 
   def maybe_create_observation_from_params(self, training_run_params):
+    assert self.experiment is not None
+
     assignments = self.get_assignments_relevant_to_experiment(training_run_params)
     values, failed = self.get_observation_values(training_run_params)
     observation = self.maybe_create_observation_from_data(assignments, values, failed)
@@ -98,7 +109,7 @@ class AiExperimentTrainingRunsCreateHandler(
     try:
       return self.services.suggestion_broker.explicit_suggestion(
         experiment=self.experiment,
-        suggestion_meta=self.make_suggestion_meta_from_json(data),
+        suggestion_meta=self.make_suggestion_meta_from_json(data),  # type: ignore
         processed_suggestion_meta=processed_suggestion_meta,
         automatic=True,
       )
@@ -106,6 +117,8 @@ class AiExperimentTrainingRunsCreateHandler(
       return None
 
   def maybe_create_suggestion(self, training_run_params):
+    assert self.experiment is not None
+
     provided_experiment_assignments = self.get_assignments_relevant_to_experiment(training_run_params)
     if provided_experiment_assignments:
       suggestion = self.maybe_create_explicit_suggestion_from_assignments(provided_experiment_assignments)
@@ -124,6 +137,9 @@ class AiExperimentTrainingRunsCreateHandler(
     return suggestion, None, assignments_update
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.experiment is not None
+
     if self.experiment.deleted:
       raise SigoptValidationError(f"Cannot create training runs for deleted experiment {self.experiment.id}")
 

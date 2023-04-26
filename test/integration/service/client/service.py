@@ -3,6 +3,9 @@
 # SPDX-License-Identifier: Apache License 2.0
 import pytest
 
+from zigopt.client.model import Client
+from zigopt.organization.model import Organization
+
 from integration.service.test_base import ServiceBase
 
 
@@ -11,28 +14,19 @@ def get_id(obj):
 
 
 class TestClientServiceFind(ServiceBase):
-  organization_a = organization_b = None
-  client_a = client_b = client_c = None
+  organization_a: Organization
+  organization_b: Organization
+  client_a: Client
+  client_b: Client
+  client_c: Client
 
   @pytest.fixture(autouse=True)
   def setup(self, services):
-    if any(
-      item is None
-      for item in (
-        self.organization_a,
-        self.organization_b,
-        self.client_a,
-        self.client_b,
-        self.client_c,
-      )
-    ):
-      self.organization_a, self.organization_b = (
-        self.make_organization(services, f"Test Organization {i}") for i in (1, 2)
-      )
-      self.client_a, self.client_b = (
-        self.make_client(services, f"Test Client {i}", self.organization_a) for i in (1, 2)
-      )
-      self.client_c = self.make_client(services, "Test Client 3", self.organization_b)
+    self.organization_a, self.organization_b = (
+      self.make_organization(services, f"Test Organization {i}") for i in (1, 2)
+    )
+    self.client_a, self.client_b = (self.make_client(services, f"Test Client {i}", self.organization_a) for i in (1, 2))
+    self.client_c = self.make_client(services, "Test Client 3", self.organization_b)
 
   def test_find_by_ids_or_organization_ids_empty_args(self, services):
     clients = services.client_service.find_by_ids_or_organization_ids(

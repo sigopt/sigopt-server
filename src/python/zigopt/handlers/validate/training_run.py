@@ -12,7 +12,7 @@ from libsigopt.aux.errors import InvalidKeyError, InvalidValueError, SigoptValid
 MAX_SOURCE_LENGTH = 30
 
 
-def validate_state(state_string: Optional[str]) -> str:
+def validate_state(state_string: Optional[str]) -> int:
   if state_string is None:
     raise InvalidValueError("Invalid state: cannot be null")
   try:
@@ -42,7 +42,7 @@ def validate_assignments_sources_json(assignment_sources: dict[str, Any]) -> Non
 def validate_assignments_meta(
   input_params: Mapping[str, Any],
   input_params_meta: Mapping[str, Any],
-  training_run: TrainingRun,
+  training_run: TrainingRun | None,
 ):
   sources = {meta.source for meta in dict(input_params_meta).values()}
   meta_keys = list(dict(input_params_meta).keys())

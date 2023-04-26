@@ -11,6 +11,9 @@ class UsersPendingPermissionsHandler(UserHandler):
   authenticator = api_token_authentication
 
   def handle(self):
+    assert self.auth is not None
+    assert self.user is not None
+
     invites = self.services.invite_service.find_by_email(self.user.email, valid_only=True)
     invite_map = to_map_by_key(invites, lambda i: i.id)
     invite_ids = list(invite_map.keys())
@@ -24,8 +27,8 @@ class UsersPendingPermissionsHandler(UserHandler):
           self.auth,
           self.services.config_broker,
           pending_permission,
-          invite_map.get(pending_permission.invite_id),
-          client_map.get(pending_permission.client_id),
+          invite_map[pending_permission.invite_id],
+          client_map[pending_permission.client_id],
         )
         for pending_permission in pending_permissions
         if pending_permission.client_id in client_map

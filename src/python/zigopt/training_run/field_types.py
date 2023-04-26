@@ -17,7 +17,7 @@ class FieldType(Enum):
 
 
 class FieldDetails:
-  type = None
+  type: FieldType
 
   def __init__(self, api_name, column_accessor, api_type, readable_name=None, sortable=False):
     self.api_name = api_name

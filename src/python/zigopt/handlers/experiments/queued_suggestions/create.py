@@ -19,12 +19,14 @@ class QueuedSuggestionsCreateHandler(ExperimentHandler):
     return request.params()
 
   def handle(self, json_dict):
+    assert self.experiment is not None
+
     if self.experiment.deleted:
       raise BadParamError(f"Cannot create QueuedSuggestions for deleted experiment {self.experiment.id}")
 
     queued_suggestion = QueuedSuggestion(
       experiment_id=self.experiment.id,
-      meta=QueuedSuggestionMeta(
+      meta=QueuedSuggestionMeta(  # pylint: disable=protobuf-type-error
         suggestion_data=build_suggestion_data_from_json(self.experiment, json_dict),
       ),
     )

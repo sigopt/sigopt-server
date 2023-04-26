@@ -7,8 +7,9 @@ import binascii
 import enum
 import json
 import re
-from typing import Any, Callable, Optional, Sequence
+from typing import Any, Callable, Generic, Optional, Sequence, TypeVar
 
+from google.protobuf.message import Message
 from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-module
 
 from zigopt.common import *
@@ -404,8 +405,11 @@ def metadata_output(pb_data: Struct) -> dict[str, Any]:
   return dict_data
 
 
-class ProtobufIOValidator(IOValidator):
-  def __init__(self, name, Cls):
+ProtoCls = TypeVar("ProtoCls", bound=Message)
+
+
+class ProtobufIOValidator(IOValidator, Generic[ProtoCls]):
+  def __init__(self, name, Cls: type[ProtoCls]):
     def input_validate(x: Any) -> bool:
       if not isinstance(x, dict):
         return False
@@ -415,9 +419,9 @@ class ProtobufIOValidator(IOValidator):
       except ValueError:
         return False
 
-    def input_parse(x: Any) -> Cls:
+    def input_parse(x: Any) -> ProtoCls:
       try:
-        return dict_to_protobuf(Cls, x)
+        return dict_to_protobuf(Cls, x)  # type: ignore
       except ValueError as e:
         raise ValueError(f"Parse {Cls} error: {e}") from e
 

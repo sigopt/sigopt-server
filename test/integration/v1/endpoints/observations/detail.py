@@ -116,7 +116,7 @@ class TestDetailObservations(V1Base):
   def test_with_deleted_clause(self, connection):
     with connection.create_any_experiment() as experiment:
       suggestion = connection.experiments(experiment.id).suggestions().create()
-      created_observations = []
+      created_observations: list = []
       for i in range(5):
         created_observations.insert(
           0,

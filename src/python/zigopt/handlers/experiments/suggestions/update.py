@@ -17,12 +17,19 @@ class SuggestionsUpdateHandler(SuggestionHandler):
     return request.params()
 
   def handle(self, json_dict):
+    assert self.auth is not None
+    assert self.experiment is not None
+    assert self.suggestion is not None
+
     suggestion_meta = ProcessedSuggestionMeta()
     client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(
       json_dict, default=self.suggestion.client_provided_data
     )
     # pylint: disable=protobuf-undefined-attribute
-    suggestion_meta.SetFieldIfNotNone("client_provided_data", client_provided_data)
+    suggestion_meta.SetFieldIfNotNone(  # type: ignore
+      "client_provided_data",
+      client_provided_data,
+    )
     # pylint: enable=protobuf-undefined-attribute
 
     processed = self.suggestion.processed

@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Any
+
 import pytest
 
 from zigopt.common.sigopt_datetime import current_datetime
@@ -162,7 +164,7 @@ class TestProjectsListEndpoint(V1Base):
   def test_list_sort(self, sort_field, sort_key, ascending, connection, client_id, client_projects):
     # NOTE: the python client doesn't pick up on ascending,
     # but it does understand after/before
-    paging_kwargs = {}
+    paging_kwargs: dict[str, Any] = {}
     if ascending:
       paging_kwargs["after"] = None
     fetched_projects = list(

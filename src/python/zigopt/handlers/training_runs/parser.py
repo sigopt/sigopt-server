@@ -131,7 +131,7 @@ class TrainingRunRequestParser:
     for name, value_dict in values_dict.items():
       value = ProtobufBuilderThatRetainsNones(TrainingRunValue())
       value.add_field("value", get_with_validation(value_dict, "value", ValidationType.number))
-      value_stddev = get_opt_with_validation(value_dict, "value_stddev", ValidationType.number)
+      value_stddev: float | None = get_opt_with_validation(value_dict, "value_stddev", ValidationType.number)
       value.add_field("value_var", napply(value_stddev, lambda x: x * x))
       yield (name, value)
 

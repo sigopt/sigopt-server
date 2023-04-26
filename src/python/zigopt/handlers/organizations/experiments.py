@@ -14,5 +14,7 @@ class OrganizationsExperimentsListDetailHandler(OrganizationHandler, BaseExperim
   required_permissions = ADMIN
 
   def handle(self, params):
+    assert self.organization is not None
+
     client_ids = [c.id for c in self.services.client_service.find_by_organization_id(self.organization.id)]
     return self.do_handle(params, client_ids, params.user)

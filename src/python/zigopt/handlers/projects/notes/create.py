@@ -22,6 +22,10 @@ class ClientsProjectsNotesCreateHandler(ProjectHandler):
     return self.Params(contents=data.get("contents"))
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.client is not None
+    assert self.project is not None
+
     note = ProjectNote(
       contents=params.contents,
       created_by=self.auth.current_user.id,

@@ -121,6 +121,7 @@ class TestCreate(ExperimentBrowserTest):
     driver.find_and_click(css_selector=".create-button")
     driver.wait_for_title_text("Experiment ABC - Summary - SigOpt")
     match = re.search(r"/experiment/(\d+)", driver.current_url)
+    assert match
     experiment_id = match.group(1)
 
     # TODO(SN-1132): some of these conditions are empty, we will remove that feature

@@ -12,7 +12,7 @@ from zigopt.token.model import Token
 
 
 class ClientService(Service):
-  def find_by_id(self, client_id, include_deleted=False, current_client=None):
+  def find_by_id(self, client_id, include_deleted=False, current_client=None) -> Client | None:
     if current_client and current_client.id == client_id:
       if not include_deleted and current_client.deleted:
         return None

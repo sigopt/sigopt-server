@@ -35,7 +35,7 @@ def _schema_validate(metadata: dict[str, Any], length: int, key_length: int, max
 
 def validate_custom_json(metadata: dict[str, Any]) -> Optional[str]:
   if metadata is not None:
-    return json.dumps(remove_nones(metadata))
+    return json.dumps(remove_nones_mapping(metadata))
   return None
 
 

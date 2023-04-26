@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -158,7 +159,7 @@ class TestSuggestions(V1Base):
 
   def test_suggestion_paging(self, connection):
     with connection.create_any_experiment() as experiment:
-      expected_ids = []
+      expected_ids: list[str] = []
       limit = 2
       for _ in range(4 * limit):
         expected_ids.insert(0, connection.experiments(experiment.id).suggestions().create().id)
@@ -260,6 +261,8 @@ class TestSuggestionMetadata(V1Base):
       assert suggestion.metadata.to_json() == metadata
 
   def test_create_with_invalid_metadata(self, connection):
+    metadata: Any
+
     with connection.create_any_experiment() as experiment:
       metadata = ["foo", "bar"]
       with RaisesApiException(HTTPStatus.BAD_REQUEST):

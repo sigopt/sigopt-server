@@ -4,6 +4,7 @@
 # pylint: disable=too-many-public-methods
 from copy import deepcopy
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -14,7 +15,7 @@ from zigopt.experiment.model import Experiment
 from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH
 
 from integration.base import RaisesApiException
-from integration.v1.constants import DEFAULT_EXPERIMENT_META
+from integration.v1.constants import DEFAULT_EXPERIMENT_META, BoundedDoubleParameterMetaType
 from integration.v1.experiments_test_base import ExperimentsTestBase
 from libsigopt.aux.constant import ParameterTransformationNames
 
@@ -40,7 +41,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
   def test_parameter_update(self, connection, client_id):
     e = connection.create_any_experiment(client_id=client_id)
     assert len(e.parameters) != 1
-    p = find(e.parameters, lambda p: p.type == "int")
+    p = next(p for p in e.parameters if p.type == "int")
     e = connection.experiments(e.id).update(
       parameters=[dict(name=p.name, type=p.type, bounds=dict(min=p.bounds.min - 1, max=p.bounds.max + 1))]
     )
@@ -115,7 +116,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
 
     # Can't change type of a parameter
     parameters = e.parameters
-    find(parameters, lambda p: p.type == "int").type = "double"
+    next(p for p in parameters if p.type == "int").type = "double"
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.experiments(e.id).update(parameters=parameters)
 
@@ -589,7 +590,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_one_optimized_one_stored_raises(self, services, connection):
-    metrics = [{"name": "optimized"}, {"name": "stored", "strategy": MetricStrategyNames.STORE}]
+    metrics: list[dict[str, Any]] = [{"name": "optimized"}, {"name": "stored", "strategy": MetricStrategyNames.STORE}]
     with connection.create_any_experiment(metrics=metrics) as e:
       new_metrics = deepcopy(metrics)
       new_metrics[0]["threshold"] = 1.23
@@ -599,7 +600,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_only_optimized(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "optimized1"},
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
@@ -618,7 +619,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert fetched_e.metrics[2].threshold is None
 
   def test_update_threshold_on_stored_stays_none(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "optimized1"},
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
@@ -638,7 +639,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert fetched_e.metrics[2].threshold is None
 
   def test_update_threshold_on_stored_raises(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "optimized1"},
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
@@ -654,7 +655,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_on_constraint_metric(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT, "threshold": 0.1},
       {"name": "optimized1"},
     ]
@@ -665,7 +666,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert updated_e.metrics[0].threshold == 4.56
 
   def test_update_remove_threshold_on_constraint_raises(self, services, connection):
-    metrics = [
+    metrics: list[dict[str, Any]] = [
       {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT, "threshold": 0.1},
       {"name": "optimized"},
     ]
@@ -707,7 +708,10 @@ class TestUpdateExperiments(ExperimentsTestBase):
     assert parameter_json["prior"] is None
 
     new_parameters = deepcopy(meta["parameters"])
-    new_parameters[1]["prior"] = prior
+    new_parameter = new_parameters[1]
+    assert new_parameter["type"] == "double"
+    assert "bounds" in new_parameter
+    new_parameter["prior"] = prior
     updated_experiment = connection.experiments(experiment.id).update(parameters=new_parameters)
 
     parameter_json = updated_experiment.parameters[1].to_json()
@@ -717,7 +721,10 @@ class TestUpdateExperiments(ExperimentsTestBase):
       assert created_prior[key] == value
 
     remove_prior_parameters = deepcopy(new_parameters)
-    remove_prior_parameters[1]["prior"] = None
+    remove_prior_parameter = remove_prior_parameters[1]
+    assert remove_prior_parameter["type"] == "double"
+    assert "prior" in remove_prior_parameter
+    remove_prior_parameter["prior"] = None
     updated_experiment = connection.experiments(experiment.id).update(parameters=remove_prior_parameters)
 
     parameter_json = updated_experiment.parameters[1].to_json()
@@ -725,8 +732,10 @@ class TestUpdateExperiments(ExperimentsTestBase):
     assert parameter_json["prior"] is None
 
   def test_log_transform_update_errors(self, connection):
-    p1 = dict(name="a", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG)
-    p2 = dict(name="b", type="double", bounds=dict(min=1, max=10))
+    p1: BoundedDoubleParameterMetaType = dict(
+      name="a", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG
+    )
+    p2: BoundedDoubleParameterMetaType = dict(name="b", type="double", bounds=dict(min=1, max=10))
     meta = deepcopy(DEFAULT_EXPERIMENT_META)
     meta["parameters"] = [p1, p2]
     e = connection.create_any_experiment(**meta)
@@ -743,7 +752,7 @@ class TestUpdateExperiments(ExperimentsTestBase):
       connection.experiments(e.id).update(parameters=[p1, p2_with_log])
 
   def test_log_transform_invalid_bounds_errors(self, connection):
-    p1 = dict(name="a", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG)
+    p1: BoundedDoubleParameterMetaType = dict(name="a", type="double", bounds=dict(min=1, max=10), transformation="log")
     meta = deepcopy(DEFAULT_EXPERIMENT_META)
     meta["parameters"] = [p1]
     e = connection.create_any_experiment(**meta)

@@ -13,6 +13,9 @@ class ClientsPendingPermissionsHandler(ClientHandler):
   required_permissions = READ
 
   def handle(self):
+    assert self.auth is not None
+    assert self.client is not None
+
     pending_permissions = self.services.pending_permission_service.find_by_client_id(self.client.id)
     invites = self.services.invite_service.find_by_organization_id(self.client.organization_id)
     invites_map = to_map_by_key(invites, lambda i: i.id)

@@ -9,7 +9,7 @@ import sys
 
 from zigopt.config import load_config_from_env
 from zigopt.log.base import base_logger_setup, configure_loggers
-from zigopt.profile.profile import NullProfiler, Profiler
+from zigopt.profile.profile import BaseProfiler, NullProfiler, Profiler
 from zigopt.queue.exceptions import WorkerInterruptedException
 from zigopt.queue.message_groups import MessageGroup
 from zigopt.queue.workers import QueueWorkers, SignalKillPolicy
@@ -32,7 +32,7 @@ if __name__ == "__main__":
   config_broker = load_config_from_env()
   configure_loggers(config_broker)
 
-  profiler = NullProfiler()
+  profiler: BaseProfiler = NullProfiler()
   if args.profile:
     profiler = Profiler()
 

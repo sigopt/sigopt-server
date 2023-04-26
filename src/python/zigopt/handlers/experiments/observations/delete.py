@@ -15,6 +15,8 @@ class ObservationsDeleteHandler(ObservationHandler):
     return request.optional_bool_param("no_optimize")
 
   def handle(self, no_optimize):
+    assert self.observation is not None
+
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
     self.services.observation_service.set_delete(self.experiment, self.observation.id)
     num_observations -= 1

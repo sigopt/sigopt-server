@@ -30,6 +30,9 @@ class SuggestionsDetailMultiHandler(ExperimentHandler):
     return request
 
   def handle(self, request):
+    assert self.auth is not None
+    assert self.experiment is not None
+
     state = validate_state(request.optional_param("state"))
     paging = request.get_paging()
     deleted = request.optional_bool_param("deleted")

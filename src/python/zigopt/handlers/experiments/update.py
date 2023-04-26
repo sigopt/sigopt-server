@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from collections import Counter
+from typing import Any
+
+from sqlalchemy import Column
 
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
@@ -185,12 +188,14 @@ class ExperimentsUpdateHandler(ExperimentHandler):
       raise SigoptValidationError("The tasks of a multitask experiment cannot be updated after creation")
 
   def _get_project(self, json_dict, update_experiment_fields):
+    assert self.experiment is not None
+
     if "project" not in json_dict:
       return self.services.project_service.find_by_client_and_id(
         client_id=self.experiment.client_id,
         project_id=self.experiment.project_id,
       )
-    project = self.get_project(json_dict)
+    project = self.get_project(json_dict)  # type: ignore
     if self.experiment.runs_only:
       if project is None:
         raise SigoptValidationError("This experiment cannot be removed from the project.")
@@ -200,6 +205,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     return project
 
   def _maybe_set_name(self, json_dict, update_experiment_fields):
+    assert self.experiment is not None
+
     if "name" not in json_dict:
       return
     name = get_with_validation(json_dict, "name", ValidationType.string)
@@ -208,6 +215,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     self.experiment.name = name
 
   def _maybe_set_state(self, json_dict, update_experiment_fields):
+    assert self.experiment is not None
+
     if "state" not in json_dict:
       return
     state = get_with_validation(json_dict, "state", ValidationType.string)
@@ -217,6 +226,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     self.experiment.deleted = deleted
 
   def _maybe_set_budget(self, json_dict, new_meta, update_meta_fields):
+    assert self.experiment is not None
+
     try:
       budget_key, budget = self.get_budget_key_and_value(json_dict, self.experiment.runs_only)
     except MissingJsonKeyError:
@@ -236,6 +247,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
       new_meta.ClearField("observation_budget")
 
   def _maybe_set_parameters(self, json_dict, new_meta, update_meta_fields):
+    assert self.experiment is not None
+
     if "parameters" not in json_dict:
       return
     if self.experiment.experiment_type == ExperimentMeta.GRID:
@@ -252,7 +265,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     if not parameters_json:
       raise SigoptValidationError("Experiments must have at least one parameter.")
 
-    name_counts = Counter(p.get("name") for p in parameters_json if p.get("name") is not None)
+    name_counts: Counter[str] = Counter(p.get("name") for p in parameters_json if p.get("name") is not None)
     duplicates = [key for (key, value) in name_counts.items() if value > 1]
     if len(duplicates) > 0:
       raise InvalidValueError(f"Duplicate parameter names: {duplicates}")
@@ -290,6 +303,9 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     )
 
   def handle(self, json_dict):
+    assert self.auth is not None
+    assert self.experiment is not None
+
     no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
 
     validate_experiment_json_dict_for_update(json_dict)
@@ -297,8 +313,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
 
     client = self.services.client_service.find_by_id(self.experiment.client_id, current_client=self.auth.current_client)
 
-    update_meta_fields = {}
-    update_experiment_fields = {}
+    update_meta_fields: dict[Column, Any] = {}
+    update_experiment_fields: dict[Column, Any] = {}
     new_meta = self.experiment.experiment_meta.copy_protobuf()
     if not new_meta.metrics:
       new_meta.metrics.extend([ExperimentMetric(name=None)])
@@ -427,6 +443,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     self._raise_if_threshold_specified(json_dict, metrics)
 
   def update_metrics(self, update_meta_fields, json_dict, new_meta):
+    assert self.experiment is not None
+
     metrics = self.experiment.all_metrics
     self._raise_if_bad_update(json_dict, metrics)
     self._update_thresholds_on_metrics(json_dict, new_meta)

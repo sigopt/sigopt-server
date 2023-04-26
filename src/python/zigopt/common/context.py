@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from contextlib import ExitStack
-from typing import Sequence
+from typing import Iterable
 
 from zigopt.common.lists import safe_iterator
 
@@ -49,7 +49,7 @@ class MultiContext(ExitStack):
       ...
     """
 
-  def __init__(self, items: Sequence):
+  def __init__(self, items: Iterable):
     super().__init__()
     self.item_generator = safe_iterator(items)
     self.items = None

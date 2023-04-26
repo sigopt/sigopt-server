@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Sequence
+from typing import Sequence, TypeVar
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.json_format import MessageToDict, ParseDict, ParseError, SerializeToJsonError
@@ -26,7 +26,10 @@ def protobuf_to_dict(obj: Message, **kwargs) -> dict:
     raise ValueError(e) from e
 
 
-def dict_to_protobuf(Cls: type[Message], obj: dict, ignore_unknown_fields: bool = False) -> Message:
+ProtobufType = TypeVar("ProtobufType", bound=Message)
+
+
+def dict_to_protobuf(Cls: type[ProtobufType], obj: dict, ignore_unknown_fields: bool = False) -> ProtobufType:
   _validate_class(Cls.DESCRIPTOR.fields)
   c = Cls()
   try:
