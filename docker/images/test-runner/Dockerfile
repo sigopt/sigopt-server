@@ -154,7 +154,7 @@ RUN : \
 
 FROM test-runner-base
 
-COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /sigopt-server/artifacts/web/routes/
+COPY --from=test-routes /sigopt-server/artifacts/web/routes/ /routes/
 
 COPY docker/images/test-runner/start-x11vnc.sh /start-x11vnc.sh
 COPY docker/images/test-runner/entrypoint.py /entrypoint.py

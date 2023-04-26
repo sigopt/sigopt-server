@@ -52,6 +52,7 @@ services:
       - sleep
       - infinity
     environment:
+      - SIGOPT_TEST_ROUTES_FILE=/routes/routes.json
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server
       - HOST_PWD
       - REQUESTS_CA_BUNDLE=/sigopt-server/artifacts/tls/root-ca.crt
@@ -84,32 +85,6 @@ services:
           cpus: "2"
           memory: 2G
           pids: 256
-    security_opt:
-      - "no-new-privileges:true"
-  generate-routes:
-    build: &node-development-build
-      dockerfile: docker/images/node-development/Dockerfile
-      args:
-        - NODE_MAJOR
-    logging:
-      <<: *logging
-    command:
-      - ./scripts/compile/generate_routes.sh
-      - "${SIGOPT_SERVER_CONFIG_DIR}"
-    volumes:
-      - *babelrc
-      - *test-routes-volume
-      - web-cache:/sigopt-server/.cache
-      - ./config:/sigopt-server/config:ro
-      - ./scripts:/sigopt-server/scripts:ro
-      - ./scratch:/sigopt-server/scratch:ro
-      - ./web:/sigopt-server/web:ro,cached
-      - ./webpack.config.script.babel.js:/sigopt-server/webpack.config.script.babel.js:ro
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 2G
     security_opt:
       - "no-new-privileges:true"
   createdb:
@@ -416,8 +391,10 @@ services:
     security_opt:
       - "no-new-privileges:true"
   web-client:
-    build:
-      <<: *node-development-build
+    build: &node-development-build
+      dockerfile: docker/images/node-development/Dockerfile
+      args:
+        - NODE_MAJOR
     restart: on-failure:5
     logging:
       <<: *logging

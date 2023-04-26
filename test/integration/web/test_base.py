@@ -234,7 +234,9 @@ def load_routes():
   global _routes  # pylint: disable=global-statement
   if _routes is None:
     try:
-      with open("artifacts/web/routes/routes.json", encoding="utf-8") as routes_fp:
+      with open(
+        os.environ.get("SIGOPT_TEST_ROUTES_FILE", "artifacts/web/routes/routes.json"), encoding="utf-8"
+      ) as routes_fp:
         _routes = json.load(routes_fp)
     except FileNotFoundError as fne:
       raise Exception(
