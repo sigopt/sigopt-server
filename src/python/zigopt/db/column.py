@@ -219,9 +219,6 @@ class _ProtobufColumnType(TypeDecorator):
       cast_type = self._get_cast_from_descriptor(self._descriptor)
       return self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(cast_type)))
 
-    def as_integer(self):
-      return self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Integer)))
-
     @classmethod
     def _get_cast_from_descriptor(cls, descriptor):
       assert cls._is_terminal_descriptor(descriptor)

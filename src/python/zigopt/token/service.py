@@ -36,7 +36,7 @@ class TokenService(Service):
     )
 
     if creating_user_id is not None:
-      query = query.filter(Token.meta.creating_user_id.as_integer() == creating_user_id)
+      query = query.filter(Token.meta.creating_user_id == creating_user_id)
 
     return self._reject_expired(self.services.database_service.all(query))
 
