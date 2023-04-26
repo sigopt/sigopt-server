@@ -15,6 +15,8 @@ class ClientsProjectsNotesListHandler(ProjectHandler):
   required_permissions = READ
 
   def handle(self):
+    assert self.project is not None
+
     query = self.services.note_service.find_project_notes_by_client_and_project(
       self.client,
       self.project,

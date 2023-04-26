@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import copy
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 
@@ -11,7 +12,7 @@ from integration.v1.constants import DEFAULT_AI_EXPERIMENT_META
 from integration.v1.experiments_test_base import AiExperimentsTestBase
 
 
-TEST_CREATE_FIELDS = [
+TEST_CREATE_FIELDS: list[tuple[str, Any]] = [
   ("assignments", None),
   ("assignments", {"unoptimized": 1}),
   ("assignments", {}),

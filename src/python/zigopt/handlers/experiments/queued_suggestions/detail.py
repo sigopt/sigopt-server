@@ -25,6 +25,8 @@ class QueuedSuggestionsDetailMultiHandler(ExperimentHandler):
     return request.get_paging()
 
   def handle(self, paging):
+    assert self.experiment is not None
+
     query = self.services.queued_suggestion_service.query_by_experiment_id(self.experiment.id)
     count = self.services.database_service.count(query)
     queued_suggestions, new_before, new_after = self.services.query_pager.fetch_page(

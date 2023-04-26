@@ -17,6 +17,10 @@ class SuggestionsUpdateHandler(SuggestionHandler):
     return request.params()
 
   def handle(self, json_dict):
+    assert self.auth is not None
+    assert self.experiment is not None
+    assert self.suggestion is not None
+
     suggestion_meta = ProcessedSuggestionMeta()
     client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(
       json_dict, default=self.suggestion.client_provided_data

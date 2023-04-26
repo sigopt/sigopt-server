@@ -9,7 +9,7 @@ from zigopt.db.column import *
 from zigopt.protobuf.gen.test.message_pb2 import Child, Parent
 
 
-Base = declarative_base()
+Base: type = declarative_base()
 
 
 class Model(Base):

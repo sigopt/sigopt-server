@@ -13,13 +13,15 @@ class OrganizationsPermissionsListDetailHandler(OrganizationHandler):
   required_permissions = ADMIN
 
   def handle(self):
+    assert self.organization is not None
+
     owner_memberships = self.services.membership_service.find_owners_by_organization_id(self.organization.id)
     owner_ids = frozenset(m.user_id for m in owner_memberships)
 
     permissions = self.services.permission_service.find_by_organization_id(self.organization.id)
-    user_ids = set(permission.user_id for permission in permissions)
-    user_ids |= owner_ids
-    user_ids = list(user_ids)
+    unique_user_ids = set(permission.user_id for permission in permissions)
+    unique_user_ids |= owner_ids
+    user_ids = list(unique_user_ids)
     users = self.services.user_service.find_by_ids(user_ids)
     user_map = {user.id: user for user in users}
 

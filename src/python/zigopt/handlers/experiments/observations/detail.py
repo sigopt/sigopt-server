@@ -20,6 +20,9 @@ class ObservationsDetailHandler(ObservationHandler):
   required_permissions = READ
 
   def handle(self):
+    assert self.experiment is not None
+    assert self.observation is not None
+
     return ObservationJsonBuilder(self.experiment, self.observation)
 
 
@@ -42,20 +45,23 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
 
   def _get_sort_key(self, sort):
     # pylint: disable=too-many-return-statements
+    assert self.experiment is not None
+    experiment = self.experiment
+
     if sort.field == "timestamp":
       return lambda o: (o.timestamp, o.id)
     if sort.field == "value":
-      metric_name = self.experiment.all_metrics[0].name
-      return lambda o: (o.metric_value(self.experiment, metric_name), o.id)
+      metric_name = experiment.all_metrics[0].name
+      return lambda o: (o.metric_value(experiment, metric_name), o.id)
     if sort.field.startswith("value-"):
       name = sort.field[len("value-") :]
-      return lambda o: (o.metric_value(self.experiment, name), o.id)
+      return lambda o: (o.metric_value(experiment, name), o.id)
     if sort.field == "value_stddev":
-      metric_name = self.experiment.all_metrics[0].name
-      return lambda o: (o.metric_value_var(self.experiment, metric_name), o.id)
+      metric_name = experiment.all_metrics[0].name
+      return lambda o: (o.metric_value_var(experiment, metric_name), o.id)
     if sort.field.startswith("value_stddev-"):
       name = sort.field[len("value_stddev-") :]
-      return lambda o: (o.metric_value_var(self.experiment, name), o.id)
+      return lambda o: (o.metric_value_var(experiment, name), o.id)
     if sort.field.startswith("parameter-"):
       param_name = sort.field[len("parameter-") :]
       if param_name not in self.experiment.all_parameters_map:
@@ -69,6 +75,9 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
 
   def handle(self, args):
     # pylint: disable=too-many-locals,unnecessary-lambda-assignment
+    assert self.experiment is not None
+    experiment = self.experiment
+
     paging = args.paging
     sort = args.sort
     deleted = args.deleted
@@ -76,7 +85,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
     delete_clause = DeleteClause.DELETED if deleted else DeleteClause.NOT_DELETED
 
     total_count = self.services.observation_service.count_by_experiment(
-      self.experiment,
+      experiment,
       deleted=delete_clause,
     )
 
@@ -87,7 +96,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
 
       def fetch_page(limit, before, after):
         return self.services.observation_service.read(
-          experiment_id=self.experiment.id,
+          experiment_id=experiment.id,
           limit=limit,
           before=before,
           after=after,
@@ -97,7 +106,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
 
       observations, new_before, new_after = Pager(fetch_page).fetch(paging, Observation.id, ascending=sort.ascending)
     else:
-      all_observations = self.services.observation_service.all_data(self.experiment)
+      all_observations = self.services.observation_service.all_data(experiment)
       key = self._get_sort_key(sort)
 
       if deleted is not None:
@@ -106,7 +115,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
       observations, new_before, new_after = Pager(all_observations).fetch(paging, key, ascending=sort.ascending)
 
     return PaginationJsonBuilder(
-      data=[ObservationJsonBuilder(self.experiment, observation) for observation in observations],
+      data=[ObservationJsonBuilder(experiment, observation) for observation in observations],
       count=total_count,
       before=new_before,
       after=new_after,

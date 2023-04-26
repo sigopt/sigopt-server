@@ -78,7 +78,7 @@ class SuggestionBrokerTestBase(ServiceBase):
       development=False,
     )
     create_kwargs.update(kwargs)
-    return ExperimentMeta(**create_kwargs)
+    return ExperimentMeta(**create_kwargs)  # type: ignore
 
   def new_experiment(self, experiment_meta=None, parallel_bandwidth=None):
     if experiment_meta is None:

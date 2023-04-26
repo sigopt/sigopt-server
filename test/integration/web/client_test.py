@@ -36,7 +36,7 @@ class TestClientSwitch(WebBase):
       t for t in api_connection.clients(other_client.id).tokens().fetch().iterate_pages() if t.user == user_id
     ]
     assert len(other_tokens) == 2
-    other_token = find(other_tokens, lambda t: not t.development)
+    other_token = next(t for t in other_tokens if not t.development)
     other_token = other_token.token
 
     tokens_page = logged_in_web_connection.get("/tokens/info")

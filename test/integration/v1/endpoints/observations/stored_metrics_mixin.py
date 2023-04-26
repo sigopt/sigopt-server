@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from copy import deepcopy
+from typing import Any
 
 import pytest
 
@@ -9,6 +10,8 @@ from zigopt.experiment.constant import MetricStrategyNames
 
 
 class StoredMetricsMixin:
+  offline_experiment_meta: dict[str, Any]
+
   @pytest.fixture
   def optimized_metric_name(self):
     return "optimized-metric"

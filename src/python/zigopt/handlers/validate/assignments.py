@@ -49,7 +49,7 @@ def get_assignment(param: ExperimentParameterProxy, assignment: float | str) -> 
   return assignment
 
 
-def parameter_conditions_satisfied(parameter: ExperimentParameterProxy, assignments_map: dict[str, Any]) -> bool:
+def parameter_conditions_satisfied(parameter: ExperimentParameterProxy, assignments_map: Mapping[str, Any]) -> bool:
   if parameter.conditions:
     for condition in parameter.conditions:
       assignment = assignments_map.get(condition.name)
@@ -58,7 +58,7 @@ def parameter_conditions_satisfied(parameter: ExperimentParameterProxy, assignme
   return True
 
 
-def constraint_satisfied(constraint: ExperimentConstraint, assignments_map: dict[str, Any]) -> None:
+def constraint_satisfied(constraint: ExperimentConstraint, assignments_map: Mapping[str, Any]) -> None:
   try:
     lhs = sum(term.coeff * assignments_map[term.name] for term in constraint.terms)
   except KeyError as e:

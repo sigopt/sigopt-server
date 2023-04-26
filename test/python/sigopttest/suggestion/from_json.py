@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Any
+
 import pytest
 
 from zigopt.experiment.model import Experiment
@@ -39,6 +41,8 @@ class TestBuildSuggestionData:
     )
 
   def test_build_suggestion_data_from_json(self, experiment, experiment_mt):
+    json_dict: dict[str, Any]
+
     json_dict = {"assignments": {"x": 1.1}}
     suggestion_data = build_suggestion_data_from_json(experiment, json_dict)
     assert suggestion_data.assignments_map == json_dict["assignments"]

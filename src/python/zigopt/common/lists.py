@@ -19,7 +19,6 @@ from typing import Mapping as _Mapping
 from typing import Optional as _Optional
 from typing import ParamSpec as _ParamSpec
 from typing import Sequence as _Sequence
-from typing import Set as _Set
 from typing import TypeVar as _TypeVar
 
 import numpy as _numpy
@@ -109,64 +108,29 @@ def flatten(lis: _Iterable[_Iterable[lists_T]]) -> list[lists_T]:
   return [l for sublist in lis for l in sublist]
 
 
-def compact_map(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:
+def compact_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:
   return {k: v for k, v in dct.items() if v}
 
 
-def compact_sequence(lis: _Sequence[_Optional[lists_T]], cls: type[list] | type[tuple]) -> _Sequence[lists_T]:
-  return cls(l for l in lis if l)
-
-
-def compact(
-  lis: _Mapping[lists_GHashable, _Optional[lists_T]] | _Sequence[_Optional[lists_T]]
-) -> dict[lists_GHashable, lists_T] | _Sequence[lists_T]:
-  """
-    Returns a copy of this object with all falsy values removed.
-    """
-  if is_mapping(lis):
-    assert isinstance(lis, _collectionsabc.Mapping)
-    return compact_map(lis)
-  if isinstance(lis, list | tuple):
-    return compact_sequence(lis, type(lis))
-  raise ValueError(f"Invalid type for compact: {type(lis)}")
+def compact_sequence(lis: _Sequence[_Optional[lists_T]]) -> list[lists_T]:
+  return [l for l in lis if l]
 
 
 def remove_nones_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:
   return {k: v for k, v in dct.items() if v is not None}
 
 
-def remove_nones_set(lis: _Set[_Optional[lists_T]]) -> _Set[lists_T]:
-  return {v for v in lis if v is not None}
-
-
 def remove_nones_sequence(
-  lis: _Sequence[_Optional[lists_T]], cls: type[list] | type[tuple]
+  lis: _Sequence[_Optional[lists_T]],
 ) -> list[lists_T] | tuple[lists_T, ...]:
-  return cls(l for l in lis if l is not None)
-
-
-def remove_nones(
-  lis: _Sequence[_Optional[lists_T]] | _Mapping[lists_GHashable, _Optional[lists_T]] | _Set[_Optional[lists_T]]
-) -> _Sequence[lists_T] | _Mapping[lists_GHashable, lists_T] | _Set[lists_T]:
-  """
-    Returns a copy of this object with all `None` values removed.
-    """
-  if is_mapping(lis):
-    assert isinstance(lis, _collectionsabc.Mapping)
-    return remove_nones_mapping(lis)
-  if is_set(lis):
-    assert isinstance(lis, _collectionsabc.Set)
-    return remove_nones_set(lis)
-  if isinstance(lis, list | tuple):
-    return remove_nones_sequence(lis, type(lis))
-  raise ValueError(f"Invalid type for remove_nones: {type(lis)}")
+  return [l for l in lis if l is not None]
 
 
 def coalesce(*args: _Any) -> _Any:
   """
     Returns the first non-None value, or None if no such value exists
     """
-  return list_get(remove_nones_sequence(args, tuple), 0)
+  return list_get(remove_nones_sequence(args), 0)
 
 
 def map_dict(func: _Callable[[lists_T], lists_R], d: dict[lists_GHashable, lists_T]) -> dict[lists_GHashable, lists_R]:
@@ -212,7 +176,7 @@ def recursively_omit_keys(json: _Any, keys: _Sequence) -> _Any:
   return recursively_filter_keys(lambda key: key not in keys, json)
 
 
-def partition(lis: _Sequence[lists_T], predicate: _Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
+def partition(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
   """
     Splits a list into two lists based on a predicate. The first list will contain
     all elements of the provided list where predicate is true, and the second list
@@ -315,7 +279,7 @@ def to_map_by_key(
 
 
 def max_option(
-  lis: _Sequence[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
+  lis: _Iterable[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
 ) -> _Optional[lists_T]:
   """
     Like max, but returns None on an empty seq instead of an error
@@ -330,7 +294,7 @@ def max_option(
 
 
 def min_option(
-  lis: _Sequence[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
+  lis: _Iterable[lists_T], key: _Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG
 ) -> _Optional[lists_T]:
   """
     Like min, but returns None on an empty seq instead of an error
@@ -402,7 +366,7 @@ def unsafe_generator(func: lists_TCallable) -> lists_TCallable:
   return func
 
 
-def as_tuple(val: _collectionsabc.Iterable[lists_T] | lists_T) -> tuple[lists_T, ...]:
+def as_tuple(val: _Iterable[lists_T] | lists_T) -> tuple[lists_T, ...]:
   """
     Turns a value into a tuple if it is not already iterable
     Allows creating functions that take either a single value
@@ -449,7 +413,7 @@ def invert_dict(base: _Mapping[lists_GHashable, lists_THashable]) -> dict[lists_
 
 def generate_constant_map_and_inverse(
   base: _Mapping[lists_GHashable, lists_THashable]
-) -> tuple[_Mapping[lists_GHashable, lists_THashable], dict[lists_THashable, lists_GHashable]]:
+) -> tuple[dict[lists_GHashable, lists_THashable], dict[lists_THashable, lists_GHashable]]:
   """
     A shorthand to generate bi-directional mappings for named constants.
     An example,
@@ -459,7 +423,7 @@ def generate_constant_map_and_inverse(
       name2=type2,
     ))
     """
-  return base, invert_dict(base)
+  return dict(base), invert_dict(base)
 
 
 def omit(base: _Mapping[lists_GHashable, lists_T], *keys: lists_GHashable) -> dict[lists_GHashable, lists_T]:

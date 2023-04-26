@@ -13,6 +13,8 @@ class TrainingRunsDetailHandler(TrainingRunHandler):
   required_permissions = READ
 
   def handle(self):
+    assert self.training_run is not None
+
     checkpoint_count = self.services.checkpoint_service.count_by_training_run(self.training_run.id)
     project = self.services.project_service.find_by_client_and_id(
       client_id=self.training_run.client_id,

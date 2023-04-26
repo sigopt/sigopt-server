@@ -27,6 +27,9 @@ class OrganizationsUninviteHandler(OrganizationHandler):
     return OrganizationsUninviteHandler.Params(email=email)
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.organization is not None
+
     email = params.email
     invitee = self.services.user_service.find_by_email(email)
     self.check_can_uninvite(email=email)
@@ -50,6 +53,9 @@ class OrganizationsUninviteHandler(OrganizationHandler):
     return {}
 
   def check_can_uninvite(self, email):
+    assert self.auth is not None
+    assert self.organization is not None
+
     uninvitee = self.services.user_service.find_by_email(email)
     invite = self.services.invite_service.find_by_email_and_organization(email, self.organization.id)
 

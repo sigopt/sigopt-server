@@ -34,6 +34,7 @@ class TestDefaultTimezone:
 
   def test_current_datetime(self):
     now = current_datetime()
+    assert now.tzinfo
     assert now.tzinfo.tzname(None) == "UTC"
 
   def test_unix_epoch(self):
@@ -66,6 +67,7 @@ class TestSystemTimezone:
 
   def test_current_datetime(self):
     now = current_datetime()
+    assert now.tzinfo
     assert now.tzinfo.tzname(None) == "-12"
 
   def test_unix_epoch(self):

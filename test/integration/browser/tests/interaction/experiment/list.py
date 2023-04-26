@@ -298,7 +298,7 @@ class TestList(ExperimentBrowserTest):
 
     def find_all_by_pagination(target):
       back_stack = []
-      found = []
+      found: list[str] = []
 
       while True:
         driver.wait_while_present(css_selector=".spinner")

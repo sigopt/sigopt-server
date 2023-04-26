@@ -29,7 +29,6 @@ class OptimizeQueueService(Service):
           ),
           *self._maybe_enqueue_importances(experiment, num_observations, force=force),
         ],
-        list,
       )
       self.services.queue_monitor.robust_enqueue(messages, experiment)
 

@@ -47,6 +47,8 @@ class ExperimentsBestTrainingRunsHandler(ExperimentHandler):
     )
 
   def handle(self, params):
+    assert self.experiment is not None
+
     observations = self.services.observation_service.all_data(self.experiment)
     best_observations = self.services.experiment_best_observation_service.get_best_observations(
       self.experiment,

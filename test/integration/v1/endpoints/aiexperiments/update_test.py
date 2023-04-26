@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from http import HTTPStatus
+from typing import Any, Callable
 
 import pytest
 
@@ -15,7 +16,7 @@ from integration.v1.experiments_test_base import AiExperimentsTestBase
 
 unix_epoch_timestamp = 0
 unix_epoch = get_unix_epoch()
-TEST_UPDATES = [
+TEST_UPDATES: list[tuple[str, Any, Callable[[Experiment], bool]]] = [
   ("budget", 13, lambda e: e.budget == 13),
   ("budget", None, lambda e: e.budget is None),
   ("metadata", None, lambda e: e.metadata is None),

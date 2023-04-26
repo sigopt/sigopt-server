@@ -25,6 +25,8 @@ class UsersMembershipsListDetailHandler(UserHandler):
     return self.Params(organization=organization)
 
   def handle(self, params):
+    assert self.user is not None
+
     memberships = []
     if params.organization:
       single_membership = self.services.membership_service.find_by_user_and_organization(
@@ -42,7 +44,7 @@ class UsersMembershipsListDetailHandler(UserHandler):
       data=[
         MembershipJsonBuilder(
           membership,
-          organization_map.get(membership.organization_id),
+          organization_map[membership.organization_id],
           self.user,
         )
         for membership in memberships

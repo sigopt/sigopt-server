@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from http import HTTPStatus
+from typing import Any
 
 from integration.base import RaisesApiException
 from integration.v1.test_base import V1Base
@@ -32,6 +33,8 @@ class TestObservationMetadata(V1Base):
       assert observation.metadata.to_json() == metadata
 
   def test_create_with_invalid_metadata(self, connection):
+    metadata: Any
+
     with connection.create_any_experiment() as experiment:
       suggestion = connection.experiments(experiment.id).suggestions().create()
       metadata = ["foo", "bar"]
@@ -62,6 +65,8 @@ class TestObservationMetadata(V1Base):
         )
 
   def test_update_metadata(self, connection):
+    metadata: Any
+
     with connection.create_any_experiment() as experiment:
       suggestion = connection.experiments(experiment.id).suggestions().create()
       observation = (

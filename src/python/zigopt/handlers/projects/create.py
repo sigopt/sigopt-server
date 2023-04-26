@@ -133,6 +133,9 @@ class ClientsProjectsCreateHandler(ClientHandler):
     )
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.client is not None
+
     project_name = params.name
     project_reference_id = params.reference_id
     project = Project(

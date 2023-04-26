@@ -32,6 +32,13 @@ Filter = ImmutableStruct("Filter", ["field", "operator", "casted_value"])
 
 
 class Cast:
+  BOOL: "Cast"
+  ID: "Cast"
+  INT: "Cast"
+  JSONB: "Cast"
+  NUMERIC: "Cast"
+  TEXT: "Cast"
+
   def __init__(self, sql_cast_func, validation_type, python_cast_func=identity):
     self.sql_cast_func = sql_cast_func
     self.validation_type = validation_type
@@ -83,7 +90,7 @@ class Field:
       # TODO(SN-1093): If we actually wanted to filter/sort by project correctly, we would need to turn
       # the provided string reference ID into an int project ID
       # However, this endpoint is scoped to the project so this is kind of pointless
-      # ('project',): TrainingRun.project_id,
+      # ("project",): TrainingRun.project_id,
       ("suggestion",): (TrainingRun.suggestion_id, Cast.ID),
       ("user",): (TrainingRun.created_by, Cast.ID),
       ("created",): (func.floor(func.extract("epoch", TrainingRun.created)), Cast.INT),
@@ -94,7 +101,10 @@ class Field:
       # TODO(SN-1094): Get the protobuf accessors working for these nested keys
       ("assignments", key): (TrainingRun.training_run_data["a"][key], Cast.JSONB),
       ("favorite",): (TrainingRun.training_run_data["f"], Cast.BOOL),
-      ("optimized_suggestion",): (UnprocessedSuggestion.source.notin_(NON_OPTIMIZED_SUGGESTION_TYPES), Cast.BOOL),
+      ("optimized_suggestion",): (
+        UnprocessedSuggestion.source.notin_(NON_OPTIMIZED_SUGGESTION_TYPES),
+        Cast.BOOL,
+      ),
       ("logs", key, "content"): (TrainingRun.training_run_data["l"][key]["c"].astext, Cast.TEXT),
       ("metadata", key): (TrainingRun.training_run_data["m"][key], Cast.JSONB),
       ("model", "type"): (TrainingRun.training_run_data["o"]["t"].astext, Cast.TEXT),
@@ -246,7 +256,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
       ascending=params.sort_ascending,
     )
     defined_fields = self.services.training_run_service.get_defined_fields(query, by_organization=by_organization)
-    count = find(defined_fields, lambda f: f.key == "id").field_count
+    count = next(f for f in defined_fields if f.key == "id").field_count
     checkpoint_counts = self.services.checkpoint_service.count_by_training_run_ids([t.id for t in training_runs])
 
     if project:
@@ -273,7 +283,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
         TrainingRunJsonBuilder(
           training_run=training_run,
           checkpoint_count=checkpoint_counts.get(training_run.id, 0),
-          project=projects_by_id.get(training_run.project_id),
+          project=projects_by_id[training_run.project_id],
         )
         for training_run in training_runs
       ],

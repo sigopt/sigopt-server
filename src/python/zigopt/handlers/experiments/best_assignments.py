@@ -27,5 +27,7 @@ class ExperimentsBestAssignmentsHandler(ExperimentHandler):
     )
 
   def handle(self, params):
+    assert self.experiment is not None
+
     best_observations = self.best_observations()
     return PaginationJsonBuilder(data=[BestAssignmentsJsonBuilder(self.experiment, b) for b in best_observations])

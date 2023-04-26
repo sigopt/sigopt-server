@@ -179,6 +179,8 @@ class Handler:
         setattr(self, key, obj)
 
   def _check_can_access_endpoint(self):
+    assert self.auth is not None
+
     if self.auth.development and not self.allow_development:
       raise ForbiddenError("Development tokens cannot access this endpoint.")
     if self.auth.api_token and self.auth.api_token.scope not in self.permitted_scopes:

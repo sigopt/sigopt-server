@@ -140,9 +140,10 @@ def _password_reset_authentication(services, request):
   old_plaintext_password = request.optional_param("old_password")
   password_reset_code = request.optional_param("password_reset_code")
 
-  if len(compact([optional_api_token, password_reset_code])) != 1:
+  login_xor_pw_reset = bool(optional_api_token) ^ bool(password_reset_code)
+  if not login_xor_pw_reset:
     raise BadParamError("Must either login or supply password_reset_code from email")
-  if len(compact([optional_api_token, old_plaintext_password])) == 1:
+  if bool(optional_api_token) ^ bool(old_plaintext_password):
     raise BadParamError("old_password only allowed when logged in")
 
   rate_limit_identifier = password_reset_rate_limit.increment_and_check_rate_limit(services, email)

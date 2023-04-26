@@ -10,7 +10,11 @@ from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 from integration.base import RaisesApiException
 from integration.utils.random_assignment import random_assignments
-from integration.v1.constants import EXPERIMENT_META_MULTISOLUTION, EXPERIMENT_META_WITH_CONSTRAINTS
+from integration.v1.constants import (
+  EXPERIMENT_META_MULTISOLUTION,
+  EXPERIMENT_META_WITH_CONSTRAINTS,
+  AnyParameterMetaType,
+)
 from integration.v1.experiments_test_base import ExperimentFeaturesTestBase
 
 
@@ -183,15 +187,24 @@ class TestMultisolutionExperiment(MultisolutionExperimentTestBase):
     meta["observation_budget"] = observation_budget
     e = connection.clients(client_id).experiments().create(**meta)
 
-    assert meta["parameters"][0]["name"] == "a"
-    a_max = meta["parameters"][0]["bounds"]["max"]
-    a_min = meta["parameters"][0]["bounds"]["min"]
-    assert meta["parameters"][1]["name"] == "b"
-    b_max = meta["parameters"][1]["bounds"]["max"]
-    b_min = meta["parameters"][1]["bounds"]["min"]
-    assert meta["parameters"][2]["name"] == "c"
-    assert meta["parameters"][2]["categorical_values"][0]["name"] == "d"
-    assert meta["parameters"][2]["categorical_values"][1]["name"] == "e"
+    p: AnyParameterMetaType = meta["parameters"][0]
+    assert p["name"] == "a"
+    assert p["type"] == "int"
+    assert "grid" not in p
+    a_max = p["bounds"]["max"]
+    a_min = p["bounds"]["min"]
+
+    p = meta["parameters"][1]
+    assert p["name"] == "b"
+    assert p["type"] == "double"
+    assert "grid" not in p
+    b_max = p["bounds"]["max"]
+    b_min = p["bounds"]["min"]
+
+    p = meta["parameters"][2]
+    assert p["name"] == "c"
+    assert p["type"] == "categorical"
+    assert p["categorical_values"] == [{"name": "d"}, {"name": "e"}]
 
     for i in range(num_observations):
       connection.experiments(e.id).observations().create(

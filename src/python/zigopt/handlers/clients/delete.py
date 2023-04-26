@@ -11,6 +11,9 @@ class ClientsDeleteHandler(ClientHandler):
   authenticator = user_token_authentication
 
   def handle(self):
+    assert self.auth is not None
+    assert self.client is not None
+
     user_can_delete = self.services.membership_service.user_is_owner_for_organization(
       user_id=self.auth.current_user.id,
       organization_id=self.client.organization_id,
@@ -21,6 +24,9 @@ class ClientsDeleteHandler(ClientHandler):
     raise ForbiddenError("You cannot delete this client.")
 
   def do_delete(self):
+    assert self.auth is not None
+    assert self.client is not None
+
     self.services.client_service.delete_clients_and_artifacts([self.client])
 
     self.services.invite_service.delete_stray_invites_by_organization(self.client.organization_id)

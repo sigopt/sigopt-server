@@ -123,11 +123,11 @@ class ObservationService(Service):
   def get_observation_counts(self, experiment_id):
     failure_count, observation_count, max_observation_id = self.services.database_service.one_or_none(
       self.services.database_service.query(
-        func.sum(case([(Observation.data.reported_failure.as_boolean(), 1)], else_=0)),
+        func.sum(case([(Observation.data.reported_failure.as_boolean(), 1)], else_=0)),  # type: ignore
         func.count(Observation.id),
         func.max(Observation.id),
       )
-      .filter(~Observation.data.deleted.as_boolean())
+      .filter(~Observation.data.deleted.as_boolean())  # type: ignore
       .filter(Observation.experiment_id == experiment_id)
       .group_by(Observation.experiment_id)
     ) or (0, 0, 0)
@@ -143,8 +143,8 @@ class ObservationService(Service):
   def find_valid_observations(self, experiment):
     return self.services.database_service.all(
       self.services.database_service.query(Observation)
-      .filter(~Observation.data.deleted.as_boolean())
-      .filter(~Observation.data.reported_failure.as_boolean())
+      .filter(~Observation.data.deleted.as_boolean())  # type: ignore
+      .filter(~Observation.data.reported_failure.as_boolean())  # type: ignore
       .filter(Observation.experiment_id == experiment.id)
     )
 
@@ -207,13 +207,13 @@ class ObservationService(Service):
 
   def _include_deleted_clause_deprecated(self, include_deleted, q):
     if not include_deleted:
-      return q.filter(~Observation.data.deleted.as_boolean())
+      return q.filter(~Observation.data.deleted.as_boolean())  # type: ignore
     return q
 
   def _include_deleted_clause(self, deleted, q):
     if deleted is DeleteClause.NOT_DELETED:
-      return q.filter(~Observation.data.deleted.as_boolean())
+      return q.filter(~Observation.data.deleted.as_boolean())  # type: ignore
     if deleted is DeleteClause.DELETED:
-      return q.filter(Observation.data.deleted.as_boolean())
+      return q.filter(Observation.data.deleted.as_boolean())  # type: ignore
     assert deleted is DeleteClause.ALL
     return q

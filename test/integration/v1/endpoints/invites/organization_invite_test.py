@@ -300,7 +300,7 @@ class TestInvite(OrganizationInviteTestBase):
     owner_organization_id,
     invitee,
   ):
-    client_invites = []
+    client_invites: list = []
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       self.invite(owner_connection, owner_organization_id, MEMBER, client_invites, invitee)
 
@@ -495,7 +495,7 @@ class TestUpdate(OrganizationInviteTestBase):
     assert len(member_all_invite.pending_permissions) == 2
     owner_connection.clients(owner_client_id).invites().delete(email=invitee.email)
     updated_invites = invite_route().fetch().data
-    updated_invite = find(updated_invites, lambda i: i.id == member_all_invite.id)
+    updated_invite = next(i for i in updated_invites if i.id == member_all_invite.id)
     assert len(updated_invite.pending_permissions) == 1
 
   def test_remove_lonely_client_fails(
@@ -667,7 +667,7 @@ class TestMembershipChange(OrganizationInviteTestBase):
     config_broker,
   ):
     memberships = connection.users(connection.user_id).memberships().fetch()
-    membership = find(memberships.data, lambda m: m.organization.id == connection.organization_id)
+    membership = next(m for m in memberships.data if m.organization.id == connection.organization_id)
     assert membership.type == MEMBER
 
     owner_connection_same_organization.organizations(connection.organization_id).invites().create(
@@ -676,7 +676,7 @@ class TestMembershipChange(OrganizationInviteTestBase):
     )
 
     memberships = connection.users(connection.user_id).memberships().fetch()
-    membership = find(memberships.data, lambda m: m.organization.id == connection.organization_id)
+    membership = next(m for m in memberships.data if m.organization.id == connection.organization_id)
     assert membership.type == OWNER
 
   def test_error_membership_update(

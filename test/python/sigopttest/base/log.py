@@ -16,7 +16,7 @@ class CapturingHandler(logging.StreamHandler):
 class LogCapturer:
   def __init__(self, logger_name):
     self.logger_name = logger_name
-    self._log_records = []
+    self._log_records: list = []
     logging.getLogger(self.logger_name).addHandler(CapturingHandler(self._log_records))
 
   @property

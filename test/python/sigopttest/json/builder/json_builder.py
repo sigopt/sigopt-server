@@ -51,7 +51,7 @@ class FieldTestObject(JsonBuilder):
       ("exposed_field1", ValidationType.boolean),
       ("exposed_field2", ValidationType.boolean),
     ],
-    getter=dict.get,
+    getter=dict.get,  # type: ignore
   )
   def returns_some_dict(self):
     return {

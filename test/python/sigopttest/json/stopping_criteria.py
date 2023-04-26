@@ -19,6 +19,6 @@ class TestStoppingCriteriaJsonBuilder:
   def test_stopping_criteria(self, possible_stagnation, observation_budget_reached):
     sc_json = StoppingCriteriaJsonBuilder.json(possible_stagnation, observation_budget_reached)
     assert set(sc_json.keys()) == set(["should_stop", "reasons", "object"])
-    assert possible_stagnation == ("possible_stagnation" in sc_json.get("reasons"))
-    assert observation_budget_reached == ("observation_budget_reached" in sc_json.get("reasons"))
-    assert (possible_stagnation or observation_budget_reached) == sc_json.get("should_stop")
+    assert possible_stagnation == ("possible_stagnation" in sc_json["reasons"])
+    assert observation_budget_reached == ("observation_budget_reached" in sc_json["reasons"])
+    assert (possible_stagnation or observation_budget_reached) == sc_json["should_stop"]

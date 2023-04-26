@@ -1,9 +1,13 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
 from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.experiment.model import Experiment
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import NONE, READ
+from zigopt.training_run.model import TrainingRun
 
 
 def readonly(func):
@@ -67,14 +71,18 @@ class GuestAuthorization(EmptyAuthorization):
 
   @readonly
   def can_act_on_project(self, services, requested_permission, project):
-    experiment = napply(self._client_token.guest_experiment_id, services.experiment_service.find_by_id)
-    training_run = napply(self._client_token.guest_training_run_id, services.training_run_service.find_by_id)
-    project_ids = distinct(
-      remove_nones(
+    experiment: Experiment | None = napply(
+      self._client_token.guest_experiment_id, services.experiment_service.find_by_id
+    )
+    training_run: TrainingRun | None = napply(
+      self._client_token.guest_training_run_id, services.training_run_service.find_by_id
+    )
+    project_ids: Sequence[int] = distinct(
+      remove_nones_sequence(
         [
           napply(experiment, lambda e: e.project_id),
           napply(training_run, lambda t: t.project_id),
-        ]
+        ],
       )
     )
     if len(project_ids) != 1:

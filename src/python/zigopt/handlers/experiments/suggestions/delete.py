@@ -13,6 +13,8 @@ class SuggestionsDeleteHandler(SuggestionHandler):
   required_permissions = WRITE
 
   def handle(self):
+    assert self.suggestion is not None
+
     self.services.processed_suggestion_service.set_delete_by_ids(self.experiment, [self.suggestion.id])
     return {}
 

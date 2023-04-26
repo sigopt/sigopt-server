@@ -159,8 +159,8 @@ class TestClientUpdate(V1Base):
     permissions = connection.clients(client.id).permissions().fetch().data
 
     assert len(permissions) == 2
-    admin_permission = find(permissions, lambda p: p.user.id == connection.user_id)
-    read_permission = find(permissions, lambda p: p.user.id == read_connection_same_client.user_id)
+    admin_permission = next(p for p in permissions if p.user.id == connection.user_id)
+    read_permission = next(p for p in permissions if p.user.id == read_connection_same_client.user_id)
 
     # Admin's value remains True
     assert admin_permission.to_json()["can_see_experiments_by_others"] is True
@@ -179,8 +179,8 @@ class TestClientUpdate(V1Base):
     permissions = connection.clients(client.id).permissions().fetch().data
 
     assert len(permissions) == 2
-    admin_permission = find(permissions, lambda p: p.user.id == connection.user_id)
-    write_permission = find(permissions, lambda p: p.user.id == write_connection_same_client.user_id)
+    admin_permission = next(p for p in permissions if p.user.id == connection.user_id)
+    write_permission = next(p for p in permissions if p.user.id == write_connection_same_client.user_id)
     # Admin's value remains True
     assert admin_permission.to_json()["can_see_experiments_by_others"] is True
     assert write_permission.to_json()["can_see_experiments_by_others"] is False

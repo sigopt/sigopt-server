@@ -64,7 +64,7 @@ class TestDetailExperiments(ExperimentsTestBase):
     db_service = services.database_service
     db_service.insert(experiment)
 
-    runs = []
+    runs: list[TrainingRun] = []
     runs.extend(self.create_run(experiment, False, TrainingRunData.ACTIVE) for _ in range(2))
     runs.extend(self.create_run(experiment, True, TrainingRunData.COMPLETED) for _ in range(4))
     runs.extend(self.create_run(experiment, True, TrainingRunData.FAILED) for _ in range(8))

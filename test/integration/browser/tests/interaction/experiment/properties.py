@@ -107,7 +107,7 @@ class TestProperties(ExperimentBrowserTest):
       )
     e = api_connection.experiments(experiment.id).fetch()
     assert len(e.parameters) == len(experiment.parameters) + 1
-    w_parameter = find(e.parameters, lambda p: p.name == "w")
+    w_parameter = next(p for p in e.parameters if p.name == "w")
     assert w_parameter.bounds.min == 100
     assert w_parameter.bounds.max == 1000
 
@@ -135,9 +135,9 @@ class TestProperties(ExperimentBrowserTest):
       )
       driver.find_and_click(css_selector="tr .categorical-value-input .dropdown-menu a")
     e = api_connection.experiments(experiment.id).fetch()
-    x_parameter = find(e.parameters, lambda p: p.name == "°")
-    y_parameter = find(e.parameters, lambda p: p.name == "ೠ")
-    z_parameter = find(e.parameters, lambda p: p.name == "🌎")
+    x_parameter = next(p for p in e.parameters if p.name == "°")
+    y_parameter = next(p for p in e.parameters if p.name == "ೠ")
+    z_parameter = next(p for p in e.parameters if p.name == "🌎")
     assert x_parameter.bounds.min == 5
     assert x_parameter.bounds.max == 45
     assert y_parameter.bounds.min == -50
@@ -234,6 +234,7 @@ class TestProperties(ExperimentBrowserTest):
     driver.find_and_click(css_selector=".duplicate-modal form button")
     driver.wait_for_element_by_text(element_text=f"{e.name} Copy")
     match = re.search(r"/experiment/(\d+)/properties", driver.current_url)
+    assert match
     experiment_id = match.group(1)
     e = api_connection.experiments(experiment_id).fetch()
     assert len(e.conditionals) == 1

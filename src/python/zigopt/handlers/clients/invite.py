@@ -20,6 +20,9 @@ from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
 
 class BaseSetPermissionHandler(ClientHandler):
   def check_can_set(self, user_id, invite_role):
+    assert self.auth is not None
+    assert self.client is not None
+
     validate_role(invite_role)
 
     if user_id == self.auth.current_user.id:
@@ -44,6 +47,10 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
 
   def handle(self, request):
     # pylint: disable=too-many-locals
+    assert self.auth is not None
+    assert self.client is not None
+    client = self.client
+
     data = request.params()
     email = validate_email(get_with_validation(data, "email", ValidationType.string))
     old_role = validate_role(get_opt_with_validation(data, "old_role", ValidationType.string) or NO_ROLE)
@@ -52,19 +59,19 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
 
     invitee = self.services.user_service.find_by_email(email)
     self.check_can_set(user_id=invitee.id if invitee else None, invite_role=role)
-    organization = self.services.organization_service.find_by_id(self.client.organization_id)
+    organization = self.services.organization_service.find_by_id(client.organization_id)
 
     # TODO(SN-1085): More granular error messages here
     if not self.services.invite_service.inviter_can_invite_to_client(
       inviter=self.auth.current_user,
-      client=self.client,
+      client=client,
       organization=organization,
       invitee_email=email,
     ):
       raise ForbiddenError("You do not have permission to invite this email address.")
 
-    client_invites = [dict(id=self.client.id, role=role, old_role=old_role)]
-    existing_invite = self.services.invite_service.find_by_email_and_organization(email, self.client.organization_id)
+    client_invites = [dict(id=client.id, role=role, old_role=old_role)]
+    existing_invite = self.services.invite_service.find_by_email_and_organization(email, client.organization_id)
 
     if existing_invite:
       if existing_invite.membership_type == MembershipType.owner:
@@ -82,7 +89,7 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
         existing_invite.membership_type,
         new_client_invites,
       )
-      pending_permission = find(pending_permissions, lambda pp: pp.client_id == self.client.id)
+      pending_permission = find(pending_permissions, lambda pp: pp.client_id == client.id)
 
     else:
       (invite, pending_permissions) = self.create_invite(
@@ -97,7 +104,7 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
       self.services.config_broker,
       pending_permission,
       invite,
-      self.client,
+      client,
     )
 
 
@@ -109,6 +116,9 @@ class ClientsUninviteHandler(BaseSetPermissionHandler):
     return validate_email(get_with_validation(data, "email", ValidationType.string))
 
   def handle(self, email):
+    assert self.auth is not None
+    assert self.client is not None
+
     invitee = self.services.user_service.find_by_email(email)
     self.check_can_set(user_id=invitee.id if invitee else None, invite_role=None)
 

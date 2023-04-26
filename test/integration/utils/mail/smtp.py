@@ -6,7 +6,7 @@ import email
 import json
 import logging
 import threading
-from email.contentmanager import ContentManager, get_text_content
+from email.contentmanager import ContentManager, get_text_content  # type: ignore
 from email.message import EmailMessage
 from email.policy import EmailPolicy
 
@@ -120,7 +120,7 @@ def _prepare_flask_mail_reader(mail_controller, log_level):
 class _MessageHandler(_MailController):
   def __init__(self):
     super().__init__()
-    self.parser = email.parser.Parser()
+    self.parser = email.parser.Parser()  # type: ignore
 
   async def handle_DATA(self, server, session, envelope):
     self.add_messages(envelope.rcpt_tos, envelope.content.decode("utf-8"))

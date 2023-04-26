@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.api.auth import maybe_client_token_authentication
+from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.base.handler import Handler
@@ -11,8 +12,9 @@ from zigopt.handlers.validate.user import validate_user_email, validate_user_nam
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation, get_with_validation
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.json.builder import UserJsonBuilder
-from zigopt.membership.model import MembershipType
+from zigopt.membership.model import Membership, MembershipType
 from zigopt.net.errors import BadParamError, ConflictingDataError, ForbiddenError
+from zigopt.permission.model import Permission
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import NONE, READ, TokenMeta
 from zigopt.protobuf.gen.user.usermeta_pb2 import UserMeta
 from zigopt.user.model import User
@@ -34,6 +36,9 @@ class BaseUsersCreateHandler(Handler):
   )
 
   def _validate_can_signup_to_client(self, email, requested_client_id):
+    assert self.auth is not None
+    current_client: Client | None = self.auth.current_client
+
     # NOTE: We require client authentication to check that the requested client supports directly signing up.
     # This is not strictly needed, since we revalidate after the user verifies their email in case the org has changed.
     # However, we want to give a sane error message when direct sign-up is disabled,
@@ -41,9 +46,9 @@ class BaseUsersCreateHandler(Handler):
     if not self.services.email_verification_service.enabled:
       raise ForbiddenError("Directly joining clients is not supported because email verification is disabled.")
 
-    requested_client = (
-      self.auth.current_client
-      if napply(self.auth.current_client, lambda c: c.id) == requested_client_id
+    requested_client: Client | None = (
+      current_client
+      if napply(current_client, lambda c: c.id) == requested_client_id
       else self.services.client_service.find_by_id(requested_client_id)
     )
     requested_organization = napply(
@@ -92,7 +97,7 @@ class BaseUsersCreateHandler(Handler):
     self.send_welcome_email(user)
     return user
 
-  def create_user_by_self_signup(self, user_attributes, pending_client, has_verified_email=False):
+  def create_user_by_self_signup(self, user_attributes, pending_client: Client | None, has_verified_email=False):
     if self.services.config_broker.get("features.requireInvite", False):
       raise ForbiddenError("You must be invited by an administrator to sign up.")
     user = self.create_user_model_without_save(
@@ -117,9 +122,11 @@ class BaseUsersCreateHandler(Handler):
   ):
     # TODO(SN-1099): Currently we're setting client and permission as one of the multiple that were created,
     # but we could do something more precise.
-    membership = list_get(self.services.membership_service.find_by_user_id(user_id=user.id), 0)
-    permission = napply(membership, lambda m: list_get(self.services.permission_service.find_by_membership(m), 0))
-    client = napply(permission, lambda p: self.services.client_service.find_by_id(p.client_id))
+    membership: Membership | None = list_get(self.services.membership_service.find_by_user_id(user_id=user.id), 0)
+    permission: Permission | None = napply(
+      membership, lambda m: list_get(self.services.permission_service.find_by_membership(m), 0)
+    )
+    client: Client | None = napply(permission, lambda p: self.services.client_service.find_by_id(p.client_id))
     organization = napply(client, lambda c: self.services.organization_service.find_by_id(c.organization_id))
 
     properties = {

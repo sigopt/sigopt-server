@@ -24,6 +24,9 @@ class SuggestionsCreateHandler(ExperimentHandler):
     return request.params()
 
   def handle(self, json_dict):
+    assert self.auth is not None
+    assert self.experiment is not None
+
     if self.experiment.deleted:
       raise SigoptValidationError(f"Cannot create suggestions for deleted experiment {self.experiment.id}")
 

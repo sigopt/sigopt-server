@@ -45,10 +45,10 @@ class TestExperimentBestObservationService:
     services.observation_service.valid_observations = Mock(return_value=observations)
 
     experiment_best_observation_service = ExperimentBestObservationService(services)
-    experiment_best_observation_service.best_from_valid_observations = Mock(return_value=1)
+    experiment_best_observation_service.best_from_valid_observations = Mock(return_value=1)  # type: ignore
 
     best = experiment_best_observation_service.single_metric_best(experiment, observations)
-    assert experiment_best_observation_service.best_from_valid_observations.called
+    assert experiment_best_observation_service.best_from_valid_observations.called  # type: ignore
     assert best == 1
 
   @pytest.mark.parametrize("var_list", [[], [None, 0], [None, None, None], [0.0, 0.00000], [0.0, None]])
@@ -61,9 +61,9 @@ class TestExperimentBestObservationService:
     services.observation_service.valid_observations = Mock(return_value=observations)
 
     experiment_best_observation_service = ExperimentBestObservationService(services)
-    experiment_best_observation_service.best_from_valid_observations = Mock(return_value=1)
+    experiment_best_observation_service.best_from_valid_observations = Mock(return_value=1)  # type: ignore
     best = experiment_best_observation_service.single_metric_best(experiment, observations)
-    assert experiment_best_observation_service.best_from_valid_observations.called
+    assert experiment_best_observation_service.best_from_valid_observations.called  # type: ignore
     assert best == 1
 
   @pytest.mark.parametrize("return_value", [1, None])
@@ -77,9 +77,9 @@ class TestExperimentBestObservationService:
     )
     observations = Mock()
     experiment_best_observation_service = ExperimentBestObservationService(services)
-    experiment_best_observation_service.single_metric_best = Mock(return_value=return_value)
+    experiment_best_observation_service.single_metric_best = Mock(return_value=return_value)  # type: ignore
     best = experiment_best_observation_service.get_best_observations(experiment, observations)
-    assert experiment_best_observation_service.single_metric_best.called
+    assert experiment_best_observation_service.single_metric_best.called  # type: ignore
     if return_value is None:
       assert best == []
     else:
@@ -105,9 +105,9 @@ class TestExperimentBestObservationService:
     )
     observations = [Mock(value_for_maximization=Mock(return_value=val)) for val in values]
     best_observation_service = ExperimentBestObservationService(services)
-    best_observation_service.pareto_frontier = Mock(return_value=observations)
+    best_observation_service.pareto_frontier = Mock(return_value=observations)  # type: ignore
     sorted_observations = best_observation_service.get_best_observations(experiment, observations)
-    assert best_observation_service.pareto_frontier.called
+    assert best_observation_service.pareto_frontier.called  # type: ignore
     default_metric_name = get_experiment_default_metric_name(experiment)
     assert default_metric_name == "a"
     for o, val in zip(sorted_observations, sorted_values):
@@ -268,7 +268,7 @@ class TestExperimentBestObservationService:
     services.exception_logger.soft_exception = Mock()
 
     experiment_best_observation_service = ExperimentBestObservationService(services)
-    experiment_best_observation_service.multi_metric_best = Mock(return_value=observations)
+    experiment_best_observation_service.multi_metric_best = Mock(return_value=observations)  # type: ignore
 
     best_observations = experiment_best_observation_service.multiple_solutions_best(
       experiment,

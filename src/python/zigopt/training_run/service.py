@@ -161,8 +161,7 @@ class TrainingRunService(Service):
     return fields
 
   def _insert_readable_names(self, fields):
-    readable_names = [self._readable_name(field) for field in fields]
-    readable_names = distinct(readable_names)
+    readable_names = distinct([self._readable_name(field) for field in fields])
     if len(readable_names) == len(fields):
       for field, readable_name in zip(fields, readable_names):
         field.name = readable_name

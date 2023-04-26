@@ -20,13 +20,16 @@ class OrganizationsClientsListDetailHandler(OrganizationHandler):
   required_permissions = READ
 
   def handle(self):
+    assert self.auth is not None
+    assert self.organization is not None
+
     membership = self.services.membership_service.find_by_user_and_organization(
       user_id=self.auth.current_user.id,
       organization_id=self.organization.id,
     )
     clients = self.services.client_service.find_clients_in_organizations_visible_to_user(
       user=self.auth.current_user,
-      memberships=remove_nones([membership]),
+      memberships=remove_nones_sequence([membership]),
     )
 
     return PaginationJsonBuilder(data=[ClientJsonBuilder(c) for c in clients])
@@ -45,6 +48,9 @@ class OrganizationsClientsCreateHandler(OrganizationHandler):
     return OrganizationsClientsCreateHandler.Params(name=name)
 
   def handle(self, params):
+    assert self.auth is not None
+    assert self.organization is not None
+
     meta = ClientMeta()
     meta.date_created = unix_timestamp()
 

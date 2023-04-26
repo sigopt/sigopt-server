@@ -5,6 +5,7 @@
 from http import HTTPStatus
 
 import pytest
+from sigopt.objects import Client as SigOptClient
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
@@ -893,7 +894,7 @@ class TestAuth(V1Base):
 
     # Ensure that a token that has an associated client id can't swap client ids
     all_tokens = list(owner_connection.clients(owner_connection.client_id).tokens().fetch().iterate_pages())
-    client_token = find(all_tokens, lambda t: t.user == owner_connection.user_id and not t.development)
+    client_token = next(t for t in all_tokens if t.user == owner_connection.user_id and not t.development)
     client_connection = Connection(
       IntegrationTestConnection(api_url, client_token.token),
       email=owner_connection.email,
@@ -1086,7 +1087,8 @@ class TestPermissions(V1Base):
 
   def ensure_other_connection_cant_see(self, connection, other_connection):
     other_session = other_connection.sessions().fetch()
-    assert napply(other_session.client, lambda c: c.id) != connection.client_id
+    client: SigOptClient | None = other_session.client
+    assert napply(client, lambda c: c.id) != connection.client_id  # type: ignore
     with RaisesApiException(HTTPStatus.NOT_FOUND):
       other_connection.clients(connection.client_id).fetch()
     with RaisesApiException(HTTPStatus.NOT_FOUND):

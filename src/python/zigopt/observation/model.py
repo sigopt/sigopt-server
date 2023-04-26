@@ -34,10 +34,10 @@ class Observation(Base):
     ForeignKey("suggestions_processed.suggestion_id", ondelete="CASCADE"),
     index=True,
   )
-  data = ProtobufColumn(ObservationData, proxy=ObservationDataProxy, name="data_json", nullable=False)
+  data: ObservationData = ProtobufColumn(ObservationData, proxy=ObservationDataProxy, name="data_json", nullable=False)
 
   def __init__(self, *args, **kwargs):
-    kwargs["data"] = kwargs.get("data", Observation.data.default_value())
+    kwargs["data"] = kwargs.get("data", ObservationData())
     super().__init__(*args, **kwargs)
 
   @validates("data")
@@ -63,7 +63,8 @@ class Observation(Base):
   @property
   def data_proxy(self) -> ObservationDataProxy:
     """Explicitly returns ObservationDataProxy which helps with linting"""
-    return ObservationDataProxy(self.data.underlying)  # pylint: disable=protobuf-undefined-attribute
+    # pylint: disable=protobuf-undefined-attribute
+    return ObservationDataProxy(self.data.underlying)  # type: ignore
 
   @property
   def reported_failure(self):

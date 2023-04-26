@@ -4,6 +4,7 @@
 from zigopt.common import *
 from zigopt.authorization.constant import AuthorizationDenied
 from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.client.model import Client
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, READ, WRITE
 
 
@@ -44,7 +45,8 @@ class UserAuthorization(EmptyAuthorization):
     # NOTE: If we have previously fetched the permission, we can short-circuit the client fetch
     if self.scoped_permission and self.scoped_permission.client_id == client_id:
       return self.scoped_permission.organization_id
-    return napply(services.client_service.find_by_id(client_id), lambda c: c.organization_id)
+    client: Client | None = services.client_service.find_by_id(client_id)
+    return napply(client, lambda c: c.organization_id)
 
   def _infer_organization_from_organization_id(self, services, organization_id):
     return services.organization_service.find_by_id(organization_id)

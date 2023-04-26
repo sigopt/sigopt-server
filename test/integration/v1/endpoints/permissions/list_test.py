@@ -1,7 +1,6 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from zigopt.common.lists import find
 from zigopt.invite.constant import NO_ROLE, READ_ONLY_ROLE, USER_ROLE
 
 from integration.v1.endpoints.invites.test_base import InviteTestBase
@@ -19,10 +18,10 @@ class TestUserPermissionsList(InviteTestBase):
     permissions = invitee_connection.users(invitee_connection.user_id).permissions().fetch()
     assert len(permissions.data) == 3
 
-    client_1_permission = find(permissions.data, lambda p: p.client.id == client_1.id)
+    client_1_permission = next(p for p in permissions.data if p.client.id == client_1.id)
     assert client_1_permission.can_write
     assert not client_1_permission.can_admin
-    client_2_permission = find(permissions.data, lambda p: p.client.id == client_2.id)
+    client_2_permission = next(p for p in permissions.data if p.client.id == client_2.id)
     assert client_2_permission.can_read
     assert not client_2_permission.can_write
 

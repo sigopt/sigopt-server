@@ -352,8 +352,8 @@ class WebBase(BaseTest):
   @classmethod
   def make_development_connection(cls, api_connection, api, config_broker, login_state):
     api_url = cls.get_api_url(config_broker)
-    development_token = find(
-      api_connection.clients(api_connection.client_id).tokens().fetch().data, lambda t: t.development
+    development_token = next(
+      t for t in api_connection.clients(api_connection.client_id).tokens().fetch().data if t.development
     )
     return ApiConnection(
       IntegrationTestConnection(

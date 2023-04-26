@@ -27,10 +27,12 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentParameter,
   ParameterCondition,
   Prior,
+  Term,
 )
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.lib import copy_protobuf
 from zigopt.sigoptcompute.adapter import SCAdapter
+from zigopt.suggestion.sampler.base import SuggestionSampler
 from zigopt.suggestion.sampler.categorical import CategoricalOnlySampler
 from zigopt.suggestion.sampler.grid import GridSampler
 from zigopt.suggestion.sampler.lhc import LatinHypercubeSampler
@@ -156,7 +158,7 @@ class TestSuggestSampler:
       ),
     )
 
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
     sampler = LatinHypercubeSampler(services, experiment, partial_opt_args())
     stencil_length = sampler.stencil_length
@@ -201,7 +203,7 @@ class TestSuggestSampler:
       assert len([c in ClosedInterval(4, 4.5) for c in double_observations]) >= 1
       assert len([c in ClosedInterval(4.5, 5) for c in double_observations]) >= 1
 
-    suggestions = []
+    suggestions: list = []
     for _ in range(stencil_length):
       optimization_args = partial_opt_args(observation_count=0, open_suggestions=suggestions)
       sampler = LatinHypercubeSampler(services, experiment, optimization_args)
@@ -262,16 +264,16 @@ class TestSuggestSampler:
         type="greater_than",
         rhs=80,
         terms=[
-          dict(name=double_parameter_1.name, coeff=1),
-          dict(name=double_parameter_2.name, coeff=1),
+          Term(name=double_parameter_1.name, coeff=1),
+          Term(name=double_parameter_2.name, coeff=1),
         ],
       ),
       ExperimentConstraint(
         type="less_than",
         rhs=85,
         terms=[
-          dict(name=double_parameter_1.name, coeff=1),
-          dict(name=double_parameter_2.name, coeff=1),
+          Term(name=double_parameter_1.name, coeff=1),
+          Term(name=double_parameter_2.name, coeff=1),
         ],
       ),
     ]
@@ -289,7 +291,7 @@ class TestSuggestSampler:
       ),
     )
 
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
     sampler = RandomSampler(services, experiment, UnprocessedSuggestion.Source.EXPLICIT_RANDOM)
     stencil_length = 2 * len(experiment.experiment_meta.all_parameters_unsorted)
@@ -335,24 +337,24 @@ class TestSuggestSampler:
         type="greater_than",
         rhs=c1,
         terms=[
-          dict(name=int_parameter_1.name, coeff=1),
-          dict(name=int_parameter_2.name, coeff=1),
+          Term(name=int_parameter_1.name, coeff=1),
+          Term(name=int_parameter_2.name, coeff=1),
         ],
       ),
       ExperimentConstraint(
         type="less_than",
         rhs=c2,
         terms=[
-          dict(name=int_parameter_1.name, coeff=1),
-          dict(name=int_parameter_2.name, coeff=1),
+          Term(name=int_parameter_1.name, coeff=1),
+          Term(name=int_parameter_2.name, coeff=1),
         ],
       ),
       ExperimentConstraint(
         type="less_than",
         rhs=c3,
         terms=[
-          dict(name=double_parameter_1.name, coeff=1),
-          dict(name=double_parameter_2.name, coeff=1),
+          Term(name=double_parameter_1.name, coeff=1),
+          Term(name=double_parameter_2.name, coeff=1),
         ],
       ),
     ]
@@ -370,7 +372,7 @@ class TestSuggestSampler:
       ),
     )
 
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
     sampler = RandomSampler(services, experiment, UnprocessedSuggestion.Source.EXPLICIT_RANDOM)
     stencil_length = 2 * len(experiment.experiment_meta.all_parameters_unsorted)
@@ -574,8 +576,8 @@ class TestSuggestSampler:
     self.assert_exclusively_in(grid_values[5], intervals, 9)
 
   def test_double_has_values(self, segmenter):
-    p = ExperimentParameter(param_type=PARAMETER_DOUBLE)
-    p = ExperimentParameterProxy(p)
+    p_ = ExperimentParameter(param_type=PARAMETER_DOUBLE)
+    p = ExperimentParameterProxy(p_)
     assert segmenter.has_values(p, ClosedInterval(1, 1))
     assert not segmenter.has_values(p, LeftOpenInterval(1, 1))
     assert not segmenter.has_values(p, RightOpenInterval(1, 1))
@@ -592,8 +594,8 @@ class TestSuggestSampler:
     assert not segmenter.has_values(p, OpenInterval(3, 2))
 
   def test_categorical_has_values(self, segmenter):
-    p = ExperimentParameter(param_type=PARAMETER_CATEGORICAL)
-    p = ExperimentParameterProxy(p)
+    p_ = ExperimentParameter(param_type=PARAMETER_CATEGORICAL)
+    p = ExperimentParameterProxy(p_)
     cv = ExperimentCategoricalValue(enum_index=0)
     cv2 = ExperimentCategoricalValue(enum_index=1)
     assert not segmenter.has_values(p, [])
@@ -601,8 +603,8 @@ class TestSuggestSampler:
     assert segmenter.has_values(p, [cv, cv2])
 
   def test_grid_has_values(self, segmenter):
-    p = ExperimentParameter(param_type=PARAMETER_DOUBLE)
-    p = ExperimentParameterProxy(p)
+    p_ = ExperimentParameter(param_type=PARAMETER_DOUBLE)
+    p = ExperimentParameterProxy(p_)
     qv = 0.1
     qv2 = 0.314
     assert not segmenter.has_values(p, [])
@@ -610,8 +612,8 @@ class TestSuggestSampler:
     assert segmenter.has_values(p, [qv, qv2])
 
   def test_int_has_values(self, segmenter):
-    p = ExperimentParameter(param_type=PARAMETER_INT)
-    p = ExperimentParameterProxy(p)
+    p_ = ExperimentParameter(param_type=PARAMETER_INT)
+    p = ExperimentParameterProxy(p_)
     assert segmenter.has_values(p, ClosedInterval(1, 1))
     assert not segmenter.has_values(p, LeftOpenInterval(1, 1))
     assert not segmenter.has_values(p, RightOpenInterval(1, 1))
@@ -673,7 +675,7 @@ class TestSuggestSampler:
         all_parameters_unsorted=[copy_protobuf(p1), copy_protobuf(p2)],
       )
     )
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
 
     sampler = CategoricalOnlySampler(services, experiment, partial_opt_args())
@@ -697,7 +699,7 @@ class TestSuggestSampler:
       assert any(((o.get_assignment(p1) == 1 and o.get_assignment(p2) == 1 for o in check)))
       assert any(((o.get_assignment(p1) == 2 and o.get_assignment(p2) == 1 for o in check)))
 
-    suggestions = []
+    suggestions: list = []
     del observations[0 : len(observations)]
     assert services.observation_service.all_data(experiment) == []
 
@@ -775,7 +777,7 @@ class TestSuggestSampler:
       ),
     )
 
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
     sampler = RandomSampler(services, experiment, UnprocessedSuggestion.Source.EXPLICIT_RANDOM)
     multi_suggestions = sampler.generate_random_suggestions(10)
@@ -796,7 +798,7 @@ class TestSuggestSampler:
       ),
     )
 
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
     sampler = RandomSampler(services, experiment, UnprocessedSuggestion.Source.EXPLICIT_RANDOM)
     multi_suggestions = sampler.generate_random_suggestions(15)
@@ -816,7 +818,7 @@ class TestSuggestSampler:
       ),
     )
 
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
     sampler = RandomSampler(services, experiment, UnprocessedSuggestion.Source.EXPLICIT_RANDOM)
     multi_suggestions = sampler.generate_random_suggestions(15)
@@ -854,9 +856,9 @@ class TestSuggestSampler:
       ),
     )
 
-    observations = []
+    observations: list[Observation] = []
     services = self.mock_services(segmenter, observations)
-    sampler = LatinHypercubeSampler(services, experiment, partial_opt_args())
+    sampler: SuggestionSampler = LatinHypercubeSampler(services, experiment, partial_opt_args())
     assert not sampler.experiment.conditionals
     assert len(sampler.experiment.experiment_meta.all_parameters_unsorted) == 4
 
