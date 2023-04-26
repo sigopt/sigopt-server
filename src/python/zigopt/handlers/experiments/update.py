@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections import Counter
 from typing import Any
 
 from sqlalchemy import Column
@@ -264,7 +265,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     if not parameters_json:
       raise SigoptValidationError("Experiments must have at least one parameter.")
 
-    name_counts: dict[str, int] = distinct_counts(remove_nones_sequence([p.get("name") for p in parameters_json]))
+    name_counts: Counter[str] = Counter(p.get("name") for p in parameters_json if p.get("name") is not None)
     duplicates = [key for (key, value) in name_counts.items() if value > 1]
     if len(duplicates) > 0:
       raise InvalidValueError(f"Duplicate parameter names: {duplicates}")
