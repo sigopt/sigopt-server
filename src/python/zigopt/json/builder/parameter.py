@@ -134,7 +134,9 @@ class ExperimentParameterJsonBuilder(JsonBuilder):
       }
       # TODO(SN-988): we probably want to know if we can't find a builder
       # should this raise a soft exception?
-      builder = type_to_builder.get(self._param.prior.prior_type)
+      builder = None
+      if self._param.prior.HasField("prior_type"):
+        builder = type_to_builder.get(self._param.prior.prior_type)
       if builder:
         return builder(self._param.prior)
     return None
