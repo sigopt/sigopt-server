@@ -215,9 +215,12 @@ class _ProtobufColumnType(TypeDecorator):
       default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
       return sql_coalesce(clause, default_value) if self._with_default else clause
 
-    def as_primitive(self):
+    def as_primitive(self, with_default=True):
       cast_type = self._get_cast_from_descriptor(self._descriptor)
-      return self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(cast_type)))
+      clause = self.astext.cast(extend_with_forbid_is_clause(cast_type))
+      if with_default:
+        clause = self._maybe_with_default(clause)
+      return clause
 
     @classmethod
     def _get_cast_from_descriptor(cls, descriptor):
@@ -265,28 +268,28 @@ class _ProtobufColumnType(TypeDecorator):
         operators.truediv,
       )
       operator_name = operator.opstring if hasattr(operator, "opstring") else repr(operator)
-      if operator in OPERATORS_REQUIRING_DEFAULTS:
-        default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
-        with_default = sql_coalesce(self.expr, adapt_for_jsonb(default_value))
-        # NOTE: This implementation is taken from `operate` in `sqlalchemy.sql.type_api`
-        o = default_comparator.operator_lookup[operator.__name__]
-        return o[0](with_default, operator, *(other + o[1:]), **kwargs)
-      if operator in OPERATORS_REQUIRING_CAST:
-        if not self._is_terminal_descriptor(self._descriptor):
+      if self._is_terminal_descriptor(self._descriptor):
+        clause = self.as_primitive(with_default=operator not in OPERATORS_FORBIDDING_DEFAULTS)
+      else:
+        if operator in OPERATORS_REQUIRING_DEFAULTS:
+          default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
+          with_default = sql_coalesce(self.expr, adapt_for_jsonb(default_value))
+          # NOTE: This implementation is taken from `operate` in `sqlalchemy.sql.type_api`
+          o = default_comparator.operator_lookup[operator.__name__]
+          return o[0](with_default, operator, *(other + o[1:]), **kwargs)
+        if operator in OPERATORS_REQUIRING_CAST:
           raise ValueError(
             f"It is unsafe to compare fields with {operator_name} - descriptor is not terminal: {self._descrioptor}"
           )
-        cast_type = self._get_cast_from_descriptor(self._descriptor)
-        casted = self._maybe_with_default(self.astext.cast(extend_with_forbid_is_clause(cast_type)))
-        return casted.operate(operator, *other, **kwargs)
-      if operator not in OPERATORS_FORBIDDING_DEFAULTS:
-        # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
-        # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
-        # operator. If you are adding a new operator here, think about whether it makes sense for the protobuf default
-        # value to be used instead of NULL when the value is missing. If it is appropriate to make that replacement,
-        # the operator should be in OPERATORS_REQUIRING_DEFAULTS, otherwise OPERATORS_FORBIDDING_DEFAULTS
-        raise NotImplementedError(f"Unsupported operator: {operator_name}")
-      return super().operate(operator, *other, **kwargs)
+        if operator not in OPERATORS_FORBIDDING_DEFAULTS:
+          # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
+          # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
+          # operator. If you are adding a new operator here, think about whether it makes sense for the protobuf default
+          # value to be used instead of NULL when the value is missing. If it is appropriate to make that replacement,
+          # the operator should be in OPERATORS_REQUIRING_DEFAULTS, otherwise OPERATORS_FORBIDDING_DEFAULTS
+          raise NotImplementedError(f"Unsupported operator: {operator_name}")
+        clause = super()
+      return clause.operate(operator, *other, **kwargs)
 
     def _real_getitem(self, key, with_default):
       operator, right_expr, _ = self._setup_getitem(key)  # pylint: disable=no-value-for-parameter
