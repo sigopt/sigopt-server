@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: pip install pipenv
+      - run: pip install pipenv pre-commit
       - run: yarn install
       - run: pipenv run pre-commit run --all-files eslint
       - run: git diff
