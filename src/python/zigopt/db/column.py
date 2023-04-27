@@ -113,19 +113,6 @@ def _raise_for_is_usage():
   )
 
 
-def extend_with_forbid_is_clause(Cls: type):
-  class Subclass(Cls):
-    class comparator_factory(Cls.comparator_factory):  # type: ignore
-      def is_(self, arg):
-        _raise_for_is_usage()
-
-      def isnot(self, arg):
-        _raise_for_is_usage()
-
-  Subclass.__name__ = Cls.__name__ + "_ForbidIsClause"
-  return Subclass
-
-
 def _default_value_for_descriptor(message_factory, descriptor):
   if isinstance(descriptor, google.protobuf.descriptor.Descriptor):
     Cls = message_factory.GetPrototype(descriptor)
@@ -217,7 +204,7 @@ class _ProtobufColumnType(TypeDecorator):
 
     def as_primitive(self, with_default=True):
       cast_type = self._get_cast_from_descriptor(self._descriptor)
-      clause = self.astext.cast(extend_with_forbid_is_clause(cast_type))
+      clause = self.astext.cast(cast_type)
       if with_default:
         clause = self._maybe_with_default(clause)
       return clause
