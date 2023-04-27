@@ -1,0 +1,26 @@
+name: SigOpt Server pre-commit checks
+run-name: ${{ github.actor }} is testing ${{ github.repository }}@${{ github.ref }}
+on:
+  push: {}
+  schedule:
+    - cron: "0 8,16 * * *"
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        hook:
+          - eslint
+          - hadolint-docker
+          - mypy
+          - pylint
+          - shellcheck
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: pip install pipenv
+      - run: pipenv install --quiet --deploy --dev
+      - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
+      - run: pipenv run ./tools/protobuf/compile.sh
+      - run: pipenv run pre-commit run --all-files ${{ matrix.hook }}
+      - run: git diff
