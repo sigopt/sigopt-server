@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         hook:
-          - eslint
           - hadolint-docker
           - mypy
           - pylint
@@ -20,7 +19,17 @@ jobs:
         uses: actions/checkout@v3
       - run: pip install pipenv
       - run: pipenv install --quiet --deploy --dev
+      - run: yarn install
       - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
       - run: pipenv run ./tools/protobuf/compile.sh
       - run: pipenv run pre-commit run --all-files ${{ matrix.hook }}
+      - run: git diff
+  pre-commit-eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: pip install pipenv
+      - run: yarn install
+      - run: pipenv run pre-commit run --all-files eslint
       - run: git diff
