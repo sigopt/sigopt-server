@@ -8,7 +8,6 @@ from google.protobuf.descriptor import FieldDescriptor
 from zigopt.common.sigopt_datetime import naive_datetime_to_aware_datetime
 from zigopt.common.struct import ImmutableStruct
 from zigopt.protobuf.gen.api.paging_pb2 import PagingSymbol
-from zigopt.protobuf.lib import get_oneof_value
 
 
 class FieldApiType(Enum):
@@ -50,11 +49,11 @@ DefinedField = ImmutableStruct(
 
 def get_value_of_paging_symbol(symbol):
   assert isinstance(symbol, PagingSymbol)
-  if symbol.WhichOneof("type") == "null_value":
+  which_oneof = symbol.WhichOneof("type")
+  if which_oneof is None:
     return None
-  if symbol.WhichOneof("type") == "timestamp_value":
+  if which_oneof == "null_value":
+    return None
+  if which_oneof == "timestamp_value":
     return naive_datetime_to_aware_datetime(symbol.timestamp_value.ToDatetime())
-  try:
-    return get_oneof_value(symbol, "type")
-  except TypeError:
-    return None
+  return getattr(symbol, which_oneof)
