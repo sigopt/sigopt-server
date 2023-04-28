@@ -20,7 +20,7 @@ from sqlalchemy.types import DateTime, TypeDecorator
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import aware_datetime_to_naive_datetime, naive_datetime_to_aware_datetime
 from zigopt.protobuf.dict import protobuf_to_dict
-from zigopt.protobuf.json import emit_json_with_descriptor, get_json_key, parse_json_with_descriptor
+from zigopt.protobuf.json import ZigoptDescriptor, emit_json_with_descriptor, get_json_key, parse_json_with_descriptor
 from zigopt.protobuf.lib import copy_protobuf, is_protobuf
 
 
@@ -113,19 +113,6 @@ def _raise_for_is_usage():
   )
 
 
-def extend_with_forbid_is_clause(Cls: type):
-  class Subclass(Cls):
-    class comparator_factory(Cls.comparator_factory):  # type: ignore
-      def is_(self, arg):
-        _raise_for_is_usage()
-
-      def isnot(self, arg):
-        _raise_for_is_usage()
-
-  Subclass.__name__ = Cls.__name__ + "_ForbidIsClause"
-  return Subclass
-
-
 def _default_value_for_descriptor(message_factory, descriptor):
   if isinstance(descriptor, google.protobuf.descriptor.Descriptor):
     Cls = message_factory.GetPrototype(descriptor)
@@ -215,29 +202,30 @@ class _ProtobufColumnType(TypeDecorator):
       default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
       return sql_coalesce(clause, default_value) if self._with_default else clause
 
-    @property
-    def astext(self):
-      raise NotImplementedError(
-        "Do not call `astext` on ProtobufColumns - prefer `as_string()` if you want a string value."
-      )
+    def as_primitive(self, with_default=True):
+      cast_type = self._get_cast_from_descriptor(self._descriptor)
+      clause = self.astext.cast(cast_type)
+      if with_default:
+        clause = self._maybe_with_default(clause)
+      return clause
 
-    @property
-    def real_astext(self):
-      return super().astext
-
-    # TODO(SN-1077): It might be possible to remove these casts in the future by inferring
-    # the types from the protobuf record...
-    def as_string(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Text)))
-
-    def as_boolean(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Boolean)))
-
-    def as_numeric(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Numeric)))
-
-    def as_integer(self):
-      return self._maybe_with_default(self.real_astext.cast(extend_with_forbid_is_clause(sqlalchemy.types.Integer)))
+    @classmethod
+    def _get_cast_from_descriptor(cls, descriptor):
+      assert cls._is_terminal_descriptor(descriptor)
+      python_type: type
+      if isinstance(descriptor, ZigoptDescriptor):
+        python_type = descriptor.python_type
+      else:
+        python_type = descriptor
+      if python_type is str:
+        return sqlalchemy.types.Text
+      if python_type is bool:
+        return sqlalchemy.types.Boolean
+      if python_type is float:
+        return sqlalchemy.types.Numeric
+      if python_type is int:
+        return sqlalchemy.types.BigInteger
+      raise NotImplementedError(f"terminal descriptor is not supported: {descriptor}")
 
     def operate(self, operator, *other, **kwargs):
       OPERATORS_REQUIRING_DEFAULTS = (
@@ -258,6 +246,7 @@ class _ProtobufColumnType(TypeDecorator):
         operators.ge,
         operators.gt,
         operators.ilike_op,
+        operators.inv,
         operators.le,
         operators.like_op,
         operators.lt,
@@ -266,24 +255,28 @@ class _ProtobufColumnType(TypeDecorator):
         operators.truediv,
       )
       operator_name = operator.opstring if hasattr(operator, "opstring") else repr(operator)
-      if operator in OPERATORS_REQUIRING_DEFAULTS:
-        default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
-        with_default = sql_coalesce(self.expr, adapt_for_jsonb(default_value))
-        # NOTE: This implementation is taken from `operate` in `sqlalchemy.sql.type_api`
-        o = default_comparator.operator_lookup[operator.__name__]
-        return o[0](with_default, operator, *(other + o[1:]), **kwargs)
-      if operator in OPERATORS_REQUIRING_CAST:
-        raise ValueError(
-          f"It is unsafe to compare fields with {operator_name} - cast values using `as_X` before comparing."
-        )
-      if operator not in OPERATORS_FORBIDDING_DEFAULTS:
-        # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
-        # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
-        # operator. If you are adding a new operator here, think about whether it makes sense for the protobuf default
-        # value to be used instead of NULL when the value is missing. If it is appropriate to make that replacement,
-        # the operator should be in OPERATORS_REQUIRING_DEFAULTS, otherwise OPERATORS_FORBIDDING_DEFAULTS
-        raise NotImplementedError(f"Unsupported operator: {operator_name}")
-      return super().operate(operator, *other, **kwargs)
+      if self._is_terminal_descriptor(self._descriptor):
+        clause = self.as_primitive(with_default=operator not in OPERATORS_FORBIDDING_DEFAULTS)
+      else:
+        if operator in OPERATORS_REQUIRING_DEFAULTS:
+          default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
+          with_default = sql_coalesce(self.expr, adapt_for_jsonb(default_value))
+          # NOTE: This implementation is taken from `operate` in `sqlalchemy.sql.type_api`
+          o = default_comparator.operator_lookup[operator.__name__]
+          return o[0](with_default, operator, *(other + o[1:]), **kwargs)
+        if operator in OPERATORS_REQUIRING_CAST:
+          raise ValueError(
+            f"It is unsafe to compare fields with {operator_name} - descriptor is not terminal: {self._descrioptor}"
+          )
+        if operator not in OPERATORS_FORBIDDING_DEFAULTS:
+          # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
+          # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
+          # operator. If you are adding a new operator here, think about whether it makes sense for the protobuf default
+          # value to be used instead of NULL when the value is missing. If it is appropriate to make that replacement,
+          # the operator should be in OPERATORS_REQUIRING_DEFAULTS, otherwise OPERATORS_FORBIDDING_DEFAULTS
+          raise NotImplementedError(f"Unsupported operator: {operator_name}")
+        clause = super()
+      return clause.operate(operator, *other, **kwargs)
 
     def _real_getitem(self, key, with_default):
       operator, right_expr, _ = self._setup_getitem(key)  # pylint: disable=no-value-for-parameter

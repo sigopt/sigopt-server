@@ -126,7 +126,7 @@ class BaseExperimentsListHandler(Handler):
 
   def _maybe_reject_ai(self, query_args, params):
     if params.include_ai is False:
-      query_args.query = query_args.query.filter(~Experiment.experiment_meta.runs_only.as_boolean())
+      query_args.query = query_args.query.filter(~Experiment.experiment_meta.runs_only)
 
   def _maybe_search(self, query_args, params, client_ids):
     if params.search is None:
@@ -200,7 +200,7 @@ class BaseExperimentsListHandler(Handler):
       query_args.query = (
         query_args.query.filter(Experiment.client_id.in_(client_ids))
         .filter(Experiment.deleted.in_(deleted))
-        .filter(Experiment.experiment_meta.development.as_boolean().in_(developments))
+        .filter((~~Experiment.experiment_meta.development).in_(developments))
       )
       self._maybe_filter_project(query_args, project)
       self._maybe_filter_created_by(query_args, created_by)

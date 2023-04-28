@@ -37,7 +37,7 @@ class TokenService(Service):
     )
 
     if creating_user_id is not None:
-      query = query.filter(Token.meta.creating_user_id.as_integer() == creating_user_id)
+      query = query.filter(Token.meta.creating_user_id == creating_user_id)
 
     return self._reject_expired(self.services.database_service.all(query))
 
@@ -181,9 +181,7 @@ class TokenService(Service):
   def renew_token(self, token):
     now = unix_timestamp()
     updated = self.services.database_service.update_one_or_none(
-      self.services.database_service.query(Token)
-      .filter(Token.token == token.token)
-      .filter(Token.meta.can_renew.as_boolean()),
+      self.services.database_service.query(Token).filter(Token.token == token.token).filter(~~Token.meta.can_renew),
       {Token.meta: jsonb_set(Token.meta, JsonPath(*unwind_json_path(Token.meta.date_renewed)), now)},
     )
     if updated:

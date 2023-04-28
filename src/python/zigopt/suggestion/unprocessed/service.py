@@ -144,7 +144,7 @@ class UnprocessedSuggestionService(Service):
 
   def _include_deleted_clause(self, include_deleted, q):
     if not include_deleted:
-      return q.filter(~UnprocessedSuggestion.suggestion_meta.deleted.as_boolean())
+      return q.filter(~UnprocessedSuggestion.suggestion_meta.deleted)
     return q
 
   @time_function(

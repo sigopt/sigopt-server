@@ -72,5 +72,5 @@ class QueuedSuggestionService(Service):
 
   def _include_deleted_clause(self, include_deleted, q):
     if not include_deleted:
-      return q.filter(~QueuedSuggestion.meta.deleted.as_boolean())
+      return q.filter(~QueuedSuggestion.meta.deleted)
     return q
