@@ -69,7 +69,7 @@ class OptimizerService(Service):
       self.services.database_service.query(Observation)
       .filter(Observation.experiment_id == experiment.id)
       .filter(Observation.id <= counts.max_observation_id)
-      .filter(~Observation.data.deleted.as_boolean())  # type: ignore
+      .filter(~Observation.data.deleted)
     )
 
     observation_iter = self.services.database_service.stream(500, query.limit(counts.observation_count))

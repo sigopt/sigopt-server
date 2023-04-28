@@ -151,20 +151,6 @@ class TestProtobufColumn(DatabaseServiceBase):
     experiment = experiment_service.find_by_id(experiment.id)
     assert experiment.experiment_meta.unused_int64_key_for_testing == value_too_big_for_float
 
-  def test_safe_comparison(self, database_service, experiment_service, experiment):
-    comparison_value = 100
-    with pytest.raises(ValueError):
-      database_service.first(
-        database_service.query(Experiment)
-        .filter(Experiment.id == experiment.id)
-        .filter(Experiment.experiment_meta.unused_int64_key_for_testing < comparison_value)
-      )
-    database_service.first(
-      database_service.query(Experiment)
-      .filter(Experiment.id == experiment.id)
-      .filter(Experiment.experiment_meta.unused_int64_key_for_testing.as_integer() < comparison_value)
-    )
-
   def test_long_value_comparison(self, database_service, experiment_service, experiment):
     # Since int64s are stored as strings, ensure that they are compared as ints
     smaller_value = 100
@@ -187,7 +173,7 @@ class TestProtobufColumn(DatabaseServiceBase):
       database_service.first(
         database_service.query(Experiment)
         .filter(Experiment.id == experiment.id)
-        .filter(Experiment.experiment_meta.unused_int64_key_for_testing.as_integer() < larger_value)
+        .filter(Experiment.experiment_meta.unused_int64_key_for_testing < larger_value)
       ).experiment_meta.unused_int64_key_for_testing
       == value
     )
@@ -195,7 +181,7 @@ class TestProtobufColumn(DatabaseServiceBase):
       database_service.first(
         database_service.query(Experiment)
         .filter(Experiment.id == experiment.id)
-        .filter(Experiment.experiment_meta.unused_int64_key_for_testing.as_integer() < smaller_value)
+        .filter(Experiment.experiment_meta.unused_int64_key_for_testing < smaller_value)
       )
       is None
     )
@@ -239,7 +225,7 @@ class TestProtobufColumn(DatabaseServiceBase):
     old_budget = experiment_service.find_by_id(experiment.id).experiment_meta.observation_budget
     experiment_service.update_meta(
       experiment.id,
-      {Experiment.experiment_meta.observation_budget: Experiment.experiment_meta.observation_budget.as_integer() + 1},
+      {Experiment.experiment_meta.observation_budget: Experiment.experiment_meta.observation_budget + 1},
     )
     experiment = experiment_service.find_by_id(experiment.id)
     assert experiment.observation_budget == old_budget + 1
@@ -268,29 +254,29 @@ class TestProtobufColumn(DatabaseServiceBase):
       for (i, (select, cast)) in enumerate(
         [
           (lambda meta: meta, None),
-          (lambda meta: meta.experiment_type, lambda c: c.as_integer()),
-          (lambda meta: meta.GetFieldOrNone("experiment_type"), lambda c: c.as_integer()),
+          (lambda meta: meta.experiment_type, lambda c: c.as_primitive()),
+          (lambda meta: meta.GetFieldOrNone("experiment_type"), lambda c: c.as_primitive()),
           (lambda meta: meta.HasField("experiment_type"), None),
-          (lambda meta: meta.development, lambda c: c.as_boolean()),
-          (lambda meta: meta.GetFieldOrNone("development"), lambda c: c.as_boolean()),
+          (lambda meta: meta.development, lambda c: ~~c),
+          (lambda meta: meta.GetFieldOrNone("development"), lambda c: ~~c),
           (lambda meta: meta.HasField("development"), None),
-          (lambda meta: meta.force_hitandrun_sampling, lambda c: c.as_boolean()),
-          (lambda meta: meta.GetFieldOrNone("force_hitandrun_sampling"), lambda c: c.as_boolean()),
+          (lambda meta: meta.force_hitandrun_sampling, lambda c: ~~c),
+          (lambda meta: meta.GetFieldOrNone("force_hitandrun_sampling"), lambda c: ~~c),
           (lambda meta: meta.HasField("force_hitandrun_sampling"), None),
-          (lambda meta: meta.num_solutions, lambda c: c.as_integer()),
-          (lambda meta: meta.GetFieldOrNone("num_solutions"), lambda c: c.as_integer()),
+          (lambda meta: meta.num_solutions, lambda c: c.as_primitive()),
+          (lambda meta: meta.GetFieldOrNone("num_solutions"), lambda c: c.as_primitive()),
           (lambda meta: meta.HasField("num_solutions"), None),
           (lambda meta: meta.metrics, None),
           (lambda meta: meta.importance_maps, None),
           (lambda meta: meta.importance_maps[""], None),
           (lambda meta: meta.importance_maps[""].importances, None),
           (lambda meta: meta.importance_maps[""].importances["param1"], None),
-          (lambda meta: meta.importance_maps[""].importances["param1"].importance, lambda c: c.as_numeric()),
+          (lambda meta: meta.importance_maps[""].importances["param1"].importance, lambda c: c.as_primitive()),
           (lambda meta: meta.all_parameters_unsorted, None),
           (lambda meta: meta.conditionals, None),
-          (lambda meta: meta.observation_budget, lambda c: c.as_integer()),
-          (lambda meta: meta.unused_int64_key_for_testing, lambda c: c.as_integer()),
-          (lambda meta: meta.GetFieldOrNone("observation_budget"), lambda c: c.as_integer()),
+          (lambda meta: meta.observation_budget, lambda c: c.as_primitive()),
+          (lambda meta: meta.unused_int64_key_for_testing, lambda c: c.as_primitive()),
+          (lambda meta: meta.GetFieldOrNone("observation_budget"), lambda c: c.as_primitive()),
           (lambda meta: meta.HasField("observation_budget"), None),
         ]
       )
@@ -307,25 +293,25 @@ class TestProtobufColumn(DatabaseServiceBase):
       for (i, (select, cast)) in enumerate(
         [
           (lambda meta: meta.all_parameters_unsorted[0], None),
-          (lambda meta: meta.all_parameters_unsorted[0].name, lambda c: c.as_string()),
+          (lambda meta: meta.all_parameters_unsorted[0].name, lambda c: c.as_primitive()),
           (lambda meta: meta.all_parameters_unsorted[0].bounds, None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.minimum, lambda c: c.as_numeric()),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("minimum"), lambda c: c.as_numeric()),
+          (lambda meta: meta.all_parameters_unsorted[0].bounds.minimum, lambda c: c.as_primitive()),
+          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("minimum"), lambda c: c.as_primitive()),
           (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("minimum"), None),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.maximum, lambda c: c.as_numeric()),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("maximum"), lambda c: c.as_numeric()),
+          (lambda meta: meta.all_parameters_unsorted[0].bounds.maximum, lambda c: c.as_primitive()),
+          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("maximum"), lambda c: c.as_primitive()),
           (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("maximum"), None),
           (lambda meta: meta.conditionals[0], None),
-          (lambda meta: meta.conditionals[0].name, lambda c: c.as_string()),
-          (lambda meta: meta.conditionals[0].GetFieldOrNone("name"), lambda c: c.as_string()),
+          (lambda meta: meta.conditionals[0].name, lambda c: c.as_primitive()),
+          (lambda meta: meta.conditionals[0].GetFieldOrNone("name"), lambda c: c.as_primitive()),
           (lambda meta: meta.conditionals[0].HasField("name"), None),
           (lambda meta: meta.conditionals[0].values, None),
           (lambda meta: meta.conditionals[0].values[0], None),
-          (lambda meta: meta.conditionals[0].values[0].name, lambda c: c.as_string()),
-          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("name"), lambda c: c.as_string()),
+          (lambda meta: meta.conditionals[0].values[0].name, lambda c: c.as_primitive()),
+          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("name"), lambda c: c.as_primitive()),
           (lambda meta: meta.conditionals[0].values[0].HasField("name"), None),
-          (lambda meta: meta.conditionals[0].values[0].enum_index, lambda c: c.as_integer()),
-          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("enum_index"), lambda c: c.as_integer()),
+          (lambda meta: meta.conditionals[0].values[0].enum_index, lambda c: c.as_primitive()),
+          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("enum_index"), lambda c: c.as_primitive()),
           (lambda meta: meta.conditionals[0].values[0].HasField("enum_index"), None),
         ]
       )
