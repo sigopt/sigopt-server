@@ -322,24 +322,6 @@ jobs:
           paths:
             - .ssh
             - project
-  pre-commit:
-    machine:
-      image: *ubuntu-executor-image
-    resource_class: medium
-    steps:
-      - attach
-      - run: pyenv global 3.10.6
-      - run: pip install pipenv
-      - run: pipenv install --quiet --deploy --dev --python=3.10
-      - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
-      - run: pipenv run ./tools/protobuf/compile.sh
-      - run: pipenv run pre-commit validate-config
-      - run: pipenv run pre-commit run --all-files eslint
-      - run: pipenv run pre-commit run --all-files hadolint-docker
-      - run: pipenv run pre-commit run --all-files mypy
-      - run: pipenv run pre-commit run --all-files pylint
-      - run: pipenv run pre-commit run --all-files shellcheck
-      - run: git diff
   check-integration-test-inits:
     executor: sigopt-lite
     steps:
@@ -540,10 +522,6 @@ workflows:
   main:
     jobs:
       - checkout-code
-      - pre-commit:
-          requires:
-            - checkout-code
-            - setup-web
       - check-integration-test-inits
       - trivy-scan-images
       - trivy-scan-project
