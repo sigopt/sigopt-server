@@ -119,7 +119,7 @@ repos:
         args: [-rn, -sn]
       - id: crosshair
         name: crosshair
-        entry: ./pp crosshair check
+        entry: ./pp ./tools/crosshair/main.py check
         language: system
         types: [python]
         args:
