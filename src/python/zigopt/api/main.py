@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import argparse
 import logging
+import os
 import sys
 
 from zigopt.api.prod import ProdApp
@@ -23,9 +24,6 @@ def _default_app(profiler, tracer):
   logging.getLogger("sigopt.python").info("Python version: %s", sys.version)
   log_version()
   return ProdApp(profiler, tracer, config_broker)
-
-
-GUNICORN_ENTRY_POINT = _default_app(NullProfiler(), NullTracer())
 
 
 def run_app():
@@ -78,3 +76,5 @@ def run_app():
 
 if __name__ == "__main__":
   run_app()
+elif os.environ.get("GUNICORN_ENABLED"):
+  GUNICORN_ENTRY_POINT = _default_app(NullProfiler(), NullTracer())

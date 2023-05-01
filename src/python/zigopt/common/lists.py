@@ -12,6 +12,7 @@ import itertools as _itertools
 from typing import TYPE_CHECKING as _TYPE_CHECKING
 from typing import Any as _Any
 from typing import Callable as _Callable
+from typing import Collection as _Collection
 from typing import Generic as _Generic
 from typing import Hashable as _Hashable
 from typing import Iterable as _Iterable
@@ -96,10 +97,9 @@ def generator_to_dict(
   return make_dict
 
 
-@deal.pre(lambda lis: all(isinstance(v, _collectionsabc.Sequence) for v in lis))
+@deal.pre(lambda lis: all(isinstance(v, _collectionsabc.Collection) for v in lis))
 @deal.ensure(lambda lis, result: all(item in result for seq in lis for item in seq))
-@deal.ensure(lambda lis, result: all(not isinstance(item, str) for seq in lis for item in seq))
-def flatten(lis: _Sequence[_Sequence[lists_T]]) -> list[lists_T]:
+def flatten(lis: _Sequence[_Collection[lists_T]]) -> list[lists_T]:
   """
     :param lis: A list of iterables
     Returns a list comprised of the elements in each iterable.
