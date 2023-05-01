@@ -118,7 +118,7 @@ repos:
         types: [python]
         args: [-rn, -sn]
       - id: crosshair
-        name: crosshai
+        name: crosshair
         entry: ./pp crosshair check
         language: system
         types: [python]
