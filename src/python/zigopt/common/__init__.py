@@ -6,6 +6,7 @@ from zigopt.common.find import *
 from zigopt.common.functions import *
 from zigopt.common.generators import *
 from zigopt.common.lists import *
+from zigopt.common.maps import *
 from zigopt.common.non_crypto_random import *
 from zigopt.common.numbers import *
 from zigopt.common.objects import *
