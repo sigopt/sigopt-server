@@ -1,6 +1,12 @@
 ci:
   skip:
-    [detect-aws-credentials, eslint, hadolint-docker, mypy, pylint, shellcheck]
+    - crosshair
+    - detect-aws-credentials
+    - eslint
+    - hadolint-docker
+    - mypy
+    - pylint
+    - shellcheck
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v4.4.0
@@ -111,3 +117,12 @@ repos:
         language: system
         types: [python]
         args: [-rn, -sn]
+      - id: crosshair
+        name: crosshai
+        entry: ./pp crosshair
+        language: system
+        types: [python]
+        args:
+          - --per_path_timeout=0.01
+          - --per_condition_timeout=1
+          - --analysis_kind=deal

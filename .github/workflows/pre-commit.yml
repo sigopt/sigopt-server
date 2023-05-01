@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         hook:
+          - crosshair
           - hadolint-docker
           - mypy
           - pylint
