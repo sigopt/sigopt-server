@@ -126,4 +126,4 @@ repos:
           - --per_path_timeout=0.01
           - --per_condition_timeout=1
           - --analysis_kind=deal
-        exclude: "^test/"
+        exclude: "^(docker|test)/"
