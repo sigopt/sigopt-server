@@ -1,13 +1,13 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Callable as _Callable
-from typing import Optional as _Optional
-from typing import TypeVar as _TypeVar
+from typing import Callable, Optional, TypeVar
 
 
-T = _TypeVar("T")
-G = _TypeVar("G")
+T = TypeVar("T")
+G = TypeVar("G")
+
+__all__ = ["identity", "napply", "throws"]
 
 
 def identity(obj: T) -> T:
@@ -17,7 +17,7 @@ def identity(obj: T) -> T:
   return obj
 
 
-def napply(obj: _Optional[T], func: _Callable[[T], G]) -> _Optional[G]:
+def napply(obj: Optional[T], func: Callable[[T], G]) -> Optional[G]:
   """
     Applies the function if obj is not None.
     """
@@ -26,7 +26,7 @@ def napply(obj: _Optional[T], func: _Callable[[T], G]) -> _Optional[G]:
   return None
 
 
-def throws(exc: type[BaseException], func: _Callable, *args, **kwargs) -> bool:
+def throws(exc: type[BaseException], func: Callable, *args, **kwargs) -> bool:
   """
     Checks if the function throws the exception.
     Does not catch other exceptions.
