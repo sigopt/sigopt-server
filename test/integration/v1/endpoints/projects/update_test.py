@@ -9,7 +9,7 @@ import pytest
 from zigopt.common.strings import random_string
 from zigopt.project.model import MAX_ID_LENGTH, MAX_NAME_LENGTH, Project
 from zigopt.protobuf.dict import dict_to_protobuf_struct, protobuf_struct_to_dict
-from zigopt.protobuf.lib import CopyFrom
+from zigopt.protobuf.lib import copy_protobuf
 
 from integration.base import RaisesApiException
 from integration.v1.test_base import V1Base
@@ -113,9 +113,9 @@ class TestProjectsUpdateEndpoint(V1Base):
     assert protobuf_struct_to_dict(db_project.data.metadata) == new_metadata
 
   def test_clear_metadata(self, services, connection, project):
-    data = project.data.copy_protobuf()
+    data = copy_protobuf(project.data)
     original_metadata = {"test_key": "test_value"}
-    CopyFrom(data.metadata, (dict_to_protobuf_struct(original_metadata)))
+    data.metadata.CopyFrom((dict_to_protobuf_struct(original_metadata)))
     services.project_service.update(
       client_id=project.client_id,
       reference_id=project.reference_id,

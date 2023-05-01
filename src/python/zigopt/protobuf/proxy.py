@@ -28,7 +28,8 @@ class Proxy(BaseProxyClass):
       # We could be more aggressive and forbid *any* setattr on a Proxy object - but
       # our codebase frequently sets cached values inside the constructor
       raise Exception(
-        "Attempting to override value on underlying protobuf, which is not safe. Must call .copy_protobuf()"
+        "Attempting to override value on underlying protobuf, which is not safe. Must call"
+        " zigopt.protobuf.lib.copy_protobuf()"
       )
     return super().__setattr__(attr, val)
 

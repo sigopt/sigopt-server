@@ -11,6 +11,7 @@ from zigopt.optimize.sources.categorical import CategoricalOptimizationSource
 from zigopt.optimize.sources.spe import SPEOptimizationSource
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMetric
 from zigopt.protobuf.gen.optimize.sources_pb2 import MultimetricHyperparameters, NullHyperparameters
+from zigopt.protobuf.lib import copy_protobuf
 
 from integration.service.optimize.optimizer.test_base import OptimizerServiceTestBase
 
@@ -140,7 +141,7 @@ class TestAuxService(OptimizerServiceTestBase):
     )
 
     # We have MultimetricHyperparameters with a different length
-    multimetric_meta = experiment.experiment_meta.copy_protobuf()
+    multimetric_meta = copy_protobuf(experiment.experiment_meta)
     multimetric_meta.ClearField("metrics")
     multimetric_meta.metrics.extend([ExperimentMetric(name="not"), ExperimentMetric(name="real")])
     experiment = Experiment(experiment_meta=multimetric_meta)

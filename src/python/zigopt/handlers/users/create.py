@@ -192,16 +192,10 @@ class BaseUsersCreateHandler(Handler):
       meta.public_cert = user_attributes.public_cert
     meta.date_created = unix_timestamp()
     meta.has_verified_email = has_verified_email
-    # pylint: disable=protobuf-undefined-attribute
-    meta.SetFieldIfNotNone(  # type: ignore
-      "pending_client_name",
-      user_attributes.client_name,
-    )
-    meta.SetFieldIfNotNone(  # type: ignore
-      "pending_client_id",
-      pending_client_id,
-    )
-    # pylint: enable=protobuf-undefined-attribute
+    if user_attributes.client_name is not None:
+      meta.pending_client_name = user_attributes.client_name
+    if pending_client_id is not None:
+      meta.pending_client_id = pending_client_id
     meta.show_welcome = True
     return User(
       name=user_attributes.name,

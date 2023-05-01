@@ -7,6 +7,7 @@ from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.common.strings import random_string
 from zigopt.membership.model import Membership, MembershipType
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.user.model import User, normalize_email, password_hash
 
@@ -65,7 +66,7 @@ class UserService(Service):
 
   def set_password_reset_code(self, user):
     code = random_string()
-    meta = user.user_meta.copy_protobuf()
+    meta = copy_protobuf(user.user_meta)
     meta.hashed_password_reset_code = password_hash(code, self.services.config_broker.get("user.password_work_factor"))
     meta.password_reset_timestamp = unix_timestamp()
     self.services.user_service.update_meta(user, meta)
@@ -77,13 +78,13 @@ class UserService(Service):
       raise SigoptValidationError("Unable to change email.")
 
     email_verification_code = self.services.email_verification_service.set_email_verification_code_without_save(user)
-    user_meta = user.user_meta.copy_protobuf()
+    user_meta = copy_protobuf(user.user_meta)
     user_meta.ClearField("public_cert")
     user.email = new_email
     return email_verification_code
 
   def delete(self, user):
-    meta = user.user_meta.copy_protobuf()
+    meta = copy_protobuf(user.user_meta)
     meta.deleted = True
     meta.date_deleted = unix_timestamp()
     self.update_meta(user, meta)

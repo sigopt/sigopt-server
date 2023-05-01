@@ -19,9 +19,9 @@ class EmailWorker(QueueWorker):
   def _handle_message(self, message):
     msg = HtmlEmail(
       to=message.to,
-      subject=message.GetFieldOrNone("subject"),
-      body_html=message.GetFieldOrNone("body_html"),
-      from_address=message.GetFieldOrNone("from_address"),
+      subject=message.subject,
+      body_html=message.body_html,
+      from_address=message.from_address,
       bypass_list_management=message.bypass_list_management,
     )
     self.services.email_router.send(msg)

@@ -15,12 +15,6 @@ message Parent {
 
   map<string, double> map_field = 11 [json_name='map_field'];
   map<string, Parent> recursive_map_field = 12 [json_name='recursive_map_field'];
-
-  oneof oneof_value {
-    double oneof_double_field = 13 [json_name='oneof_double_field'];
-    string oneof_string_field = 14 [json_name='oneof_string_field'];
-    Child oneof_composite_field = 15 [json_name='oneof_composite_field'];
-  }
 }
 
 message Child {

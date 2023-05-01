@@ -70,12 +70,12 @@ def get_formatted_values(values, experiment, experiment_metrics, old_values=None
 
     val = value_from_json(
       v,
-      default=napply(old_v, lambda v: v.GetFieldOrNone("value")),  # type: ignore
+      default=old_v.value if old_v and old_v.HasField("value") else None,
     )
     v_var = value_var_from_json(
       v,
       experiment,
-      default=napply(old_v, lambda v: v.GetFieldOrNone("value_var")),  # type: ignore
+      default=old_v.value_var if old_v and old_v.HasField("value_var") else None,
     )
 
     if val is None:

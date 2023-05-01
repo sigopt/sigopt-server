@@ -24,11 +24,15 @@ class BaseValueJsonBuilder(JsonBuilder):
 
   @field(ValidationType.number)
   def value(self) -> Optional[float]:
-    return self._value.GetFieldOrNone("value")  # type: ignore
+    if self._value.HasField("value"):
+      return self._value.value
+    return None
 
   @field(ValidationType.number)
   def value_stddev(self) -> Optional[float]:
-    return napply(self._value.GetFieldOrNone("value_var"), sqrt)  # type: ignore
+    if self._value.HasField("value_var"):
+      return sqrt(self._value.value_var)
+    return None
 
 
 class ValueJsonBuilder(BaseValueJsonBuilder):
@@ -36,7 +40,9 @@ class ValueJsonBuilder(BaseValueJsonBuilder):
 
   @field(ValidationType.string)
   def name(self) -> Optional[str]:
-    return self._value.GetFieldOrNone("name")  # type: ignore
+    if self._value.HasField("name"):
+      return self._value.name
+    return None
 
 
 class ObservationDataJsonBuilder(JsonBuilder):

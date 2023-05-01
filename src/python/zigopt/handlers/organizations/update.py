@@ -13,6 +13,7 @@ from zigopt.json.builder import OrganizationJsonBuilder
 from zigopt.net.errors import NotFoundError
 from zigopt.organization.model import Organization
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, WRITE
+from zigopt.protobuf.lib import copy_protobuf
 
 from libsigopt.aux.errors import SigoptValidationError
 
@@ -70,7 +71,7 @@ class OrganizationsUpdateHandler(OrganizationHandler):
       update_clause[Organization.name] = params.name
       self.organization.name = params.name
 
-    meta = self.organization.organization_meta.copy_protobuf()
+    meta = copy_protobuf(self.organization.organization_meta)
 
     if params.email_domains is not None:
       meta.email_domains[:] = params.email_domains

@@ -8,6 +8,7 @@ import pytest
 from mock import patch
 
 from zigopt.common.sigopt_datetime import current_datetime
+from zigopt.protobuf.lib import copy_protobuf
 
 from integration.service.experiment.test_base import ExperimentServiceTestBase
 
@@ -69,7 +70,7 @@ class TestExperimentCacheCount(ExperimentServiceTestBase):
     key = self._get_redis_key(services, organization, time_interval)
     assert services.redis_service.exists(key) is False
 
-    new_meta = experiment.experiment_meta.copy_protobuf()
+    new_meta = copy_protobuf(experiment.experiment_meta)
     new_meta.development = True
     experiment.experiment_meta = new_meta
     services.experiment_service.insert(experiment)

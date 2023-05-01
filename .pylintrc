@@ -21,6 +21,7 @@ disable=
   duplicate-code,
   invalid-name,
   missing-docstring,
+  no-member,
   too-few-public-methods,
   too-many-ancestors,
   too-many-arguments,

@@ -13,6 +13,7 @@ from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_
 from zigopt.json.builder import PaginationJsonBuilder, TokenJsonBuilder
 from zigopt.net.errors import ForbiddenError, NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, READ, WRITE, TokenMeta
+from zigopt.protobuf.lib import copy_protobuf
 
 from libsigopt.aux.errors import SigoptValidationError
 
@@ -86,7 +87,7 @@ class ClientsTokensUpdateHandler(TokenHandler):
         raise SigoptValidationError('Token must equal "rotate"')
       self.services.token_service.rotate_token(self.token)
     if params.lasts_forever is not None:
-      meta = self.token.meta.copy_protobuf()
+      meta = copy_protobuf(self.token.meta)
       meta.lasts_forever = params.lasts_forever
       self.services.token_service.update_meta(self.token, meta)
     new_expires_value = params.expires

@@ -58,13 +58,10 @@ class SuggestionsCreateHandler(ExperimentHandler):
 
   @staticmethod
   def make_processed_suggestion_meta_from_json(json_dict):
-    # pylint: disable=protobuf-undefined-attribute
     suggestion_meta = ProcessedSuggestionMeta()
 
     client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(json_dict)
-    suggestion_meta.SetFieldIfNotNone(  # type: ignore
-      "client_provided_data",
-      client_provided_data,
-    )
+    if client_provided_data is not None:
+      suggestion_meta.client_provided_data = client_provided_data
 
     return suggestion_meta

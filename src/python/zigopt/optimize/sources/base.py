@@ -5,6 +5,7 @@ from zigopt.assignments.build import set_assignments_map_with_conditionals_from_
 from zigopt.common.lists import coalesce
 from zigopt.profile.timing import time_function
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionMeta
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
@@ -62,7 +63,7 @@ class OptimizationSource:
   def create_unprocessed_suggestions(self, suggestion_data_proxies, source_number):
     unprocessed_suggestion_list = []
     for proxy in suggestion_data_proxies:
-      suggestion_data = proxy.copy_protobuf()
+      suggestion_data = copy_protobuf(proxy)
       set_assignments_map_with_conditionals_from_proxy(suggestion_data, proxy, self.experiment)
       suggestion_meta_kwargs = {"suggestion_data": suggestion_data}
       unprocessed_suggestion_list.append(

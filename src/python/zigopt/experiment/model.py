@@ -48,7 +48,7 @@ class ExperimentParameterProxy(Proxy):
 
   @property
   def has_prior(self):
-    return self.GetFieldOrNone("prior") is not None
+    return self.HasField("prior")
 
   @property
   def active_categorical_values(self):
@@ -82,7 +82,7 @@ class ExperimentMetricProxy(Proxy):
 
   @property
   def threshold(self):
-    return self.GetFieldOrNone("threshold")
+    return self.underlying.threshold if self.HasField("threshold") else None
 
   @property
   def is_optimized(self):
@@ -238,7 +238,7 @@ class Experiment(Base):
 
   @property
   def client_provided_data(self):
-    return self.experiment_meta.GetFieldOrNone("client_provided_data")
+    return self.experiment_meta.client_provided_data if self.experiment_meta.HasField("client_provided_data") else None
 
   @property
   def client_provided_data_dict(self):
@@ -303,7 +303,7 @@ class Experiment(Base):
 
   @property
   def observation_budget(self):
-    return self.experiment_meta.GetFieldOrNone("observation_budget")
+    return self.experiment_meta.observation_budget if self.experiment_meta.HasField("observation_budget") else None
 
   @property
   def should_offline_optimize(self):
@@ -323,7 +323,7 @@ class Experiment(Base):
 
   @property
   def metric_thresholds(self):
-    return [metric.threshold for metric in self.all_metrics]
+    return [metric.threshold if metric.HasField("threshold") else None for metric in self.all_metrics]
 
   @property
   def development(self):

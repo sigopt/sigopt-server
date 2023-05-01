@@ -11,6 +11,7 @@ from zigopt.handlers.validate.user import validate_user_password
 from zigopt.json.builder import SessionJsonBuilder
 from zigopt.net.errors import ForbiddenError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import NONE
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.user.model import User, password_hash, password_matches
 
 
@@ -53,7 +54,7 @@ class UsersChangePasswordHandler(BaseSessionHandler):
     if password_matches(new_plaintext_password, user_to_update.hashed_password):
       raise ForbiddenError("Cannot reuse your current password")
 
-    new_meta = user_to_update.user_meta.copy_protobuf()
+    new_meta = copy_protobuf(user_to_update.user_meta)
     new_meta.ClearField("hashed_password_reset_code")
     new_meta.ClearField("needs_password_reset")
     user_to_update.user_meta = new_meta
