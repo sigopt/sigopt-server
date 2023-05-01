@@ -116,7 +116,8 @@ repos:
         entry: ./pp pylint
         language: system
         types: [python]
-        args: [-rn, -sn]
+        args: [-rn, -sn, -j8]
+        require_serial: true
       - id: crosshair
         name: crosshair
         entry: ./tools/crosshair/pre_commit_entry.sh
