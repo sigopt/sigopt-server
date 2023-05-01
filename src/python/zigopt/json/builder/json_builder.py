@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any, Callable, Optional, Sequence
 
-from zigopt.common import *
-from zigopt.common.lists import filter_keys, map_dict
+from zigopt.common.functions import napply
+from zigopt.common.strings import is_string
 from zigopt.handlers.validate.validate_dict import (
   IOValidatorInterface,
   TypeValidatorBase,

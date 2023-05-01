@@ -5,7 +5,7 @@ from http import HTTPStatus
 
 import pytest
 
-from zigopt.common.lists import recursively_omit_keys
+from zigopt.common.recursive import recursively_omit_keys
 from zigopt.handlers.validate.training_run import MAX_SOURCE_LENGTH
 from zigopt.training_run.model import OPTIMIZED_ASSIGNMENT_SOURCE
 

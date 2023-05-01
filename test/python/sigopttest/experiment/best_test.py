@@ -186,7 +186,7 @@ class TestExperimentBestObservationService:
       services.sc_adapter.multisolution_best_assignments.assert_called_once()
     else:
       services.sc_adapter.multisolution_best_assignments.assert_not_called()
-    services.exception_logger.soft_exception.assert_not_called()
+    services.exception_logger.soft_exception.assert_not_called()  # type: ignore
 
     default_metric_name = get_experiment_default_metric_name(experiment)
     assert default_metric_name == "a"
@@ -225,7 +225,7 @@ class TestExperimentBestObservationService:
     best_observations = best_observation_service.get_best_observations(experiment, observations)
 
     services.sc_adapter.multisolution_best_assignments.assert_called_once()
-    services.exception_logger.soft_exception.assert_called_once()
+    services.exception_logger.soft_exception.assert_called_once()  # type: ignore
 
     default_metric_name = get_experiment_default_metric_name(experiment)
     assert default_metric_name == "a"
@@ -277,7 +277,7 @@ class TestExperimentBestObservationService:
 
     if num_top_observations > num_solutions:
       services.sc_adapter.multisolution_best_assignments.assert_called_once()
-    services.exception_logger.soft_exception.assert_not_called()
+    services.exception_logger.soft_exception.assert_not_called()  # type: ignore
     default_metric_name = get_experiment_default_metric_name(experiment)
     assert default_metric_name == "a"
     assert len(best_observations) == len(best_values) == num_solutions
