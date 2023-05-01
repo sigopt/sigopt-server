@@ -4,6 +4,7 @@
 """
 Common utility functions for working with lists
 """
+# crosshair: on
 
 import collections.abc as _collectionsabc
 import enum
