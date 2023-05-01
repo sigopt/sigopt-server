@@ -119,11 +119,7 @@ repos:
         args: [-rn, -sn]
       - id: crosshair
         name: crosshair
-        entry: ./pp ./tools/crosshair/main.py check
+        entry: ./tools/crosshair/pre_commit_entry.sh
         language: system
         types: [python]
-        args:
-          - --per_path_timeout=0.01
-          - --per_condition_timeout=2
-          - --analysis_kind=deal
-        exclude: "^(docker|test)/"
+        exclude: "^(.pyrepl|docker|test)"
