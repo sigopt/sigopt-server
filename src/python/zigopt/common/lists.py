@@ -21,6 +21,7 @@ from typing import ParamSpec as _ParamSpec
 from typing import Sequence as _Sequence
 from typing import TypeVar as _TypeVar
 
+import deal
 import numpy as _numpy
 
 from zigopt.common.functions import identity as _identity
@@ -94,7 +95,10 @@ def generator_to_dict(
   return make_dict
 
 
-def flatten(lis: _Iterable[_Iterable[lists_T]]) -> list[lists_T]:
+@deal.pre(lambda lis: all(isinstance(v, _collectionsabc.Sequence) for v in lis))
+@deal.ensure(lambda lis, result: all(item in result for seq in lis for item in seq))
+@deal.ensure(lambda lis, result: all(not isinstance(item, str) for seq in lis for item in seq))
+def flatten(lis: _Sequence[_Sequence[lists_T]]) -> list[lists_T]:
   """
     :param lis: A list of iterables
     Returns a list comprised of the elements in each iterable.
@@ -108,18 +112,30 @@ def flatten(lis: _Iterable[_Iterable[lists_T]]) -> list[lists_T]:
   return [l for sublist in lis for l in sublist]
 
 
+@deal.ensure(lambda dct, result: all(dct[k] is v for k, v in result.items()))
+@deal.ensure(lambda dct, result: sum(1 for v in dct.values() if v) == len(result))
+@deal.post(lambda result: all(result.values()))
 def compact_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:
   return {k: v for k, v in dct.items() if v}
 
 
+@deal.ensure(lambda lis, result: all(v in lis for v in result))
+@deal.ensure(lambda lis, result: sum(1 for v in lis if v) == len(result))
+@deal.post(all)
 def compact_sequence(lis: _Sequence[_Optional[lists_T]]) -> list[lists_T]:
   return [l for l in lis if l]
 
 
+@deal.ensure(lambda dct, result: all(dct[k] is v for k, v in result.items()))
+@deal.ensure(lambda dct, result: sum(1 for v in dct.values() if v is not None) == len(result))
+@deal.post(lambda result: not any(v is None for v in result.values()))
 def remove_nones_mapping(dct: _Mapping[lists_GHashable, _Optional[lists_T]]) -> dict[lists_GHashable, lists_T]:
   return {k: v for k, v in dct.items() if v is not None}
 
 
+@deal.ensure(lambda lis, result: all(v in lis for v in result))
+@deal.ensure(lambda lis, result: sum(1 for v in lis if v is not None) == len(result))
+@deal.post(lambda result: not any(v is None for v in result))
 def remove_nones_sequence(
   lis: _Sequence[_Optional[lists_T]],
 ) -> list[lists_T] | tuple[lists_T, ...]:
@@ -133,6 +149,7 @@ def coalesce(*args: _Any) -> _Any:
   return list_get(remove_nones_sequence(args), 0)
 
 
+@deal.ensure(lambda func, d, result: all(func(v) == result[k] for k, v in d.items()))
 def map_dict(func: _Callable[[lists_T], lists_R], d: dict[lists_GHashable, lists_T]) -> dict[lists_GHashable, lists_R]:
   """
     Returns a new dict with `func` applied to all the values in `d`
@@ -152,6 +169,9 @@ def recursively_map_dict(func: _Callable[[_Any], _Any], d: dict) -> dict:
   return _inner(func, d)
 
 
+@deal.ensure(lambda func, json, result: set(result) == {k for k in json if func(k)})
+@deal.ensure(lambda func, json, result: all(json[k] is v for k, v in result.items()))
+@deal.raises(Exception)
 def filter_keys(
   func: _Callable[[lists_GHashable], bool], json: dict[lists_GHashable, lists_T]
 ) -> dict[lists_GHashable, lists_T]:
@@ -172,11 +192,14 @@ def recursively_filter_keys(func: _Callable[[_Any], bool], json: _Any) -> _Any:
 
 
 def recursively_omit_keys(json: _Any, keys: _Sequence) -> _Any:
-  assert is_sequence(keys)
   return recursively_filter_keys(lambda key: key not in keys, json)
 
 
-def partition(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
+@deal.pre(lambda lis, predicate: all(isinstance(predicate(v), bool) for v in lis))
+@deal.ensure(lambda lis, predicate, result: all(predicate(v) for v in result[0]))
+@deal.ensure(lambda lis, predicate, result: not any(predicate(v) for v in result[1]))
+@deal.raises(Exception, TypeError)
+def partition(lis: _Sequence[lists_T], predicate: _Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
   """
     Splits a list into two lists based on a predicate. The first list will contain
     all elements of the provided list where predicate is true, and the second list
@@ -187,23 +210,26 @@ def partition(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) ->
   false_list = []
   for l in as_list:
     pred_value = predicate(l)
-    if pred_value is True:
+    if pred_value:
       true_list.append(l)
-    elif pred_value is False:
-      false_list.append(l)
     else:
-      raise Exception("Invalid predicate")
+      false_list.append(l)
 
   return true_list, false_list
 
 
-def distinct(lis: list[lists_T] | tuple[lists_T, ...]) -> _Sequence[lists_T]:
+@deal.ensure(lambda lis, result: set(lis) == set(result))
+@deal.post(lambda result: len(result) == len(set(result)))
+@deal.pure
+def distinct(lis: list[lists_THashable] | tuple[lists_THashable, ...]) -> _Sequence[lists_THashable]:
   """
     Returns a copy of lis with only distinct elements, preserving order.
     """
   return distinct_by(lis, key=_identity)
 
 
+@deal.ensure(lambda lis, key, result: set(key(v) for v in lis) == set(key(v) for v in result))
+@deal.raises(Exception)
 def distinct_by(lis: _Sequence[lists_T], key: _Callable[[lists_T], _Hashable]) -> _Sequence[lists_T]:
   """
     Returns a copy of lis with only distinct elements, using the function `key` to determine distinctness.
@@ -227,6 +253,8 @@ def distinct_by(lis: _Sequence[lists_T], key: _Callable[[lists_T], _Hashable]) -
   raise ValueError(f"Invalid type for compact: {type(lis)}")
 
 
+@deal.ensure(lambda lis, predicate, result: result in lis if any(predicate(v) for v in lis) else result is None)
+@deal.raises(Exception)
 def find(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) -> _Optional[lists_T]:
   """
     Finds the first element in lis satisfying predicate, or else None
@@ -234,6 +262,9 @@ def find(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) -> _Opt
   return next((item for item in lis if predicate(item)), None)
 
 
+@deal.ensure(lambda lis, predicate, result: result < len(lis) if any(predicate(v) for v in lis) else result is None)
+@deal.post(lambda result: result is None or result >= 0)
+@deal.raises(Exception)
 def find_index(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) -> _Optional[int]:
   """
     Finds the index of the first element in lis satisfying predicate, or else None
@@ -244,6 +275,9 @@ def find_index(lis: _Iterable[lists_T], predicate: _Callable[[lists_T], bool]) -
   return None
 
 
+@deal.ensure(lambda lis, key, result: all(all(key(v) == k for v in group) for k, group in result.items()))
+@deal.ensure(lambda lis, key, result: all(v in result[key(v)] for v in lis))
+@deal.raises(Exception)
 def as_grouped_dict(
   lis: _Iterable[lists_T], key: _Callable[[lists_T], lists_GHashable]
 ) -> dict[lists_GHashable, list[lists_T]]:
@@ -261,6 +295,9 @@ def as_grouped_dict(
   return ret_map
 
 
+@deal.ensure(lambda lis, key, result: {key(v) for v in lis} == set(result))
+@deal.ensure(lambda lis, key, result: all(v in lis for v in result.values()))
+@deal.raises(Exception)
 def to_map_by_key(
   lis: _Iterable[lists_T], key: _Callable[[lists_T], lists_GHashable]
 ) -> dict[lists_GHashable, lists_T]:
@@ -308,6 +345,8 @@ def min_option(
     return None
 
 
+@deal.ensure(lambda lis, index, result: result == lis[index] if -len(lis) <= index < len(lis) else result is None)
+@deal.pure
 def list_get(lis: _Sequence[lists_T], index: int) -> _Optional[lists_T]:
   """
     Gets the list item at the provided index, or None if that index is invalid
@@ -318,7 +357,12 @@ def list_get(lis: _Sequence[lists_T], index: int) -> _Optional[lists_T]:
     return None
 
 
-def tail(lis: _Sequence[lists_T], n) -> _Sequence[lists_T]:
+@deal.pre(lambda lis, n: n >= 0)
+@deal.ensure(lambda lis, n, result: len(lis) >= len(result))
+@deal.ensure(lambda lis, n, result: len(result) == n if n < len(lis) else len(result) == len(lis))
+@deal.ensure(lambda lis, n, result: lis[-len(result) :] == result if result else True)
+@deal.pure
+def tail(lis: _Sequence[lists_T], n: int) -> _Sequence[lists_T]:
   """
     Gets the last N items of a list.
     This is safer than lis[-n:], because it will still work when n is 0.
@@ -343,14 +387,22 @@ def chunked(
   return list(_itertools.zip_longest(fillvalue=fillvalue, *args))
 
 
+@deal.pre(lambda lis, size: size > 0)
+@deal.ensure(lambda lis, size, result: all(len(v) == size for v in result))
+@deal.ensure(
+  lambda lis, size, result: all(lis[i : i + size] == v for i, v in enumerate(result))
+  if isinstance(lis, _collectionsabc.Sequence)
+  else True
+)
+@deal.post(lambda result: isinstance(result, list))
+@deal.post(lambda result: all(isinstance(v, tuple) for v in result))
+@deal.pure
 def sliding(lis: _Iterable[lists_T], size: int) -> list[tuple[lists_T, ...]]:
   """
     Returns all list slices of length `size`, in order. Returns a list of tuples.
 
     Ex: sliding([1,2,3,4], 2) == [(1, 2), (2, 3), (3, 4)]
     """
-  if size < 1:
-    raise Exception(f"Size must be > 0, received {size}")
   list_iterators = _itertools.tee(lis, size)
   for index, list_iterator in enumerate(list_iterators):
     next(_itertools.islice(list_iterator, index, index), None)  # advance by `index`
@@ -366,6 +418,13 @@ def unsafe_generator(func: lists_TCallable) -> lists_TCallable:
   return func
 
 
+@deal.ensure(lambda val, result: (val,) == result if isinstance(val, bytes) else True)
+@deal.ensure(lambda val, result: (val,) == result if isinstance(val, str) else True)
+@deal.ensure(lambda val, result: (val,) == result if not isinstance(val, _collectionsabc.Iterable) else True)
+@deal.ensure(lambda val, result: tuple(val) == result if isinstance(val, list) else True)
+@deal.ensure(lambda val, result: tuple(val) == result if isinstance(val, tuple) else True)
+@deal.post(lambda result: isinstance(result, tuple))
+@deal.pure
 def as_tuple(val: _Iterable[lists_T] | lists_T) -> tuple[lists_T, ...]:
   """
     Turns a value into a tuple if it is not already iterable
@@ -398,11 +457,15 @@ def extend_dict(
   return base
 
 
+@deal.ensure(lambda base, result: all(base[v] is k for k, v in result.items()))
+@deal.ensure(lambda base, result: all(result[v] is k for k, v in base.items()))
+@deal.raises(ValueError)
+@deal.reason(ValueError, lambda base: len(set(base.values())) != len(base))
+@deal.has()
 def invert_dict(base: _Mapping[lists_GHashable, lists_THashable]) -> dict[lists_THashable, lists_GHashable]:
   """
-    Returns a new dict which
+    Returns a new dict which has the keys and values of the input reversed
     """
-  assert is_mapping(base)
   ret = {}
   for k, v in base.items():
     ret[v] = k
@@ -426,14 +489,32 @@ def generate_constant_map_and_inverse(
   return dict(base), invert_dict(base)
 
 
+@deal.ensure(lambda base, keys, result: set(base) - set(keys) == set(result))
+@deal.ensure(lambda base, keys, result: all(base[k] is result[k] for k in result))
+def _omit(
+  base: _Mapping[lists_GHashable, lists_T], keys: tuple[lists_GHashable, ...]
+) -> dict[lists_GHashable, lists_T]:
+  keys_ = set(keys)
+  return {k: v for k, v in base.items() if k not in keys_}
+
+
 def omit(base: _Mapping[lists_GHashable, lists_T], *keys: lists_GHashable) -> dict[lists_GHashable, lists_T]:
   """
     Returns a copy of `base` with `keys` removed.
     Matches underscore.js _.omit.
     """
-  assert is_mapping(base)
+  return _omit(base, keys)
+
+
+@deal.ensure(lambda base, keys, result: set(base) & set(keys) == set(result))
+@deal.ensure(lambda base, keys, result: all(base[k] is result[k] for k in result))
+@deal.pure
+def _pick(
+  base: _Mapping[lists_GHashable, lists_T],
+  keys: tuple[lists_GHashable, ...],
+) -> dict[lists_GHashable, lists_T]:
   keys_ = set(keys)
-  return {k: v for k, v in base.items() if k not in keys_}
+  return {k: v for k, v in base.items() if k in keys_}
 
 
 def pick(base: _Mapping[lists_GHashable, lists_T], *keys: lists_GHashable) -> dict[lists_GHashable, lists_T]:
@@ -441,11 +522,16 @@ def pick(base: _Mapping[lists_GHashable, lists_T], *keys: lists_GHashable) -> di
     Returns a copy of `base` with only keys `keys`.
     Matches underscore.js _.pick.
     """
-  assert is_mapping(base)
-  keys_ = set(keys)
-  return {k: v for k, v in base.items() if k in keys_}
+  return _pick(base, keys)
 
 
+@deal.ensure(lambda val, result: result if isinstance(val, list) else True)
+@deal.ensure(lambda val, result: result if isinstance(val, tuple) else True)
+@deal.ensure(lambda val, result: result if isinstance(val, _collectionsabc.Generator) else True)
+@deal.ensure(lambda val, result: result if isinstance(val, _numpy.ndarray) else True)
+@deal.ensure(lambda val, result: not result if isinstance(val, str) else True)
+@deal.post(lambda result: isinstance(result, bool))
+@deal.pure
 def is_iterable(val: _Any) -> bool:
   """
     Returns True iff this is an iterable type. Avoids the common error that strings
@@ -454,6 +540,13 @@ def is_iterable(val: _Any) -> bool:
   return isinstance(val, _collectionsabc.Iterable) and not _is_serial(val)
 
 
+@deal.ensure(lambda val, result: result if isinstance(val, list) else True)
+@deal.ensure(lambda val, result: result if isinstance(val, tuple) else True)
+@deal.ensure(lambda val, result: not result if isinstance(val, _numpy.ndarray) else True)
+@deal.ensure(lambda val, result: not result if isinstance(val, str) else True)
+@deal.ensure(lambda val, result: not result if isinstance(val, _collectionsabc.Generator) else True)
+@deal.post(lambda result: isinstance(result, bool))
+@deal.pure
 def is_sequence(val: _Any) -> bool:
   """
     Returns True iff this is a "list-like" type. Avoids the common error that strings
