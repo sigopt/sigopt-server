@@ -68,18 +68,6 @@ repos:
     hooks:
       - id: isort
         entry: ./pp isort
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.2.0"
-    hooks:
-      - id: mypy
-        entry: ./pp mypy
-        additional_dependencies:
-          - types-mock==5.0.0.6
-          - types-protobuf==3.20.4
-          - types-pytz==2023.2.0.0
-          - types-PyYAML==5.4.1
-          - types-redis==4.5.3.0
-          - types-requests==2.28.11.2
   - repo: https://github.com/pre-commit/mirrors-prettier.git
     rev: "v3.0.0-alpha.9-for-vscode"
     hooks:
@@ -111,6 +99,11 @@ repos:
         description: "An AST-based pattern checker for JavaScript."
         language: system
         types: [javascript]
+      - id: mypy
+        name: mypy
+        entry: ./pp mypy
+        language: system
+        types: [python]
       - id: pylint
         name: pylint
         entry: ./pp pylint
