@@ -7,7 +7,7 @@ name = "pypi"
 python_version = "3.10"
 
 [packages]
-Flask = ">=2.2.3,<2.3"
+Flask = ">=2.3.2,<2.4"
 PyYAML = ">=5.4.1,<7"
 backoff = ">=1.10.0,<3"
 bcrypt = ">=3.2.0,<5"
@@ -37,7 +37,7 @@ build = "==0.10.0"
 debugpy = "==1.6.7"
 flaky = "==3.7.0"
 freezegun = "==1.2.1"
-flasgger = {ref = "c9c08f752a0cb3e015ee837005cbb000aa13b8ae", git = "https://github.com/sigopt/flasgger.git"}
+flasgger = {ref = "8626429a9f5f05bd62fc8d47e0b851f5788c9adf", git = "https://github.com/sigopt/flasgger.git"}
 sigopt = {ref = "main", git = "https://github.com/sigopt/sigopt-python.git"}
 html5-parser = "==0.4.4"
 inotify = {version = ">=0.2.10,<0.3", sys_platform = "== 'linux'"}
