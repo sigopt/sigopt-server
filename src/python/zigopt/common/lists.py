@@ -182,7 +182,6 @@ def tail(lis: Sequence[lists_T], n: int) -> Sequence[lists_T]:
     This is safer than lis[-n:], because it will still work when n is 0.
     It also fails on None inputs instead of just returning the whole list
     """
-  assert n is not None
   return [] if n <= 0 else lis[-n:]
 
 
@@ -205,15 +204,9 @@ def chunked(
 
 @deal.pre(lambda lis, size: size > 0)
 @deal.ensure(lambda lis, size, result: all(len(v) == size for v in result))
-@deal.ensure(
-  lambda lis, size, result: all(lis[i : i + size] == v for i, v in enumerate(result))
-  if isinstance(lis, collections.abc.Sequence)
-  else True
-)
-@deal.post(lambda result: isinstance(result, list))
-@deal.post(lambda result: all(isinstance(v, tuple) for v in result))
+@deal.ensure(lambda lis, size, result: all(tuple(lis[i : i + size]) == v for i, v in enumerate(result)))
 @deal.pure
-def sliding(lis: Iterable[lists_T], size: int) -> list[tuple[lists_T, ...]]:
+def sliding(lis: Sequence[lists_T], size: int) -> list[tuple[lists_T, ...]]:
   """
     Returns all list slices of length `size`, in order. Returns a list of tuples.
 
