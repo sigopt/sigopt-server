@@ -29,7 +29,7 @@ class TestUpdateOne(DatabaseServiceBase):
     self._organization = Organization(name="test update_one org")
     services.database_service.insert(self._organization)
     self._client = Client(organization_id=self._organization.id, name="test update_one client")
-    services.database_service.insert(self.client)
+    services.database_service.insert(self._client)
     self.e1 = Experiment(client_id=self._client.id, name="test_update_one experiment 1")
     services.database_service.insert(self.e1)
     self.e2 = Experiment(client_id=self._client.id, name="test_update_one experiment 2")
