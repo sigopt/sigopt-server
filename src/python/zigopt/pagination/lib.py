@@ -49,8 +49,11 @@ DefinedField = ImmutableStruct(
 
 def get_value_of_paging_symbol(symbol):
   assert isinstance(symbol, PagingSymbol)
-  if symbol.WhichOneof("type") == "null_value":
+  which_oneof = symbol.WhichOneof("type")
+  if which_oneof is None:
     return None
-  if symbol.WhichOneof("type") == "timestamp_value":
+  if which_oneof == "null_value":
+    return None
+  if which_oneof == "timestamp_value":
     return naive_datetime_to_aware_datetime(symbol.timestamp_value.ToDatetime())
-  return symbol.GetOneofValueOrNone("type")  # type: ignore
+  return getattr(symbol, which_oneof)

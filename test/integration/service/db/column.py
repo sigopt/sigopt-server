@@ -12,6 +12,7 @@ from zigopt.db.column import JsonPath, jsonb_set
 from zigopt.experiment.model import Experiment
 from zigopt.protobuf.dict import protobuf_to_dict
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.protobuf.proxy import Proxy
 
 from integration.service.db.test_base import DatabaseServiceBase
@@ -219,7 +220,7 @@ class TestProtobufColumn(DatabaseServiceBase):
       experiment.id, {getattr(Experiment.experiment_meta, key): getattr(Experiment.experiment_meta, key)}
     )
     new_experiment = experiment_service.find_by_id(experiment.id)
-    assert experiment.experiment_meta.copy_protobuf() == (new_experiment.experiment_meta.copy_protobuf())
+    assert copy_protobuf(experiment.experiment_meta) == (copy_protobuf(new_experiment.experiment_meta))
 
   def test_jsonb_increment(self, database_service, experiment_service, experiment):
     old_budget = experiment_service.find_by_id(experiment.id).experiment_meta.observation_budget
@@ -255,16 +256,14 @@ class TestProtobufColumn(DatabaseServiceBase):
         [
           (lambda meta: meta, None),
           (lambda meta: meta.experiment_type, lambda c: c.as_primitive()),
-          (lambda meta: meta.GetFieldOrNone("experiment_type"), lambda c: c.as_primitive()),
           (lambda meta: meta.HasField("experiment_type"), None),
+          (lambda meta: meta.development, lambda c: c.as_primitive()),
           (lambda meta: meta.development, lambda c: ~~c),
-          (lambda meta: meta.GetFieldOrNone("development"), lambda c: ~~c),
           (lambda meta: meta.HasField("development"), None),
+          (lambda meta: meta.force_hitandrun_sampling, lambda c: c.as_primitive()),
           (lambda meta: meta.force_hitandrun_sampling, lambda c: ~~c),
-          (lambda meta: meta.GetFieldOrNone("force_hitandrun_sampling"), lambda c: ~~c),
           (lambda meta: meta.HasField("force_hitandrun_sampling"), None),
           (lambda meta: meta.num_solutions, lambda c: c.as_primitive()),
-          (lambda meta: meta.GetFieldOrNone("num_solutions"), lambda c: c.as_primitive()),
           (lambda meta: meta.HasField("num_solutions"), None),
           (lambda meta: meta.metrics, None),
           (lambda meta: meta.importance_maps, None),
@@ -276,7 +275,7 @@ class TestProtobufColumn(DatabaseServiceBase):
           (lambda meta: meta.conditionals, None),
           (lambda meta: meta.observation_budget, lambda c: c.as_primitive()),
           (lambda meta: meta.unused_int64_key_for_testing, lambda c: c.as_primitive()),
-          (lambda meta: meta.GetFieldOrNone("observation_budget"), lambda c: c.as_primitive()),
+          (lambda meta: meta.observation_budget, lambda c: c.as_primitive()),
           (lambda meta: meta.HasField("observation_budget"), None),
         ]
       )
@@ -296,22 +295,17 @@ class TestProtobufColumn(DatabaseServiceBase):
           (lambda meta: meta.all_parameters_unsorted[0].name, lambda c: c.as_primitive()),
           (lambda meta: meta.all_parameters_unsorted[0].bounds, None),
           (lambda meta: meta.all_parameters_unsorted[0].bounds.minimum, lambda c: c.as_primitive()),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("minimum"), lambda c: c.as_primitive()),
           (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("minimum"), None),
           (lambda meta: meta.all_parameters_unsorted[0].bounds.maximum, lambda c: c.as_primitive()),
-          (lambda meta: meta.all_parameters_unsorted[0].bounds.GetFieldOrNone("maximum"), lambda c: c.as_primitive()),
           (lambda meta: meta.all_parameters_unsorted[0].bounds.HasField("maximum"), None),
           (lambda meta: meta.conditionals[0], None),
           (lambda meta: meta.conditionals[0].name, lambda c: c.as_primitive()),
-          (lambda meta: meta.conditionals[0].GetFieldOrNone("name"), lambda c: c.as_primitive()),
           (lambda meta: meta.conditionals[0].HasField("name"), None),
           (lambda meta: meta.conditionals[0].values, None),
           (lambda meta: meta.conditionals[0].values[0], None),
           (lambda meta: meta.conditionals[0].values[0].name, lambda c: c.as_primitive()),
-          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("name"), lambda c: c.as_primitive()),
           (lambda meta: meta.conditionals[0].values[0].HasField("name"), None),
           (lambda meta: meta.conditionals[0].values[0].enum_index, lambda c: c.as_primitive()),
-          (lambda meta: meta.conditionals[0].values[0].GetFieldOrNone("enum_index"), lambda c: c.as_primitive()),
           (lambda meta: meta.conditionals[0].values[0].HasField("enum_index"), None),
         ]
       )

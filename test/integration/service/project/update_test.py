@@ -4,7 +4,6 @@
 from zigopt.common.strings import random_string
 from zigopt.project.model import Project
 from zigopt.protobuf.dict import dict_to_protobuf_struct
-from zigopt.protobuf.lib import CopyFrom
 
 from integration.service.project.test_base import ProjectServiceTestBase
 
@@ -33,7 +32,7 @@ class TestProjectServiceUpdate(ProjectServiceTestBase):
 
   def test_update_project_data(self, services, project_service, project):
     project_data = Project.data.default_value()
-    CopyFrom(project_data.metadata, (dict_to_protobuf_struct({"testing": random_string()})))
+    project_data.metadata.CopyFrom((dict_to_protobuf_struct({"testing": random_string()})))
     project_service.update(
       client_id=project.client_id,
       reference_id=project.reference_id,
@@ -49,7 +48,7 @@ class TestProjectServiceUpdate(ProjectServiceTestBase):
   def test_update_project_all(self, services, project_service, project):
     new_name = random_string()
     project_data = Project.data.default_value()
-    CopyFrom(project_data.metadata, (dict_to_protobuf_struct({"testing": random_string()})))
+    project_data.metadata.CopyFrom((dict_to_protobuf_struct({"testing": random_string()})))
     project_service.update(
       client_id=project.client_id,
       reference_id=project.reference_id,

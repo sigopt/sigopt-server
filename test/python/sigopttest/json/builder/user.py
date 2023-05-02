@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.json.builder import UserJsonBuilder
+from zigopt.protobuf.lib import copy_protobuf
 
 from sigopttest.json.builder.test_base import HIDDEN_USER_FIELDS, VISIBLE_USER_FIELDS, BuilderTestBase
 
@@ -27,7 +28,7 @@ class TestUserJsonBuilder(BuilderTestBase):
       assert hidden_field_name not in user_json
 
   def test_all_fields(self, user):
-    user_meta = user.user_meta.copy_protobuf()
+    user_meta = copy_protobuf(user.user_meta)
     user_meta.deleted = True
     user.user_meta = user_meta
     user_json = UserJsonBuilder.json(user)
@@ -37,7 +38,7 @@ class TestUserJsonBuilder(BuilderTestBase):
     assert user_json["deleted"] is True
 
   def test_educational_user(self, user):
-    user_meta = user.user_meta.copy_protobuf()
+    user_meta = copy_protobuf(user.user_meta)
     user_meta.educational_user = True
     user.user_meta = user_meta
     user_json = UserJsonBuilder.json(user)

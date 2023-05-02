@@ -11,6 +11,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentCategoricalValue,
   ExperimentParameter,
 )
+from zigopt.protobuf.lib import copy_protobuf
 
 from libsigopt.aux.errors import SigoptValidationError
 
@@ -29,7 +30,7 @@ def convert_to_unconditioned_experiment(experiment):
   conditionals = experiment.conditionals
   conditionals_as_cat_parameter_list = [convert_conditional_to_categorical_parameter(c) for c in conditionals]
 
-  unconditioned_experiment_meta = experiment.experiment_meta.copy_protobuf()
+  unconditioned_experiment_meta = copy_protobuf(experiment.experiment_meta)
   unconditioned_experiment_meta.ClearField("conditionals")
   for p in unconditioned_experiment_meta.all_parameters_unsorted:
     if p.conditions and not p.replacement_value_if_missing:

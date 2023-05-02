@@ -42,6 +42,7 @@ from zigopt.parameters.from_json import (
 )
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMeta, ExperimentMetric
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+from zigopt.protobuf.lib import copy_protobuf
 
 from libsigopt.aux.errors import InvalidTypeError, InvalidValueError, MissingJsonKeyError, SigoptValidationError
 
@@ -315,7 +316,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
 
     update_meta_fields: dict[Column, Any] = {}
     update_experiment_fields: dict[Column, Any] = {}
-    new_meta = self.experiment.experiment_meta.copy_protobuf()
+    new_meta = copy_protobuf(self.experiment.experiment_meta)
     if not new_meta.metrics:
       new_meta.metrics.extend([ExperimentMetric(name=None)])
 
@@ -489,8 +490,8 @@ class ExperimentsUpdateHandler(ExperimentHandler):
           " Please add a default_value field to the new parameter(s)."
           " Or if you are using the web dashboard fill out the Default Value field."
         )
-    default_value = param.GetFieldOrNone("replacement_value_if_missing")
-    if default_value is not None and not param.valid_assignment(default_value):
+    default_value = param.replacement_value_if_missing
+    if param.HasField("replacement_value_if_missing") and not param.valid_assignment(default_value):
       if param.is_categorical:
         raise SigoptValidationError(
           f"`default_value` for parameter {param.name} is invalid - must be a valid categorical value."

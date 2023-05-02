@@ -97,11 +97,8 @@ class OrganizationService(Service):
     meta = ClientMeta()
     meta.date_created = unix_timestamp()
 
-    # pylint: disable=protobuf-undefined-attribute
-    meta.client_security.SetFieldIfNotNone(  # type: ignore
-      "allow_users_to_see_experiments_by_others", allow_users_to_see_experiments_by_others
-    )
-    # pylint: enable=protobuf-undefined-attribute
+    if allow_users_to_see_experiments_by_others is not None:
+      meta.client_security.allow_users_to_see_experiments_by_others = allow_users_to_see_experiments_by_others
 
     client = Client(
       organization_id=organization.id,

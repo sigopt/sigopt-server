@@ -6,7 +6,6 @@ import uuid
 from zigopt.file.storage.base import FileStorage
 from zigopt.json.builder import S3DownloadJsonBuilder, S3UploadJsonBuilder
 from zigopt.protobuf.gen.file.filedata_pb2 import S3StorageMethod
-from zigopt.protobuf.lib import CopyFrom
 
 
 class S3FileStorage(FileStorage):
@@ -32,7 +31,7 @@ class S3FileStorage(FileStorage):
   def set_file_storage_method(self, file_obj):
     if file_obj.data.WhichOneof("storage_method") == "s3":
       return
-    CopyFrom(file_obj.data.s3, S3StorageMethod(key=self.get_key_from_file(file_obj)))
+    file_obj.data.s3.CopyFrom(S3StorageMethod(key=self.get_key_from_file(file_obj)))
 
   def create_upload_data(self, file_obj):
     self.check_enabled()

@@ -10,6 +10,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentMeta,
   ExperimentParameter,
 )
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.suggestion.sampler.xgb_sampler import XGBSampler
 
 
@@ -33,7 +34,7 @@ def double_parameter(name, minimum, maximum):
 
 def fake_experiment(all_parameters):
   experiment = Experiment(
-    experiment_meta=ExperimentMeta(all_parameters_unsorted=[param.copy_protobuf() for param in all_parameters])
+    experiment_meta=ExperimentMeta(all_parameters_unsorted=[copy_protobuf(param) for param in all_parameters])
   )
   return experiment
 

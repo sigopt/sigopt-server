@@ -131,24 +131,20 @@ class TestDbColumn:
     ],
   )
   def test_valid_fields(self, field):
-    Model.protobuf_column.GetFieldOrNone(field)
+    getattr(Model.protobuf_column, field)
     Model.protobuf_column.HasField(field)
 
   @pytest.mark.parametrize(
     "field",
     [
-      "repeated_double_field",
-      "repeated_string_field",
-      "repeated_composite_field",
-      "repeated_recursive_field",
       "serialized_name",
       "fake_name",
     ],
   )
   def test_invalid_fields(self, field):
-    with pytest.raises(ValueError):
-      Model.protobuf_column.GetFieldOrNone(field)
-    with pytest.raises(ValueError):
+    with pytest.raises(AttributeError):
+      getattr(Model.protobuf_column, field)
+    with pytest.raises(AttributeError):
       Model.protobuf_column.HasField(field)
 
   def test_map_fields(self):
