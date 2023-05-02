@@ -4,7 +4,6 @@
 from sqlalchemy import BigInteger, Column, ForeignKey, PrimaryKeyConstraint, Sequence, String, UniqueConstraint
 from sqlalchemy.orm import validates
 
-from zigopt.common import *
 from zigopt.db.column import ProtobufColumn, ProtobufColumnValidator
 from zigopt.db.declarative import Base
 from zigopt.protobuf.gen.tag.tagdata_pb2 import TagData
