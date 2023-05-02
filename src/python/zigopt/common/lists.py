@@ -14,7 +14,6 @@ import deal
 
 from zigopt.common.functions import identity
 from zigopt.common.generators import unsafe_generator
-from zigopt.common.remove_nones import remove_nones_sequence
 from zigopt.common.types import is_iterable
 
 
@@ -67,7 +66,7 @@ def coalesce(*args: Any) -> Any:
   """
     Returns the first non-None value, or None if no such value exists
     """
-  return list_get(remove_nones_sequence(args), 0)
+  return next((a for a in args if a is not None), None)
 
 
 @deal.pre(lambda lis, predicate: all(isinstance(predicate(v), bool) for v in lis))

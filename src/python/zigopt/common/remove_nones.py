@@ -20,7 +20,7 @@ def remove_nones_mapping(dct: Mapping[lists_GHashable, Optional[lists_T]]) -> di
   return {k: v for k, v in dct.items() if v is not None}
 
 
-@deal.ensure(lambda lis, result: all(v in lis for v in result))
+@deal.ensure(lambda lis, result: all(any(v is e for e in lis) for v in result))
 @deal.ensure(lambda lis, result: sum(1 for v in lis if v is not None) == len(result))
 @deal.post(lambda result: not any(v is None for v in result))
 def remove_nones_sequence(
