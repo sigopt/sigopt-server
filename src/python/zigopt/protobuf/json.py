@@ -1,12 +1,23 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# crosshair: on
+from typing import Any, Callable
+
+import deal
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
-from google.protobuf.json_format import _IsMapEntry as IsMapEntry  # type: ignore
+from google.protobuf.json_format import _IsMapEntry  # type: ignore
+from google.protobuf.message_factory import MessageFactory
 
 from zigopt.common import *
 from zigopt.protobuf.dict import dict_to_protobuf, is_protobuf_struct_descriptor, protobuf_to_dict
 from zigopt.protobuf.lib import is_protobuf
+
+
+@deal.pure
+@deal.post(lambda result: isinstance(result, bool))
+def IsMapEntry(field: FieldDescriptor) -> bool:
+  return hasattr(field.message_type, "has_options") and _IsMapEntry(field)
 
 
 class InvalidPathError(ValueError):
@@ -60,8 +71,13 @@ class DescriptorWithDefault(ZigoptDescriptor):
     return self.python_type(value)
 
 
-def next_descriptor_for_field_descriptor(descriptor):
+@deal.post(callable)
+@deal.raises(NotImplementedError, TypeError)
+@deal.has()
+def next_descriptor_for_field_descriptor(descriptor: FieldDescriptor) -> Callable:
   if descriptor.message_type is not None:
+    if not callable(descriptor.message_type):
+      raise TypeError(f"message_type for descriptor is not callable: {descriptor.message_type}")
     return descriptor.message_type
   if descriptor.type == FieldDescriptor.TYPE_ENUM:
     return OurEnumDescriptor(descriptor)
@@ -89,7 +105,10 @@ def next_descriptor_for_field_descriptor(descriptor):
   return python_type
 
 
-def field_descriptor_to_scalar_descriptor(field_descriptor):
+@deal.post(callable)
+@deal.raises(NotImplementedError, TypeError)
+@deal.has()
+def field_descriptor_to_scalar_descriptor(field_descriptor: FieldDescriptor) -> Callable:
   if field_descriptor.message_type:
     raise NotImplementedError("message types are not supported in this function")
   python_type = next_descriptor_for_field_descriptor(field_descriptor)
@@ -98,8 +117,10 @@ def field_descriptor_to_scalar_descriptor(field_descriptor):
   return python_type
 
 
-def get_json_key_from_field_descriptor(descriptor, key):
-  assert isinstance(descriptor, FieldDescriptor)
+@deal.post(callable)
+@deal.raises(InvalidPathError, TypeError)
+@deal.has()
+def get_json_key_from_field_descriptor(descriptor: FieldDescriptor, key) -> Callable:
   is_array_access = is_integer(key)
   if is_array_access:
     if descriptor.label != FieldDescriptor.LABEL_REPEATED:
@@ -116,57 +137,63 @@ def get_json_key_from_field_descriptor(descriptor, key):
   raise TypeError("Did not dereference FieldDescriptor message_type")
 
 
-def get_json_key(descriptor, key, json=False):
-  assert hasattr(descriptor, "GetOptions"), "validate_path can only be called on protobuf descriptors"
-  assert descriptor is not None
-
-  is_field_descriptor = isinstance(descriptor, FieldDescriptor)
-  is_array_access = is_integer(key)
-  if is_field_descriptor:
-    descriptor = get_json_key_from_field_descriptor(descriptor, key)
-  else:
-    if is_array_access:
-      raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
-    for field in descriptor.fields:
-      accessor_name = field.name
-      if json:
-        assert field.json_name
-        accessor_name = field.json_name
-      if accessor_name == key:
-        descriptor = field
-        if descriptor.label != FieldDescriptor.LABEL_REPEATED:
-          if descriptor.type == FieldDescriptor.TYPE_MESSAGE:
-            descriptor = descriptor.message_type
-          else:
-            descriptor = field_descriptor_to_scalar_descriptor(descriptor)
-        break
-    else:
-      raise InvalidPathError(f"Invalid attribute for {descriptor}: {key}")
-  assert descriptor is not None
-  return descriptor
+@deal.pre(
+  lambda descriptor, key, json: hasattr(descriptor, "GetOptions"),
+  message="validate_path can only be called on protobuf descriptors",
+)
+@deal.post(callable)
+@deal.raises(TypeError, InvalidPathError)
+@deal.has()
+def get_json_key(descriptor: Descriptor | FieldDescriptor, key, json: bool) -> Callable:
+  if isinstance(descriptor, FieldDescriptor):
+    return get_json_key_from_field_descriptor(descriptor, key)
+  if is_integer(key):
+    raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
+  for field in descriptor.fields:
+    accessor_name = field.name
+    if json:
+      accessor_name = field.json_name
+    if accessor_name == key:
+      if field.label != FieldDescriptor.LABEL_REPEATED:
+        if field.type == FieldDescriptor.TYPE_MESSAGE:
+          return field.message_type
+        return field_descriptor_to_scalar_descriptor(field)
+      break
+  raise InvalidPathError(f"Invalid attribute for {descriptor}: {key}")
 
 
-def _validate_array(value, descriptor, is_emit):
-  is_field_descriptor = isinstance(descriptor, FieldDescriptor)
-  if is_field_descriptor:
-    is_repeated_field = (descriptor.label == FieldDescriptor.LABEL_REPEATED) and not IsMapEntry(descriptor)
-    is_array = is_sequence(value)
-    if is_array ^ is_repeated_field:
-      raise ValueError("Expected repeated field descriptor for array values")
-    return is_array
-  return False
+@deal.post(lambda result: isinstance(result, bool))
+@deal.raises(ValueError)
+@deal.has()
+def validate_array(value: list | dict | int | float | str, descriptor: FieldDescriptor, is_emit: bool) -> bool:
+  is_repeated_field = (descriptor.label == FieldDescriptor.LABEL_REPEATED) and not (
+    hasattr(descriptor.message_type, "has_options") and IsMapEntry(descriptor)
+  )
+  is_array = is_sequence(value)
+  if is_array ^ is_repeated_field:
+    raise ValueError("Expected repeated field descriptor for array values")
+  return is_array
 
 
-def is_valid_field_descriptor_for_value(value, descriptor, is_emit):
+@deal.post(lambda result: isinstance(result, bool))
+@deal.pure
+def is_valid_field_descriptor_for_value(value: Any, descriptor: FieldDescriptor, is_emit: bool) -> bool:
   if descriptor.type == FieldDescriptor.TYPE_MESSAGE:
     return is_protobuf(value) if is_emit else is_mapping(value)
-  return is_valid_scalar_descriptor_for_value(
-    value,
-    next_descriptor_for_field_descriptor(descriptor),
-  )
+  try:
+    return is_valid_scalar_descriptor_for_value(
+      value,
+      next_descriptor_for_field_descriptor(descriptor),
+    )
+  except TypeError:
+    return False
 
 
-def is_valid_scalar_descriptor_for_value(value, descriptor):
+@deal.post(lambda result: isinstance(result, bool))
+@deal.pure
+def is_valid_scalar_descriptor_for_value(value: Any, descriptor: FieldDescriptor | Callable) -> bool:
+  if not callable(descriptor):
+    return False
   try:
     return descriptor(value) == value
   except (TypeError, ValueError):
@@ -175,8 +202,7 @@ def is_valid_scalar_descriptor_for_value(value, descriptor):
 
 def emit_json_with_descriptor(value, descriptor):
   # pylint: disable=too-many-return-statements
-  is_array = _validate_array(value, descriptor, is_emit=True)
-  if is_array:
+  if isinstance(descriptor, FieldDescriptor) and validate_array(value, descriptor, is_emit=True):
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
     return [emit_json_with_descriptor(v, next_descriptor) for v in value]
   if isinstance(descriptor, Descriptor):
@@ -203,10 +229,13 @@ def emit_json_with_descriptor(value, descriptor):
   raise ValueError(f"Invalid value for scalar descriptor {descriptor}: {value}")
 
 
-def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknown_fields):
+@deal.raises(ValueError)
+@deal.has()
+def parse_json_with_descriptor(
+  value: Any, descriptor: Descriptor, message_factory: MessageFactory, ignore_unknown_fields: bool
+) -> Any:
   # pylint: disable=too-many-return-statements
-  is_array = _validate_array(value, descriptor, is_emit=False)
-  if is_array:
+  if isinstance(descriptor, FieldDescriptor) and validate_array(value, descriptor, is_emit=False):
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
     return [parse_json_with_descriptor(v, next_descriptor, message_factory, ignore_unknown_fields) for v in value]
   if isinstance(descriptor, Descriptor):
