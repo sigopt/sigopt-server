@@ -31,7 +31,7 @@ def is_iterable(val: Any) -> bool:
 
 @deal.ensure(lambda val, result: result if isinstance(val, list) else True)
 @deal.ensure(lambda val, result: result if isinstance(val, tuple) else True)
-@deal.ensure(lambda val, result: not result if isinstance(val, numpy.ndarray) else True)
+@deal.ensure(lambda val, result: result if isinstance(val, numpy.ndarray) else True)
 @deal.ensure(lambda val, result: not result if isinstance(val, str) else True)
 @deal.ensure(lambda val, result: not result if isinstance(val, collections.abc.Generator) else True)
 @deal.post(lambda result: isinstance(result, bool))
