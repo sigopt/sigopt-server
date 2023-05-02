@@ -8,6 +8,7 @@ import os
 import sys
 
 from zigopt.config import load_config_from_env
+from zigopt.contracts import prepare_contracts
 from zigopt.log.base import base_logger_setup, configure_loggers
 from zigopt.profile.profile import BaseProfiler, NullProfiler, Profiler
 from zigopt.queue.exceptions import WorkerInterruptedException
@@ -29,6 +30,7 @@ parser.add_argument("--interrupted-exit-code", type=int, default=0)
 if __name__ == "__main__":
   base_logger_setup()
   args = parser.parse_args()
+  prepare_contracts()
   config_broker = load_config_from_env()
   configure_loggers(config_broker)
 

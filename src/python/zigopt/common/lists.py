@@ -20,11 +20,11 @@ from zigopt.common.types import is_iterable
 if TYPE_CHECKING:
   import _typeshed
 
-  type_lists_Comp = _typeshed.SupportsRichComparison
+  type_Comparable = _typeshed.SupportsRichComparison
 
 
-lists_T = TypeVar("lists_T")
-lists_THashable = TypeVar("lists_THashable", bound=Hashable)
+T = TypeVar("T")
+THashable = TypeVar("THashable", bound=Hashable)
 
 __all__ = [
   "flatten",
@@ -48,7 +48,7 @@ class Sentinel(enum.Enum):
 
 @deal.pre(lambda lis: all(isinstance(v, collections.abc.Collection) for v in lis))
 @deal.ensure(lambda lis, result: all(item in result for seq in lis for item in seq))
-def flatten(lis: Sequence[Collection[lists_T]]) -> list[lists_T]:
+def flatten(lis: Sequence[Collection[T]]) -> list[T]:
   """
     :param lis: A list of iterables
     Returns a list comprised of the elements in each iterable.
@@ -73,7 +73,7 @@ def coalesce(*args: Any) -> Any:
 @deal.ensure(lambda lis, predicate, result: all(predicate(v) for v in result[0]))
 @deal.ensure(lambda lis, predicate, result: not any(predicate(v) for v in result[1]))
 @deal.raises(Exception, TypeError)
-def partition(lis: Sequence[lists_T], predicate: Callable[[lists_T], bool]) -> tuple[list[lists_T], list[lists_T]]:
+def partition(lis: Sequence[T], predicate: Callable[[T], bool]) -> tuple[list[T], list[T]]:
   """
     Splits a list into two lists based on a predicate. The first list will contain
     all elements of the provided list where predicate is true, and the second list
@@ -95,7 +95,7 @@ def partition(lis: Sequence[lists_T], predicate: Callable[[lists_T], bool]) -> t
 @deal.ensure(lambda lis, result: set(lis) == set(result))
 @deal.post(lambda result: len(result) == len(set(result)))
 @deal.pure
-def distinct(lis: list[lists_THashable] | tuple[lists_THashable, ...]) -> Sequence[lists_THashable]:
+def distinct(lis: list[THashable] | tuple[THashable, ...]) -> Sequence[THashable]:
   """
     Returns a copy of lis with only distinct elements, preserving order.
     """
@@ -104,14 +104,14 @@ def distinct(lis: list[lists_THashable] | tuple[lists_THashable, ...]) -> Sequen
 
 @deal.ensure(lambda lis, key, result: set(key(v) for v in lis) == set(key(v) for v in result))
 @deal.raises(Exception)
-def distinct_by(lis: Sequence[lists_T], key: Callable[[lists_T], Hashable]) -> Sequence[lists_T]:
+def distinct_by(lis: Sequence[T], key: Callable[[T], Hashable]) -> Sequence[T]:
   """
     Returns a copy of lis with only distinct elements, using the function `key` to determine distinctness.
     When two elements have the same key value, the first encountered is used
     """
 
   @unsafe_generator
-  def generator() -> Iterator[lists_T]:
+  def generator() -> Iterator[T]:
     seen = set()
     for l in lis:
       k = key(l)
@@ -128,9 +128,9 @@ def distinct_by(lis: Sequence[lists_T], key: Callable[[lists_T], Hashable]) -> S
 
 
 def max_option(
-  lis: Iterable[lists_T],
-  key: Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG,
-) -> Optional[lists_T]:
+  lis: Iterable[T],
+  key: Callable[[T], "type_Comparable"] | Sentinel = Sentinel.NO_ARG,
+) -> Optional[T]:
   """
     Like max, but returns None on an empty seq instead of an error
     """
@@ -144,9 +144,9 @@ def max_option(
 
 
 def min_option(
-  lis: Iterable[lists_T],
-  key: Callable[[lists_T], "type_lists_Comp"] | Sentinel = Sentinel.NO_ARG,
-) -> Optional[lists_T]:
+  lis: Iterable[T],
+  key: Callable[[T], "type_Comparable"] | Sentinel = Sentinel.NO_ARG,
+) -> Optional[T]:
   """
     Like min, but returns None on an empty seq instead of an error
     """
@@ -161,7 +161,7 @@ def min_option(
 
 @deal.ensure(lambda lis, index, result: result == lis[index] if -len(lis) <= index < len(lis) else result is None)
 @deal.pure
-def list_get(lis: Sequence[lists_T], index: int) -> Optional[lists_T]:
+def list_get(lis: Sequence[T], index: int) -> Optional[T]:
   """
     Gets the list item at the provided index, or None if that index is invalid
     """
@@ -176,7 +176,7 @@ def list_get(lis: Sequence[lists_T], index: int) -> Optional[lists_T]:
 @deal.ensure(lambda lis, n, result: len(result) == n if n < len(lis) else len(result) == len(lis))
 @deal.ensure(lambda lis, n, result: lis[-len(result) :] == result if result else True)
 @deal.pure
-def tail(lis: Sequence[lists_T], n: int) -> Sequence[lists_T]:
+def tail(lis: Sequence[T], n: int) -> Sequence[T]:
   """
     Gets the last N items of a list.
     This is safer than lis[-n:], because it will still work when n is 0.
@@ -186,10 +186,10 @@ def tail(lis: Sequence[lists_T], n: int) -> Sequence[lists_T]:
 
 
 def chunked(
-  lis: Iterable[lists_T],
+  lis: Iterable[T],
   size: int,
-  fillvalue: Optional[lists_T] = None,
-) -> list[tuple[Optional[lists_T], ...]]:
+  fillvalue: Optional[T] = None,
+) -> list[tuple[Optional[T], ...]]:
   """
     Returns disjoint list slices of length `size`, in order. Returns a list of tuples.
     Uses `fillvalue` to pad out the last list, if necessary.
@@ -206,7 +206,7 @@ def chunked(
 @deal.ensure(lambda lis, size, result: all(len(v) == size for v in result))
 @deal.ensure(lambda lis, size, result: all(tuple(lis[i : i + size]) == v for i, v in enumerate(result)))
 @deal.pure
-def sliding(lis: Sequence[lists_T], size: int) -> list[tuple[lists_T, ...]]:
+def sliding(lis: Sequence[T], size: int) -> list[tuple[T, ...]]:
   """
     Returns all list slices of length `size`, in order. Returns a list of tuples.
 
@@ -225,7 +225,7 @@ def sliding(lis: Sequence[lists_T], size: int) -> list[tuple[lists_T, ...]]:
 @deal.ensure(lambda val, result: tuple(val) == result if isinstance(val, tuple) else True)
 @deal.post(lambda result: isinstance(result, tuple))
 @deal.pure
-def as_tuple(val: Collection[lists_T] | lists_T) -> tuple[lists_T, ...]:
+def as_tuple(val: Collection[T] | T) -> tuple[T, ...]:
   """
     Turns a value into a tuple if it is not already iterable
     Allows creating functions that take either a single value

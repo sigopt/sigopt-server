@@ -151,6 +151,13 @@ class BuilderDetails:
     self.object_type = object_type
     self.field_dict = field_dict
 
+  def __eq__(self, other):
+    if self is other:
+      return True
+    if type(self) is type(other):
+      return self.__dict__ == other.__dict__
+    return False
+
 
 class JsonBuilder:
   builder: BuilderDetails
@@ -195,6 +202,11 @@ class JsonBuilder:
 
   def resolve_all(self) -> dict:
     return self.resolve_fields(fields=None)
+
+  def __eq__(self, other) -> bool:
+    if type(self) is type(other):
+      return self.__dict__ == other.__dict__
+    return False
 
 
 class JsonBuilderValidationType(TypeValidatorBase):

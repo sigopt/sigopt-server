@@ -52,6 +52,7 @@ services:
       - sleep
       - infinity
     environment:
+      - ENABLE_CONTRACTS=x
       - SIGOPT_TEST_ROUTES_FILE=/routes/routes.json
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server
       - HOST_PWD
@@ -93,6 +94,7 @@ services:
     logging:
       <<: *logging
     environment:
+      - ENABLE_CONTRACTS=x
       - SIGOPT_SERVER_CONFIG_DIR
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
     stdin_open: true
@@ -142,6 +144,7 @@ services:
     command: &qworker_command
       - qworkerwatch.sh
     environment:
+      - ENABLE_CONTRACTS=x
       - &pythonpath PYTHONPATH=/sigopt-server/src/python:/sigopt-server
       - &config SIGOPT_SERVER_CONFIG_DIR
       - &git_hash sigopt_server_version
@@ -187,6 +190,7 @@ services:
       <<: *logging
     command: *qworker_command
     environment:
+      - ENABLE_CONTRACTS=x
       - *pythonpath
       - *config
       - *git_hash
@@ -219,6 +223,7 @@ services:
       - -c
       - "while true; do python -m zigopt.api.main --debug --threaded; sleep 1; done"
     environment: &sigopt-server-env
+      - ENABLE_CONTRACTS=x
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
       - SIGOPT_SERVER_CONFIG_DIR
       - sigopt_server_version
@@ -275,6 +280,7 @@ services:
       - "python -m zigopt.api.documentation"
       - docker cp documentation:/sigopt-server/scratch/swagger.json .
     environment:
+      - ENABLE_CONTRACTS=x
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server
       - SIGOPT_SERVER_CONFIG_DIR
       - sigopt_server_version
@@ -514,6 +520,7 @@ services:
           python -m integration.utils.mail --verbose
         done
     environment:
+      - ENABLE_CONTRACTS=x
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test:/sigopt-server
     volumes:
       - ./config:/sigopt-server/config:ro

@@ -18,6 +18,7 @@ from zigopt.common import *
 from zigopt.client.model import Client
 from zigopt.common.sigopt_datetime import current_datetime, unix_timestamp
 from zigopt.config import load_config_from_env
+from zigopt.contracts import prepare_contracts
 from zigopt.db.declarative import Base
 from zigopt.db.service import DatabaseConnectionService
 from zigopt.experiment.model import Experiment
@@ -505,6 +506,7 @@ def parse_args():
 
 def main():
   the_args = parse_args()
+  prepare_contracts()
 
   config_broker = load_config_from_env()
   config_broker.data.setdefault("redis", {})["enabled"] = False
