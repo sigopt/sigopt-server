@@ -7,7 +7,7 @@ from typing import Callable, Optional, Sequence, TypeVar
 import deal
 
 
-lists_T = TypeVar("lists_T")
+T = TypeVar("T")
 
 
 __all__ = ["find", "find_index"]
@@ -15,7 +15,7 @@ __all__ = ["find", "find_index"]
 
 @deal.ensure(lambda lis, predicate, result: result in lis if any(predicate(v) for v in lis) else result is None)
 @deal.raises(Exception)
-def find(lis: Sequence[lists_T], predicate: Callable[[lists_T], bool]) -> Optional[lists_T]:
+def find(lis: Sequence[T], predicate: Callable[[T], bool]) -> Optional[T]:
   """
     Finds the first element in lis satisfying predicate, or else None
     """
@@ -25,7 +25,7 @@ def find(lis: Sequence[lists_T], predicate: Callable[[lists_T], bool]) -> Option
 @deal.ensure(lambda lis, predicate, result: result < len(lis) if any(predicate(v) for v in lis) else result is None)
 @deal.post(lambda result: result is None or result >= 0)
 @deal.raises(Exception)
-def find_index(lis: Sequence[lists_T], predicate: Callable[[lists_T], bool]) -> Optional[int]:
+def find_index(lis: Sequence[T], predicate: Callable[[T], bool]) -> Optional[int]:
   """
     Finds the index of the first element in lis satisfying predicate, or else None
     """
