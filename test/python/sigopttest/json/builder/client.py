@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.json.builder import ClientJsonBuilder
+from zigopt.protobuf.lib import copy_protobuf
 
 from sigopttest.json.builder.test_base import HIDDEN_CLIENT_FIELDS, VISIBLE_CLIENT_FIELDS, BuilderTestBase
 
@@ -27,7 +28,7 @@ class TestClientJsonBuilder(BuilderTestBase):
       assert hidden_field_name not in client_json
 
   def test_all_fields(self, client):
-    client_meta = client.client_meta.copy_protobuf()
+    client_meta = copy_protobuf(client.client_meta)
     client_meta.deleted = True
     client.client_meta = client_meta
     client_json = ClientJsonBuilder.json(client)

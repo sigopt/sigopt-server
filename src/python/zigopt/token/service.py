@@ -7,6 +7,7 @@ from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.db.column import JsonPath, jsonb_set, unwind_json_path
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ, TokenMeta
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.token.model import MAX_CONCURRENT_SESSIONS, USER_TOKEN_EXPIRY_SECONDS, Token
 from zigopt.token.token_types import TokenType
@@ -65,12 +66,9 @@ class TokenService(Service):
       napply(session_expiration, lambda s: max(s - now, 0)),
       self.services.config_broker.get("external_authorization.token_ttl_seconds"),
     ]
-    # pylint: disable=protobuf-undefined-attribute
-    meta.SetFieldIfNotNone(  # type: ignore
-      "ttl_seconds",
-      min_option(remove_nones_sequence(ttl_options)),
-    )
-    # pylint: enable=protobuf-undefined-attribute
+    ttl_seconds = min_option(remove_nones_sequence(ttl_options))
+    if ttl_seconds is not None:
+      meta.ttl_seconds = ttl_seconds
     return meta
 
   def _get_or_create_role_token(self, client_id, user_id, development):
@@ -153,7 +151,8 @@ class TokenService(Service):
   ):
     meta = self._make_guest_token_meta(session_expiration=session_expiration, creating_user_id=creating_user_id)
     meta.guest_training_run_id = training_run_id
-    meta.SetFieldIfNotNone("guest_experiment_id", experiment_id)  # pylint: disable=protobuf-undefined-attribute
+    if experiment_id is not None:
+      meta.guest_experiment_id = experiment_id
     new = Token(token_type=TokenType.GUEST, client_id=client_id, user_id=None, meta=meta)
     self.services.database_service.insert(new)
     return new
@@ -186,7 +185,7 @@ class TokenService(Service):
       {Token.meta: jsonb_set(Token.meta, JsonPath(*unwind_json_path(Token.meta.date_renewed)), now)},
     )
     if updated:
-      meta = token.meta.copy_protobuf()
+      meta = copy_protobuf(token.meta)
       meta.date_renewed = now
       token.meta = meta
       return token

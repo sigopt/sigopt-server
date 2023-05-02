@@ -28,7 +28,7 @@ class TestListTags(V1Base):
       services.tag_service.insert(
         Tag(
           name=tag_name,
-          data=TagData(color=Color(red=i, green=i, blue=i)),  # pylint: disable=protobuf-type-error
+          data=TagData(color=Color(red=i, green=i, blue=i)),
           client_id=connection.client_id,
         )
       )

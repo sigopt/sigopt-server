@@ -7,6 +7,7 @@ from zigopt.experiment.model import Experiment
 from zigopt.handlers.experiments.create import BaseExperimentsCreateHandler
 from zigopt.optimize.sources.conditional import ConditionalOptimizationSource
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.sigoptcompute.adapter import SCAdapter
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
@@ -121,7 +122,7 @@ class TestSourceFunctionality(UnitTestBase):
         assert u.source == UnprocessedSuggestion.Source.GP_CATEGORICAL
       else:
         assert u.source == UnprocessedSuggestion.Source.EXPLICIT_RANDOM
-      has_assignments = u.suggestion_meta.suggestion_data.copy_protobuf()
+      has_assignments = copy_protobuf(u.suggestion_meta.suggestion_data)
       values_dict = has_assignments.assignments_map
       assert len(values_dict) == 2
       conditional_assignment = u.suggestion_meta.get_conditional_assignments(experiment)

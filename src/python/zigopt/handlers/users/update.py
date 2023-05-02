@@ -10,6 +10,7 @@ from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.json.builder import UserJsonBuilder
 from zigopt.net.errors import ForbiddenError, NotFoundError
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.user.model import do_password_hash_work_factor_update, password_matches
 
 from libsigopt.aux.errors import MissingParamError, SigoptValidationError
@@ -92,7 +93,7 @@ class UsersUpdateHandler(UserHandler):
       user.name = uploaded_user.name
 
     if uploaded_user.educational_user is not None:
-      user_meta = user.user_meta.copy_protobuf()
+      user_meta = copy_protobuf(user.user_meta)
       user_meta.educational_user = uploaded_user.educational_user
       user.user_meta = user_meta
 
@@ -111,7 +112,7 @@ class UsersUpdateHandler(UserHandler):
 
     show_welcome = uploaded_user.show_welcome
     if show_welcome is not None:
-      user_meta = user.user_meta.copy_protobuf()
+      user_meta = copy_protobuf(user.user_meta)
       user_meta.show_welcome = show_welcome
       user.user_meta = user_meta
 
@@ -121,7 +122,7 @@ class UsersUpdateHandler(UserHandler):
     elif planned_usage is self.NOT_PROVIDED:
       pass
     else:
-      user_meta = user.user_meta.copy_protobuf()
+      user_meta = copy_protobuf(user.user_meta)
       user_meta.planned_usage.optimize = planned_usage.get("optimize", user_meta.planned_usage.optimize)
       user_meta.planned_usage.track = planned_usage.get("track", user_meta.planned_usage.track)
       user.user_meta = user_meta

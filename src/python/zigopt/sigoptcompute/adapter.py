@@ -11,7 +11,7 @@ from zigopt.experiment.constant import METRIC_OBJECTIVE_TYPE_TO_NAME
 from zigopt.experiment.constraints import parse_experiment_constraints_to_func_list
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import Prior
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData
-from zigopt.protobuf.lib import CopyFrom
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.sigoptcompute.constant import (
   ACTIVATE_LINEAR_MEAN,
@@ -517,7 +517,7 @@ class SCAdapter(Service):
           assignment = round(assignment)
         data.assignments_map[parameter.name] = assignment
       if task_cost is not None:
-        CopyFrom(data.task, experiment.get_task_by_cost(task_cost).copy_protobuf())
+        data.task.CopyFrom(experiment.get_task_by_cost(task_cost))
 
       yield SuggestionDataProxy(data)
 
@@ -581,7 +581,7 @@ class SCAdapter(Service):
       return var_type, elements, name
 
     def parameter_to_prior_info(p):
-      prior_type = p.prior.GetFieldOrNone("prior_type")
+      prior_type = p.prior.prior_type if p.prior.HasField("prior_type") else None
       if prior_type == Prior.NORMAL:
         assert p.is_double
         name = ParameterPriorNames.NORMAL
@@ -619,7 +619,7 @@ class SCAdapter(Service):
     observations,
     observation_count,
   ):
-    parameters = [p.copy_protobuf() for p in experiment.all_parameters]
+    parameters = [copy_protobuf(p) for p in experiment.all_parameters]
 
     points = numpy.empty((observation_count, experiment.dimension))
     values = numpy.zeros((observation_count, len(experiment.all_metrics)))
@@ -655,7 +655,7 @@ class SCAdapter(Service):
   @staticmethod
   def _make_points_being_sampled(experiment, open_suggestion_datas=None):
     open_suggestion_datas = open_suggestion_datas or []
-    parameters = [p.copy_protobuf() for p in experiment.all_parameters]
+    parameters = [copy_protobuf(p) for p in experiment.all_parameters]
 
     points = numpy.empty((len(open_suggestion_datas), experiment.dimension))
     task_costs = numpy.empty(len(open_suggestion_datas))

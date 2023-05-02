@@ -8,6 +8,7 @@ from zigopt.common.sigopt_datetime import aware_datetime_to_naive_datetime
 from zigopt.common.struct import ImmutableStruct
 from zigopt.pagination.lib import get_value_of_paging_symbol
 from zigopt.protobuf.gen.api.paging_pb2 import PagingMarker, PagingSymbol
+from zigopt.protobuf.lib import copy_protobuf
 
 
 SortRequest = ImmutableStruct("SortRequest", ("field", "ascending"))
@@ -65,13 +66,13 @@ class Pager:
   # value, we should use numpy.nextafter.
   def _increment_marker(self, marker):
     assert marker.symbols[-1].WhichOneof("type") == "int_value"
-    marker = marker.copy_protobuf()
+    marker = copy_protobuf(marker)
     marker.symbols[-1].int_value += 1
     return marker
 
   def _decrement_marker(self, marker):
     assert marker.symbols[-1].WhichOneof("type") == "int_value"
-    marker = marker.copy_protobuf()
+    marker = copy_protobuf(marker)
     marker.symbols[-1].int_value -= 1
     return marker
 

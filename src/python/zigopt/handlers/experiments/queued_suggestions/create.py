@@ -26,7 +26,7 @@ class QueuedSuggestionsCreateHandler(ExperimentHandler):
 
     queued_suggestion = QueuedSuggestion(
       experiment_id=self.experiment.id,
-      meta=QueuedSuggestionMeta(  # pylint: disable=protobuf-type-error
+      meta=QueuedSuggestionMeta(
         suggestion_data=build_suggestion_data_from_json(self.experiment, json_dict),
       ),
     )

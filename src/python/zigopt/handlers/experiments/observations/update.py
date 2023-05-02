@@ -13,6 +13,7 @@ from zigopt.observation.data import update_observation_data
 from zigopt.observation.from_json import update_observation_data_assignments_task_from_json
 from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
+from zigopt.protobuf.lib import copy_protobuf
 
 
 class ObservationsUpdateHandler(CreatesObservationsMixin, ObservationHandler):
@@ -33,8 +34,8 @@ class ObservationsUpdateHandler(CreatesObservationsMixin, ObservationHandler):
     no_optimize = get_opt_with_validation(json_dict, "no_optimize", ValidationType.boolean)
 
     now = current_datetime()
-    new_observation_data = self.observation.data.copy_protobuf()  # type: ignore
-    new_observation_data.timestamp = datetime_to_seconds(now)
+    new_observation_data = copy_protobuf(self.observation.data)
+    new_observation_data.timestamp = int(datetime_to_seconds(now))
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
 
     self.observation_from_json(

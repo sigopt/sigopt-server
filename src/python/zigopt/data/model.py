@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.protobuf.proxy import Proxy
 
 
@@ -9,14 +10,14 @@ class BaseHasMeasurementsProxy(Proxy):
   def get_all_measurements(self, experiment):
     measurements = self.sorted_measurements()
     if len(measurements) == 1 and not experiment.has_multiple_metrics:
-      only_measurement = measurements[0].copy_protobuf()
+      only_measurement = copy_protobuf(measurements[0])
       if experiment.all_metrics[0].HasField("name"):
         only_measurement.name = experiment.all_metrics[0].name
       measurements = [(only_measurement)]
     return measurements
 
   def get_all_measurements_for_maximization(self, experiment):
-    all_measurements = [v.copy_protobuf() for v in self.get_all_measurements(experiment)]
+    all_measurements = [copy_protobuf(v) for v in self.get_all_measurements(experiment)]
     for i, metric in enumerate(experiment.all_metrics):
       if metric.is_minimized:
         all_measurements[i].value = -all_measurements[i].value
@@ -29,20 +30,20 @@ class BaseHasMeasurementsProxy(Proxy):
 
   def value_for_maximization(self, experiment, name):
     value = find(self.get_all_measurements_for_maximization(experiment), lambda v: v.name == name)
-    if value:
-      return value.GetFieldOrNone("value")
+    if value and value.HasField("value"):
+      return value.value
     return None
 
   def metric_value(self, experiment, name):
     measurement = find(self.get_all_measurements(experiment), lambda v: v.name == name)
-    if measurement:
-      return measurement.GetFieldOrNone("value")
+    if measurement and measurement.HasField("value"):
+      return measurement.value
     return None
 
   def metric_value_var(self, experiment, name):
     measurement = find(self.get_all_measurements(experiment), lambda v: v.name == name)
-    if measurement:
-      return measurement.GetFieldOrNone("value_var")
+    if measurement and measurement.HasField("value_var"):
+      return measurement.value_var
     return None
 
   def _sorted_attributes(self, experiment, attr):
@@ -50,7 +51,7 @@ class BaseHasMeasurementsProxy(Proxy):
     num_expected_metrics = len(experiment.all_metrics)
     assert self.reported_failure or len(measurements) == num_expected_metrics
 
-    attr_fields = [m.GetFieldOrNone(attr) for m in measurements]
+    attr_fields = [getattr(m, attr) if m.HasField(attr) else None for m in measurements]
     if not attr_fields or any(f is None for f in attr_fields):
       return None
     return attr_fields

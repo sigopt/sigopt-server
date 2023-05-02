@@ -5,7 +5,6 @@ import numpy
 
 from zigopt.optimize.sources.base import OptimizationSource
 from zigopt.protobuf.gen.optimize.sources_pb2 import CategoricalHyperparameters, MultimetricHyperparameters
-from zigopt.protobuf.lib import CopyFrom
 from zigopt.sigoptcompute.constant import (
   DEFAULT_AUTO_NOISE_ACTIVATED,
   DEFAULT_EI_WHEN_UNCOMPUTABLE,
@@ -130,7 +129,11 @@ class CategoricalOptimizationSource(OptimizationSource):
   def _extract_cat_hyperparameter_dict(self, optimization_args, hyperparameters, use_auto_noise):
     length_scale_map = dict(((l.parameter_name, l.length_list) for l in hyperparameters.hyperparameter_lengths))
 
-    alpha = hyperparameters.GetFieldOrNone("hyperparameter_alpha") or DEFAULT_HYPERPARAMETER_ALPHA
+    alpha = (
+      hyperparameters.hyperparameter_alpha
+      if hyperparameters.HasField("hyperparameter_alpha")
+      else DEFAULT_HYPERPARAMETER_ALPHA
+    )
 
     length_scales = []
     for p in self.experiment.all_parameters_sorted:
@@ -141,11 +144,19 @@ class CategoricalOptimizationSource(OptimizationSource):
 
     tikhonov = None
     if use_auto_noise:
-      tikhonov = hyperparameters.GetFieldOrNone("hyperparameter_tikhonov") or DEFAULT_HYPERPARAMETER_TIKHONOV
+      tikhonov = (
+        hyperparameters.hyperparameter_tikhonov
+        if hyperparameters.HasField("hyperparameter_tikhonov")
+        else DEFAULT_HYPERPARAMETER_TIKHONOV
+      )
 
     task_length = None
     if self.should_have_task_length():
-      task_length = hyperparameters.GetFieldOrNone("task_length") or DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE
+      task_length = (
+        hyperparameters.task_length
+        if hyperparameters.HasField("task_length")
+        else DEFAULT_HYPERPARAMETER_TASK_LENGTH_SCALE
+      )
 
     return {
       "alpha": alpha,
@@ -159,12 +170,9 @@ class CategoricalOptimizationSource(OptimizationSource):
     for i, metric in enumerate(self.experiment.all_metrics):
       mmhpv = ret.multimetric_hyperparameter_value.add()
       mmhpv.metric_name = str(metric.name)
-      # pylint: disable=protobuf-undefined-attribute
-      CopyFrom(
-        mmhpv.categorical_hyperparameters,
-        self.build_cat_hyperparameter_protobuf_from_dict(hyperparameter_dict[i]).copy_protobuf(),
+      mmhpv.categorical_hyperparameters.CopyFrom(
+        self.build_cat_hyperparameter_protobuf_from_dict(hyperparameter_dict[i])
       )
-      # pylint: enable=protobuf-undefined-attribute
     return ret
 
   def build_cat_hyperparameter_protobuf_from_dict(self, hyperparameter_dict):

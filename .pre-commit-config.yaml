@@ -32,7 +32,7 @@ repos:
         args: ["--license=Apache License 2.0", "--owner=Intel Corporation"]
       - id: sigoptlint-python
         args:
-          - --include=AvoidDatetimeNowRule,GeneratorExpressionRule,NoImportLibsigoptComputeRule,ProtobufMethodsRule,SafeIteratorRule,SafeYieldRule
+          - --include=AvoidDatetimeNowRule,GeneratorExpressionRule,NoImportLibsigoptComputeRule,SafeIteratorRule,SafeYieldRule
       - id: sigoptlint-shell
   - repo: https://github.com/PyCQA/bandit.git
     rev: "1.7.5"

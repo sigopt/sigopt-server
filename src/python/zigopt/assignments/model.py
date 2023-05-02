@@ -6,6 +6,7 @@ import numpy
 from zigopt.common import *
 from zigopt.handlers.validate.assignments import parameter_conditions_satisfied
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentParameter
+from zigopt.protobuf.lib import copy_protobuf
 from zigopt.protobuf.proxy import Proxy
 
 
@@ -16,7 +17,7 @@ class MissingValueException(Exception):
 def make_experiment_assignment_value_array(has_assignments, parameters, vals=None, log_scale=False):
   # TODO(SN-1069): This copy_protobuf was added for performance in the presence of
   # immutable protobufs. Is it still necessary?
-  has_assignments = has_assignments.copy_protobuf()
+  has_assignments = copy_protobuf(has_assignments)
   values_dict = has_assignments.assignments_map
   for parameter in parameters:
     if parameter.name not in values_dict:
