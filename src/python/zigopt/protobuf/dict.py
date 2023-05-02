@@ -1,8 +1,10 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# crosshair: on
 from typing import Sequence, TypeVar
 
+import deal
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.json_format import MessageToDict, ParseDict, ParseError, SerializeToJsonError
 from google.protobuf.message import Message
@@ -18,6 +20,8 @@ def _validate_class(fields: Sequence[FieldDescriptor]) -> None:
     seen_names.add(serialize_name)
 
 
+@deal.raises(ValueError)
+@deal.has()
 def protobuf_to_dict(obj: Message, **kwargs) -> dict:
   _validate_class(obj.DESCRIPTOR.fields)
   try:
@@ -29,6 +33,8 @@ def protobuf_to_dict(obj: Message, **kwargs) -> dict:
 ProtobufType = TypeVar("ProtobufType", bound=Message)
 
 
+@deal.raises(ValueError)
+@deal.has()
 def dict_to_protobuf(Cls: type[ProtobufType], obj: dict, ignore_unknown_fields: bool = False) -> ProtobufType:
   _validate_class(Cls.DESCRIPTOR.fields)
   c = Cls()
@@ -39,21 +45,26 @@ def dict_to_protobuf(Cls: type[ProtobufType], obj: dict, ignore_unknown_fields: 
   return c
 
 
+@deal.pre(lambda descriptor: isinstance(descriptor, Descriptor))
+@deal.pure
 def is_protobuf_struct_descriptor(descriptor: Descriptor) -> bool:
-  assert isinstance(descriptor, Descriptor)
   return descriptor.full_name == "google.protobuf.Struct"
 
 
+@deal.pre(lambda obj: isinstance(obj, Message))
+@deal.pure
 def is_protobuf_struct(obj: Message) -> bool:
   return isinstance(obj, Struct)
 
 
+@deal.post(lambda result: isinstance(result, Struct))
+@deal.pure
 def dict_to_protobuf_struct(obj: dict) -> Struct:
-  struct = dict_to_protobuf(Struct, obj)
-  assert isinstance(struct, Struct)
-  return struct
+  # crosshair: off
+  return dict_to_protobuf(Struct, obj)
 
 
+@deal.pre(lambda obj: isinstance(obj, Struct))
+@deal.pure
 def protobuf_struct_to_dict(obj: Struct) -> dict:
-  assert is_protobuf_struct(obj)
   return protobuf_to_dict(obj)
