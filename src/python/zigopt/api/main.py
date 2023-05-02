@@ -9,6 +9,7 @@ import sys
 from zigopt.api.prod import ProdApp
 from zigopt.brand.constant import PRODUCT_NAME
 from zigopt.config import load_config_from_env
+from zigopt.contracts import prepare_contracts
 from zigopt.log.base import base_logger_setup, configure_loggers
 from zigopt.profile.profile import BaseProfiler, NullProfiler, Profiler
 from zigopt.profile.tracer import NullTracer
@@ -57,6 +58,8 @@ def run_app():
   if args.profile and args.debug:
     raise Exception("The profiler does not work in debug mode")
 
+  prepare_contracts()
+
   profiler: BaseProfiler = NullProfiler()
   if args.profile:
     profiler = Profiler()
@@ -77,4 +80,5 @@ def run_app():
 if __name__ == "__main__":
   run_app()
 elif os.environ.get("GUNICORN_ENABLED"):
+  prepare_contracts()
   GUNICORN_ENTRY_POINT = _default_app(NullProfiler(), NullTracer())

@@ -41,6 +41,7 @@ services:
       - REQUESTS_CA_BUNDLE=/etc/ssl/certs/sigopt-root-ca.crt
       - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt-root-ca.crt
     volumes:
+      - ENABLE_CONTRACTS=x
       - &rootca-volume ./artifacts/tls/root-ca.crt:/etc/ssl/certs/sigopt-root-ca.crt:ro
       - &sigopt-config-volume server-config:/etc/sigopt/server-config
       - ./junit-results:/sigopt-server/junit-results
@@ -86,6 +87,7 @@ services:
       - -m
       - zigopt.utils.create_database
     environment:
+      - ENABLE_CONTRACTS
       - *server-config-env
     read_only: true
     security_opt:
@@ -135,6 +137,7 @@ services:
       - 0.0.0.0:5000
       - zigopt.api.main:GUNICORN_ENTRY_POINT
     environment: &zigopt_environment
+      - ENABLE_CONTRACTS
       - *server-config-env
       - sigopt_server_version
     volumes:
@@ -364,6 +367,7 @@ services:
       - sleep
       - infinity
     environment:
+      - ENABLE_CONTRACTS=x
       - SIGOPT_API_URL=https://sigopt.ninja:4443/api
       - SIGOPT_APP_URL=https://sigopt.ninja:4443
       - SIGOPT_API_TOKEN=client_token
