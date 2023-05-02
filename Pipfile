@@ -7,7 +7,7 @@ name = "pypi"
 python_version = "3.10"
 
 [packages]
-Flask = ">=2.2.3,<2.3"
+Flask = ">=2.2.3,<2.4"
 PyYAML = ">=5.4.1,<7"
 backoff = ">=1.10.0,<3"
 bcrypt = ">=3.2.0,<5"
