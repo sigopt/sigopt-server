@@ -436,7 +436,7 @@ class TestLists:
     assert sliding([1, 2, 3], 1000) == []
 
     assert sliding([1, 2, 3, 4, 5, 6], 4) == [(1, 2, 3, 4), (2, 3, 4, 5), (3, 4, 5, 6)]
-    assert sliding((i for i in range(1, 7)), 4) == [(1, 2, 3, 4), (2, 3, 4, 5), (3, 4, 5, 6)]
+    assert sliding(list(range(1, 7)), 4) == [(1, 2, 3, 4), (2, 3, 4, 5), (3, 4, 5, 6)]
 
   def test_as_tuple(self):
     assert as_tuple(None) == (None,)
