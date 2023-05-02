@@ -5,7 +5,8 @@ import json
 import operator
 
 from sqlalchemy import cast as sql_cast
-from sqlalchemy import func, types
+from sqlalchemy import func
+from sqlalchemy import types as sql_types
 from sqlalchemy.dialects.postgresql import JSONB
 
 from zigopt.common import *
@@ -45,12 +46,12 @@ class Cast:
     self.python_cast_func = python_cast_func
 
 
-Cast.BOOL = Cast(lambda x: x.cast(types.Boolean), ValidationType.boolean)
-Cast.ID = Cast(lambda x: x.cast(types.BigInteger), ValidationType.id)
-Cast.INT = Cast(lambda x: x.cast(types.BigInteger), ValidationType.integer)
+Cast.BOOL = Cast(lambda x: x.cast(sql_types.Boolean), ValidationType.boolean)
+Cast.ID = Cast(lambda x: x.cast(sql_types.BigInteger), ValidationType.id)
+Cast.INT = Cast(lambda x: x.cast(sql_types.BigInteger), ValidationType.integer)
 Cast.JSONB = Cast(identity, ValidationType.json, lambda y: sql_cast(y, JSONB))
-Cast.NUMERIC = Cast(lambda x: x.cast(types.Numeric), ValidationType.number)
-Cast.TEXT = Cast(lambda x: x.cast(types.Text), ValidationType.string)
+Cast.NUMERIC = Cast(lambda x: x.cast(sql_types.Numeric), ValidationType.number)
+Cast.TEXT = Cast(lambda x: x.cast(sql_types.Text), ValidationType.string)
 
 OPERATOR_EQ_STRING = "=="
 
@@ -247,7 +248,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
 
     if params.search is not None:
       keyword = params.search.lower().strip()
-      query = query.filter(TrainingRun.training_run_data["n"].astext.cast(types.Text).ilike(f"%{keyword}%"))
+      query = query.filter(TrainingRun.training_run_data["n"].astext.cast(sql_types.Text).ilike(f"%{keyword}%"))
 
     training_runs, before, after = self.services.query_pager.fetch_page(
       query,
