@@ -29,25 +29,23 @@ class OrganizationsPermissionsListDetailHandler(OrganizationHandler):
     client_map = to_map_by_key(clients, lambda c: c.id)
 
     return PaginationJsonBuilder(
-      data=flatten(
-        [
-          (
-            OwnerPermissionJsonBuilder(
-              membership=membership,
-              user=user_map[membership.user_id],
-              client=client,
-            )
-            for membership in owner_memberships
-            for client in clients
-          ),
-          (
-            PermissionJsonBuilder(
-              permission,
-              user=user_map[permission.user_id],
-              client=client_map[permission.client_id],
-            )
-            for permission in permissions
-          ),
-        ]
-      )
+      data=[
+        *(
+          OwnerPermissionJsonBuilder(
+            membership=membership,
+            user=user_map[membership.user_id],
+            client=client,
+          )
+          for membership in owner_memberships
+          for client in clients
+        ),
+        *(
+          PermissionJsonBuilder(
+            permission,
+            user=user_map[permission.user_id],
+            client=client_map[permission.client_id],
+          )
+          for permission in permissions
+        ),
+      ]
     )

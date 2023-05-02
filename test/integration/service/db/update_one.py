@@ -21,15 +21,18 @@ UPDATE_CLAUSE = {
 
 
 class TestUpdateOne(DatabaseServiceBase):
+  _organization: Organization
+  _client: Client
+
   @pytest.fixture(autouse=True)
   def _setup(self, services):
-    self.organization = Organization(name="test update_one org")
-    services.database_service.insert(self.organization)
-    self.client = Client(organization_id=self.organization.id, name="test update_one client")
+    self._organization = Organization(name="test update_one org")
+    services.database_service.insert(self._organization)
+    self._client = Client(organization_id=self._organization.id, name="test update_one client")
     services.database_service.insert(self.client)
-    self.e1 = Experiment(client_id=self.client.id, name="test_update_one experiment 1")
+    self.e1 = Experiment(client_id=self._client.id, name="test_update_one experiment 1")
     services.database_service.insert(self.e1)
-    self.e2 = Experiment(client_id=self.client.id, name="test_update_one experiment 2")
+    self.e2 = Experiment(client_id=self._client.id, name="test_update_one experiment 2")
     services.database_service.insert(self.e2)
     self._assert_no_updates(services)
 
@@ -60,7 +63,7 @@ class TestUpdateOne(DatabaseServiceBase):
   def test_update_one_multiple_results(self, services, updater):
     with pytest.raises(MultipleResultsFound):
       getattr(services.database_service, updater)(
-        services.database_service.query(Experiment).filter(Experiment.client_id == self.client.id),
+        services.database_service.query(Experiment).filter(Experiment.client_id == self._client.id),
         UPDATE_CLAUSE,
       )
     self._assert_no_updates(services)
@@ -68,14 +71,14 @@ class TestUpdateOne(DatabaseServiceBase):
   def test_update_one_no_result(self, services):
     with pytest.raises(NoResultFound):
       services.database_service.update_one(
-        services.database_service.query(Experiment).filter(Experiment.client_id == self.client.id + 1),
+        services.database_service.query(Experiment).filter(Experiment.client_id == self._client.id + 1),
         UPDATE_CLAUSE,
       )
     self._assert_no_updates(services)
 
   def test_update_one_or_none_no_result(self, services):
     services.database_service.update_one_or_none(
-      services.database_service.query(Experiment).filter(Experiment.client_id == self.client.id + 1),
+      services.database_service.query(Experiment).filter(Experiment.client_id == self._client.id + 1),
       UPDATE_CLAUSE,
     )
     self._assert_no_updates(services)

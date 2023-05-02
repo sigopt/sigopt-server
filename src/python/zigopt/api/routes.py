@@ -7,6 +7,7 @@ from http import HTTPStatus
 from flask import request
 
 from zigopt.api.common import handler_registry
+from zigopt.api.request import Request
 from zigopt.handlers.base.welcome import WelcomeHandler
 from zigopt.net.errors import EndpointNotFoundError, InvalidMethodError, RequestError
 from zigopt.net.responses import success_response
@@ -28,6 +29,7 @@ def log_requests(app):
   app.before_request(before_request)
 
   def teardown_request(exception):
+    assert isinstance(request, Request)
     if request.path != HEALTH_PATH:
       app.global_services.logging_service.with_request(request).getLogger("sigopt.requests").info(
         "Request time: %dms",

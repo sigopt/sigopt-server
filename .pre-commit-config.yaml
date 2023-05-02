@@ -102,8 +102,10 @@ repos:
       - id: mypy
         name: mypy
         entry: ./pp mypy
+        args: [--ignore-missing-imports]
         language: system
         types: [python]
+        require_serial: true
       - id: pylint
         name: pylint
         entry: ./pp pylint

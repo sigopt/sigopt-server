@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 # crosshair: on
 import collections
-from typing import Callable, Hashable, Iterable, Mapping, MutableMapping, TypeVar
+from typing import Callable, Collection, Hashable, Mapping, MutableMapping, TypeVar
 
 import deal
 
@@ -140,7 +140,7 @@ def pick(base: Mapping[lists_GHashable, lists_T], *keys: lists_GHashable) -> dic
 @deal.ensure(lambda lis, key, result: all(v in result[key(v)] for v in lis))
 @deal.raises(Exception)
 def as_grouped_dict(
-  lis: Iterable[lists_T], key: Callable[[lists_T], lists_GHashable]
+  lis: Collection[lists_T], key: Callable[[lists_T], lists_GHashable]
 ) -> dict[lists_GHashable, list[lists_T]]:
   """
     Groups the elements in lis by applying the function `key`
@@ -157,9 +157,11 @@ def as_grouped_dict(
 
 
 @deal.ensure(lambda lis, key, result: {key(v) for v in lis} == set(result))
-@deal.ensure(lambda lis, key, result: all(v in lis for v in result.values()))
+@deal.ensure(lambda lis, key, result: all(any(v is e for e in lis) for v in result.values()))
 @deal.raises(Exception)
-def to_map_by_key(lis: Iterable[lists_T], key: Callable[[lists_T], lists_GHashable]) -> dict[lists_GHashable, lists_T]:
+def to_map_by_key(
+  lis: Collection[lists_T], key: Callable[[lists_T], lists_GHashable]
+) -> dict[lists_GHashable, lists_T]:
   """
     Creates a map out of the elements in lis by applying the function `key`.
     Assumes unique keys - if there are duplicate keys then a value will be chosen arbitrarily.

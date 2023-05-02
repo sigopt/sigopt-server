@@ -31,7 +31,7 @@ class MissingFieldError(JsonBuilderError):
 
 
 class InvalidFieldError(JsonBuilderError):
-  def __init__(self, builder: "JsonBuilder", field_name: str, type_error: TypeError):
+  def __init__(self, builder: "JsonBuilder", field_name: str, type_error: InvalidTypeError):
     super().__init__(
       f"when resolving field `{field_name}` in {type(builder).__name__}: {str(type_error)}",
       builder,
