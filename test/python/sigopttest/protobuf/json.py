@@ -22,29 +22,29 @@ class TestUtils:
     return factory
 
   def test_get_json_key(self):
-    assert get_json_key(Parent.DESCRIPTOR, "optional_double_field") == float
-    assert get_json_key(Parent.DESCRIPTOR, "optional_string_field") == str
-    assert get_json_key(Parent.DESCRIPTOR, "optional_composite_field") == Child.DESCRIPTOR
-    assert get_json_key(Parent.DESCRIPTOR, "optional_recursive_field") == Parent.DESCRIPTOR
-    assert get_json_key(Parent.DESCRIPTOR, "repeated_double_field") == _field_descriptor("repeated_double_field")
-    assert get_json_key(Parent.DESCRIPTOR, "repeated_string_field") == _field_descriptor("repeated_string_field")
-    assert get_json_key(Parent.DESCRIPTOR, "repeated_composite_field") == _field_descriptor("repeated_composite_field")
-    assert get_json_key(Parent.DESCRIPTOR, "repeated_recursive_field") == _field_descriptor("repeated_recursive_field")
-    assert get_json_key(Parent.DESCRIPTOR, "map_field") == _field_descriptor("map_field")
-    assert get_json_key(Parent.DESCRIPTOR, "recursive_map_field") == _field_descriptor("recursive_map_field")
+    assert get_json_key(Parent.DESCRIPTOR, "optional_double_field", False) == float
+    assert get_json_key(Parent.DESCRIPTOR, "optional_string_field", False) == str
+    assert get_json_key(Parent.DESCRIPTOR, "optional_composite_field", False) == Child.DESCRIPTOR
+    assert get_json_key(Parent.DESCRIPTOR, "optional_recursive_field", False) == Parent.DESCRIPTOR
+    assert get_json_key(Parent.DESCRIPTOR, "repeated_double_field", False) == _field_descriptor("repeated_double_field")
+    assert get_json_key(Parent.DESCRIPTOR, "repeated_string_field", False) == _field_descriptor("repeated_string_field")
+    assert get_json_key(Parent.DESCRIPTOR, "repeated_composite_field", False) == _field_descriptor(
+      "repeated_composite_field"
+    )
+    assert get_json_key(Parent.DESCRIPTOR, "repeated_recursive_field", False) == _field_descriptor(
+      "repeated_recursive_field"
+    )
+    assert get_json_key(Parent.DESCRIPTOR, "map_field", False) == _field_descriptor("map_field")
+    assert get_json_key(Parent.DESCRIPTOR, "recursive_map_field", False) == _field_descriptor("recursive_map_field")
 
-    assert get_json_key(_field_descriptor("repeated_double_field"), 0) == float
-    assert get_json_key(_field_descriptor("repeated_string_field"), 0) == str
-    assert get_json_key(_field_descriptor("repeated_composite_field"), 0) == Child.DESCRIPTOR
-    assert get_json_key(_field_descriptor("repeated_recursive_field"), 0) == Parent.DESCRIPTOR
+    assert get_json_key(_field_descriptor("repeated_double_field"), 0, False) == float
+    assert get_json_key(_field_descriptor("repeated_string_field"), 0, False) == str
+    assert get_json_key(_field_descriptor("repeated_composite_field"), 0, False) == Child.DESCRIPTOR
+    assert get_json_key(_field_descriptor("repeated_recursive_field"), 0, False) == Parent.DESCRIPTOR
 
   def test_invalid_get_json_key(self):
-    with pytest.raises(AssertionError):
-      get_json_key(float, "fake")
-    with pytest.raises(AssertionError):
-      get_json_key(str, "fake")
     with pytest.raises(InvalidPathError):
-      get_json_key(Parent.DESCRIPTOR, "fake_name")
+      get_json_key(Parent.DESCRIPTOR, "fake_name", False)
 
   def test_get_json_key_json_name(self):
     assert get_json_key(Parent.DESCRIPTOR, "variable_name", json=False) == str
