@@ -4,15 +4,16 @@
 # SPDX-License-Identifier: Apache License 2.0
 set -e
 set -o pipefail
+set -x
 
 function run_fg {
   ./ci/compose.sh build --progress=plain "$1"
-  ./ci/compose run --rm "$@"
+  ./ci/compose.sh run --rm "$@"
 }
 
 function run_bg {
   ./ci/compose.sh build --progress=plain "$1"
-  ./ci/compose run -d "$@" &
+  ./ci/compose.sh run -d "$@" &
 }
 
 TEST="$1"
