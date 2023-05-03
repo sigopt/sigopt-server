@@ -1,9 +1,7 @@
 name: SigOpt Server pre-commit checks
-run-name: ${{ github.actor }} is testing ${{ github.repository }}@${{ github.ref }}
+run-name: Pre-commit checks for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}
-  schedule:
-    - cron: "0 8,16 * * *"
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
