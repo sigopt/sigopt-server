@@ -1,0 +1,19 @@
+name: python code tests
+run-name: Python tests for ${{ github.repository }}@${{ github.ref }}
+on:
+  push: {}
+jobs:
+  check-node-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - run: pip install pipenv
+      - run: pipenv install --deploy
+      - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
+      - run: pipenv run ./tools/protobuf/compile.sh
+      - run: pipenv run pytest test/python/sigopttest
