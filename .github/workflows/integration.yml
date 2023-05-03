@@ -11,7 +11,7 @@ jobs:
       - run: sudo mkdir -p /etc/apt/keyrings
       - run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
       - run: sudo apt-get remove -yqq moby-buildx moby-compose moby-cli
-      - run: sudo rm "$(which docker-compose)" "$(which docker)"
+      - run: sudo rm -f "$(which docker-compose)" "$(which docker)"
       - run: |
           echo \
             "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu focal stable" \
