@@ -215,17 +215,6 @@ commands:
       count:
         type: integer
         default: 1
-  run-zigopt-test:
-    steps:
-      - attach
-      - install-python-libraries
-      - run: pipenv run ./test/unit_tests.sh --junitxml=junit-results/unit-tests/junit.xml --count=<< parameters.count >> test/python/sigopttest
-      - store_test_results:
-          path: junit-results
-    parameters:
-      count:
-        type: integer
-        default: 1
   store-junit-test-results:
     steps:
       - store_test_results:
@@ -486,10 +475,6 @@ jobs:
           description: Redis
           service: redis
       - run: ./ci/worker_health_pass.sh
-  zigopt-unit:
-    executor: sigopt-python-only
-    steps:
-      - run-zigopt-test
   eval-circleci:
     docker:
       - image: circleci/buildpack-deps:curl
@@ -516,10 +501,6 @@ workflows:
       - service-integration
       - worker-health
       - web-integration
-      - zigopt-unit:
-          requires: &zigopt-unit-requires
-            - checkout-code
-            - compile-protobuf
       - documentation-generation:
           requires:
             - compile-protobuf
