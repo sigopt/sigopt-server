@@ -8,11 +8,12 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+      - run: docker-compose --version
       - run: ./ci/run_integration_test.sh test/integration/service/
       - name: Docker logs
         if: always()
         run: |
           set +e
-          ./ci/compose logs postgres
-          ./ci/compose logs redis
-          ./ci/compose logs minio
+          ./ci/compose.sh logs postgres
+          ./ci/compose.sh logs redis
+          ./ci/compose.sh logs minio
