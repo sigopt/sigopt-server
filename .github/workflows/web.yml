@@ -1,0 +1,27 @@
+name: SigOpt Server web code tests
+run-name: Web tests for ${{ github.repository }}@${{ github.ref }}
+on:
+  push: {}
+jobs:
+  check-node-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: yarn install
+      - run: ./ci/check_node_deps.sh
+  dead-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: yarn install
+      - run: make submodules
+      - run: make web-dead-code
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: yarn install
+      - run: yarn -s test

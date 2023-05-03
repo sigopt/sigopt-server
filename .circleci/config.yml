@@ -428,26 +428,6 @@ jobs:
     steps:
       - run-browser-test:
           test_path: ""
-  check-node-dependencies:
-    executor: sigopt-node-only
-    steps:
-      - attach
-      - install-submodules
-      - run: ./ci/check_node_deps.sh
-  web-unit:
-    executor: sigopt-node-only
-    steps:
-      - attach
-      - install-submodules
-      - run: JEST_JUNIT_OUTPUT=junit-results/jest/junit.xml yarn test --reporters=default --reporters=jest-junit --runInBand --ci
-      - store_test_results:
-          path: junit-results
-  web-dead-code:
-    executor: sigopt-node-only
-    steps:
-      - attach
-      - install-submodules
-      - run: make web-dead-code
   web-integration:
     executor: sigopt-integration
     resource_class: large
@@ -536,18 +516,6 @@ workflows:
       - service-integration
       - worker-health
       - web-integration
-      - check-node-dependencies:
-          requires:
-            - checkout-code
-            - setup-web
-      - web-dead-code:
-          requires:
-            - checkout-code
-            - setup-web
-      - web-unit:
-          requires:
-            - checkout-code
-            - setup-web
       - zigopt-unit:
           requires: &zigopt-unit-requires
             - checkout-code
