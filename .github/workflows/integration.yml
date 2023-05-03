@@ -1,0 +1,18 @@
+name: integration tests
+run-name: Integration tests for ${{ github.repository }}@${{ github.ref }}
+on:
+  push: {}
+jobs:
+  service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: ./ci/run_integration_test.sh test/integration/service/
+      - name: Docker logs
+        if: always()
+        run: |
+          set +e
+          ./ci/compose logs postgres
+          ./ci/compose logs redis
+          ./ci/compose logs minio

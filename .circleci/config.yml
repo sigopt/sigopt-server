@@ -462,11 +462,6 @@ jobs:
       - run:
           name: Client Integration Test
           command: ./ci/compose.sh run test-client test/run_client_integration_tests.sh main
-  service-integration:
-    executor: sigopt-integration
-    steps:
-      - run-integration-test:
-          test_path: /service
   worker-health:
     executor: sigopt-integration
     steps:
@@ -513,7 +508,6 @@ workflows:
       - v1-integration
       - client-integration
       - browser-integration
-      - service-integration
       - worker-health
       - web-integration
       - zigopt-unit:
