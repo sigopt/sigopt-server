@@ -16,4 +16,4 @@ jobs:
       - run: pipenv install --deploy --dev
       - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
       - run: pipenv run ./tools/protobuf/compile.sh
-      - run: pipenv run pytest test/python/sigopttest
+      - run: pipenv run ./pp pytest test/python/sigopttest
