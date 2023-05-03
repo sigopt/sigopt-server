@@ -1,4 +1,4 @@
-name: SigOpt Server pre-commit checks
+name: pre-commit checks
 run-name: Pre-commit checks for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}

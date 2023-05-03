@@ -1,4 +1,4 @@
-name: SigOpt Server web code tests
+name: web code tests
 run-name: Web tests for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}
