@@ -3,7 +3,7 @@ run-name: Python tests for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}
 jobs:
-  check-node-dependencies:
+  sigopttest:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
