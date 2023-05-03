@@ -9,4 +9,4 @@ export COMPOSE_PROJECT_NAME="${CIRCLE_SHA1}_${CIRCLE_JOB}_${CIRCLE_NODE_INDEX}"
 export TAG="$CIRCLE_SHA1"
 export MINIO_ROOT_PASSWORD=CHANGEME123
 
-exec docker-compose --file=docker-compose.yml --env-file=./.env "$@"
+exec docker compose --file=docker-compose.yml --env-file=./.env "$@"
