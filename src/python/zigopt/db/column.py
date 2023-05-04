@@ -266,7 +266,7 @@ class _ProtobufColumnType(TypeDecorator):
           return o[0](with_default, operator, *(other + o[1:]), **kwargs)
         if operator in OPERATORS_REQUIRING_CAST:
           raise ValueError(
-            f"It is unsafe to compare fields with {operator_name} - descriptor is not terminal: {self._descrioptor}"
+            f"It is unsafe to compare fields with {operator_name} - descriptor is not terminal: {self._descriptor}"
           )
         if operator not in OPERATORS_FORBIDDING_DEFAULTS:
           # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
