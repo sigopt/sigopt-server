@@ -1,6 +1,7 @@
 # Copyright © 2023 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# crosshair: on
 import collections
 from typing import Callable, Collection, Hashable, Mapping, MutableMapping, TypeVar
 

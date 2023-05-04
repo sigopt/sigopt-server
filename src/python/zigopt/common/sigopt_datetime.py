@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# crosshair: on
 import datetime
 import os
 from typing import Optional
