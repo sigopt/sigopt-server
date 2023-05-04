@@ -7,7 +7,7 @@ set -o pipefail
 
 if [ -z "$_RUN_CROSSHAIR" ]; then
   OUTPUT="$(mktemp)"
-  if crosshair check \
+  if ./tools/crosshair/main.py check \
     --per_path_timeout=0.01 \
     --per_condition_timeout=2 \
     --analysis_kind=deal \
