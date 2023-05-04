@@ -15,7 +15,7 @@ function run_fg {
 function run_bg {
   ./ci/compose.sh build --progress=plain "$1"
   ./ci/compose.sh create "$1"
-  ./ci/compose.sh run -d "$@" &
+  ./ci/compose.sh run -d "$@"
 }
 
 TEST="$1"
