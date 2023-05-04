@@ -80,3 +80,5 @@ ENV VECLIB_MAXIMUM_THREADS 1
 ENV NUMEXPR_NUM_THREADS 1
 
 COPY docker/images/zigopt/bin/ /usr/local/bin/
+
+COPY config/ /sigopt-server/config/
