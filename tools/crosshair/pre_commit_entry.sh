@@ -6,6 +6,7 @@ set -e
 set -o pipefail
 
 if [ -n "$_RUN_CROSSHAIR" ]; then
+  echo "$@"
   OUTPUT="$(mktemp)"
   if ./pp ./tools/crosshair/main.py check \
     --per_path_timeout=0.01 \
