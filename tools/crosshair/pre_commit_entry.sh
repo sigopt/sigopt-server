@@ -16,6 +16,7 @@ if [ -z "$_RUN_CROSSHAIR" ]; then
   else
     echo "The above failure occurred while checking $1"
     echo
+    exit 1
   fi
 fi
 
