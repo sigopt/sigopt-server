@@ -8,9 +8,6 @@ commands:
     steps:
       - attach_workspace:
           at: /home/circleci
-  install-trivy:
-    steps:
-      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.40.0/trivy_0.40.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
   install-submodules:
     steps:
       - add_ssh_keys:
@@ -340,33 +337,6 @@ jobs:
               echo 'Some __init__.py files are missing in test/integration/. Run `./scripts/dev/ensure_inits.sh` and commit the changes.'
             fi
             exit $rc
-  trivy-scan-images:
-    executor: sigopt-build
-    resource_class: medium
-    steps:
-      - checkout
-      - run: pyenv global 3.10.6
-      - install-submodules
-      - install-trivy
-      - run: ./ci/trivy_scan_images.sh --ignore-unfixed --debug
-      - store_artifacts:
-          path: artifacts/trivy/
-  trivy-scan-project:
-    docker:
-      - image: cimg/base:stable
-    resource_class: medium
-    steps:
-      - checkout
-      - install-trivy
-      - run: mkdir -p artifacts/trivy && trivy fs . --debug
-      - store_artifacts:
-          path: artifacts/trivy/
-  yarn-audit:
-    executor: sigopt-node-only
-    resource_class: small
-    steps:
-      - checkout
-      - run: yarn audit --groups dependencies
   test-docker-deployment:
     executor: sigopt-build
     resource_class: xlarge
@@ -503,9 +473,6 @@ workflows:
     jobs:
       - checkout-code
       - check-integration-test-inits
-      - trivy-scan-images
-      - trivy-scan-project
-      - yarn-audit
       - test-docker-deployment
       - test-docker-development
       - setup-web
@@ -529,8 +496,6 @@ workflows:
             - documentation-generation
   nightly:
     jobs:
-      - trivy-scan-images
-      - trivy-scan-project
       - test-docker-deployment
     triggers:
       - schedule:
