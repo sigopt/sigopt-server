@@ -68,7 +68,7 @@ RUN : \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
-ENV CHROMEDRIVER_VERSION "113.0.5672.24"
+ENV CHROMEDRIVER_VERSION "113.0.5672.63"
 
 RUN : \
   ; apt-get update -yqq >/dev/null \

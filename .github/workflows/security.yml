@@ -1,0 +1,36 @@
+name: security checks
+run-name: Security checks for ${{ github.repository }}@${{ github.ref }}
+on:
+  push: {}
+  schedule:
+    - cron: "0 8,16 * * *"
+jobs:
+  trivy-scan-fs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.41.0/trivy_0.41.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
+      - run: mkdir -p artifacts/trivy && trivy fs . --debug
+      - uses: actions/upload-artifact@v3
+        with:
+          name: trivy-fs-results
+          path: artifacts/trivy/results.json
+  trivy-scan-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.41.0/trivy_0.41.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
+      - run: make submodules
+      - run: ./ci/trivy_scan_images.sh --ignore-unfixed --debug
+      - uses: actions/upload-artifact@v3
+        with:
+          name: trivy-images-results
+          path: artifacts/trivy/
+  yarn-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: yarn audit
