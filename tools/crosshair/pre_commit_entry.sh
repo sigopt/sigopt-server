@@ -5,8 +5,20 @@
 set -e
 set -o pipefail
 
+if [ -z "$_RUN_CROSSHAIR" ]; then
+  if crosshair check \
+    --per_path_timeout=0.01 \
+    --per_condition_timeout=2 \
+    --analysis_kind=deal \
+    "$@"
+  then
+    exit
+  else
+    echo "The above failure occurred while checking $1"
+    echo
+  fi
+fi
+
+
 source scripts/set_python_path.sh .
-printf "%s\0" "$@" | xargs -0 -n1 crosshair check \
-  --per_path_timeout=0.01 \
-  --per_condition_timeout=2 \
-  --analysis_kind=deal
+printf "%s\0" "$@" | xargs -0 -n1 env _RUN_CROSSHAIR=x "$0"
