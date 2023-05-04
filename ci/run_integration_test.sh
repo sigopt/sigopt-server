@@ -8,11 +8,13 @@ set -x
 
 function run_fg {
   ./ci/compose.sh build --progress=plain "$1"
+  ./ci/compose.sh create "$1"
   ./ci/compose.sh run --rm "$@"
 }
 
 function run_bg {
   ./ci/compose.sh build --progress=plain "$1"
+  ./ci/compose.sh create "$1"
   ./ci/compose.sh run -d "$@" &
 }
 
