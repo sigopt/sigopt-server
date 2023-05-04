@@ -89,7 +89,7 @@ def setup_db(config_broker, allow_list=True, superuser=None, superuser_password=
   # pg8000's execute only works for quoted arguments - db names and roles are
   # not quoted in sql queries.
   if allow_list:
-    assert database in DB_NAME_ALLOW_LIST
+    assert database in DB_NAME_ALLOW_LIST, f"{database} not in {DB_NAME_ALLOW_LIST}"
 
   # Connect as default superuser
   args: dict[str, Any] = {
