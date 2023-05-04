@@ -11,4 +11,5 @@ DEFAULT_CONFIG_DIR = "/etc/sigopt/server-config/"
 
 def load_config_from_env() -> ConfigBroker:
   config_dir = os.environ.get("SIGOPT_SERVER_CONFIG_DIR") or DEFAULT_CONFIG_DIR
+  print(os.listdir(config_dir))
   return ConfigBroker.from_directory(config_dir)
