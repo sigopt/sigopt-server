@@ -6,7 +6,7 @@ set -e
 set -o pipefail
 
 source scripts/set_python_path.sh .
-printf "%s\0" "$@" | xargs -0 -n1 ./tools/crosshair/main.py check \
+printf "%s\0" "$@" | xargs -0 -n1 crosshair check \
   --per_path_timeout=0.01 \
   --per_condition_timeout=2 \
   --analysis_kind=deal
