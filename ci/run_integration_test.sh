@@ -31,6 +31,7 @@ run_bg redis
 run_bg minio
 run_fg init-minio-cookiejar
 run_fg init-minio-filestorage
+run_bg smtp
 for service in "$@"; do
   run_bg "$service"
 done
