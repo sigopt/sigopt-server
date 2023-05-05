@@ -57,5 +57,5 @@ jobs:
           ./ci/compose.sh logs smtp
           ./ci/compose.sh logs qworker
           ./ci/compose.sh logs qworker-analytics
-          ./ci/compose.sh logs api
           ./ci/compose.sh logs nginx
+          ./ci/compose.sh logs api
