@@ -29,3 +29,33 @@ jobs:
           ./ci/compose.sh logs redis
           ./ci/compose.sh logs minio
           ./ci/compose.sh logs smtp
+  v1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: sudo mkdir -p /etc/apt/keyrings
+      - run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      - run: sudo apt-get remove -yqq moby-buildx moby-compose moby-cli
+      - run: |
+          echo \
+            "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu focal stable" \
+           | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      - run: apt-cache madison docker-ce-cli | awk '{ print $3 }'
+      - run: |
+          sudo apt-get update -yqq && sudo apt-get install -yqq \
+            docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
+            docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - run: ./ci/run_integration_test.sh test/integration/v1/ qworker qworker-analytics api nginx
+      - name: Docker logs
+        if: always()
+        run: |
+          set +e
+          ./ci/compose.sh logs postgres
+          ./ci/compose.sh logs redis
+          ./ci/compose.sh logs minio
+          ./ci/compose.sh logs smtp
+          ./ci/compose.sh logs qworker
+          ./ci/compose.sh logs qworker-analytics
+          ./ci/compose.sh logs api
+          ./ci/compose.sh logs nginx
