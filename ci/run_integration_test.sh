@@ -7,23 +7,17 @@ set -o pipefail
 set -x
 
 function run_fg {
-  ./ci/compose.sh build --progress=plain "$1"
-  ./ci/compose.sh create "$1"
-  ./ci/compose.sh run --rm "$@"
+  ./ci/run_container_fg.sh "$@"
 }
 
 function run_bg {
-  ./ci/compose.sh build --progress=plain "$1"
-  ./ci/compose.sh up -d "$@"
+  ./ci/run_container_bg.sh "$@"
 }
 
 TEST="$1"
 shift
 
-./ci/compose.sh run -Ti --rm init-config sh -e <<EOF
-  cp /sigopt-server/config/circleci/* /etc/sigopt/server-config/
-  echo CHANGEME123 >/etc/minio/password.txt
-EOF
+./ci/init_config.sh
 
 run_bg postgres
 run_fg createdb --fake-data
