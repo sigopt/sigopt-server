@@ -20,7 +20,7 @@ function run_bg {
 TEST="$1"
 shift
 
-./ci/compose.sh run -Ti --rm init-config sh -e \<<EOF
+./ci/compose.sh run -Ti --rm init-config sh -e <<EOF
   cp /sigopt-server/config/circleci/* /etc/sigopt/server-config/
   echo CHANGEME123 >/etc/minio/password.txt
 EOF
