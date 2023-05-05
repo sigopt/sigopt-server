@@ -192,6 +192,7 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - run: ./ci/create_development_tls_certs.sh
       - run: ./ci/init_config.sh
       - run: ./ci/run_container_bg.sh postgres
       - run: ./ci/run_container_fg.sh createdb
