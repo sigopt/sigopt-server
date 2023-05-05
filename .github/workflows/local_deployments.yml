@@ -1,0 +1,33 @@
+name: test local deployments
+run-name: Test local deployments for ${{ github.repository }}@${{ github.ref }}
+on:
+  push: {}
+  schedule:
+    - cron: "0 8,16 * * *"
+jobs:
+  service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: sudo mkdir -p /etc/apt/keyrings
+      - run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      - run: sudo apt-get remove -yqq moby-buildx moby-compose moby-cli
+      - run: |
+          echo \
+            "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu focal stable" \
+           | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      - run: apt-cache madison docker-ce-cli | awk '{ print $3 }'
+      - run: |
+          sudo apt-get update -yqq && sudo apt-get install -yqq \
+            docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
+            docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+      - run: EDITOR=true ./setup.sh
+      - run: ./start.sh &
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
+      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/api/health
+      - run: |
+          EMAIL="$(tail -n 2 scratch/setup_output.log | grep -E '^  email:' | awk -F': ' '{ print $2 }')"
+          PASSWORD="$(tail -n 2 scratch/setup_output.log | grep -E '^  password:' | awk -F': ' '{ print $2 }')"
+          curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "'"$EMAIL"'", "password": "'"$PASSWORD"'"}'
