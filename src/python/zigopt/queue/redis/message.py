@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.protobuf.gen.queue.messages_pb2 import MessageWithName
 from zigopt.queue.message import ReceivedMessage
 from zigopt.queue.redis.base import BaseRedisQueueProvider

@@ -4,6 +4,7 @@
 import numpy
 
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.handlers.validate.assignments import parameter_conditions_satisfied
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentParameter
 from zigopt.protobuf.lib import copy_protobuf

@@ -4,6 +4,7 @@
 from collections import Counter
 
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.common.numbers import *
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationValue

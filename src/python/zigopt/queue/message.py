@@ -4,6 +4,7 @@
 from google.protobuf.message import Message
 
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.common.sigopt_datetime import unix_timestamp
 
 

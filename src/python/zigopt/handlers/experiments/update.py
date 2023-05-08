@@ -8,6 +8,7 @@ from sqlalchemy import Column
 
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
+from zigopt.common.lists import coalesce
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.experiment.constant import (
   EXPERIMENT_PARAMETER_TYPE_TO_NAME,

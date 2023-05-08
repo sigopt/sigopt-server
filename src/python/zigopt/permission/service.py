@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.client.model import Client
+from zigopt.common.lists import coalesce
 from zigopt.db.column import JsonPath, jsonb_set, unwind_json_path
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import ADMIN_ROLE, READ_ONLY_ROLE, USER_ROLE

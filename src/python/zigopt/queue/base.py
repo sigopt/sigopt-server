@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.services.base import Service
 

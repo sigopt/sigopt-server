@@ -4,6 +4,7 @@
 import datetime as dt
 
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.common.sigopt_datetime import aware_datetime_to_naive_datetime
 from zigopt.common.struct import ImmutableStruct
 from zigopt.pagination.lib import get_value_of_paging_symbol

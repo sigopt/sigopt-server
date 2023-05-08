@@ -5,6 +5,7 @@ from typing import Any, Literal, Optional
 
 from zigopt.common import *
 from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.common.lists import coalesce
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.experiment.constant import (
   EXPERIMENT_TYPE_TO_NAME,

@@ -6,6 +6,7 @@ from sqlalchemy import BigInteger, Column, String
 from sqlalchemy.orm import validates
 
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.db.column import ProtobufColumn, ProtobufColumnValidator
 from zigopt.db.declarative import Base
 from zigopt.protobuf.gen.user.usermeta_pb2 import UserMeta

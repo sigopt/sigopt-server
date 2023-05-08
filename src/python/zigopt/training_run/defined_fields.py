@@ -7,6 +7,7 @@ from sqlalchemy.sql import text
 
 from zigopt.common import *
 from zigopt.client.model import Client
+from zigopt.common.lists import coalesce
 from zigopt.pagination.lib import PROTOBUF_FIELD_TYPE_TO_FIELD_API_TYPE, DefinedField, FieldApiType
 from zigopt.training_run.field_types import TRAINING_RUN_API_FIELDS, FieldType
 from zigopt.training_run.model import TrainingRun

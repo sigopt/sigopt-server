@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 
 
 class OptimizationArgs:  # pylint: disable=too-many-instance-attributes

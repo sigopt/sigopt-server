@@ -7,6 +7,7 @@ import numpy
 
 from zigopt.common import *
 from zigopt.assignments.model import MissingValueException, extract_array_for_computation_from_assignments
+from zigopt.common.lists import coalesce
 from zigopt.experiment.constant import METRIC_OBJECTIVE_TYPE_TO_NAME
 from zigopt.experiment.constraints import parse_experiment_constraints_to_func_list
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import Prior

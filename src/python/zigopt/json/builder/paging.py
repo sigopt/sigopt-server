@@ -5,6 +5,7 @@ from typing import Any, Optional, Sequence
 
 from zigopt.common import *
 from zigopt.api.paging import serialize_paging_marker
+from zigopt.common.lists import coalesce
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.pagination.lib import FIELD_API_TYPE_TO_STRING, DefinedField
 from zigopt.protobuf.gen.api.paging_pb2 import PagingMarker

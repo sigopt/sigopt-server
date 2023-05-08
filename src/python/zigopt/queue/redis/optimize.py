@@ -4,6 +4,7 @@
 import base64
 
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.queue.message import ReceivedMessage
 from zigopt.queue.message_types import MessageType
 from zigopt.queue.redis.base import BaseRedisQueueProvider

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication, client_token_authentication
+from zigopt.common.lists import coalesce
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.common.struct import ImmutableStruct
 from zigopt.conditionals.from_json import set_experiment_conditionals_list_from_json

@@ -5,7 +5,7 @@ from sqlalchemy import or_
 
 from zigopt.common import *
 from zigopt.client.model import Client
-from zigopt.common.lists import flatten
+from zigopt.common.lists import coalesce, flatten
 from zigopt.common.sigopt_datetime import seconds_to_datetime
 from zigopt.common.struct import ImmutableStruct
 from zigopt.experiment.model import Experiment

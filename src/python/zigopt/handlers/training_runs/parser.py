@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.handlers.validate.base import validate_name
 from zigopt.handlers.validate.metadata import validate_metadata
 from zigopt.handlers.validate.sys_metadata import validate_sys_metadata

@@ -6,6 +6,7 @@ import signal
 import time
 
 from zigopt.common import *
+from zigopt.common.lists import coalesce
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.exception.logger import AlreadyLoggedException
 from zigopt.profile.tracer import NullTracer

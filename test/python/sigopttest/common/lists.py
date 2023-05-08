@@ -6,7 +6,7 @@ import numpy
 import pytest
 
 from zigopt.common import *
-from zigopt.common.lists import flatten
+from zigopt.common.lists import coalesce, flatten
 from zigopt.protobuf.gen.test.message_pb2 import Parent
 
 
