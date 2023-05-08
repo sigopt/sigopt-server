@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
 from zigopt.assignments.build import set_assignments_map_from_proxy
+from zigopt.common.lists import flatten
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData, SuggestionMeta
 from zigopt.protobuf.lib import copy_protobuf
 from zigopt.queued_suggestion.model import QueuedSuggestion

@@ -14,6 +14,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 
 from zigopt.common import *
+from zigopt.common.lists import flatten
 from zigopt.fs.dir import ensure_dir
 
 from integration.browser.helpers import navigation_helper

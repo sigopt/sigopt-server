@@ -5,6 +5,7 @@ import csv
 import io
 
 from zigopt.common import *
+from zigopt.common.lists import flatten
 
 from integration.utils.make_values import make_values
 from integration.web.experiment.test_base import ExperimentWebBase

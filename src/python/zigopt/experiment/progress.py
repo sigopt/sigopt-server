@@ -4,6 +4,7 @@
 from sqlalchemy import case, desc, func
 
 from zigopt.common import *
+from zigopt.common.lists import flatten
 from zigopt.json.builder import ObservationProgressJsonBuilder, RunProgressJsonBuilder
 from zigopt.observation.model import Observation
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import ExperimentMetric

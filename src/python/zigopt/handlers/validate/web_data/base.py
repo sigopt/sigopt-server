@@ -6,6 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 from zigopt.common import *
+from zigopt.common.lists import flatten
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.handlers.validate.web_data.ag_run_view import ag_run_view_schema
 from zigopt.handlers.validate.web_data.run_view import run_view_schema
