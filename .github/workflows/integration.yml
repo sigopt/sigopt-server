@@ -189,7 +189,7 @@ jobs:
       - run: ./ci/create_development_tls_certs.sh
       - run: ./ci/init_config.sh
       - run: ./ci/run_container_bg.sh postgres
-      - run: ./ci/run_container_fg.sh createdb
+      - run: ./ci/run_container_fg.sh createdb --fake-data
       - run: ./ci/run_container_bg.sh redis
       - run: ./ci/run_container_bg.sh qworker
       - run: ./ci/run_container_bg.sh api
