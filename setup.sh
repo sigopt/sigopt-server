@@ -21,7 +21,7 @@ else
   exit 1
 fi
 echo "Building docker images..."
-if docker-compose --file=docker-compose.yml build --progress=quiet api createdb nginx qworker qworker-analytics web-server; then
+if docker compose --file=docker-compose.yml build --progress=quiet api createdb nginx qworker qworker-analytics web-server; then
   echo "Finished building docker images."
 else
   echo "Failed to build docker images. This is most likely because of a disk space error with your docker allocation. You can try running: docker system prune -a to clear up space."
@@ -31,7 +31,7 @@ fi
 MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
 export MINIO_ROOT_PASSWORD
 echo "Initializing configuration directory..."
-if docker-compose --file=docker-compose.yml run -i --rm init-config; then
+if docker compose --file=docker-compose.yml run -i --rm init-config; then
   echo "Configuration directory initialized."
 else
   echo "Failed to initialize the configuration directory"
@@ -59,8 +59,8 @@ else
 fi
 
 echo "Starting required services..."
-docker-compose --file=docker-compose.yml stop minio &>/dev/null || true
-if docker-compose --file=docker-compose.yml up --detach minio postgres redis; then
+docker compose --file=docker-compose.yml stop minio &>/dev/null || true
+if docker compose --file=docker-compose.yml up --detach minio postgres redis; then
   echo "Required services have started."
 else
   echo "Failed to start required services!"
@@ -68,21 +68,21 @@ else
 fi
 USER_PASSWORD="$(./tools/secure/generate_random_string.sh 16)"
 echo "Initializing database..."
-if docker-compose --file=docker-compose.yml run --rm createdb --drop-tables --user-password="$USER_PASSWORD"; then
+if docker compose --file=docker-compose.yml run --rm createdb --drop-tables --user-password="$USER_PASSWORD"; then
   echo "Database ready."
 else
   echo "Failed to initialize database!"
   exit 1
 fi
 echo "Initializing file storage..."
-if docker-compose --file=docker-compose.yml run --rm init-minio-filestorage; then
+if docker compose --file=docker-compose.yml run --rm init-minio-filestorage; then
   echo "File storage ready."
 else
   echo "Failed to initialize file storage!"
   exit 1
 fi
 echo "Initializing session storage..."
-if docker-compose --file=docker-compose.yml run --rm init-minio-cookiejar; then
+if docker compose --file=docker-compose.yml run --rm init-minio-cookiejar; then
   echo "Session storage ready."
 else
   echo "Failed to initialize session storage!"

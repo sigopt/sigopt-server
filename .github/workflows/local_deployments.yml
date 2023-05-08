@@ -22,11 +22,6 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
-      - run: |
-          sudo cat <<EOF >"$(which docker-compose)"
-          #!/usr/bin/env bash
-          exec docker compose "$@"
-          EOF
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: EDITOR=true ./setup.sh
       - run: ./start.sh &
