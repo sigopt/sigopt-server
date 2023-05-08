@@ -111,8 +111,10 @@ class TestExperiment(ExperimentWebBase):
           "id",
         ]
         + flatten(
-          [f"value-{m.name}" if m.name else "value", f"value_stddev-{m.name}" if m.name else "value_stddev"]
-          for m in e.metrics
+          [
+            [f"value-{m.name}" if m.name else "value", f"value_stddev-{m.name}" if m.name else "value_stddev"]
+            for m in e.metrics
+          ]
         )
         + (["task_name"] if e.tasks else [])
       )

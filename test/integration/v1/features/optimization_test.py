@@ -4,7 +4,7 @@
 import pytest
 from flaky import flaky
 
-from zigopt.common.lists import *
+from zigopt.common.find import find_index
 from zigopt.experiment.model import Experiment
 from zigopt.observation.model import Observation
 from zigopt.optimization_aux.model import ExperimentOptimizationAux

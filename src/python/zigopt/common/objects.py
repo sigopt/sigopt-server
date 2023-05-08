@@ -4,7 +4,10 @@
 from typing import Any as _Any
 from typing import Sequence as _Sequence
 
-from zigopt.common.lists import is_mapping
+from zigopt.common.types import is_mapping
+
+
+__all__ = ["recursively_check_for_instances"]
 
 
 def recursively_check_for_instances(obj: _Any, check: type | _Sequence[type], ignore: type | _Sequence[type] = ()):

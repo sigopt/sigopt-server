@@ -5,6 +5,8 @@
 set -e
 set -o pipefail
 
+export GUNICORN_ENABLED=x
+
 exec gunicorn \
  --log-file - \
  --worker-class gevent \

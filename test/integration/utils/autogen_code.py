@@ -6,7 +6,7 @@ import subprocess
 import sys
 import tempfile
 
-from zigopt.common.lists import omit
+from zigopt.common.maps import omit
 
 
 def assert_experiments_equivalent(experiment1, experiment2):

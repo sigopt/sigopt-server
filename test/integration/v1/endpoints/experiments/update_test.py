@@ -17,6 +17,7 @@ from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH
 from integration.base import RaisesApiException
 from integration.v1.constants import DEFAULT_EXPERIMENT_META, BoundedDoubleParameterMetaType
 from integration.v1.experiments_test_base import ExperimentsTestBase
+from integration.v1.test_base import Connection
 from libsigopt.aux.constant import ParameterTransformationNames
 
 
@@ -25,13 +26,15 @@ unix_epoch = get_unix_epoch()
 
 
 class TestUpdateExperiments(ExperimentsTestBase):
+  _connection: Connection
+
   @pytest.fixture(autouse=True)
   def setup_assert_experiment(self, connection):
-    self.connection = connection
+    self._connection = connection
 
   def assert_experiment_updated(self, e, checker):
     assert checker(e) is True
-    assert checker(self.connection.experiments(e.id).fetch())
+    assert checker(self._connection.experiments(e.id).fetch())
 
   def test_name_update(self, connection, client_id, any_meta):
     e = connection.clients(client_id).experiments().create(**any_meta)
@@ -733,7 +736,10 @@ class TestUpdateExperiments(ExperimentsTestBase):
 
   def test_log_transform_update_errors(self, connection):
     p1: BoundedDoubleParameterMetaType = dict(
-      name="a", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG
+      name="a",
+      type="double",
+      bounds=dict(min=1, max=10),
+      transformation="log",
     )
     p2: BoundedDoubleParameterMetaType = dict(name="b", type="double", bounds=dict(min=1, max=10))
     meta = deepcopy(DEFAULT_EXPERIMENT_META)
@@ -742,12 +748,12 @@ class TestUpdateExperiments(ExperimentsTestBase):
     assert e.parameters[0].to_json()["transformation"] == ParameterTransformationNames.LOG
 
     p1_none_transform = deepcopy(p1)
-    p1_none_transform["transformation"] = ParameterTransformationNames.NONE
+    p1_none_transform["transformation"] = "none"
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.experiments(e.id).update(parameters=[p1_none_transform, p2])
 
     p2_with_log = deepcopy(p2)
-    p2_with_log["transformation"] = ParameterTransformationNames.LOG
+    p2_with_log["transformation"] = "log"
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.experiments(e.id).update(parameters=[p1, p2_with_log])
 

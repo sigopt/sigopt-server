@@ -4,4 +4,6 @@
 import random
 
 
+__all__ = ["non_crypto_random"]
+
 non_crypto_random = random

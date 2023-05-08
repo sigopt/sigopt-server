@@ -26,6 +26,8 @@ FORBIDDEN_FIELDS = (
   "index",
 )
 
+__all__ = ["ImmutableStruct"]
+
 
 def ImmutableStruct(name, args, defaults=None):
   fields = tuple(args)

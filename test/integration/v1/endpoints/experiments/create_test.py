@@ -14,6 +14,7 @@ from integration.v1.constants import (
   DEFAULT_EXPERIMENT_META,
   EXPERIMENT_META_CONDITIONALS,
   EXPERIMENT_META_MULTISOLUTION,
+  CategoricalParameterMetaType,
 )
 from integration.v1.experiments_test_base import ExperimentsTestBase
 from libsigopt.aux.constant import ParameterTransformationNames
@@ -651,9 +652,7 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
 
   def test_log_transform_params(self, connection, services):
     meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
-    meta["parameters"] = [
-      dict(name="a", type="double", bounds=dict(min=0.1, max=10), transformation=ParameterTransformationNames.LOG)
-    ]
+    meta["parameters"] = [dict(name="a", type="double", bounds=dict(min=0.1, max=10), transformation="log")]
     e = connection.create_any_experiment(**meta)
     assert e.parameters[0].to_json()["transformation"] == ParameterTransformationNames.LOG
     zigopt_experiment = services.experiment_service.find_by_id(e.id)
@@ -671,25 +670,23 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
   )
   def test_log_transform_errors_on_non_positive_bounds(self, connection, bounds):
     meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
-    meta["parameters"] = [dict(name="a", type="double", bounds=bounds, transformation=ParameterTransformationNames.LOG)]
+    meta["parameters"] = [dict(name="a", type="double", bounds=bounds, transformation="log")]
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.create_any_experiment(**meta)
 
   def test_log_transform_errors_on_non_double(self, connection):
     meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
 
-    meta["parameters"] = [
-      dict(name="a", type="int", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG)
-    ]
+    meta["parameters"] = [dict(name="a", type="int", bounds=dict(min=1, max=10), transformation="log")]
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.create_any_experiment(**meta)
 
     meta["parameters"] = [
-      dict(  # type: ignore
+      CategoricalParameterMetaType(  # type: ignore
         name="cat",
         type="categorical",
         categorical_values=[dict(name="d"), dict(name="e")],
-        transformation=ParameterTransformationNames.LOG,
+        transformation="log",
       ),
     ]
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
@@ -698,11 +695,11 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
   def test_log_transform_errors_on_parameter_priors(self, connection):
     meta = copy.deepcopy(DEFAULT_EXPERIMENT_META)
     meta["parameters"] = [
-      dict(  # type: ignore
+      dict(
         name="a",
         type="double",
         bounds=dict(min=1, max=10),
-        transformation=ParameterTransformationNames.LOG,
+        transformation="log",
         prior=dict(name="normal", mean=0.0, scale=1.0),
       )
     ]
@@ -714,7 +711,7 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
     meta["parameters"] = [
       dict(name="a", type="double", bounds=dict(min=1, max=10)),
       dict(name="b", type="double", bounds=dict(min=1, max=10)),
-      dict(name="c", type="double", bounds=dict(min=1, max=10), transformation=ParameterTransformationNames.LOG),
+      dict(name="c", type="double", bounds=dict(min=1, max=10), transformation="log"),
     ]
     meta["linear_constraints"] = [
       dict(
@@ -744,14 +741,14 @@ class TestCreateExperimentsWithMetricStrategy(ExperimentsTestBase):
         type="double",
         bounds=dict(min=1, max=10),
         conditions=dict(x=["foo", "bar"]),
-        transformation=ParameterTransformationNames.LOG,
+        transformation="log",
       ),
       dict(
         name="b",
         type="double",
         bounds=dict(min=1, max=10),
         conditions=dict(x=["foo", "baz"]),
-        transformation=ParameterTransformationNames.LOG,
+        transformation="log",
       ),
     ]
     meta["conditionals"] = [

@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from zigopt.common.lists import find
+from zigopt.common.find import find
 from zigopt.common.strings import random_string
 from zigopt.handlers.experiments.list_base import EXPERIMENT_RECENCY
 from zigopt.project.model import MAX_ID_LENGTH as MAX_PROJECT_ID_LENGTH

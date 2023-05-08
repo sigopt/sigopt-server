@@ -22,7 +22,7 @@ from zigopt.training_run.model import TrainingRun
 from zigopt.user.model import User
 
 from integration.base import RaisesApiException
-from integration.v1.test_base import V1Base
+from integration.v1.test_base import Connection, V1Base
 
 
 # NOTE: Fields that are defined on all Training Runs one gets from a API request
@@ -168,16 +168,17 @@ def is_null(field):
 
 class TestTrainingRunsList(V1Base):
   # pylint: disable=too-many-public-methods
+  _connection: Connection
+  _project: Project
+
   @pytest.fixture(autouse=True)
   def setup_project(self, connection, setup):
     del setup
-    # pylint: disable=attribute-defined-outside-init
-    self.connection = connection
+    self._connection = connection
     project_id = random_string(str_length=20).lower()
-    self.project = Project(client_id=connection.client_id, reference_id=project_id, name=project_id, created_by=None)
-    self.services.database_service.insert(self.project)
-    return self.project
-    # pylint: enable=attribute-defined-outside-init
+    self._project = Project(client_id=connection.client_id, reference_id=project_id, name=project_id, created_by=None)
+    self.services.database_service.insert(self._project)
+    return self._project
 
   @pytest.fixture
   def experiment(self, connection):
@@ -202,27 +203,27 @@ class TestTrainingRunsList(V1Base):
     return [0.0, 0.01, 2.02, 10.01, 100.001, 99999]
 
   def fetch_training_runs(self, project_id=None, **kwargs):
-    project_id = project_id or self.project.reference_id
-    return self.connection.clients(self.connection.client_id).projects(project_id).training_runs().fetch(**kwargs)
+    project_id = project_id or self._project.reference_id
+    return self._connection.clients(self._connection.client_id).projects(project_id).training_runs().fetch(**kwargs)
 
   def insert_training_run(self, **kwargs):
     params = dict(
-      client_id=self.connection.client_id,
-      project_id=self.project.id,
+      client_id=self._connection.client_id,
+      project_id=self._project.id,
     )
     extend_dict(params, kwargs)
     self.services.database_service.insert(TrainingRun(**params))
 
   def create_training_run(self, **kwargs):
     return (
-      self.connection.clients(self.connection.client_id)
-      .projects(self.project.reference_id)
+      self._connection.clients(self._connection.client_id)
+      .projects(self._project.reference_id)
       .training_runs()
       .create(**kwargs)
     )
 
   def update_training_run(self, run_id, **kwargs):
-    return self.connection.training_runs(run_id).update(**kwargs)
+    return self._connection.training_runs(run_id).update(**kwargs)
 
   def test_filter_name_field(self, string_values):
     string_values = compact_sequence(string_values)
@@ -326,9 +327,9 @@ class TestTrainingRunsList(V1Base):
     # By definition the client ID must be the same for every value in the list,
     # but we still want to handle them sanely
     count = len(id_values)
-    assert self.fetch_training_runs(**equals("client", self.connection.client_id)).count == count
-    assert self.fetch_training_runs(**less_than_or_equal("client", self.connection.client_id)).count == count
-    assert self.fetch_training_runs(**less_than("client", self.connection.client_id)).count == 0
+    assert self.fetch_training_runs(**equals("client", self._connection.client_id)).count == count
+    assert self.fetch_training_runs(**less_than_or_equal("client", self._connection.client_id)).count == count
+    assert self.fetch_training_runs(**less_than("client", self._connection.client_id)).count == 0
     assert (
       self.fetch_training_runs(sort="client", ascending=True).data
       == self.fetch_training_runs(sort="id", ascending=True).data
@@ -553,7 +554,7 @@ class TestTrainingRunsList(V1Base):
   @pytest.fixture(scope="function")
   def project_for_testing_count(self):
     project_id = random_string(str_length=20).lower()
-    project = Project(client_id=self.connection.client_id, reference_id=project_id, name=project_id, created_by=None)
+    project = Project(client_id=self._connection.client_id, reference_id=project_id, name=project_id, created_by=None)
     self.services.database_service.insert(project)
     return project
 

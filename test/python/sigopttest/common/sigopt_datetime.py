@@ -6,6 +6,7 @@ import os
 import time
 
 import pytest
+import pytz
 
 from zigopt.common.sigopt_datetime import *
 

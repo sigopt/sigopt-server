@@ -20,7 +20,7 @@ class TestLists:
       ([[1, 3]], [1, 3]),
       ([[1, 3], [], [], [2]], [1, 3, 2]),
       ([[1, 3], [], [], [2, [4]]], [1, 3, 2, [4]]),
-      (([i] for i in range(5)), list(range(5))),
+      ([[i] for i in range(5)], list(range(5))),
     ],
   )
   def test_flatten(self, input_list, expected):
@@ -35,12 +35,6 @@ class TestLists:
     assert tail([1, 2, 3, 4, 5], 5) == [1, 2, 3, 4, 5]
     assert tail([1, 2, 3, 4, 5], 3) == [3, 4, 5]
     assert tail([1, 2, 3, 4, 5], 0) == []
-    assert tail([1, 2, 3, 4, 5], -2) == []
-
-    with pytest.raises(Exception):
-      tail([], None)
-    with pytest.raises(Exception):
-      tail([1, 2, 3], None)
 
   @pytest.mark.parametrize(
     "input_data,expected",
@@ -159,7 +153,7 @@ class TestLists:
     assert partition([1, 2], lambda x: True) == ([1, 2], [])
     assert partition([1, 2], lambda x: False) == ([], [1, 2])
     assert partition([1, 2, 3, 4], lambda x: x % 2 == 0) == ([2, 4], [1, 3])
-    assert partition((i for i in range(1, 5)), lambda x: x % 2 == 0) == ([2, 4], [1, 3])
+    assert partition(list(range(1, 5)), lambda x: x % 2 == 0) == ([2, 4], [1, 3])
 
   def test_distinct(self):
     assert distinct([]) == []
@@ -173,18 +167,6 @@ class TestLists:
     assert distinct(()) == ()
     assert distinct((1, 2)) == (1, 2)
     assert distinct((1, 1, 2)) == (1, 2)
-
-    with pytest.raises(ValueError):
-      distinct({})  # type: ignore
-
-    with pytest.raises(ValueError):
-      distinct(set([]))  # type: ignore
-
-    with pytest.raises(ValueError):
-      distinct("abc")  # type: ignore
-
-    with pytest.raises(ValueError):
-      distinct(None)  # type: ignore
 
   def test_distinct_by(self):
     assert distinct_by((), key=lambda x: x) == ()  # type: ignore
@@ -216,7 +198,7 @@ class TestLists:
     assert find([1, 2], lambda x: True) == 1
     assert find([1, 2], lambda x: x % 2 == 0) == 2
     assert find([1, 2, 4, 6], lambda x: x % 2 == 0) == 2
-    assert find((i for i in range(1, 5)), lambda x: x % 2 == 0) == 2
+    assert find(list(range(1, 5)), lambda x: x % 2 == 0) == 2
 
   def test_as_grouped_dict(self):
     assert as_grouped_dict([], lambda x: x) == {}  # type: ignore
@@ -224,7 +206,7 @@ class TestLists:
     assert as_grouped_dict([1, 2], lambda x: x) == {1: [1], 2: [2]}
     assert as_grouped_dict([1, 2], lambda x: x % 2) == {1: [1], 0: [2]}
     assert as_grouped_dict([1, 2, 3, 4], lambda x: x % 2) == {1: [1, 3], 0: [2, 4]}
-    assert as_grouped_dict((i for i in range(1, 5)), lambda x: x % 2) == {1: [1, 3], 0: [2, 4]}
+    assert as_grouped_dict(list(range(1, 5)), lambda x: x % 2) == {1: [1, 3], 0: [2, 4]}
 
   def test_to_map_by_key(self):
     assert to_map_by_key([], lambda x: x) == {}  # type: ignore
@@ -232,7 +214,7 @@ class TestLists:
     assert to_map_by_key([1, 2], lambda x: x) == {1: 1, 2: 2}
     assert to_map_by_key([1, 2], lambda x: x % 2) == {1: 1, 0: 2}
     assert to_map_by_key([1, 2, 3, 4], lambda x: x % 2) == {1: 3, 0: 4}
-    assert to_map_by_key((i for i in range(1, 5)), lambda x: x % 2) == {1: 3, 0: 4}
+    assert to_map_by_key(list(range(1, 5)), lambda x: x % 2) == {1: 3, 0: 4}
 
   def test_map_dict(self):
     assert map_dict(lambda x: x, {}) == {}  # type: ignore
@@ -436,7 +418,7 @@ class TestLists:
     assert sliding([1, 2, 3], 1000) == []
 
     assert sliding([1, 2, 3, 4, 5, 6], 4) == [(1, 2, 3, 4), (2, 3, 4, 5), (3, 4, 5, 6)]
-    assert sliding((i for i in range(1, 7)), 4) == [(1, 2, 3, 4), (2, 3, 4, 5), (3, 4, 5, 6)]
+    assert sliding(list(range(1, 7)), 4) == [(1, 2, 3, 4), (2, 3, 4, 5), (3, 4, 5, 6)]
 
   def test_as_tuple(self):
     assert as_tuple(None) == (None,)

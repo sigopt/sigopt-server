@@ -26,24 +26,22 @@ class ClientsPermissionsHandler(ClientHandler):
     user_map = {user.id: user for user in users}
 
     return PaginationJsonBuilder(
-      data=flatten(
-        [
-          (
-            OwnerPermissionJsonBuilder(
-              membership=membership,
-              user=user_map[membership.user_id],
-              client=self.client,
-            )
-            for membership in owner_memberships
-          ),
-          (
-            PermissionJsonBuilder(
-              permission,
-              user=user_map[permission.user_id],
-              client=self.client,
-            )
-            for permission in permissions
-          ),
-        ]
-      )
+      data=[
+        *(
+          OwnerPermissionJsonBuilder(
+            membership=membership,
+            user=user_map[membership.user_id],
+            client=self.client,
+          )
+          for membership in owner_memberships
+        ),
+        *(
+          PermissionJsonBuilder(
+            permission,
+            user=user_map[permission.user_id],
+            client=self.client,
+          )
+          for permission in permissions
+        ),
+      ]
     )

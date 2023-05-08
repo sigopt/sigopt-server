@@ -3,18 +3,21 @@
 # SPDX-License-Identifier: Apache License 2.0
 import secrets
 import string
-from typing import Any as _Any
+from typing import Any
 
 
-def is_string(val: _Any) -> bool:
+__all__ = ["is_string", "is_serial", "is_likely_random_string", "random_string"]
+
+
+def is_string(val: Any) -> bool:
   return isinstance(val, str)
 
 
-def is_serial(val: _Any) -> bool:
+def is_serial(val: Any) -> bool:
   return isinstance(val, (str, bytes))
 
 
-def is_likely_random_string(val: _Any) -> bool:
+def is_likely_random_string(val: Any) -> bool:
   return is_string(val) and all(c in string.ascii_uppercase for c in val)
 
 

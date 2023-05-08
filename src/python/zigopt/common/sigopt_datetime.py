@@ -1,14 +1,29 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+# crosshair: on
 import datetime
 import os
-from typing import Optional as _Optional
+from typing import Optional
 
+import deal
 import pytz
 
 
 # sigoptlint: disable=AvoidDatetimeNowRule
+__all__ = [
+  "default_timezone",
+  "datetime_to_seconds",
+  "seconds_to_datetime",
+  "unix_epoch",
+  "aware_datetime_to_naive_datetime",
+  "naive_datetime_to_aware_datetime",
+  "current_datetime",
+  "unix_timestamp",
+  "unix_timestamp_with_microseconds",
+  "get_month_interval",
+  "seconds_until_next_interval",
+]
 
 
 def default_timezone() -> datetime.tzinfo:
@@ -37,13 +52,16 @@ def unix_epoch() -> datetime.datetime:
   return datetime.datetime.utcfromtimestamp(0).replace(tzinfo=pytz.utc).astimezone(default_timezone())
 
 
+@deal.pre(lambda dt: dt.tzinfo is not None)
+@deal.post(lambda result: result.tzinfo is None)
+@deal.raises(OverflowError, TypeError)
 def aware_datetime_to_naive_datetime(dt: datetime.datetime) -> datetime.datetime:
-  assert dt.tzinfo is not None
   return dt.astimezone(default_timezone()).replace(tzinfo=None)
 
 
+@deal.pre(lambda dt: dt.tzinfo is None)
+@deal.post(lambda result: result.tzinfo is not None)
 def naive_datetime_to_aware_datetime(dt: datetime.datetime) -> datetime.datetime:
-  assert dt.tzinfo is None
   return dt.replace(tzinfo=default_timezone())
 
 
@@ -59,15 +77,22 @@ def unix_timestamp_with_microseconds() -> float:
   return datetime_to_seconds(current_datetime(), with_microseconds=True)
 
 
-def get_month_interval(dt: _Optional[datetime.datetime] = None) -> tuple[datetime.datetime, datetime.datetime]:
-  if dt is None:
-    dt = current_datetime()
+@deal.ensure(lambda dt, result: result[0] <= dt <= result[1])
+@deal.post(lambda result: result[0] < result[1])
+@deal.raises(ValueError)
+def _get_month_interval(dt: datetime.datetime) -> tuple[datetime.datetime, datetime.datetime]:
   start = dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
   try:
     end = start.replace(month=start.month + 1)
   except ValueError:
     end = start.replace(year=start.year + 1, month=1)
   return start, end
+
+
+def get_month_interval(dt: Optional[datetime.datetime] = None) -> tuple[datetime.datetime, datetime.datetime]:
+  if dt is None:
+    dt = current_datetime()
+  return _get_month_interval(dt)
 
 
 def seconds_until_next_interval(interval_length_seconds: float) -> float:

@@ -4,7 +4,10 @@
 from contextlib import ExitStack
 from typing import Iterable
 
-from zigopt.common.lists import safe_iterator
+from zigopt.common.generators import safe_iterator
+
+
+__all__ = ["EmptyContext", "MultiContext"]
 
 
 class EmptyContext:

@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 from typing import Any, Callable, Optional, Sequence
 
-from zigopt.common import *
-from zigopt.common.lists import filter_keys, map_dict
+from zigopt.common.functions import napply
+from zigopt.common.strings import is_string
 from zigopt.handlers.validate.validate_dict import (
   IOValidatorInterface,
   TypeValidatorBase,
@@ -31,7 +31,7 @@ class MissingFieldError(JsonBuilderError):
 
 
 class InvalidFieldError(JsonBuilderError):
-  def __init__(self, builder: "JsonBuilder", field_name: str, type_error: TypeError):
+  def __init__(self, builder: "JsonBuilder", field_name: str, type_error: InvalidTypeError):
     super().__init__(
       f"when resolving field `{field_name}` in {type(builder).__name__}: {str(type_error)}",
       builder,
@@ -151,6 +151,13 @@ class BuilderDetails:
     self.object_type = object_type
     self.field_dict = field_dict
 
+  def __eq__(self, other):
+    if self is other:
+      return True
+    if type(self) is type(other):
+      return self.__dict__ == other.__dict__
+    return False
+
 
 class JsonBuilder:
   builder: BuilderDetails
@@ -195,6 +202,11 @@ class JsonBuilder:
 
   def resolve_all(self) -> dict:
     return self.resolve_fields(fields=None)
+
+  def __eq__(self, other) -> bool:
+    if type(self) is type(other):
+      return self.__dict__ == other.__dict__
+    return False
 
 
 class JsonBuilderValidationType(TypeValidatorBase):

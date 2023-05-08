@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import numpy
 
+from zigopt.common.generators import generator_to_list
 from zigopt.common.lists import *
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import PARAMETER_DOUBLE, PARAMETER_INT
 

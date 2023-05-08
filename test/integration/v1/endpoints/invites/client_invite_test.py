@@ -5,8 +5,7 @@ from http import HTTPStatus
 
 import pytest
 
-from zigopt.common import *
-from zigopt.common.lists import find
+from zigopt.common.find import find
 from zigopt.invite.constant import ADMIN_ROLE, NO_ROLE, READ_ONLY_ROLE, USER_ROLE
 from zigopt.user.model import normalize_email
 
