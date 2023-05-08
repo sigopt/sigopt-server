@@ -22,26 +22,6 @@ commands:
     steps:
       - run: pip install pipenv
       - run: pipenv install --quiet --deploy --dev --python=3.10
-  update-docker-cli:
-    steps:
-      - run: sudo mkdir -p /etc/apt/keyrings
-      - run: sudo apt-get remove -yqq docker-ce-rootless-extras docker-scan-plugin
-      - run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-      - run: |
-          echo \
-            "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu focal stable" \
-           | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-      - run: apt-cache madison docker-ce-cli | awk '{ print $3 }'
-      - run: |
-          sudo apt-get update -yqq && sudo apt-get install -yqq \
-            docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
-            docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
-      - run: docker version
-  sigopt-ninja-dns:
-    steps:
-      - run:
-          name: Add sigopt.ninja DNS entry
-          command: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
   compile-protobuf:
     steps:
       - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
@@ -81,10 +61,6 @@ commands:
         type: string
       service:
         type: string
-  docker-test-setup:
-    steps:
-      - run: make submodules
-      - sigopt-ninja-dns
   initialize-config-directory:
     steps:
       - run:
@@ -129,30 +105,8 @@ commands:
       - run:
           name: Check that swagger file exists and validate it with swagger validator
           command: node ./ci/validate_swagger.js /home/circleci/project/swagger.json
-  notify-slack-on-fail:
-    steps:
-      - slack/notify:
-          branch_pattern: master
-          channel: sigopt-platform-ci
-          event: fail
-          custom: |
-            {
-              "blocks": [
-                {
-                  "text": {
-                    "text": "*$CIRCLE_JOB* _failed_ in *$CIRCLE_PROJECT_REPONAME* (*$CIRCLE_BRANCH*): <${CIRCLE_BUILD_URL}|View Workflow>",
-                    "type": "mrkdwn"
-                  },
-                  "type": "section"
-                }
-              ]
-            }
 
 executors:
-  sigopt-build:
-    machine:
-      image: &ubuntu-executor-image ubuntu-2004:2022.10.1
-    resource_class: large
   basic:
     docker:
       - image: cimg/base:current-22.04
@@ -163,14 +117,6 @@ executors:
   sigopt-node-only:
     docker:
       - image: cimg/node:16.18
-    resource_class: small
-  sigopt-mcafee:
-    machine:
-      image: *ubuntu-executor-image
-    resource_class: xlarge
-  sigopt-lite:
-    docker:
-      - image: cimg/base:2022.11
     resource_class: small
 
 jobs:
@@ -188,28 +134,6 @@ jobs:
           paths:
             - .ssh
             - project
-  test-docker-development:
-    executor: sigopt-build
-    resource_class: xlarge
-    steps:
-      - checkout
-      - update-docker-cli
-      - run: ./ci/create_development_tls_certs.sh
-      - sigopt-ninja-dns
-      - run: make submodules fix-db setup-cookiejar setup-filestorage
-      - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
-      - run:
-          name: Development services
-          command: ./scripts/launch/all_live.sh
-          background: true
-      - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
-      - run: "./ci/wait_for.sh url https://sigopt.ninja:4443/api/ --user client_token:"
-      - run: |
-          curl -fk -X POST https://sigopt.ninja:4443/api/v1/sessions -d '{"email": "owner@sigopt.ninja", "password": "owner"}'
-      - run: |
-          ./test/test_dev_env.sh \
-            test/integration/browser/tests/interaction/global/email_test.py \
-            test/integration/v1/endpoints/training_runs/files_test.py
   compile-protobuf:
     executor: basic
     resource_class: small
@@ -243,7 +167,6 @@ workflows:
   main:
     jobs:
       - checkout-code
-      - test-docker-development
       - setup-web
       - compile-protobuf
       - documentation-generation:
