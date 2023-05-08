@@ -52,9 +52,7 @@ jobs:
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: make submodules fix-db setup-cookiejar setup-filestorage
       - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
-      - run:
-          name: Development services
-          command: ./scripts/launch/all_live.sh &
+      - run: ./scripts/launch/all_live.sh &
       - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
       - run: "./ci/wait_for.sh url https://sigopt.ninja:4443/api/ --user client_token:"
       - run: |
