@@ -32,7 +32,7 @@ sigopt-config = {ref = "v2.0.0", git = "https://github.com/sigopt/sigopt-config.
 libsigopt = {ref = "main", git = "https://github.com/sigopt/libsigopt"}
 
 [dev-packages]
-aiosmtpd = "==1.4.2"
+aiosmtpd = "==1.4.4.post2"
 build = "==0.10.0"
 debugpy = "==1.6.7"
 flaky = "==3.7.0"
