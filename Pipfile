@@ -42,7 +42,7 @@ flasgger = {ref = "8626429a9f5f05bd62fc8d47e0b851f5788c9adf", git = "https://git
 sigopt = {ref = "main", git = "https://github.com/sigopt/sigopt-python.git"}
 html5-parser = "==0.4.4"
 inotify = {version = ">=0.2.10,<0.3", sys_platform = "== 'linux'"}
-ipython = "==8.12.0"
+ipython = "==8.13.2"
 lxml = "==4.9.1"
 mock = "==5.0.2"
 networkx = "==3.0"
