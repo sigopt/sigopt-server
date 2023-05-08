@@ -7,6 +7,7 @@ import sqlalchemy
 from sqlalchemy import tuple_
 
 from zigopt.common import *
+from zigopt.common.lists import distinct
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.project.model import Project
 from zigopt.services.base import Service

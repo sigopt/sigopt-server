@@ -4,6 +4,7 @@
 from sqlalchemy import func
 
 from zigopt.common import *
+from zigopt.common.lists import distinct
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.pagination.lib import DefinedField, FieldApiType
 from zigopt.services.base import Service

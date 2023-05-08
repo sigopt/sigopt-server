@@ -12,6 +12,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.client.model import Client
+from zigopt.common.lists import distinct
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.clients.base import ClientHandler

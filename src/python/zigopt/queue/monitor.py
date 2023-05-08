@@ -4,6 +4,7 @@
 from datetime import timedelta
 
 from zigopt.common import *
+from zigopt.common.lists import distinct
 from zigopt.common.sigopt_datetime import unix_timestamp_with_microseconds
 from zigopt.redis.service import RedisServiceError
 from zigopt.services.base import Service

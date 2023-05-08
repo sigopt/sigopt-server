@@ -5,6 +5,7 @@ from typing import Sequence
 
 from zigopt.common import *
 from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.common.lists import distinct
 from zigopt.experiment.model import Experiment
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import NONE, READ
 from zigopt.training_run.model import TrainingRun

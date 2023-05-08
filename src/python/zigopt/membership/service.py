@@ -4,6 +4,7 @@
 from sqlalchemy.sql.expression import or_, tuple_
 
 from zigopt.common import *
+from zigopt.common.lists import *
 from zigopt.membership.model import Membership, MembershipType
 from zigopt.permission.model import Permission
 from zigopt.services.base import Service
