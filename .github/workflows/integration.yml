@@ -191,6 +191,7 @@ jobs:
       - run: ./ci/run_container_bg.sh postgres
       - run: ./ci/run_container_fg.sh createdb --fake-data
       - run: ./ci/run_container_bg.sh redis
+      - run: ./ci/run_container_bg.sh mongodb
       - run: ./ci/run_container_bg.sh qworker
       - run: ./ci/run_container_bg.sh api
       - run: ./ci/run_container_bg.sh nginx
