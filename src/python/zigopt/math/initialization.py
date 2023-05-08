@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common import *
+from zigopt.common.lists import partition
 from zigopt.conditionals.util import convert_to_unconditioned_experiment
 
 

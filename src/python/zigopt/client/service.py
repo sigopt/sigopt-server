@@ -5,6 +5,7 @@ from sqlalchemy import or_
 
 from zigopt.common import *
 from zigopt.client.model import Client
+from zigopt.common.lists import partition
 from zigopt.permission.model import Permission
 from zigopt.protobuf.gen.client.clientmeta_pb2 import ClientMeta
 from zigopt.protobuf.lib import copy_protobuf

@@ -4,6 +4,7 @@
 from typing import Sequence
 
 from zigopt.common import *
+from zigopt.common.lists import partition
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.db.column import JsonPath, jsonb_set, unwind_json_path
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ, TokenMeta

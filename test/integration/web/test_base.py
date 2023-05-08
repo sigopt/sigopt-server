@@ -13,6 +13,7 @@ from lxml import html as lhtml
 from requests.cookies import RequestsCookieJar
 
 from zigopt.common import *
+from zigopt.common.lists import partition
 from zigopt.membership.model import MembershipType
 
 from integration.base import BaseTest
