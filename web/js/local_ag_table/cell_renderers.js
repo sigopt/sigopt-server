@@ -13,9 +13,11 @@ import {produce} from "immer";
 import Component from "../react/component";
 import SetFilter from "./custom_filters/set_filter";
 import StarGlyph from "../component/glyph/star";
+import TableGlyph from "../component/glyph/table";
 import Tag from "../tag/component";
 import TagFilter from "./custom_filters/tag_filter";
 import {CHART_COLORS, PARAMETER_SOURCES} from "../chart/constants";
+import {CreateCheckpointsModal} from "../pages/project/components/runs_table/data/checkpoints_table";
 import {Duration, RelativeTime} from "../render/format_times";
 import {isDefinedAndNotNull} from "../utils";
 
@@ -136,6 +138,31 @@ class FavoriteCell extends Component {
   }
 }
 
+class CheckpointsCell extends React.Component {
+  constructor(props) {
+    super(props);
+    this._createModal = React.createRef();
+  }
+
+  render() {
+    return (
+      <div>
+        <button
+          onClick={this._createModal.current && this._createModal.current.show}
+          type="button"
+        >
+          <TableGlyph />
+        </button>
+        <CreateCheckpointsModal
+          run_id={this.props.data}
+          ref={this._createModal}
+          // promiseApiClient={this.services.promiseApiClient}
+        />
+      </div>
+    );
+  }
+}
+
 class DatasetsCell extends Component {
   render() {
     if (!this.props.data) {
@@ -248,6 +275,7 @@ export const CellRenderers = {
   boolean,
   timestamp,
 
+  CheckpointsCell,
   CreatedByLink,
   DatasetsCell,
   DurationCell,
