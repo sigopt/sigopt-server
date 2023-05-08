@@ -25,7 +25,7 @@ jobs:
       - run: |
           sudo cat <<EOF >"$(which docker-compose)"
           #!/usr/bin/env bash
-          exec docker compose
+          exec docker compose "$@"
           EOF
       - run: docker-compose --version
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
