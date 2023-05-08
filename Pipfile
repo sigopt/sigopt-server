@@ -33,7 +33,7 @@ libsigopt = {ref = "main", git = "https://github.com/sigopt/libsigopt"}
 deal = ">=4.24.1,<5"
 
 [dev-packages]
-aiosmtpd = "==1.4.2"
+aiosmtpd = "==1.4.4.post2"
 build = "==0.10.0"
 debugpy = "==1.6.7"
 flaky = "==3.7.0"
