@@ -192,7 +192,6 @@ jobs:
       - run: ./ci/run_container_fg.sh createdb
       - run: ./ci/run_container_bg.sh redis
       - run: ./ci/run_container_bg.sh qworker
-      - run: ./ci/run_container_bg.sh qworker-analytics
       - run: ./ci/run_container_bg.sh api
       - run: ./ci/run_container_bg.sh nginx
       - run: ./ci/run_container_fg.sh test-client test/run_client_integration_tests.sh main
