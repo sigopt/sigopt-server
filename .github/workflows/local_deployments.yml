@@ -60,6 +60,7 @@ jobs:
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
+      - run: ./ci/create_development_tls_certs.sh
       - run: make submodules fix-db setup-cookiejar setup-filestorage
       - run: ./scripts/launch/start_zigopt_services.sh || ./scripts/launch/start_zigopt_services.sh
       - run: BUILD_ONLY=x ./scripts/launch/all_live.sh
