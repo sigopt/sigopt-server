@@ -8,12 +8,10 @@ Common utility functions for working with lists
 import collections
 import enum
 import itertools
-from typing import TYPE_CHECKING, Any, Callable, Collection, Hashable, Iterable, Iterator, Optional, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Collection, Hashable, Iterable, Optional, Sequence, TypeVar
 
 import deal
 
-from zigopt.common.functions import identity
-from zigopt.common.generators import unsafe_generator
 from zigopt.common.types import is_iterable
 
 
@@ -31,7 +29,6 @@ __all__ = [
   "coalesce",
   "partition",
   "distinct",
-  "distinct_by",
   "max_option",
   "min_option",
   "list_get",
@@ -95,36 +92,20 @@ def partition(lis: Sequence[T], predicate: Callable[[T], bool]) -> tuple[list[T]
 @deal.ensure(lambda lis, result: set(lis) == set(result))
 @deal.post(lambda result: len(result) == len(set(result)))
 @deal.pure
-def distinct(lis: list[THashable] | tuple[THashable, ...]) -> Sequence[THashable]:
+def distinct(lis: Sequence[THashable]) -> list[THashable]:
   """
     Returns a copy of lis with only distinct elements, preserving order.
     """
-  return distinct_by(lis, key=identity)
 
+  res: list[THashable] = []
+  seen = set()
 
-@deal.ensure(lambda lis, key, result: set(key(v) for v in lis) == set(key(v) for v in result))
-@deal.raises(Exception)
-def distinct_by(lis: Sequence[T], key: Callable[[T], Hashable]) -> Sequence[T]:
-  """
-    Returns a copy of lis with only distinct elements, using the function `key` to determine distinctness.
-    When two elements have the same key value, the first encountered is used
-    """
+  for l in lis:
+    if l not in seen:
+      seen.add(l)
+      res.append(l)
 
-  @unsafe_generator
-  def generator() -> Iterator[T]:
-    seen = set()
-    for l in lis:
-      k = key(l)
-      if k not in seen:
-        seen.add(k)
-        yield l
-
-  gen = generator()
-  if isinstance(lis, list):
-    return list(gen)
-  if isinstance(lis, tuple):
-    return tuple(gen)
-  raise ValueError(f"Invalid type for compact: {type(lis)}")
+  return res
 
 
 def max_option(

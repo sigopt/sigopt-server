@@ -169,29 +169,6 @@ class TestLists:
     assert distinct((1, 2)) == (1, 2)
     assert distinct((1, 1, 2)) == (1, 2)
 
-  def test_distinct_by(self):
-    assert distinct_by((), key=lambda x: x) == ()  # type: ignore
-    assert distinct_by((1, 2), key=lambda x: x) == (1, 2)
-    assert distinct_by((1, 1, 2), key=lambda x: x) == (1, 2)
-
-    assert distinct_by([], key=lambda x: x) == []
-    assert distinct_by([1], key=lambda x: x) == [1]
-    assert distinct_by([1, 2], key=lambda x: x) == [1, 2]
-    assert distinct_by([1, 1, 2], key=lambda x: x) == [1, 2]
-    assert distinct_by([1, 2, 2], key=lambda x: x) == [1, 2]
-    assert distinct_by([2, 1, 1], key=lambda x: x) == [2, 1]
-
-    assert distinct_by([], key=lambda x: x % 2) == []
-    assert distinct_by([1], key=lambda x: x % 2) == [1]
-    assert distinct_by([1, 2], key=lambda x: x % 2) == [1, 2]
-    assert distinct_by([1, 1, 2], key=lambda x: x % 2) == [1, 2]
-    assert distinct_by([1, 2, 2], key=lambda x: x % 2) == [1, 2]
-    assert distinct_by([2, 1, 1], key=lambda x: x % 2) == [2, 1]
-    assert distinct_by([1, 2, 3, 4], key=lambda x: x % 2) == [1, 2]
-    assert distinct_by([1, 3, 2], key=lambda x: x % 2) == [1, 2]
-    assert distinct_by([1, 2, 4], key=lambda x: x % 2) == [1, 2]
-    assert distinct_by([2, 1, 3], key=lambda x: x % 2) == [2, 1]
-
   def test_find(self):
     assert find([], lambda x: True) is None
     assert find([1], lambda x: True) == 1
