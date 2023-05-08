@@ -35,14 +35,14 @@ jobs:
         if: always()
         run: |
           set +e
-          ./ci/compose.sh logs postgres
-          ./ci/compose.sh logs redis
-          ./ci/compose.sh logs minio
-          ./ci/compose.sh logs web-server
-          ./ci/compose.sh logs api
-          ./ci/compose.sh logs nginx
-          ./ci/compose.sh logs qworker
-          ./ci/compose.sh logs qworker-analytics
+          docker compose logs postgres
+          docker compose logs redis
+          docker compose logs minio
+          docker compose logs web-server
+          docker compose logs api
+          docker compose logs nginx
+          docker compose logs qworker
+          docker compose logs qworker-analytics
   development-deployment:
     runs-on: ubuntu-latest
     steps:
@@ -76,13 +76,13 @@ jobs:
         if: always()
         run: |
           set +e
-          ./ci/compose.sh logs postgres
-          ./ci/compose.sh logs redis
-          ./ci/compose.sh logs minio
-          ./ci/compose.sh logs smtp
-          ./ci/compose.sh logs web-server
-          ./ci/compose.sh logs web-client
-          ./ci/compose.sh logs api
-          ./ci/compose.sh logs nginx
-          ./ci/compose.sh logs qworker
-          ./ci/compose.sh logs qworker-analytics
+          ./scripts/launch/compose.sh logs postgres
+          ./scripts/launch/compose.sh logs redis
+          ./scripts/launch/compose.sh logs minio
+          ./scripts/launch/compose.sh logs smtp
+          ./scripts/launch/compose.sh logs web-server
+          ./scripts/launch/compose.sh logs web-client
+          ./scripts/launch/compose.sh logs api
+          ./scripts/launch/compose.sh logs nginx
+          ./scripts/launch/compose.sh logs qworker
+          ./scripts/launch/compose.sh logs qworker-analytics
