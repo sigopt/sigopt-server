@@ -65,8 +65,6 @@ RUN set -ex \
   ; adduser -S produser \
   ; :
 
-COPY config/ /sigopt-server/config/
-
 EXPOSE 4000
 
 ENV NODE_DOMAIN server
