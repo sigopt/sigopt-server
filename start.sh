@@ -10,12 +10,12 @@ MINIO_ROOT_PASSWORD="$(./tools/secure/generate_random_string.sh)"
 export MINIO_ROOT_PASSWORD
 sigopt_server_version="git:$(git rev-parse HEAD)"
 export sigopt_server_version
-docker-compose --file=docker-compose.yml up --detach \
+docker compose --file=docker-compose.yml up --detach \
   minio \
   nginx \
   postgres \
   redis
-docker-compose --file=docker-compose.yml up \
+docker compose --file=docker-compose.yml up \
   api \
   nginx \
   qworker \
