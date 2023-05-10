@@ -2,12 +2,12 @@ name: documentation validation
 run-name: Validate the generated documentation for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}
+env:
+  SIGOPT_SWAGGER_PATH: /home/circleci/project/
+  SIGOPT_SWAGGER_FILENAME: swagger.json
 jobs:
   sigopttest:
     runs-on: ubuntu-latest
-    environment:
-      SIGOPT_SWAGGER_PATH: /home/circleci/project/
-      SIGOPT_SWAGGER_FILENAME: swagger.json
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
