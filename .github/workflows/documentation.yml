@@ -6,7 +6,7 @@ env:
   SIGOPT_SWAGGER_PATH: /home/circleci/project/
   SIGOPT_SWAGGER_FILENAME: swagger.json
 jobs:
-  sigopttest:
+  generate-and-validate-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
