@@ -1,0 +1,26 @@
+name: documentation validation
+run-name: Validate the generated documentation for ${{ github.repository }}@${{ github.ref }}
+on:
+  push: {}
+jobs:
+  sigopttest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - run: pip install pipenv
+      - run: pipenv install --deploy --dev
+      - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
+      - run: pipenv run ./tools/protobuf/compile.sh
+      - name: Generate swagger file
+        run: pipenv run env SIGOPT_SERVER_CONFIG_DIR=./config/circleci ./pp src/python/zigopt/api/documentation.py
+        environment:
+          SIGOPT_SWAGGER_PATH: /home/circleci/project/
+          SIGOPT_SWAGGER_FILENAME: swagger.json
+      - run: yarn install
+      - name: Check that swagger file exists and validate it with swagger validator
+        run: node ./ci/validate_swagger.js /home/circleci/project/swagger.json
