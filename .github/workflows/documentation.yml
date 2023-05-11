@@ -3,7 +3,7 @@ run-name: Validate the generated documentation for ${{ github.repository }}@${{ 
 on:
   push: {}
 env:
-  SIGOPT_SWAGGER_PATH: /home/circleci/project/
+  SIGOPT_SWAGGER_PATH: ./
   SIGOPT_SWAGGER_FILENAME: swagger.json
 jobs:
   generate-and-validate-docs:
