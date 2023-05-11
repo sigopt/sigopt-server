@@ -9,7 +9,6 @@ jobs:
   generate-and-validate-docs:
     runs-on: ubuntu-latest
     steps:
-      - run: pwd
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Python 3.10
