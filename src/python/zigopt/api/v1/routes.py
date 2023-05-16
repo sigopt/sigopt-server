@@ -202,19 +202,19 @@ def initialize_blueprint(app):
   )
   post_route("/aiexperiments/<int:experiment_id>/training_runs", AiExperimentTrainingRunsCreateHandler)
   get_route(
-    "/aiexperiments/<experiment_id>",
+    "/aiexperiments/<int:experiment_id>",
     AiExperimentsDetailHandler,
   )
   put_route(
-    "/aiexperiments/<experiment_id>",
+    "/aiexperiments/<int:experiment_id>",
     AiExperimentsUpdateHandler,
   )
   delete_route(
-    "/aiexperiments/<experiment_id>",
+    "/aiexperiments/<int:experiment_id>",
     AiExperimentsDeleteHandler,
   )
   get_route(
-    "/aiexperiments/<experiment_id>/best_training_runs",
+    "/aiexperiments/<int:experiment_id>/best_training_runs",
     AiExperimentsBestTrainingRunsHandler,
   )
 
