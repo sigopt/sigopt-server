@@ -5,5 +5,4 @@
 set -e
 set -o pipefail
 
-./ci/compose.sh build --progress=plain "$1"
 ./ci/compose.sh up -d "$@"

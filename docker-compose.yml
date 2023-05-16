@@ -30,6 +30,7 @@ services:
   test-runner:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
+    image: sigopt-server-test-runner
     environment:
       - ENABLE_CONTRACTS=x
       - &server-config-env SIGOPT_SERVER_CONFIG_DIR
@@ -48,6 +49,7 @@ services:
   smtp:
     build:
       <<: *test-runner-build
+    image: sigopt-server-test-runner
     restart: on-failure:5
     command:
       - python
@@ -73,6 +75,7 @@ services:
   createdb:
     build: &zigopt-build
       dockerfile: docker/images/zigopt/Dockerfile
+    image: sigopt-server-zigopt
     entrypoint:
       - python
       - -m
@@ -121,6 +124,7 @@ services:
   api:
     build:
       <<: *zigopt-build
+    image: sigopt-server-zigopt
     restart: on-failure:5
     command:
       - /usr/local/bin/gunicorn_serve.sh
