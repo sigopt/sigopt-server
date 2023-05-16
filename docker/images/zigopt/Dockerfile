@@ -14,10 +14,9 @@ RUN set -ex \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
-ARG PROTOBUF_VERSION
 COPY tools/protobuf/install.sh /install_protobuf.sh
 RUN set -ex \
-  ; /install_protobuf.sh "$PROTOBUF_VERSION" \
+  ; /install_protobuf.sh \
   ; :
 
 WORKDIR /sigopt-server

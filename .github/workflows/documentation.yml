@@ -17,7 +17,7 @@ jobs:
           python-version: "3.10"
       - run: pip install pipenv
       - run: pipenv install --deploy --dev
-      - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
+      - run: source .env && sudo ./tools/protobuf/install.sh
       - run: pipenv run ./tools/protobuf/compile.sh
       - name: Generate swagger file
         run: pipenv run env SIGOPT_SERVER_CONFIG_DIR=./config/circleci ./pp src/python/zigopt/api/documentation.py

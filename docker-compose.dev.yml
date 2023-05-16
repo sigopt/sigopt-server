@@ -8,8 +8,6 @@ services:
   test-client:
     build: &python-development-build
       dockerfile: docker/images/python-development/Dockerfile
-      args:
-        - PROTOBUF_VERSION
     logging: &logging
       options:
         max-file: "5"
@@ -39,8 +37,6 @@ services:
   test-runner:
     build:
       dockerfile: docker/images/test-runner/Dockerfile
-      args:
-        - PROTOBUF_VERSION
     logging:
       <<: *logging
     command:

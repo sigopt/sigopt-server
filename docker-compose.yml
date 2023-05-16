@@ -30,8 +30,6 @@ services:
   test-runner:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
-      args:
-        - PROTOBUF_VERSION
     environment:
       - ENABLE_CONTRACTS=x
       - &server-config-env SIGOPT_SERVER_CONFIG_DIR
@@ -75,8 +73,6 @@ services:
   createdb:
     build: &zigopt-build
       dockerfile: docker/images/zigopt/Dockerfile
-      args:
-        - PROTOBUF_VERSION
     entrypoint:
       - python
       - -m

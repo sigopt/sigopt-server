@@ -14,6 +14,6 @@ jobs:
           python-version: "3.10"
       - run: pip install pipenv
       - run: pipenv install --deploy --dev
-      - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
+      - run: source .env && sudo ./tools/protobuf/install.sh
       - run: pipenv run ./tools/protobuf/compile.sh
       - run: pipenv run ./pp pytest test/python/sigopttest
