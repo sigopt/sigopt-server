@@ -1,11 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG PYTHON_MAJOR
-ARG PYTHON_MINOR
-
-
-FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster
+FROM python:3.10-buster
 
 ENV PYTHONPATH=/sigopt-python
 RUN set -ex \

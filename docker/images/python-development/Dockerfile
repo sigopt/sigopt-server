@@ -1,12 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG PYTHON_MAJOR
-ARG PYTHON_MINOR
-
-
 # hadolint ignore=DL3006
-FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster
+FROM python:3.10-buster
 
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \

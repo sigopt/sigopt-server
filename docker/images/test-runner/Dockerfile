@@ -43,8 +43,6 @@ RUN set -ex \
 
 ENV LANG C
 
-ARG PYTHON_MAJOR
-ARG PYTHON_MINOR
 RUN : \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
@@ -55,8 +53,8 @@ RUN : \
       lxde=* \
       pkg-config=* \
       python-is-python3=* \
-      python3-dev="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
-      python3-minimal="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
+      python3-dev="3.10.*" \
+      python3-minimal="3.10.*" \
       python3-pip=* \
       unzip=6.* \
       x11vnc=* \

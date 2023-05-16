@@ -32,8 +32,6 @@ services:
       dockerfile: docker/images/test-runner/Dockerfile
       args:
         - PROTOBUF_VERSION
-        - PYTHON_MAJOR
-        - PYTHON_MINOR
     environment:
       - ENABLE_CONTRACTS=x
       - &server-config-env SIGOPT_SERVER_CONFIG_DIR
@@ -79,8 +77,6 @@ services:
       dockerfile: docker/images/zigopt/Dockerfile
       args:
         - PROTOBUF_VERSION
-        - PYTHON_MAJOR
-        - PYTHON_MINOR
     entrypoint:
       - python
       - -m

@@ -10,8 +10,6 @@ services:
       dockerfile: docker/images/python-development/Dockerfile
       args:
         - PROTOBUF_VERSION
-        - PYTHON_MAJOR
-        - PYTHON_MINOR
     logging: &logging
       options:
         max-file: "5"
@@ -43,8 +41,6 @@ services:
       dockerfile: docker/images/test-runner/Dockerfile
       args:
         - PROTOBUF_VERSION
-        - PYTHON_MAJOR
-        - PYTHON_MINOR
     logging:
       <<: *logging
     command:
@@ -663,9 +659,6 @@ services:
   hyperopt-mongo-worker:
     build:
       dockerfile: docker/images/hyperopt/Dockerfile
-      args:
-        - PYTHON_MAJOR
-        - PYTHON_MINOR
     logging:
       <<: *logging
     depends_on:
