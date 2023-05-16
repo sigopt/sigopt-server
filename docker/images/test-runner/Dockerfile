@@ -1,10 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG NODE_MAJOR
-
-
-FROM node:${NODE_MAJOR} AS test-routes
+FROM node:18 AS test-routes
 
 # hadolint ignore=DL3016
 RUN set -ex \

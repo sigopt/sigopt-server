@@ -31,7 +31,6 @@ services:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
       args:
-        - NODE_MAJOR
         - PROTOBUF_VERSION
         - PYTHON_MAJOR
         - PYTHON_MINOR
@@ -174,8 +173,6 @@ services:
   web-server:
     build:
       dockerfile: docker/images/web/Dockerfile
-      args:
-        - NODE_MAJOR
     environment:
       - *server-config-env
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"

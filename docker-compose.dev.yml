@@ -42,7 +42,6 @@ services:
     build:
       dockerfile: docker/images/test-runner/Dockerfile
       args:
-        - NODE_MAJOR
         - PROTOBUF_VERSION
         - PYTHON_MAJOR
         - PYTHON_MINOR
@@ -399,8 +398,6 @@ services:
   web-client:
     build: &node-development-build
       dockerfile: docker/images/node-development/Dockerfile
-      args:
-        - NODE_MAJOR
     restart: on-failure:5
     logging:
       <<: *logging

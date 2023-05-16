@@ -1,10 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-ARG NODE_MAJOR
-
-
-FROM node:${NODE_MAJOR} AS node-build
+FROM node:18 AS node-build
 
 # hadolint ignore=DL3016
 RUN set -ex \
@@ -39,7 +36,7 @@ COPY scripts/compile/minify_js_server_bundle.sh /sigopt-server/scripts/compile/m
 RUN ./scripts/compile/minify_js_server_bundle.sh
 
 
-FROM node:${NODE_MAJOR}-alpine
+FROM node:18-alpine
 
 # hadolint ignore=DL3018
 RUN set -ex \
