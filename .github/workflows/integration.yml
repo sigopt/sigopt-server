@@ -20,6 +20,13 @@ jobs:
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: docker buildx create --use --driver=docker-container
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/test-runner/Dockerfile
       - run: ./ci/run_integration_test.sh test/integration/service/
       - name: Docker logs
         if: always()
