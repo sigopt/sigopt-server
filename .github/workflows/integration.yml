@@ -27,7 +27,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha
           file: docker/images/test-runner/Dockerfile
-          tag: sigopt-server-test-runner
+          target: sigopt-server-test-runner
           push: false
       - name: Build zigopt
         uses: docker/build-push-action@v4
@@ -36,7 +36,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha
           file: docker/images/zigopt/Dockerfile
-          tag: sigopt-server-zigopt
+          target: sigopt-server-zigopt
           push: false
       - run: ./ci/run_integration_test.sh test/integration/service/
       - name: Docker logs
