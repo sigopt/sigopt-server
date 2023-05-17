@@ -71,6 +71,7 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - run: docker buildx create --use --driver=docker-container
       - name: Build test-runner
         uses: docker/build-push-action@v4
         with:
@@ -120,6 +121,7 @@ jobs:
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: make submodules
+      - run: docker buildx create --use --driver=docker-container
       - name: Build test-runner
         uses: docker/build-push-action@v4
         with:
@@ -188,6 +190,7 @@ jobs:
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: make submodules
+      - run: docker buildx create --use --driver=docker-container
       - name: Build test-runner
         uses: docker/build-push-action@v4
         with:
@@ -246,6 +249,7 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - run: docker buildx create --use --driver=docker-container
       - name: Build zigopt
         uses: docker/build-push-action@v4
         with:
