@@ -37,6 +37,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: docker/images/zigopt/Dockerfile
+          outputs: type=cacheonly
           tags: sigopt-server-zigopt
           push: false
       - run: ./ci/run_integration_test.sh test/integration/service/
