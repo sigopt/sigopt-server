@@ -360,30 +360,6 @@ services:
     security_opt:
       - "no-new-privileges:true"
 
-  test-client:
-    build:
-      <<: *test-runner-build
-    command:
-      - sleep
-      - infinity
-    environment:
-      - ENABLE_CONTRACTS=x
-      - SIGOPT_API_URL=https://sigopt.ninja:4443/api
-      - SIGOPT_APP_URL=https://sigopt.ninja:4443
-      - SIGOPT_API_TOKEN=client_token
-      - *api-tls-verify-env
-      - ALLOW_SLOW=1
-    volumes:
-      - *rootca-volume
-      - .:/sigopt-server
-      - sigopt-python:/sigopt-server/sigopt-python
-
-  mongodb:
-    image: "mongo:${MONGODB_VERSION}"
-    ports:
-      - "27017:27017"
-    container_name: "mongodb"
-
 volumes:
   minio-config: {}
   minio-data: {}

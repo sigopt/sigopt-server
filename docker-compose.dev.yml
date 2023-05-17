@@ -5,10 +5,11 @@ networks:
     driver: bridge
 
 services:
-  test-client:
-    build: &python-development-build
-      dockerfile: docker/images/python-development/Dockerfile
+  test-runner:
+    build:
+      dockerfile: docker/images/test-runner/Dockerfile
       args:
+        - NODE_MAJOR
         - PROTOBUF_VERSION
         - PYTHON_MAJOR
         - PYTHON_MINOR
@@ -20,50 +21,18 @@ services:
       - sleep
       - infinity
     environment:
-      - "HOST_PWD=${HOST_PWD}"
-      - SIGOPT_API_URL=https://sigopt.ninja:4443/api
-      - SIGOPT_APP_URL=https://sigopt.ninja:4443
-      - SIGOPT_API_TOKEN=client_token
-      - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt/root-ca.crt
-    volumes:
-      - &rootca-volume ./artifacts/tls:/etc/ssl/certs/sigopt:ro
-      - ./test:/sigopt-server/test:ro
-    working_dir: /sigopt-server
-    depends_on:
-      - api
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 64M
-    security_opt:
-      - "no-new-privileges:true"
-  test-runner:
-    build:
-      dockerfile: docker/images/test-runner/Dockerfile
-      args:
-        - NODE_MAJOR
-        - PROTOBUF_VERSION
-        - PYTHON_MAJOR
-        - PYTHON_MINOR
-    logging:
-      <<: *logging
-    command:
-      - sleep
-      - infinity
-    environment:
       - ENABLE_CONTRACTS=x
       - SIGOPT_TEST_ROUTES_FILE=/routes/routes.json
       - PYTHONPATH=/sigopt-server/src/python:/sigopt-server/test/python:/sigopt-server/test:/sigopt-server
       - HOST_PWD
       - REQUESTS_CA_BUNDLE=/sigopt-server/artifacts/tls/root-ca.crt
-      - *api-tls-verify-env
+      - &api-tls-verify-env SIGOPT_API_VERIFY_SSL_CERTS=/etc/ssl/certs/sigopt/root-ca.crt
     volumes:
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - &redis-run-volume redis-run:/var/run/redis
       - /dev/shm:/dev/shm
       - &babelrc ./.babelrc:/sigopt-server/.babelrc:ro
-      - *rootca-volume
+      - &rootca-volume ./artifacts/tls:/etc/ssl/certs/sigopt:ro
       - ./artifacts/tls:/sigopt-server/artifacts/tls:ro
       - ./config:/sigopt-server/config:ro
       - ./failure_console_logs:/sigopt-server/failure_console_logs
@@ -89,8 +58,12 @@ services:
     security_opt:
       - "no-new-privileges:true"
   createdb:
-    build:
-      <<: *python-development-build
+    build: &python-development-build
+      dockerfile: docker/images/python-development/Dockerfile
+      args:
+        - PROTOBUF_VERSION
+        - PYTHON_MAJOR
+        - PYTHON_MINOR
     logging:
       <<: *logging
     environment:
@@ -651,32 +624,6 @@ services:
       timeout: "1s"
       retries: 0
       start_period: "10s"
-    security_opt:
-      - "no-new-privileges:true"
-  mongodb:
-    logging:
-      <<: *logging
-    image: "mongo:${MONGODB_VERSION}"
-    ports:
-      - "127.0.0.1:27017:27017"
-    container_name: "mongodb"
-    security_opt:
-      - "no-new-privileges:true"
-
-  hyperopt-mongo-worker:
-    build:
-      dockerfile: docker/images/hyperopt/Dockerfile
-      args:
-        - PYTHON_MAJOR
-        - PYTHON_MINOR
-    logging:
-      <<: *logging
-    depends_on:
-      - mongodb
-    container_name: "hyperopt-mongo-worker"
-    command: ["bash", "start-worker.sh"]
-    volumes:
-      - ../sigopt-python:/sigopt-python:ro
     security_opt:
       - "no-new-privileges:true"
 
