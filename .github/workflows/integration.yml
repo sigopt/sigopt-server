@@ -27,7 +27,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: docker/images/test-runner/Dockerfile
-          scope: "${{ github.ref }}-service"
           tags: sigopt-server-test-runner
           push: false
       - name: Build zigopt
