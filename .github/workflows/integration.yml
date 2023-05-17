@@ -71,6 +71,24 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - name: Build test-runner
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/test-runner/Dockerfile
+          tags: sigopt-server-test-runner
+          push: false
+      - name: Build zigopt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/zigopt/Dockerfile
+          tags: sigopt-server-zigopt
+          push: false
       - run: ./ci/create_development_tls_certs.sh
       - run: ./ci/run_integration_test.sh test/integration/v1/${{ matrix.suite }}/ qworker qworker-analytics api nginx
       - name: Docker logs
@@ -101,8 +119,35 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
-      - run: ./ci/create_development_tls_certs.sh
       - run: make submodules
+      - name: Build test-runner
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/test-runner/Dockerfile
+          tags: sigopt-server-test-runner
+          push: false
+      - name: Build zigopt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/zigopt/Dockerfile
+          tags: sigopt-server-zigopt
+          push: false
+      - name: Build web
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/web/Dockerfile
+          tags: sigopt-server-web
+          push: false
+      - run: ./ci/create_development_tls_certs.sh
       - run: ./ci/run_integration_test.sh test/integration/web/ qworker qworker-analytics api web-server nginx
       - name: Docker logs
         if: always()
@@ -142,8 +187,35 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
-      - run: ./ci/create_development_tls_certs.sh
       - run: make submodules
+      - name: Build test-runner
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/test-runner/Dockerfile
+          tags: sigopt-server-test-runner
+          push: false
+      - name: Build zigopt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/zigopt/Dockerfile
+          tags: sigopt-server-zigopt
+          push: false
+      - name: Build web
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/web/Dockerfile
+          tags: sigopt-server-web
+          push: false
+      - run: ./ci/create_development_tls_certs.sh
       - run: ./ci/run_integration_test.sh test/integration/browser/tests/interaction/${{ matrix.suite }} qworker qworker-analytics api web-server nginx
       - name: Docker logs
         if: always()
@@ -174,6 +246,15 @@ jobs:
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-ce-cli=5:20.10.23~3-0~ubuntu-focal \
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
+      - name: Build zigopt
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha
+          file: docker/images/zigopt/Dockerfile
+          tags: sigopt-server-zigopt
+          push: false
       - run: ./ci/init_config.sh
       - run: ./ci/run_container_bg.sh postgres
       - run: ./ci/run_container_fg.sh createdb

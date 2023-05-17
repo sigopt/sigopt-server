@@ -169,6 +169,7 @@ services:
   web-server:
     build:
       dockerfile: docker/images/web/Dockerfile
+    image: sigopt-server-web
     environment:
       - *server-config-env
       - "NODE_EXTRA_CA_CERTS=/sigopt-server/artifacts/tls/root-ca.crt"
