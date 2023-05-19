@@ -31,7 +31,7 @@ jobs:
       - name: Build test-cache
         uses: docker/build-push-action@v4
         with:
-          context: scratch/
+          context: src/
           cache-from: type=gha
           cache-to: type=gha,mode=max
           file: Dockerfile
