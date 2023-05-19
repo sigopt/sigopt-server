@@ -24,16 +24,17 @@ jobs:
             docker-buildx-plugin
       - run: docker buildx version
       - run: docker buildx create --use --driver=docker-container
+        # - name: Build test-cache
+        #   run: |
+        #     mkdir scratch
+        #     docker buildx build --cache-from type=gha --cache-to type=gha,mode=max -f Dockerfile --output type=cacheonly scratch
       - name: Build test-cache
-        run: |
-          mkdir scratch
-          docker buildx build --cache-from type=gha --cache-to type=gha,mode=max -f Dockerfile --output type=cacheonly scratch
-          # - name: Build test-cache
-          #   uses: docker/build-push-action@v4
-          #   with:
-          #     cache-from: type=gha
-          #     cache-to: type=gha,mode=max
-          #     file: Dockerfile
-          #     outputs: type=cacheonly
-          #     tags: sigopt-server-test-cache
-          #     push: false
+        uses: docker/build-push-action@v4
+        with:
+          context: scratch/
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          file: Dockerfile
+          outputs: type=cacheonly
+          tags: sigopt-server-test-cache
+          push: false
