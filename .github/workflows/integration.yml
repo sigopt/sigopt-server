@@ -21,14 +21,17 @@ jobs:
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: docker buildx create --use --driver=docker-container
       - name: Build test-cache
-        uses: docker/build-push-action@v4
-        with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          file: Dockerfile
-          outputs: type=cacheonly
-          tags: sigopt-server-test-cache
-          push: false
+        run:
+          docker buildx build --cache-from type=gha --cache-to type=gha,mode=max -f Dockerfile --output type=cacheonly
+          # - name: Build test-cache
+          #   uses: docker/build-push-action@v4
+          #   with:
+          #     cache-from: type=gha
+          #     cache-to: type=gha,mode=max
+          #     file: Dockerfile
+          #     outputs: type=cacheonly
+          #     tags: sigopt-server-test-cache
+          #     push: false
   service:
     runs-on: ubuntu-latest
     steps:
