@@ -22,7 +22,7 @@ jobs:
       - run: docker buildx create --use --driver=docker-container
       - name: Build test-cache
         run:
-          docker buildx build --cache-from type=gha --cache-to type=gha,mode=max -f Dockerfile --output type=cacheonly
+          docker buildx build --cache-from type=gha --cache-to type=gha,mode=max -f Dockerfile --output type=cacheonly .
           # - name: Build test-cache
           #   uses: docker/build-push-action@v4
           #   with:
