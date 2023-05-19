@@ -22,7 +22,6 @@ jobs:
       - run: |
           sudo apt-get update -yqq && sudo apt-get install -yqq \
             docker-buildx-plugin
-      - run: docker buildx version
       - run: docker buildx create --use --driver=docker-container
         # - name: Build test-cache
         #   run: |
