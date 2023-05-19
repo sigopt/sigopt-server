@@ -21,7 +21,7 @@ jobs:
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: docker buildx create --use --driver=docker-container
       - name: Build test-cache
-        run:
+        run: |
           mkdir scratch
           docker buildx build --cache-from type=gha --cache-to type=gha,mode=max -f Dockerfile --output type=cacheonly scratch
           # - name: Build test-cache
