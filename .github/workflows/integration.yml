@@ -24,8 +24,8 @@ jobs:
       - name: Build test-cache
         uses: docker/build-push-action@v4
         with:
-          cache-from: type=gha,scope=$GITHUB_REF_NAME:test-cache
-          cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME:test-cache
+          cache-from: type=gha,scope=${{ github.ref }}:test-cache
+          cache-to: type=gha,mode=max,scope=${{ github.ref }}:test-cache
           file: Dockerfile
           outputs: type=cacheonly
           tags: sigopt-server-test-cache
@@ -51,8 +51,8 @@ jobs:
       - name: Build test-runner
         uses: docker/build-push-action@v4
         with:
-          cache-from: type=gha,scope=$GITHUB_REF_NAME:service
-          cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME:service
+          cache-from: type=gha,scope=${{ github.ref }}:service
+          cache-to: type=gha,mode=max,scope=${{ github.ref }}:service
           file: docker/images/test-runner/Dockerfile
           outputs: type=cacheonly
           tags: sigopt-server-test-runner
@@ -60,8 +60,8 @@ jobs:
       - name: Build zigopt
         uses: docker/build-push-action@v4
         with:
-          cache-from: type=gha,scope=$GITHUB_REF_NAME:service
-          cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME:service
+          cache-from: type=gha,scope=${{ github.ref }}:service
+          cache-to: type=gha,mode=max,scope=${{ github.ref }}:service
           file: docker/images/zigopt/Dockerfile
           outputs: type=cacheonly
           tags: sigopt-server-zigopt
