@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "075a85924bbe8aab66e7788221a802ae9feed629e2eb3a403ceca4faf39d9a39"
+            "sha256": "34581054e677bb1053e5509c9ae71f19b7593f3c1e1c5c8690bb7372bf26bb78"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1451,7 +1451,7 @@
                 "sha256:8bef7dde241278824a6d83f44a544709b065191b95b6e50894bdc722fcba0504",
                 "sha256:f84c2818376e66cf843d497486ea8fed8700b340f308f076c6fb1229dff318b6"
             ],
-            "markers": "python_full_version >= '3.8.0'",
+            "markers": "python_version >= '3.8'",
             "version": "==5.12.0"
         },
         "itsdangerous": {
@@ -1876,16 +1876,16 @@
         },
         "playwright": {
             "hashes": [
-                "sha256:12c73e6a10ba8a1ddac4849a6f06c753e38de60bec6db5f50f7580ade5772d97",
-                "sha256:225ff39ff29219caab242a562e6a5efa486d4659ac10d16421ad5904c7f23b25",
-                "sha256:5a3eefb7bbe5fb90c89b31ac52a6d78dde94cf82d5fbe0a999789a37d414a92f",
-                "sha256:5cb681c1bfc05e49dfe5299b9bf2f51300e60ed077d47c927c8f056938972565",
-                "sha256:c51029b8837f3533277718ff003a6fc1b512e7879ef4880306c69048345d04ac",
-                "sha256:d74ee6b7de96ddaf3af91a90d6160beda68b281b1027b8afec46945062c25aec",
-                "sha256:f032c87b918a0b348b15065d5a67693cd70f39861ea65b8c9f0b63c991bf1a75"
+                "sha256:030b273370bcfdec22317ca9fbdd8b66f7493462fb3bf2fce144e3cc82899ae4",
+                "sha256:0671dbb767422621b980b4545eeb2910c73f4e2aabe376a58e4a1ac03990bcec",
+                "sha256:08a9cd792a65c7e5f2bb68580f669a706d867fecabc8686098a2fabe3e34f5f8",
+                "sha256:69f90c23c3906837bbbce4cb80774df72adc2e35c43b9744e13638d37049d970",
+                "sha256:84dc9ac79ac828d823161fd6903ffbaf9d3843f4ced2fc2e3414b91b15624d0c",
+                "sha256:9a749f5f2fafc85c5b2a849226cbfdbca4fa047dec3ae20900494e84a390dd0c",
+                "sha256:b3f6f27f67ec4ef32216a6fab3ffd8a4e1100383be0e863ff86707e617bec1b6"
             ],
             "index": "pypi",
-            "version": "==1.31.1"
+            "version": "==1.33.0"
         },
         "pluggy": {
             "hashes": [
