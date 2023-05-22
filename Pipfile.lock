@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d79c1a1037d850e34bb737ab378442d5e5aebcc5ca126f0e1560fca9d130e549"
+            "sha256": "11c3b77293efb65c7cf1f2ef5820b10e78eb291236e5f0bc1008ee42c3426348"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -390,7 +390,7 @@
         },
         "libsigopt": {
             "git": "https://github.com/sigopt/libsigopt",
-            "ref": "7844282a46542f74687d8b7a71f21e6c1cbb20bf"
+            "ref": "a584a18a43b9a4c88f2ade64bd48576d1e269904"
         },
         "mako": {
             "hashes": [
@@ -705,11 +705,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:23aaf86b85ca52ceb801d32703f12d77517b2556af839621c641fca11287952b",
-                "sha256:f104fa03692a2602fa0fec6c6a9e63b6c8a968de13e17c026957dd1f53d80990"
+                "sha256:5df61bf30bb10c6f756eb19e7c9f3b473051f48db77fddbe06ff2ca307df9a6f",
+                "sha256:62642358adc77ffa87233bc4d2354c4b2682d214048f500964dbe760ccedf102"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==67.7.2"
+            "version": "==67.8.0"
         },
         "sigopt-config": {
             "git": "https://github.com/sigopt/sigopt-config.git",
@@ -1235,11 +1235,11 @@
         },
         "docutils": {
             "hashes": [
-                "sha256:a428f10de4de4774389734c986a01b4af2d802d26717108b0f1b9356862937c5",
-                "sha256:f75a5a52fbcacd81b47e42888ad2b380748aaccfb3f13af0fe69deb759f01eb6"
+                "sha256:96f387a2c5562db4476f09f13bbab2192e764cac08ebbf3a34a95d9b1e4a59d6",
+                "sha256:f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==0.20"
+            "version": "==0.20.1"
         },
         "exceptiongroup": {
             "hashes": [
@@ -1286,11 +1286,11 @@
         },
         "freezegun": {
             "hashes": [
-                "sha256:15103a67dfa868ad809a8f508146e396be2995172d25f927e48ce51c0bf5cb09",
-                "sha256:b4c64efb275e6bc68dc6e771b17ffe0ff0f90b81a2a5189043550b6519926ba4"
+                "sha256:cd22d1ba06941384410cd967d8a99d5ae2442f57dfafeff2fda5de8dc5c05446",
+                "sha256:ea1b963b993cb9ea195adbd893a48d573fda951b0da64f60883d7e988b606c9f"
             ],
             "index": "pypi",
-            "version": "==1.2.1"
+            "version": "==1.2.2"
         },
         "gitdb": {
             "hashes": [
@@ -1972,11 +1972,11 @@
         },
         "pygls": {
             "hashes": [
-                "sha256:adacc96da77598c70f46acfdfd1481d3da90cd54f639f7eee52eb6e4dbd57b55",
-                "sha256:f3ee98ddbb4690eb5c755bc32ba7e129607f14cbd313575f33d0cea443b78cb2"
+                "sha256:6d278d29fa6559b0f7a448263c85cb64ec6e9369548b02f1a7944060848b21f9",
+                "sha256:888ed63d1f650b4fc64d603d73d37545386ec533c0caac921aed80f80ea946a4"
             ],
             "markers": "python_version >= '3.7' and python_version < '4'",
-            "version": "==1.0.1"
+            "version": "==1.0.2"
         },
         "pygments": {
             "hashes": [
@@ -2200,15 +2200,15 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:23aaf86b85ca52ceb801d32703f12d77517b2556af839621c641fca11287952b",
-                "sha256:f104fa03692a2602fa0fec6c6a9e63b6c8a968de13e17c026957dd1f53d80990"
+                "sha256:5df61bf30bb10c6f756eb19e7c9f3b473051f48db77fddbe06ff2ca307df9a6f",
+                "sha256:62642358adc77ffa87233bc4d2354c4b2682d214048f500964dbe760ccedf102"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==67.7.2"
+            "version": "==67.8.0"
         },
         "sigopt": {
             "git": "https://github.com/sigopt/sigopt-python.git",
-            "ref": "64591967ea9a70d99487f35795b28c7f8df89aa1"
+            "ref": "3beef7e581d6d680d28eb336a60d7bf451c20eec"
         },
         "six": {
             "hashes": [
@@ -2306,11 +2306,11 @@
         },
         "typeguard": {
             "hashes": [
-                "sha256:00edaa8da3a133674796cf5ea87d9f4b4c367d77476e185e80251cc13dfbb8c4",
-                "sha256:5e3e3be01e887e7eafae5af63d1f36c849aaa94e3a0112097312aabfa16284f1"
+                "sha256:bbe993854385284ab42fd5bd3bee6f6556577ce8b50696d6cb956d704f286c8e",
+                "sha256:fee5297fdb28f8e9efcb8142b5ee219e02375509cd77ea9d270b5af826358d5a"
             ],
-            "markers": "python_full_version >= '3.5.3'",
-            "version": "==2.13.3"
+            "markers": "python_full_version >= '3.7.4'",
+            "version": "==3.0.2"
         },
         "types-mock": {
             "hashes": [

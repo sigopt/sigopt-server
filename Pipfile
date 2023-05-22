@@ -37,7 +37,7 @@ aiosmtpd = "==1.4.4.post2"
 build = "==0.10.0"
 debugpy = "==1.6.7"
 flaky = "==3.7.0"
-freezegun = "==1.2.1"
+freezegun = "==1.2.2"
 flasgger = {ref = "8626429a9f5f05bd62fc8d47e0b851f5788c9adf", git = "https://github.com/sigopt/flasgger.git"}
 sigopt = {ref = "main", git = "https://github.com/sigopt/sigopt-python.git"}
 html5-parser = "==0.4.4"
