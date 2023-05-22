@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "11c3b77293efb65c7cf1f2ef5820b10e78eb291236e5f0bc1008ee42c3426348"
+            "sha256": "075a85924bbe8aab66e7788221a802ae9feed629e2eb3a403ceca4faf39d9a39"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -390,7 +390,7 @@
         },
         "libsigopt": {
             "git": "https://github.com/sigopt/libsigopt",
-            "ref": "a584a18a43b9a4c88f2ade64bd48576d1e269904"
+            "ref": "f8c4a0e0f608628b71745f0d628ccd8fbb42f994"
         },
         "mako": {
             "hashes": [
@@ -1451,7 +1451,7 @@
                 "sha256:8bef7dde241278824a6d83f44a544709b065191b95b6e50894bdc722fcba0504",
                 "sha256:f84c2818376e66cf843d497486ea8fed8700b340f308f076c6fb1229dff318b6"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==5.12.0"
         },
         "itsdangerous": {
@@ -2002,13 +2002,6 @@
             "index": "pypi",
             "version": "==0.20.2"
         },
-        "pyopenssl": {
-            "hashes": [
-                "sha256:841498b9bec61623b1b6c47ebbc02367c07d60e0e195f19790817f10cc8db0b7",
-                "sha256:9e0c526404a210df9d2b18cd33364beadb0dc858a739b885677bc65e105d4a4c"
-            ],
-            "version": "==23.1.1"
-        },
         "pypng": {
             "hashes": [
                 "sha256:4a43e969b8f5aaafb2a415536c1a8ec7e341cd6a3f957fd5b5f32a4cfeed902c",
@@ -2153,11 +2146,11 @@
         },
         "requests": {
             "hashes": [
-                "sha256:10e94cc4f3121ee6da529d358cdaeaff2f1c409cd377dbc72b825852f2f7e294",
-                "sha256:239d7d4458afcb28a692cdd298d87542235f4ca8d36d03a15bfc128a6559a2f4"
+                "sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f",
+                "sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2.30.0"
+            "version": "==2.31.0"
         },
         "requests-toolbelt": {
             "hashes": [
@@ -2193,10 +2186,11 @@
         },
         "selenium": {
             "hashes": [
-                "sha256:f67402b8f973aaa98d9c55b8f9aa63532009cd1859b2222a8b9800354942d8bc"
+                "sha256:3444f4376321530c36ce8355b6b357d8cf4a7d588ce5cf772183465930bbed0e",
+                "sha256:82aedaa85d55bc861f4c89ff9609e82f6c958e2e1e3da3ffcc36703f21d3ee16"
             ],
             "index": "pypi",
-            "version": "==4.3.0"
+            "version": "==4.9.1"
         },
         "setuptools": {
             "hashes": [
@@ -2404,13 +2398,6 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'",
             "version": "==1.26.15"
-        },
-        "urllib3-secure-extra": {
-            "hashes": [
-                "sha256:ee9409cbfeb4b8609047be4c32fb4317870c602767e53fd8a41005ebe6a41dff",
-                "sha256:f7adcb108b4d12a4b26b99eb60e265d087f435052a76aefa396b6ee85e9a6ef9"
-            ],
-            "version": "==0.1.0"
         },
         "virtualenv": {
             "hashes": [
