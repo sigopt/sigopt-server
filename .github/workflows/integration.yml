@@ -31,7 +31,7 @@ jobs:
       - name: Build test-runner
         uses: docker/build-push-action@v4
         with:
-          cache-from: type=gha,scope=${{ github.ref }}:service
+          cache-from: type=gha,mode=max,scope=${{ github.ref }}:service
           cache-to: type=gha,mode=max,scope=${{ github.ref }}:service
           file: docker/images/test-runner/Dockerfile
           outputs: type=cacheonly
@@ -40,7 +40,7 @@ jobs:
       - name: Build zigopt
         uses: docker/build-push-action@v4
         with:
-          cache-from: type=gha,scope=${{ github.ref }}:service
+          cache-from: type=gha,mode=max,scope=${{ github.ref }}:service
           cache-to: type=gha,mode=max,scope=${{ github.ref }}:service
           file: docker/images/zigopt/Dockerfile
           outputs: type=cacheonly
