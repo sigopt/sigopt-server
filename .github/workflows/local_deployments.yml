@@ -23,7 +23,9 @@ jobs:
             docker-compose-plugin=2.16.0-1~ubuntu.20.04~focal
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: mkdir -p scratch
-      - run: EDITOR=true ./setup.sh | tee scratch/setup_output.log
+      - run: |
+          set -o pipefail
+          EDITOR=true ./setup.sh | tee scratch/setup_output.log
       - run: ./start.sh &
       - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/login
       - run: ./ci/wait_for.sh url https://sigopt.ninja:4443/api/health
