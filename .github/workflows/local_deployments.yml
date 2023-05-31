@@ -13,7 +13,9 @@ jobs:
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: mkdir -p scratch
       - run: make submodules
-      - run: docker build -f docker/images/web/Dockerfile .
+      - run: |
+          source .env
+          docker build -f docker/images/web/Dockerfile . --build-arg=NODE_MAJOR="$NODE_MAJOR" --build-arg=PYTHON_MAJOR="$PYTHON_MAJOR" --build-arg=PYTHON_MINOR="$PYTHON_MINOR" --build-arg=PROTOBUF_VERSION="$PROTOBUF_VERSION"
       - run: |
           set -o pipefail
           EDITOR=true ./setup.sh | tee scratch/setup_output.log
