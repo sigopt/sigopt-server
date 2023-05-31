@@ -68,7 +68,7 @@ RUN : \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
-ENV CHROMEDRIVER_VERSION "113.0.5672.63"
+ENV CHROMEDRIVER_VERSION "114.0.5735.90"
 
 RUN : \
   ; apt-get update -yqq >/dev/null \
@@ -79,7 +79,7 @@ RUN : \
   ; echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      google-chrome-stable=113.* \
+      google-chrome-stable=114.* \
       unzip=6.* \
   ; rm -rf /var/lib/apt/lists/* \
   ; curl -fSsL -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
