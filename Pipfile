@@ -43,7 +43,7 @@ sigopt = {ref = "main", git = "https://github.com/sigopt/sigopt-python.git"}
 html5-parser = "==0.4.4"
 inotify = {version = ">=0.2.10,<0.3", sys_platform = "== 'linux'"}
 ipython = "==8.13.2"
-lxml = "==4.9.1"
+lxml = "==4.9.2"
 mock = "==5.0.2"
 playwright = "==1.33.0"
 pre-commit = "==3.3.1"
