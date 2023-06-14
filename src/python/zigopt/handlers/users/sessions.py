@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication, login_authentication
 from zigopt.client.model import Client
@@ -18,7 +20,7 @@ class BaseSessionHandler(Handler):
     assert self.auth is not None
 
     memberships = self.services.membership_service.find_by_user_id(user.id)
-    clients: list[Client] = self.services.client_service.find_clients_in_organizations_visible_to_user(
+    clients: Sequence[Client] = self.services.client_service.find_clients_in_organizations_visible_to_user(
       user,
       memberships,
     )

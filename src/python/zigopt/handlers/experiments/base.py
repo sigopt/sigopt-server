@@ -4,6 +4,7 @@
 from flask import request
 
 from zigopt.common import *
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.json.builder import ExperimentJsonBuilder
@@ -57,6 +58,8 @@ class ExperimentHandler(Handler):
   permitted_scopes = (TokenMeta.ALL_ENDPOINTS, TokenMeta.SHARED_EXPERIMENT_SCOPE)
   JsonBuilder = ExperimentJsonBuilder
   redirect_ai_experiments = False
+
+  experiment: Experiment | None
 
   def __init__(self, services, req, experiment_id):
     if experiment_id is None:

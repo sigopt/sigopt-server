@@ -38,7 +38,7 @@ class CheckpointService(Service):
       self.services.database_service.query(Checkpoint).filter(Checkpoint.training_run_id == training_run_id)
     )
 
-  def count_by_training_run_ids(self, training_run_ids: int) -> dict[int, int]:
+  def count_by_training_run_ids(self, training_run_ids: Sequence[int]) -> dict[int, int]:
     return dict(
       self.services.database_service.all(
         self.services.database_service.query(Checkpoint.training_run_id, func.count(1))

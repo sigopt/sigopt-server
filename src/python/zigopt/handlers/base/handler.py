@@ -9,6 +9,7 @@ from zigopt.authorization.constant import AuthorizationDenied
 from zigopt.net.errors import ForbiddenError, NotFoundError, RequestError
 from zigopt.net.responses import TokenStatus
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, NONE, READ, WRITE, TokenMeta
+from zigopt.services.api import ApiRequestLocalServiceBag
 
 
 class HandlerException(Exception):
@@ -105,6 +106,8 @@ class Handler:
   # If this is returned from parse_params, then no argument is provided
   # to the `handler()` method
   NO_PARAMS = object()
+
+  services: ApiRequestLocalServiceBag
 
   def __init__(self, services, request):
     super().__init__()

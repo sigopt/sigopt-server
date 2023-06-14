@@ -84,7 +84,7 @@ class ExperimentsBestTrainingRunsHandler(ExperimentHandler):
       data=[
         TrainingRunJsonBuilder(
           tr,
-          checkpoint_counts.get(tr.id),
+          checkpoint_counts.get(tr.id, 0),
           project,
         )
         for tr in best_training_runs

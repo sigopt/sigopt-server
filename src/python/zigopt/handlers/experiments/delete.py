@@ -65,6 +65,8 @@ class ExperimentsDeleteHandler(ExperimentHandler):
     return {self.INCLUDE_RUNS_KEY: include_runs_option}
 
   def handle(self, params):
+    if not self.experiment:
+      return {}
     if params[self.INCLUDE_RUNS_KEY] == self.INCLUDE_RUNS_OPTION_TRUE:
       self.services.training_run_service.delete_runs_in_experiment(self.experiment)
     self.services.experiment_service.delete(self.experiment)

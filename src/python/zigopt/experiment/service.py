@@ -183,12 +183,11 @@ class ExperimentService(Service):
       )
     return return_val
 
-  def force_hitandrun_sampling(self, experiment: Experiment, force: bool) -> Experiment:
+  def force_hitandrun_sampling(self, experiment: Experiment, force: bool) -> int:
     ret = self.update_meta(
       experiment.id,
       {Experiment.experiment_meta.force_hitandrun_sampling: force},
     )
-    assert ret is not None
     meta: ExperimentMeta = copy_protobuf(experiment.experiment_meta)
     meta.force_hitandrun_sampling = force
     experiment.experiment_meta = ExperimentMetaProxy(meta)
@@ -196,23 +195,21 @@ class ExperimentService(Service):
 
   # NOTE - if we implement the possibility for users to update metric names, we need to update the
   # importances when the names have changed (as they are currently keyed by metric names)
-  def update_importance_maps(self, experiment: Experiment, importance_maps: dict[str, dict[str, float]]) -> Experiment:
+  def update_importance_maps(self, experiment: Experiment, importance_maps: dict[str, dict[str, float]]) -> int:
     imap = {}
     for metric_name in importance_maps.keys():
       imap[metric_name] = MetricImportanceMap(
         importances={key: MetricImportance(importance=value) for key, value in importance_maps[metric_name].items()}
       )
 
-    ret = self.update_meta(
+    return self.update_meta(
       experiment.id,
       {
         Experiment.experiment_meta.importance_maps: imap,
       },
     )
-    assert ret
-    return ret
 
-  def update_meta(self, experiment_id: int, params: dict[Column, Any]) -> Experiment | None:
+  def update_meta(self, experiment_id: int, params: dict[Column, Any]) -> int:
     meta_clause = Experiment.experiment_meta
     for attribute, value in params.items():
       json_path = unwind_json_path(attribute)

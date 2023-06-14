@@ -15,6 +15,8 @@ class TrainingRunHandler(Handler):
   permitted_scopes = (TokenMeta.ALL_ENDPOINTS, TokenMeta.SHARED_EXPERIMENT_SCOPE)
   allow_development = True
 
+  training_run: TrainingRun | None
+
   def __init__(self, services, request, *, training_run_id, experiment_id=None):
     super().__init__(services, request)
     if training_run_id is None:
