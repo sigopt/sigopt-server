@@ -12,11 +12,11 @@ from zigopt.user.model import User
 
 
 class authentication_result(TypedDict, total=False):
-  authenticated_from_email_link: bool | None
-  client: Client | None
-  membership: Membership | None
-  organization: Organization | None
-  permission: Permission | None
-  session_expiration: int | None
-  token: Token | None
-  user: User | None
+  authenticated_from_email_link: bool
+  client: Client
+  membership: Membership
+  organization: Organization
+  permission: Permission
+  session_expiration: int
+  token: Token
+  user: User

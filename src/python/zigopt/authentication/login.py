@@ -15,19 +15,17 @@ from zigopt.user.model import User, do_password_hash_work_factor_update, passwor
 
 @deal.has()
 @deal.raises(ValueError)
-def right_password(user: User | None, password: str) -> bool:
-  return bool(user and password_matches(password, user.hashed_password or ""))
+def right_password(user: User, password: str) -> bool:
+  return bool(password_matches(password, user.hashed_password or ""))
 
 
 @deal.has()
 @deal.raises(ValueError)
-def right_code(user: User | None, code: str) -> bool:
+def right_code(user: User, code: str) -> bool:
   VERIFICATION_THRESHOLD = timedelta(weeks=1).total_seconds()
   now = unix_timestamp()
   return bool(
-    user
-    and code
-    and user.email_verification_timestamp
+    user.email_verification_timestamp
     and (now - user.email_verification_timestamp) < VERIFICATION_THRESHOLD
     and user.hashed_email_verification_code
     and password_matches(code, user.hashed_email_verification_code or "")
@@ -37,7 +35,7 @@ def right_code(user: User | None, code: str) -> bool:
 @deal.raises(BadParamError, ForbiddenError)
 def authenticate_password(services, user: User | None, password: str) -> authentication_result:
   app_url = services.config_broker["address.app_url"]
-  if right_password(user, password):
+  if user and right_password(user, password):
     do_password_hash_work_factor_update(services, user, password)
     if services.email_verification_service.has_verified_email_if_needed(user):
       return authentication_result(user=user)
@@ -47,8 +45,8 @@ def authenticate_password(services, user: User | None, password: str) -> authent
 
 @deal.has()
 @deal.raises(BadParamError)
-def authenticate_email_code(user: User | None, code: str) -> authentication_result:
-  if right_code(user, code):
+def authenticate_email_code(user: User | None, code: str | None) -> authentication_result:
+  if user and code and right_code(user, code):
     return authentication_result(
       user=user,
       authenticated_from_email_link=True,
@@ -80,7 +78,7 @@ DEFAULT_PASSWORD_CHECK_JITTER_SECONDS = 1
 
 
 @deal.raises(BadParamError, RequestError)
-def authenticate_login(services, email: str, password: str, code: str) -> authentication_result:
+def authenticate_login(services, email: str, password: str, code: str | None) -> authentication_result:
   error = None
   start_time = time.time()
   # NOTE: we delay at least 2 because hashing should take ~1s so we need to overestimate
