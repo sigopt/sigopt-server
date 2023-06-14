@@ -77,7 +77,7 @@ DEFAULT_PASSWORD_CHECK_MIN_DELAY_SECONDS = 2
 DEFAULT_PASSWORD_CHECK_JITTER_SECONDS = 1
 
 
-@deal.raises(BadParamError, RequestError)
+@deal.raises(BadParamError, ForbiddenError, UnauthorizedError)
 def authenticate_login(services, email: str, password: str, code: str | None) -> AuthenticationResult:
   error = None
   start_time = time.time()
