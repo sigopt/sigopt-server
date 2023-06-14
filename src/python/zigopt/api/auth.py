@@ -184,9 +184,10 @@ def _do_api_token_authentication(services, request, token, mandatory):
     token_obj = authentication.token
     user = authentication.user
     client_auth = authentication.client_authentication_result
-    assert client_auth
-    client = client_auth.client
-    permission = client_auth.permission
+    client = permission = None
+    if client_auth:
+      client = client_auth.client
+      permission = client_auth.permission
     org_auth = authentication.organization_authentication_result
     assert org_auth
     membership = org_auth.membership
