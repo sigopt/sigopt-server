@@ -11,8 +11,8 @@ from zigopt.token.model import Token
 
 
 class ClientAuthorization(EmptyAuthorization):
-  @deal.pre(lambda current_client, client_token: client_token.client_id == current_client.id)
-  @deal.pre(lambda current_client, client_token: client_token.all_experiments)
+  @deal.pre(lambda self, current_client, client_token: client_token.client_id == current_client.id)
+  @deal.pre(lambda self, current_client, client_token: client_token.all_experiments)
   def __init__(self, current_client: Client, client_token: Token):
     super().__init__()
     self._current_client = current_client
