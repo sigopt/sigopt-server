@@ -16,7 +16,15 @@ from zigopt.user.model import get_domain_from_email, normalize_email
 
 class InviteService(Service):
   # pylint: disable=too-many-public-methods
-  def create_invite(self, email, organization_id, inviter_id, invite_code, membership_type, invite_id=None):
+  def create_invite(
+    self,
+    email: str,
+    organization_id: int,
+    inviter_id: int,
+    invite_code: str,
+    membership_type: MembershipType,
+    invite_id: int | None = None,
+  ) -> Invite:
     return Invite(
       id=invite_id,
       email=email,
@@ -27,12 +35,12 @@ class InviteService(Service):
       timestamp=current_datetime(),
     )
 
-  def insert_invite(self, invite):
+  def insert_invite(self, invite: Invite) -> Invite:
     self.services.database_service.insert(invite)
     self.services.database_service.flush_session()
     return invite
 
-  def find_by_id(self, invite_id):
+  def find_by_id(self, invite_id: int) -> Invite | None:
     return self.services.database_service.one_or_none(
       self.services.database_service.query(Invite).filter_by(id=invite_id)
     )

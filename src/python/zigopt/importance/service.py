@@ -1,14 +1,17 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 import numpy
 from sklearn.ensemble import ExtraTreesRegressor
 
 from zigopt.common import *
+from zigopt.experiment.model import Experiment
 from zigopt.services.base import Service
 
 
-def compute_importances(features, values):
+def compute_importances(features: Sequence[Sequence[float]], values: Sequence[float]) -> numpy.ndarray:
   def _get_n_estimators(n_dimensions, n_observations):
     if n_dimensions <= 50 and n_observations <= 10000:
       n_estimators = 100
@@ -17,10 +20,10 @@ def compute_importances(features, values):
     return n_estimators
 
   assert len(features) == len(values)
-  features = numpy.asarray(features)
-  n_observations, n_dimensions = features.shape
-  assert len(features.shape) == 2
-  n_estimators = _get_n_estimators(len(features[0]), len(features))
+  np_features = numpy.asarray(features)
+  n_observations, n_dimensions = np_features.shape
+  assert len(np_features.shape) == 2
+  n_estimators = _get_n_estimators(*np_features.shape)
   values_max, values_min = max(values), min(values)
 
   # NOTE: Normalize the values before feeding them to the random forest model,
@@ -42,11 +45,11 @@ def compute_importances(features, values):
 
 class ImportancesService(Service):
   @staticmethod
-  def minimum_valid_observations_to_compute_importances(experiment):
+  def minimum_valid_observations_to_compute_importances(experiment: Experiment) -> int:
     return 5 * len(experiment.all_parameters)
 
   @staticmethod
-  def can_update_importances(experiment, num_observations):
+  def can_update_importances(experiment: Experiment, num_observations: int) -> bool:
     return (
       len(experiment.all_parameters) > 1
       and not experiment.development
@@ -54,7 +57,7 @@ class ImportancesService(Service):
       and num_observations >= ImportancesService.minimum_valid_observations_to_compute_importances(experiment)
     )
 
-  def should_update_importances(self, experiment, observation_count):
+  def should_update_importances(self, experiment: Experiment, observation_count: int) -> bool:
     # Want to make sure we show importances as soon as they are available.
     # Also want to make sure that when the experiment is over, the customer
     # gets the "final" importances.
@@ -85,7 +88,7 @@ class ImportancesService(Service):
     scaling_factor = 200
     return non_crypto_random.random() < probability_of_update * min([1, (scaling_factor / observation_count)])
 
-  def compute_parameter_importances(self, experiment):
+  def compute_parameter_importances(self, experiment: Experiment) -> int | None:
     valid_observations = self.services.observation_service.find_valid_observations(experiment)
     if not self.can_update_importances(experiment, len(valid_observations)):
       return None
@@ -114,5 +117,5 @@ class ImportancesService(Service):
 
     return max_option([o.id for o in valid_observations])
 
-  def persist_importances(self, experiment, importance_maps):
+  def persist_importances(self, experiment: Experiment, importance_maps: dict[str, dict[str, float]]) -> None:
     self.services.experiment_service.update_importance_maps(experiment, importance_maps)
