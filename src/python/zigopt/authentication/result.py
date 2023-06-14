@@ -1,27 +1,22 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-def authentication_result(
-  token=None,
-  client=None,
-  user=None,
-  permission=None,
-  membership=None,
-  authenticated_from_email_link=None,
-  authenticated_public_cert=None,
-  authorization_response=None,
-  session_expiration=None,
-  organization=None,
-):
-  return {
-    "token": token,
-    "client": client,
-    "user": user,
-    "permission": permission,
-    "membership": membership,
-    "authenticated_from_email_link": authenticated_from_email_link,
-    "authenticated_public_cert": authenticated_public_cert,
-    "authorization_response": authorization_response,
-    "session_expiration": session_expiration,
-    "organization": organization,
-  }
+from typing import TypedDict
+
+from zigopt.client.model import Client
+from zigopt.membership.model import Membership
+from zigopt.organization.model import Organization
+from zigopt.permission.model import Permission
+from zigopt.token.model import Token
+from zigopt.user.model import User
+
+
+class authentication_result(TypedDict, total=False):
+  authenticated_from_email_link: bool | None
+  client: Client | None
+  membership: Membership | None
+  organization: Organization | None
+  permission: Permission | None
+  session_expiration: int | None
+  token: Token | None
+  user: User | None

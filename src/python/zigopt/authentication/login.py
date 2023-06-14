@@ -4,18 +4,24 @@
 import time
 from datetime import timedelta
 
+import deal
+
 from zigopt.authentication.result import authentication_result
 from zigopt.common.non_crypto_random import non_crypto_random
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.net.errors import BadParamError, ForbiddenError, RequestError, UnauthorizedError
-from zigopt.user.model import do_password_hash_work_factor_update, password_matches
+from zigopt.user.model import User, do_password_hash_work_factor_update, password_matches
 
 
-def right_password(user, password):
-  return bool(user and password_matches(password, user.hashed_password))
+@deal.has()
+@deal.raises(ValueError)
+def right_password(user: User | None, password: str) -> bool:
+  return bool(user and password_matches(password, user.hashed_password or ""))
 
 
-def right_code(user, code):
+@deal.has()
+@deal.raises(ValueError)
+def right_code(user: User | None, code: str) -> bool:
   VERIFICATION_THRESHOLD = timedelta(weeks=1).total_seconds()
   now = unix_timestamp()
   return bool(
@@ -24,11 +30,12 @@ def right_code(user, code):
     and user.email_verification_timestamp
     and (now - user.email_verification_timestamp) < VERIFICATION_THRESHOLD
     and user.hashed_email_verification_code
-    and password_matches(code, user.hashed_email_verification_code)
+    and password_matches(code, user.hashed_email_verification_code or "")
   )
 
 
-def authenticate_password(services, user, password):
+@deal.raises(BadParamError, ForbiddenError)
+def authenticate_password(services, user: User | None, password: str) -> authentication_result:
   app_url = services.config_broker["address.app_url"]
   if right_password(user, password):
     do_password_hash_work_factor_update(services, user, password)
@@ -38,7 +45,9 @@ def authenticate_password(services, user, password):
   raise BadParamError("Invalid email/password")
 
 
-def authenticate_email_code(user, code):
+@deal.has()
+@deal.raises(BadParamError)
+def authenticate_email_code(user: User | None, code: str) -> authentication_result:
   if right_code(user, code):
     return authentication_result(
       user=user,
@@ -51,7 +60,8 @@ PASSWORD_RESET_EXPIRY_IN_HOURS = 2
 PASSWORD_RESET_EXPIRY_IN_SECONDS = timedelta(hours=PASSWORD_RESET_EXPIRY_IN_HOURS).total_seconds()
 
 
-def authenticate_password_reset_code(services, email, password_reset_code):
+@deal.raises(BadParamError, UnauthorizedError)
+def authenticate_password_reset_code(services, email: str, password_reset_code: str) -> authentication_result:
   user = services.user_service.find_by_email(email)
   if (
     user
@@ -69,7 +79,8 @@ DEFAULT_PASSWORD_CHECK_MIN_DELAY_SECONDS = 2
 DEFAULT_PASSWORD_CHECK_JITTER_SECONDS = 1
 
 
-def authenticate_login(services, email, password, code):
+@deal.raises(BadParamError, RequestError)
+def authenticate_login(services, email: str, password: str, code: str) -> authentication_result:
   error = None
   start_time = time.time()
   # NOTE: we delay at least 2 because hashing should take ~1s so we need to overestimate

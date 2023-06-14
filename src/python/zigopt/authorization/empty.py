@@ -85,13 +85,5 @@ class EmptyAuthorization:
     return False
 
   @property
-  def authenticated_public_cert(self):
-    return None
-
-  @property
-  def authorization_response(self):
-    return None
-
-  @property
   def session_expiration(self):
     return napply(self.api_token, lambda u: u.expiration_timestamp)

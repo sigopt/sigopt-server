@@ -1,12 +1,16 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.authentication.result import authentication_result
 from zigopt.net.errors import ForbiddenError
 from zigopt.net.responses import TokenStatus
+from zigopt.token.model import Token
 
 
-def authenticate_token(services, token):
+@deal.raises(ForbiddenError, TypeError)
+def authenticate_token(services, token: str) -> authentication_result:
   token_obj = services.token_service.find_by_token(token, include_expired=True)
   if token_obj is None:
     return authentication_result()
@@ -19,7 +23,8 @@ def authenticate_token(services, token):
   raise TypeError("Token is of invalid type")
 
 
-def authenticate_client_token(services, token_obj):
+@deal.raises(ForbiddenError)
+def authenticate_client_token(services, token_obj: Token | None) -> authentication_result:
   if token_obj and token_obj.client_id:
     client = services.client_service.find_by_id(token_obj.client_id, include_deleted=True)
     if client:
@@ -48,7 +53,8 @@ def authenticate_client_token(services, token_obj):
   return authentication_result()
 
 
-def authenticate_user_token(services, token_obj):
+@deal.raises(ForbiddenError)
+def authenticate_user_token(services, token_obj: Token | None) -> authentication_result:
   if token_obj and token_obj.user_id:
     user = services.user_service.find_by_id(token_obj.user_id, include_deleted=True)
     if user:
