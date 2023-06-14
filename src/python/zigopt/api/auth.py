@@ -189,8 +189,9 @@ def _do_api_token_authentication(services, request, token, mandatory):
       client = client_auth.client
       permission = client_auth.permission
     org_auth = authentication.organization_authentication_result
-    assert org_auth
-    membership = org_auth.membership
+    membership = None
+    if org_auth:
+      membership = org_auth.membership
     user_authorization = UserAuthorization(
       current_user=user,
       user_token=token_obj,
@@ -225,6 +226,7 @@ def _do_api_token_authentication(services, request, token, mandatory):
           current_permission=permission,
         )
       assert user is None and permission is None and membership is None
+      assert token_obj
       if token_obj.all_experiments:
         return ClientAuthorization(current_client=client, client_token=token_obj)
       if token_obj.guest_can_read:
