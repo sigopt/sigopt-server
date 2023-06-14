@@ -153,8 +153,9 @@ def _password_reset_authentication(services, request):
     authentication = authenticate_password_reset_code(services, email, password_reset_code)
   password_reset_rate_limit.reset_rate_limit(services, rate_limit_identifier)
 
-  current_user = authentication["user"]
-  authenticated_from_email_link = authentication["authenticated_from_email_link"]
+  current_user = authentication.user
+  assert current_user
+  authenticated_from_email_link = authentication.authenticated_from_email_link
 
   user_token = services.token_service.create_temporary_user_token(current_user.id)
   return UserLoginAuthorization(
@@ -180,11 +181,18 @@ def _do_api_token_authentication(services, request, token, mandatory):
   if token:
     api_token_rate_limit.increment_and_check_rate_limit(services, request)
     authentication = authenticate_token(services, token)
-    token_obj = authentication["token"]
-    user = authentication["user"]
-    client = authentication["client"]
-    membership = authentication["membership"]
-    permission = authentication["permission"]
+    token_obj = authentication.token
+    user = authentication.user
+    client_auth = authentication.client_authentication_result
+    assert client_auth
+    client = client_auth.client
+    assert client
+    permission = client_auth.permission
+    assert permission
+    org_auth = authentication.organization_authentication_result
+    assert org_auth
+    membership = org_auth.membership
+    assert membership
     user_authorization = UserAuthorization(
       current_user=user,
       user_token=token_obj,
@@ -251,9 +259,9 @@ def _login_authentication(services, request):
     rate_limit_identifier = login_rate_limit.increment_and_check_rate_limit(services, request)
     authentication = authenticate_login(services, email, password, code)
     login_rate_limit.reset_rate_limit(services, rate_limit_identifier)
-    user = authentication["user"]
+    user = authentication.user
     if user is not None:
-      authenticated_from_email_link = authentication["authenticated_from_email_link"]
+      authenticated_from_email_link = authentication.authenticated_from_email_link
       user_token = services.token_service.create_temporary_user_token(user.id)
       return UserLoginAuthorization(
         current_user=user,

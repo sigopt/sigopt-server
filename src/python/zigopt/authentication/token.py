@@ -3,17 +3,21 @@
 # SPDX-License-Identifier: Apache License 2.0
 import deal
 
-from zigopt.authentication.result import authentication_result
+from zigopt.authentication.result import (
+  AuthenticationResult,
+  ClientAuthenticationResult,
+  OrganizationAuthenticationResult,
+)
 from zigopt.net.errors import ForbiddenError
 from zigopt.net.responses import TokenStatus
 from zigopt.token.model import Token
 
 
 @deal.raises(ForbiddenError, TypeError)
-def authenticate_token(services, token: str) -> authentication_result:
+def authenticate_token(services, token: str) -> AuthenticationResult:
   token_obj = services.token_service.find_by_token(token, include_expired=True)
   if token_obj is None:
-    return authentication_result()
+    return AuthenticationResult()
   if token_obj.expired:
     raise ForbiddenError("Your API token has expired.", token_status=TokenStatus.EXPIRED)
   if token_obj.is_client_token:
@@ -24,7 +28,7 @@ def authenticate_token(services, token: str) -> authentication_result:
 
 
 @deal.raises(ForbiddenError)
-def authenticate_client_token(services, token_obj: Token | None) -> authentication_result:
+def authenticate_client_token(services, token_obj: Token | None) -> AuthenticationResult:
   if token_obj and token_obj.client_id:
     client = services.client_service.find_by_id(token_obj.client_id, include_deleted=True)
     if client:
@@ -41,24 +45,25 @@ def authenticate_client_token(services, token_obj: Token | None) -> authenticati
             user = services.user_service.find_by_id(token_obj.user_id, include_deleted=True)
             if user.deleted:
               raise ForbiddenError(f"User {user.id} has been deleted")
-            return authentication_result(
+            return AuthenticationResult(
               token=token_obj,
-              client=client,
               user=user,
-              permission=permission,
-              membership=membership,
+              client_authentication_result=ClientAuthenticationResult(client=client, permission=permission),
+              organization_authentication_result=OrganizationAuthenticationResult(membership=membership),
             )
       else:
-        return authentication_result(token=token_obj, client=client)
-  return authentication_result()
+        return AuthenticationResult(
+          token=token_obj, client_authentication_result=ClientAuthenticationResult(client=client)
+        )
+  return AuthenticationResult()
 
 
 @deal.raises(ForbiddenError)
-def authenticate_user_token(services, token_obj: Token | None) -> authentication_result:
+def authenticate_user_token(services, token_obj: Token | None) -> AuthenticationResult:
   if token_obj and token_obj.user_id:
     user = services.user_service.find_by_id(token_obj.user_id, include_deleted=True)
     if user:
       if user.deleted:
         raise ForbiddenError(f"User {user.id} has been deleted")
-      return authentication_result(token=token_obj, user=user)
-  return authentication_result()
+      return AuthenticationResult(token=token_obj, user=user)
+  return AuthenticationResult()
