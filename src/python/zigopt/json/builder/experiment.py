@@ -11,7 +11,7 @@ from zigopt.experiment.constant import (
   METRIC_OBJECTIVE_TYPE_TO_NAME,
   METRIC_STRATEGY_TYPE_TO_NAME,
 )
-from zigopt.experiment.model import Experiment
+from zigopt.experiment.model import Experiment, ExperimentMetaProxy
 from zigopt.json.builder.json_builder import JsonBuilder, JsonBuilderValidationType, ValidationType, field
 from zigopt.json.builder.observation import ObservationJsonBuilder
 from zigopt.json.builder.parameter import ExperimentParameterJsonBuilder
@@ -21,7 +21,6 @@ from zigopt.project.model import Project
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import (
   ExperimentConditional,
   ExperimentConstraint,
-  ExperimentMeta,
   ExperimentMetric,
   Term,
 )
@@ -230,7 +229,7 @@ class ExperimentJsonBuilder(JsonBuilder):
     return self._experiment.name
 
   @property
-  def meta(self) -> ExperimentMeta:
+  def meta(self) -> ExperimentMetaProxy:
     return self._experiment.experiment_meta
 
   @field(ValidationType.positive_integer)

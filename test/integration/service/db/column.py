@@ -134,7 +134,10 @@ class TestProtobufColumn(DatabaseServiceBase):
     orig_json_value = protobuf_to_dict(experiment.experiment_meta).get(json_name)
     assert_neq(orig_value, sample_value)
     assert_neq(orig_json_value, sample_json_value)
-    experiment_service.update_meta(experiment.id, {Experiment.experiment_meta[json_name]: sample_json_value})
+    experiment_service.update_meta(
+      experiment.id,
+      {Experiment.experiment_meta[json_name]: sample_json_value},  # type: ignore
+    )
     experiment = experiment_service.find_by_id(experiment.id)
     assert_eq(getattr(experiment.experiment_meta, attr_name), sample_value)
     assert_eq(protobuf_to_dict(experiment.experiment_meta).get(json_name), sample_json_value)
