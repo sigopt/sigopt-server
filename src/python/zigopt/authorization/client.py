@@ -1,25 +1,29 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.common import *
 from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.client.model import Client
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, READ, WRITE
+from zigopt.token.model import Token
 
 
 class ClientAuthorization(EmptyAuthorization):
-  def __init__(self, current_client, client_token):
-    assert client_token.client_id == current_client.id
+  @deal.pre(lambda current_client, client_token: client_token.client_id == current_client.id)
+  @deal.pre(lambda current_client, client_token: client_token.all_experiments)
+  def __init__(self, current_client: Client, client_token: Token):
     super().__init__()
     self._current_client = current_client
     self._client_token = client_token
-    assert self._client_token.all_experiments
 
   @property
-  def current_client(self):
+  def current_client(self) -> Client:
     return self._current_client
 
   @property
-  def api_token(self):
+  def api_token(self) -> Token:
     return self._client_token
 
   def can_act_on_user(self, services, requested_permission, user):

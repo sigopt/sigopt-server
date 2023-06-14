@@ -1,15 +1,44 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.common import *
 from zigopt.authorization.constant import AuthorizationDenied
 from zigopt.authorization.empty import EmptyAuthorization
 from zigopt.client.model import Client
+from zigopt.membership.model import Membership
+from zigopt.permission.model import Permission
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, READ, WRITE
+from zigopt.token.model import Token
+from zigopt.user.model import User
 
 
 class UserAuthorization(EmptyAuthorization):
-  def __init__(self, current_user, user_token, scoped_membership, scoped_permission):
+  @deal.pre(
+    lambda self, current_user, user_token, scoped_membership, scoped_permission: (
+      scoped_membership is None or scoped_membership.user_id == current_user.id
+    )
+  )
+  @deal.pre(
+    lambda self, current_user, user_token, scoped_membership, scoped_permission: (
+      scoped_permission is None or scoped_permission.user_id == current_user.id
+    )
+  )
+  @deal.pre(
+    lambda self, current_user, user_token, scoped_membership, scoped_permission: (
+      (scoped_membership is not None and scoped_membership.organization_id == scoped_permission.organization_id)
+      if scoped_permission is not None
+      else True
+    )
+  )
+  def __init__(
+    self,
+    current_user: User,
+    user_token: Token,
+    scoped_membership: Membership | None,
+    scoped_permission: Permission | None,
+  ):
     super().__init__()
     self._current_user = current_user
     self._user_token = user_token

@@ -1,16 +1,40 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.authorization.user import UserAuthorization
+from zigopt.client.model import Client
+from zigopt.membership.model import Membership
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
+from zigopt.user.model import User
 
 
 class _BaseClientUserAuthorization(EmptyAuthorization):
-  def __init__(self, current_client, current_user, client_token, current_membership, user_authorization):
-    assert client_token.client_id == current_client.id
-    assert current_membership
-    assert user_authorization.scoped_membership is current_membership
-    assert user_authorization.scoped_membership.is_owner or user_authorization.scoped_permission
+  @deal.pre(
+    lambda self, current_client, current_user, client_token, current_membership, user_authorization: (
+      client_token.client_id == current_client.id
+    )
+  )
+  @deal.pre(
+    lambda self, current_client, current_user, client_token, current_membership, user_authorization: (
+      user_authorization.scoped_membership is current_membership
+    )
+  )
+  @deal.pre(
+    lambda self, current_client, current_user, client_token, current_membership, user_authorization: (
+      current_membership.is_owner or user_authorization.scoped_permission
+    )
+  )
+  def __init__(
+    self,
+    current_client: Client,
+    current_user: User,
+    client_token,
+    current_membership: Membership,
+    user_authorization: UserAuthorization,
+  ):
     super().__init__()
     self._current_client = current_client
     self._current_membership = current_membership

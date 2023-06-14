@@ -1,8 +1,15 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.authorization.client_user import _BaseClientUserAuthorization
+from zigopt.authorization.user import UserAuthorization
+from zigopt.client.model import Client
+from zigopt.membership.model import Membership
 from zigopt.permission.model import Permission
+from zigopt.token.model import Token
+from zigopt.user.model import User
 
 
 class OrganizationMemberAuthorization(_BaseClientUserAuthorization):
@@ -25,18 +32,39 @@ class OrganizationMemberAuthorization(_BaseClientUserAuthorization):
       user_authorization=user_authorization,
     )
 
-  def __init__(
+  def _pre_check_client_id(
     self,
-    current_client,
+    current_client: Client,
     current_user,
     client_token,
     current_membership,
-    current_permission,
+    current_permission: Permission,
     user_authorization,
   ):
-    assert isinstance(current_permission, Permission)
-    assert current_permission.client_id == current_client.id
-    assert current_permission.user_id == current_user.id
+    return current_permission.client_id == current_client.id
+
+  def _pre_check_user_id(
+    self,
+    current_client,
+    current_user: User,
+    client_token,
+    current_membership,
+    current_permission: Permission,
+    user_authorization,
+  ):
+    return current_permission.user_id == current_user.id
+
+  @deal.pre(_pre_check_client_id)
+  @deal.pre(_pre_check_user_id)
+  def __init__(
+    self,
+    current_client: Client,
+    current_user: User,
+    client_token: Token,
+    current_membership: Membership,
+    current_permission: Permission,
+    user_authorization: UserAuthorization,
+  ):
     super().__init__(
       current_client=current_client,
       current_user=current_user,
@@ -76,13 +104,12 @@ class OrganizationMemberAuthorization(_BaseClientUserAuthorization):
       return (
         owner_can_see_this_artifact
         and
-        # pylint: disable=protected-access
+        # pylint: disable-next=protected-access
         self._user_authorization._can_act_on_client_artifacts(
           services,
           requested_permission,
           client_id,
           owner_id_for_artifacts,
         )
-        # pylint: enable=protected-access
       )
     return False

@@ -1,11 +1,14 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.common import *
+from zigopt.authorization.base import Authorization
 from zigopt.token.model import Token
 
 
-class EmptyAuthorization:
+class EmptyAuthorization(Authorization):
   @property
   def current_client(self):
     return None
@@ -58,8 +61,11 @@ class EmptyAuthorization:
       owner_id_for_artifacts=project.created_by,
     )
 
+  @deal.pre(
+    lambda self, services, requested_permission, training_run: training_run.client_id is not None,
+    message="Training run must have client_id to check can act on Training run",
+  )
   def can_act_on_training_run(self, services, requested_permission, training_run):
-    assert training_run.client_id is not None, "Training run must have client_id to check can act on Training run"
     return self._can_act_on_client_artifacts(
       services=services,
       requested_permission=requested_permission,
@@ -83,14 +89,6 @@ class EmptyAuthorization:
   @property
   def authenticated_from_email_link(self):
     return False
-
-  @property
-  def authenticated_public_cert(self):
-    return None
-
-  @property
-  def authorization_response(self):
-    return None
 
   @property
   def session_expiration(self):

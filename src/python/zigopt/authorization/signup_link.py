@@ -1,9 +1,13 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.common import *
 from zigopt.authorization.empty import EmptyAuthorization
+from zigopt.client.model import Client
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import NONE, READ
+from zigopt.token.model import Token
 
 
 def readonly(func):
@@ -16,8 +20,8 @@ def readonly(func):
 
 
 class SignupLinkAuthorization(EmptyAuthorization):
-  def __init__(self, current_client, client_token):
-    assert client_token.client_id == current_client.id
+  @deal.pre(lambda self, current_client, client_token: client_token.client_id == current_client.id)
+  def __init__(self, current_client: Client, client_token: Token):
     super().__init__()
     self._current_client = current_client
     self._client_token = client_token

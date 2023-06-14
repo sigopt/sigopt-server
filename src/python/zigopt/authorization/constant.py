@@ -6,7 +6,7 @@
 class AuthorizationDenied:
   NEEDS_EMAIL_VERIFICATION: "AuthorizationDenied"
 
-  def __init__(self, name):
+  def __init__(self, name: str):
     self.name = name
 
   def __bool__(self):

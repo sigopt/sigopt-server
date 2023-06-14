@@ -1,10 +1,15 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import deal
+
 from zigopt.authorization.client_user import _BaseClientUserAuthorization
+from zigopt.authorization.user import UserAuthorization
 from zigopt.client.model import Client
 from zigopt.experiment.model import Experiment
 from zigopt.membership.model import Membership
+from zigopt.token.model import Token
+from zigopt.user.model import User
 
 
 class OrganizationOwnerAuthorization(_BaseClientUserAuthorization):
@@ -19,11 +24,29 @@ class OrganizationOwnerAuthorization(_BaseClientUserAuthorization):
       user_authorization=user_authorization,
     )
 
-  def __init__(self, current_client, current_user, client_token, current_membership, user_authorization):
-    assert isinstance(current_membership, Membership)
-    assert current_membership.is_owner
-    assert current_membership.organization_id == current_client.organization_id
-    assert current_membership.user_id == current_user.id
+  @deal.pre(
+    lambda self, current_client, current_user, client_token, current_membership, user_authorization: (
+      current_membership.is_owner
+    )
+  )
+  @deal.pre(
+    lambda self, current_client, current_user, client_token, current_membership, user_authorization: (
+      current_membership.organization_id == current_client.organization_id
+    )
+  )
+  @deal.pre(
+    lambda self, current_client, current_user, client_token, current_membership, user_authorization: (
+      current_membership.user_id == current_user.id
+    )
+  )
+  def __init__(
+    self,
+    current_client: Client,
+    current_user: User,
+    client_token: Token,
+    current_membership: Membership,
+    user_authorization: UserAuthorization,
+  ):
     super().__init__(
       current_client=current_client,
       current_user=current_user,
