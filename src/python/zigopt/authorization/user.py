@@ -18,19 +18,22 @@ class UserAuthorization(EmptyAuthorization):
   @deal.pre(
     lambda self, current_user, user_token, scoped_membership, scoped_permission: (
       scoped_membership is None or scoped_membership.user_id == current_user.id
-    )
+    ),
+    message="The membership must apply to the provided user",
   )
   @deal.pre(
     lambda self, current_user, user_token, scoped_membership, scoped_permission: (
       scoped_permission is None or scoped_permission.user_id == current_user.id
-    )
+    ),
+    message="The permission must apply to the provided user",
   )
   @deal.pre(
     lambda self, current_user, user_token, scoped_membership, scoped_permission: (
-      (scoped_membership is not None and scoped_membership.organization_id == scoped_permission.organization_id)
-      if scoped_permission is not None
+      scoped_membership.organization_id == scoped_permission.organization_id
+      if all((scoped_permission, scoped_membership))
       else True
-    )
+    ),
+    message="Permission and membership must have the same organization",
   )
   def __init__(
     self,

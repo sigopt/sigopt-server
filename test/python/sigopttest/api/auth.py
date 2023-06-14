@@ -144,11 +144,11 @@ class _TestAuthCore:
     ]
   )
   def find_role(self, request):
-    def dummy_find_role(*pairs):
+    def dummy_find_role(*pairs, **extra):
       def find_function(client_id, user_id):
         for c, u in pairs:
           if (c.id, u.id) == (client_id, user_id):
-            return Mock(client_id=client_id, user_id=user_id, **request.param)
+            return Mock(client_id=client_id, user_id=user_id, **request.param, **extra)
         return None
 
       return find_function
@@ -190,6 +190,7 @@ class _TestAuthCore:
           (self.client, self.user),
           (self.deleted_client, self.user),
           (self.client, self.deleted_user),
+          organization_id=self.organization.id,
         )
       ),
       token_service=Mock(
