@@ -1,40 +1,70 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import datetime
+from typing import Any, Sequence, TypeVar, cast
+
 from sqlalchemy import func
 
 from zigopt.common import *
+from zigopt.experiment.model import Experiment
 from zigopt.optimization_aux.model import ExperimentOptimizationAux
-from zigopt.protobuf.gen.optimize.sources_pb2 import MultimetricHyperparameters
+from zigopt.optimize.sources.base import OptimizationSource
+from zigopt.protobuf.gen.optimize.sources_pb2 import (
+  CategoricalHyperparameters,
+  MultimetricHyperparameters,
+  NullHyperparameters,
+)
 from zigopt.services.base import Service
 
 
+Hyperparams = CategoricalHyperparameters | MultimetricHyperparameters | NullHyperparameters
+THyperparams = TypeVar("THyperparams", bound=Hyperparams)
+
+
 class BaseAuxService(Service):
-  def persist_hyperparameters(self, experiment, source_name, hyperparameters, current_aux_date_updated):
+  def persist_hyperparameters(
+    self,
+    experiment: Experiment,
+    source_name: str,
+    hyperparameters: Hyperparams,
+    current_aux_date_updated: datetime.datetime,
+  ) -> None:
     raise NotImplementedError()
 
-  def get_stored_auxes(self, experiment, source_name=None):
+  def get_stored_auxes(
+    self, experiment: Experiment, source_name: str | None = None
+  ) -> Sequence[ExperimentOptimizationAux]:
     raise NotImplementedError()
 
-  def delete_hyperparameters_for_experiment(self, experiment):
+  def delete_hyperparameters_for_experiment(self, experiment: Experiment) -> None:
     raise NotImplementedError()
 
-  def get_stored_hyperparameters(self, experiment, source, auxes=None):
+  def get_stored_hyperparameters(
+    self,
+    experiment: Experiment,
+    source: OptimizationSource,
+    auxes: Sequence[ExperimentOptimizationAux] | None = None,
+  ) -> Hyperparams | None:
     if auxes is None:
       auxes = self.get_stored_auxes(experiment, source_name=source.name)
     aux = find(auxes, lambda aux: aux.source_name == source.name)
     return self.get_hyperparameters_from_aux(experiment, source.hyperparameter_type, aux)
 
-  def attempt_to_deserialize_as(self, serialized_hyperparameters, hyperparameter_type):
+  def attempt_to_deserialize_as(
+    self,
+    serialized_hyperparameters: bytes,
+    hyperparameter_type: type[THyperparams],
+  ) -> tuple[THyperparams | None, dict[str, Any] | None]:
     protobuf_cls = hyperparameter_type
     protobuf = protobuf_cls()
     protobuf.ParseFromString(serialized_hyperparameters)
 
     hyperparameter_string_as_stored = protobuf.SerializeToString()
-    protobuf.DiscardUnknownFields()
+    protobuf.DiscardUnknownFields()  # type: ignore
     interpretable_hyperparameter_string = protobuf.SerializeToString()
     if hyperparameter_string_as_stored == interpretable_hyperparameter_string:
-      return protobuf, None
+      return cast(THyperparams, protobuf), None
     inconsistency = {
       "Stored data column": hyperparameter_string_as_stored,
       "Interpreted data column": interpretable_hyperparameter_string,
@@ -42,7 +72,12 @@ class BaseAuxService(Service):
     }
     return None, inconsistency
 
-  def get_hyperparameters_from_aux(self, experiment, hyperparameter_type, optimization_aux):
+  def get_hyperparameters_from_aux(
+    self,
+    experiment: Experiment,
+    hyperparameter_type: type[THyperparams],
+    optimization_aux: ExperimentOptimizationAux | None,
+  ) -> THyperparams | None:
     serialized_hyperparameters = optimization_aux and optimization_aux.data_column
     if not serialized_hyperparameters:
       return None
@@ -51,18 +86,18 @@ class BaseAuxService(Service):
     if protobuf:
       # we have correctly deserialized protobuf, then check if the number of experiment metrics match up
       # with number of stored metrics
-      if hyperparameter_type == MultimetricHyperparameters and len(experiment.all_metrics) != len(
-        protobuf.multimetric_hyperparameter_value
-      ):
-        inconsistency = {
-          "Stored number of metrics": len(protobuf.multimetric_hyperparameter_value),
-          "Experiment number of metrics": len(experiment.all_metrics),
-        }
-        self.services.exception_logger.soft_exception(
-          msg="Mismatch MultimetricHyperparameters length and Experiment metric length",
-          extra=inconsistency,
-        )
-        return None
+      if hyperparameter_type == MultimetricHyperparameters:
+        multimetric_hp: MultimetricHyperparameters = cast(MultimetricHyperparameters, protobuf)
+        if len(experiment.all_metrics) != len(multimetric_hp.multimetric_hyperparameter_value):
+          inconsistency = {
+            "Stored number of metrics": len(multimetric_hp.multimetric_hyperparameter_value),
+            "Experiment number of metrics": len(experiment.all_metrics),
+          }
+          self.services.exception_logger.soft_exception(
+            msg="Mismatch MultimetricHyperparameters length and Experiment metric length",
+            extra=inconsistency,
+          )
+          return None
     else:
       self.services.exception_logger.soft_exception(
         msg="Inconsistent hyperparameter type and aux storage",
@@ -72,12 +107,18 @@ class BaseAuxService(Service):
 
     return protobuf
 
-  def reset_hyperparameters(self, experiment):
+  def reset_hyperparameters(self, experiment: Experiment) -> None:
     self.delete_hyperparameters_for_experiment(experiment)
 
 
 class PostgresAuxService(BaseAuxService):
-  def persist_hyperparameters(self, experiment, source_name, hyperparameters, current_aux_date_updated):
+  def persist_hyperparameters(
+    self,
+    experiment,
+    source_name,
+    hyperparameters,
+    current_aux_date_updated,
+  ):
     experiment = self.services.experiment_service.find_by_id(experiment.id)
     if experiment:
       self.services.database_service.upsert(
