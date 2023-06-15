@@ -5,6 +5,7 @@ from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.json.builder import TrainingRunJsonBuilder
+from zigopt.net.errors import NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 
 
@@ -45,6 +46,8 @@ class TrainingRunsDeleteHandler(TrainingRunHandler):
       client_id=self.training_run.client_id,
       project_id=self.training_run.project_id,
     )
+    if not project:
+      raise NotFoundError()
 
     self.services.training_run_service.set_deleted(self.training_run.id)
     self.training_run.deleted = True

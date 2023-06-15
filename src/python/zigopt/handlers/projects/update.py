@@ -140,6 +140,7 @@ class ClientsProjectsUpdateHandler(ProjectHandler):
       client_id=self.client_id,
       reference_id=self.project_reference_id,
     )
+    assert project
     return ProjectJsonBuilder(
       project,
       experiment_count=self.services.experiment_service.count_by_project(self.project.client_id, self.project.id),

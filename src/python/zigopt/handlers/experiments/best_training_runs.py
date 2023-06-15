@@ -5,6 +5,7 @@ from zigopt.api.auth import api_token_authentication
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.json.builder import PaginationJsonBuilder, TrainingRunJsonBuilder
+from zigopt.net.errors import NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 from zigopt.training_run.model import TrainingRun
 
@@ -49,6 +50,13 @@ class ExperimentsBestTrainingRunsHandler(ExperimentHandler):
   def handle(self, params):
     assert self.experiment is not None
 
+    project = self.services.project_service.find_by_client_and_id(
+      client_id=self.experiment.client_id,
+      project_id=self.experiment.project_id,
+    )
+    if not project:
+      raise NotFoundError()
+
     observations = self.services.observation_service.all_data(self.experiment)
     best_observations = self.services.experiment_best_observation_service.get_best_observations(
       self.experiment,
@@ -76,10 +84,6 @@ class ExperimentsBestTrainingRunsHandler(ExperimentHandler):
       ]
 
     checkpoint_counts = self.services.checkpoint_service.count_by_training_run_ids([tr.id for tr in best_training_runs])
-    project = self.services.project_service.find_by_client_and_id(
-      client_id=self.experiment.client_id,
-      project_id=self.experiment.project_id,
-    )
     return PaginationJsonBuilder(
       data=[
         TrainingRunJsonBuilder(

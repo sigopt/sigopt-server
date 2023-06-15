@@ -13,6 +13,7 @@ from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.handlers.training_runs.parser import TrainingRunRequestParams, TrainingRunRequestParser
 from zigopt.handlers.validate.training_run import validate_assignments_meta
 from zigopt.json.builder.training_run import TrainingRunJsonBuilder
+from zigopt.net.errors import NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun, is_completed_state
@@ -150,12 +151,19 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
       self._create_observation_from_suggestion(training_run, updated_timestamp)
 
   def handle(self, params):
+    # pylint: disable=too-many-branches
     assert self.auth is not None
     assert self.training_run is not None
 
     self._ensure_field_cannot_be_removed(params, "state")
     self._ensure_field_cannot_be_removed(params, "name")
     self._ensure_field_cannot_be_removed(params, "project")
+
+    project = self.services.project_service.find_by_client_and_id(
+      self.training_run.client_id, self.training_run.project_id
+    )
+    if not project:
+      raise NotFoundError()
 
     if self.training_run.experiment_id is not None:
       self.experiment = self.services.experiment_service.find_by_id(
@@ -211,7 +219,6 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     if params.skip_response_content:
       return None
 
-    project = self.services.project_service.find_by_client_and_id(training_run.client_id, training_run.project_id)
     checkpoint_count = self.services.checkpoint_service.count_by_training_run(self.training_run.id)
     return TrainingRunJsonBuilder(
       training_run=training_run,
