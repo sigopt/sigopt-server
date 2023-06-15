@@ -40,7 +40,7 @@ class RedisOptimizeQueueProvider(BaseRedisQueueProvider):
     self._persist_message_contents(queue_messages, group_key)
     self._add_to_queue(self.redis_key, message_keys_to_scores)
 
-  def dequeue(self, session, wait_time_seconds=None):
+  def dequeue(self, wait_time_seconds=None):
     wait_time_seconds = coalesce(wait_time_seconds, self.wait_time_seconds)
     message_key, enqueue_time = self._pop_from_queue(self.redis_key, wait_time_seconds)
     if not message_key:

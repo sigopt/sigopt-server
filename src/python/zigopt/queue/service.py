@@ -1,20 +1,18 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
 from zigopt.queue.base import BaseQueueService
-
-
-class DequeueSession:
-  def __enter__(self):
-    return self
-
-  def __exit__(self, exc_type, exc_value, tb):
-    pass
+from zigopt.queue.provider import QueueProvider
 
 
 class QueueService(BaseQueueService):
-  def __init__(self, services, providers):
+  providers: Sequence[QueueProvider]
+  enabled: bool
+
+  def __init__(self, services, providers: Sequence[QueueProvider]):
     super().__init__(services)
     self.enabled = self.services.config_broker.get("queue.enabled", default=True)
     self.providers = providers
@@ -24,7 +22,7 @@ class QueueService(BaseQueueService):
       for provider in self.providers:
         provider.warmup()
 
-  def purge_all_queues(self):
+  def purge_all_queues(self) -> None:
     if self.enabled:
       for provider in self.providers:
         provider.purge_queue()
@@ -46,34 +44,28 @@ class QueueService(BaseQueueService):
           message_score=message_score,
         )
 
-  def start_session(self, queue_name):
-    provider = self.get_provider_from_queue_name(queue_name)
-    if provider is None:
-      raise ValueError(f"{queue_name} has no provider")
-    if hasattr(provider, "start_session"):
-      return provider.start_session()
-    return DequeueSession()
-
   def test(self, queue_name):
     if self.enabled:
       self.get_provider_from_queue_name(queue_name).test()
 
-  def dequeue(self, session, queue_name, wait_time_seconds=None):
+  def dequeue(self, queue_name, wait_time_seconds=None):
     if self.enabled:
-      return self.get_provider_from_queue_name(queue_name).dequeue(session, wait_time_seconds=wait_time_seconds)
+      return self.get_provider_from_queue_name(queue_name).dequeue(wait_time_seconds=wait_time_seconds)
     return None
 
-  def delete(self, session, message, queue_name):
+  def delete(self, message, queue_name):
     if self.enabled:
-      self.get_provider_from_queue_name(queue_name).delete(session, message)
+      self.get_provider_from_queue_name(queue_name).delete(message)
 
-  def reject(self, session, message, queue_name):
+  def reject(self, message, queue_name):
     if self.enabled:
-      self.get_provider_from_queue_name(queue_name).reject(session, message)
+      self.get_provider_from_queue_name(queue_name).reject(message)
 
-  def get_provider_from_queue_name(self, queue_name):
-    return find(self.providers, lambda p: p.queue_name == queue_name)
+  def get_provider_from_queue_name(self, queue_name: str) -> QueueProvider:
+    provider = find(self.providers, lambda p: p.queue_name == queue_name)
+    assert provider
+    return provider
 
-  def get_provider_from_message_type(self, message_type):
+  def get_provider_from_message_type(self, message_type) -> QueueProvider:
     queue_name = self.get_queue_name_from_message_type(message_type)
     return self.get_provider_from_queue_name(queue_name)

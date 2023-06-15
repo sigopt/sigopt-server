@@ -154,6 +154,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     # pylint: disable=too-many-branches
     assert self.auth is not None
     assert self.training_run is not None
+    assert self.project is not None
 
     self._ensure_field_cannot_be_removed(params, "state")
     self._ensure_field_cannot_be_removed(params, "name")
