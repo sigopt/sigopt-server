@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
 from zigopt.handlers.base.handler import Handler
 from zigopt.iam_logging.service import IamEvent, IamResponseStatus
@@ -8,6 +10,7 @@ from zigopt.invite.constant import NO_ROLE, permission_to_role
 from zigopt.json.builder import MembershipJsonBuilder
 from zigopt.membership.model import MembershipType
 from zigopt.net.errors import ConflictingDataError
+from zigopt.permission.pending.service import PendingPermission
 
 from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
 
@@ -88,7 +91,7 @@ class InviteHandler(Handler):
       invite_id=invite_id,
     )
 
-    pending_permissions = []
+    pending_permissions: Sequence[PendingPermission] = []
 
     if invitee:
       pending_permissions = self.create_pending_permissions(invite, client_invites, client_map, insert=False)
