@@ -112,6 +112,8 @@ class ExperimentHandler(Handler):
     )
 
   def _reset_hyperparameters(self):
+    assert self.experiment is not None
+
     self.services.aux_service.reset_hyperparameters(self.experiment)
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
     self.services.optimize_queue_service.enqueue_optimization(

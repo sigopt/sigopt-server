@@ -13,6 +13,8 @@ class MetricImportancesUpdateHandler(ExperimentHandler):
   required_permissions = WRITE
 
   def handle(self):
+    assert self.experiment is not None
+
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
     q_msg = self.services.optimize_queue_service.always_enqueue_importances(
       experiment=self.experiment,

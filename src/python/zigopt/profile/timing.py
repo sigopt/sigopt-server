@@ -4,17 +4,28 @@
 import json
 import logging
 import time
+from functools import wraps
+from typing import Any, Callable, Mapping, ParamSpec, TypeVar
 
 from zigopt.common import *
 
 
-def time_function(logger_name, log_attributes=lambda *args, **kwargs: None):
-  def decorator(f):
-    def wrapped_f(f_self, *args, **kwargs):
+TParams = ParamSpec("TParams")
+TResult = TypeVar("TResult")
+TWrapped = Callable[TParams, TResult]
+
+
+def time_function(
+  logger_name: str, log_attributes: Callable[TParams, Mapping[str, Any] | None] = lambda *args, **kwargs: {}
+) -> Callable[[TWrapped], TWrapped]:
+  def decorator(f: TWrapped) -> TWrapped:
+    @wraps(f)
+    def wrapped_f(*args, **kwargs):
+      f_self = args[0]
       start = time.time()
       result = None
       try:
-        result = f(f_self, *args, **kwargs)
+        result = f(*args, **kwargs)
         return result
       finally:
         end = time.time()
@@ -27,7 +38,7 @@ def time_function(logger_name, log_attributes=lambda *args, **kwargs: None):
                 className=type(f_self).__name__,
                 functionName=f.__name__,
                 time=(end - start),
-                **(log_attributes(f_self, *args, **kwargs) or {}),
+                **(log_attributes(*args, **kwargs) or {}),
               )
             )
           ),

@@ -106,6 +106,8 @@ class CreatesObservationsMixin:
     return observation
 
   def enqueue_optimization(self, num_observations_before, num_failures_before, new_observations):
+    assert self.experiment is not None
+
     num_observations = num_observations_before + len(new_observations)
     num_failures = num_failures_before + len([o for o in new_observations if o.reported_failure])
     source = self.services.optimizer.get_inferred_optimization_source(
@@ -121,6 +123,8 @@ class CreatesObservationsMixin:
     )
 
   def add_observations(self, observations, client, counts, optimize=True):
+    assert self.experiment is not None
+
     self.services.observation_service.insert_observations(self.experiment, observations)
 
     if optimize:
