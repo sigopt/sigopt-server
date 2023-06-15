@@ -50,14 +50,14 @@ class UsersDeleteHandler(UserHandler):
       return
 
     other_owner_memberships = self.services.membership_service.organizations_with_other_owners(
-      organization_ids, self.user.id
+      list(organization_ids), self.user.id
     )
     still_owned_organization_ids = set(m.organization_id for m in other_owner_memberships)
 
     unowned_organization_ids = organization_ids - still_owned_organization_ids
     if unowned_organization_ids:
       other_non_owner_memberships = self.services.membership_service.organizations_with_other_non_owners(
-        unowned_organization_ids,
+        list(unowned_organization_ids),
         self.user.id,
       )
       orphaned_organization_ids = set(m.organization_id for m in other_non_owner_memberships)
@@ -76,7 +76,7 @@ class UsersDeleteHandler(UserHandler):
 
     organization_ids = set(p.organization_id for p in permissions)
     organizations_with_other_owners = self.services.membership_service.organizations_with_other_owners(
-      organization_ids,
+      list(organization_ids),
       self.user.id,
     )
     other_owned_organizations = set(m.organization_id for m in organizations_with_other_owners)

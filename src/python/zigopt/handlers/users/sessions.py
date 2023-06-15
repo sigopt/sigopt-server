@@ -51,6 +51,8 @@ class BaseSessionHandler(Handler):
     # probably won't be a problem
     valid_invites = self.services.invite_service.find_by_email(user.email, valid_only=True)
 
+    client: Client | None = None
+
     # NOTE: If the user has a pending_client_id or outstanding invites, attempt to
     # add them to the client.
     # TODO(SN-1102): More of this could be shared with POST /users/X/permissions if we wanted.
@@ -64,21 +66,20 @@ class BaseSessionHandler(Handler):
       )
       (_, _, client) = list_get(clients, 0) or (None, None, None)
     elif pending_client_id:
-      pending_client: Client | None = self.services.client_service.find_by_id(pending_client_id)
-      pending_organization = napply(
-        pending_client,
-        lambda c: self.services.organization_service.find_by_id(c.organization_id),
-      )
-      did_signup, _ = self.services.invite_service.signup_to_client_if_permitted(
-        user=user,
-        organization=pending_organization,
-        client=pending_client,
-      )
-      client = pending_client if did_signup else None
-    else:
-      client = None
+      pending_client = self.services.client_service.find_by_id(pending_client_id)
+      if pending_client:
+        pending_organization = self.services.organization_service.find_by_id(pending_client.organization_id)
+        if pending_organization:
+          did_signup, _ = self.services.invite_service.signup_to_client_if_permitted(
+            user=user,
+            organization=pending_organization,
+            client=pending_client,
+          )
+          if did_signup:
+            client = pending_client
 
-    client = client or self.get_client_for_user(user)
+    if not client:
+      client = self.get_client_for_user(user)
     if not client:
       if not self.services.config_broker.get("features.allowCreateOrganization", False):
         raise ForbiddenError("You must be invited to an organization")
