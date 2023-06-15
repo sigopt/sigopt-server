@@ -41,13 +41,7 @@ class TrainingRunsDeleteHandler(TrainingRunHandler):
 
   def handle(self):
     assert self.training_run is not None
-
-    project = self.services.project_service.find_by_client_and_id(
-      client_id=self.training_run.client_id,
-      project_id=self.training_run.project_id,
-    )
-    if not project:
-      raise NotFoundError()
+    assert self.project is not None
 
     self.services.training_run_service.set_deleted(self.training_run.id)
     self.training_run.deleted = True
@@ -56,5 +50,5 @@ class TrainingRunsDeleteHandler(TrainingRunHandler):
     return TrainingRunJsonBuilder(
       self.training_run,
       checkpoint_count=checkpoint_count,
-      project=project,
+      project=self.project,
     )

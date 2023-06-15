@@ -15,16 +15,11 @@ class TrainingRunsDetailHandler(TrainingRunHandler):
 
   def handle(self):
     assert self.training_run is not None
-    project = self.services.project_service.find_by_client_and_id(
-      client_id=self.training_run.client_id,
-      project_id=self.training_run.project_id,
-    )
-    if not project:
-      raise NotFoundError()
+    assert self.project is not None
 
     checkpoint_count = self.services.checkpoint_service.count_by_training_run(self.training_run.id)
     return TrainingRunJsonBuilder(
       self.training_run,
       checkpoint_count=checkpoint_count,
-      project=project,
+      project=self.project,
     )

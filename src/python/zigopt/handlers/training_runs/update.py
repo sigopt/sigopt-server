@@ -159,12 +159,6 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     self._ensure_field_cannot_be_removed(params, "name")
     self._ensure_field_cannot_be_removed(params, "project")
 
-    project = self.services.project_service.find_by_client_and_id(
-      self.training_run.client_id, self.training_run.project_id
-    )
-    if not project:
-      raise NotFoundError()
-
     if self.training_run.experiment_id is not None:
       self.experiment = self.services.experiment_service.find_by_id(
         self.training_run.experiment_id, include_deleted=True
@@ -223,5 +217,5 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     return TrainingRunJsonBuilder(
       training_run=training_run,
       checkpoint_count=checkpoint_count,
-      project=project,
+      project=self.project,
     )
