@@ -2,15 +2,18 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import uuid
+from collections.abc import Sequence
 from datetime import timedelta
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Query
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp_with_microseconds
 from zigopt.exception.logger import AlreadyLoggedException
+from zigopt.experiment.model import Experiment
 from zigopt.profile.timing import time_function
-from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionMeta
+from zigopt.protobuf.gen.suggest.suggestion_pb2 import ProcessedSuggestionMeta, SuggestionMeta
 from zigopt.protobuf.lib import copy_protobuf
 from zigopt.services.base import Service
 from zigopt.suggestion.lib import DuplicateUnprocessedSuggestionError
@@ -26,11 +29,11 @@ from zigopt.suggestion.unprocessed.model import (
 class UnprocessedSuggestionService(Service):
   def process(
     self,
-    experiment,
-    unprocessed_suggestion,
-    processed_suggestion_meta,
-    queued_id=None,
-    automatic=False,
+    experiment: Experiment,
+    unprocessed_suggestion: UnprocessedSuggestion,
+    processed_suggestion_meta: ProcessedSuggestionMeta,
+    queued_id: int | None = None,
+    automatic: bool = False,
   ):
     assert experiment.id == unprocessed_suggestion.experiment_id
 
@@ -65,7 +68,7 @@ class UnprocessedSuggestionService(Service):
       unprocessed=unprocessed_suggestion,
     )
 
-  def delete_all_for_experiment(self, experiment):
+  def delete_all_for_experiment(self, experiment: Experiment) -> None:
     updated_suggestions = []
     for old_suggestion in self.services.database_service.all(
       self.services.database_service.query(UnprocessedSuggestion).filter(
@@ -77,10 +80,10 @@ class UnprocessedSuggestionService(Service):
       updated_suggestions.append({"id": old_suggestion.id, "suggestion_meta": new_suggestion_meta})
     self.services.database_service.update_all(UnprocessedSuggestion, updated_suggestions)
 
-  def delete_by_id(self, experiment, suggestion_id):
+  def delete_by_id(self, experiment: Experiment, suggestion_id: int) -> None:
     suggestion = self.find_by_id(suggestion_id)
     if suggestion:
-      new_meta = copy_protobuf(suggestion.suggestion_meta)
+      new_meta: SuggestionMeta = copy_protobuf(suggestion.suggestion_meta)
       new_meta.deleted = True
       self.services.database_service.update_one(
         self.services.database_service.query(UnprocessedSuggestion)
@@ -89,7 +92,9 @@ class UnprocessedSuggestionService(Service):
         {UnprocessedSuggestion.suggestion_meta: new_meta},
       )
 
-  def find_by_ids(self, suggestion_ids, include_deleted=False):
+  def find_by_ids(
+    self, suggestion_ids: Sequence[int], include_deleted: bool = False
+  ) -> Sequence[UnprocessedSuggestion]:
     if suggestion_ids:
       return self.services.database_service.all(
         self._include_deleted_clause(
@@ -101,10 +106,12 @@ class UnprocessedSuggestionService(Service):
       )
     return []
 
-  def find_by_id(self, suggestion_id, include_deleted=False):
+  def find_by_id(self, suggestion_id: int, include_deleted: bool = False) -> UnprocessedSuggestion | None:
     return list_get(self.find_by_ids([suggestion_id], include_deleted), 0)
 
-  def find_by_experiment(self, experiment, include_deleted=False):
+  def find_by_experiment(
+    self, experiment: Experiment, include_deleted: bool = False
+  ) -> Sequence[UnprocessedSuggestion]:
     return self.services.database_service.all(
       self._include_deleted_clause(
         include_deleted,
@@ -114,7 +121,7 @@ class UnprocessedSuggestionService(Service):
       )
     )
 
-  def count_by_experiment(self, experiment, include_deleted=False):
+  def count_by_experiment(self, experiment: Experiment, include_deleted: bool = False) -> int:
     return self.services.database_service.count(
       self._include_deleted_clause(
         include_deleted,
@@ -122,7 +129,7 @@ class UnprocessedSuggestionService(Service):
       )
     )
 
-  def insert_suggestions_to_be_processed(self, generated_suggestions):
+  def insert_suggestions_to_be_processed(self, generated_suggestions: Sequence[UnprocessedSuggestion]) -> None:
     generated_suggestions = list(generated_suggestions)
     if generated_suggestions:
       generated_ids = self.services.database_service.reserve_ids(
@@ -142,7 +149,7 @@ class UnprocessedSuggestionService(Service):
           raise DuplicateUnprocessedSuggestionError("UnprocessedSuggestion already exists") from e
         raise
 
-  def _include_deleted_clause(self, include_deleted, q):
+  def _include_deleted_clause(self, include_deleted: bool, q: Query) -> Query:
     if not include_deleted:
       return q.filter(~UnprocessedSuggestion.suggestion_meta.deleted)
     return q
@@ -151,7 +158,9 @@ class UnprocessedSuggestionService(Service):
     "sigopt.timing",
     log_attributes=lambda self, experiment, *args, **kwargs: {"experiment": str(experiment.id)},
   )
-  def get_suggestions_per_source(self, experiment, sources=None):
+  def get_suggestions_per_source(
+    self, experiment: Experiment, sources: Sequence[int] | None = None
+  ) -> Sequence[UnprocessedSuggestion]:
     if sources is None:
       sources_key = self.services.redis_key_service.create_sources_key(experiment.id)
       sources = self.services.redis_service.get_set_members(sources_key)
@@ -184,7 +193,7 @@ class UnprocessedSuggestionService(Service):
         )
     return [s for s in unprocessed_suggestions if s.is_valid(experiment)]
 
-  def _truncate_suggestion_length(self, experiment_id, source, num_to_keep):
+  def _truncate_suggestion_length(self, experiment_id: int, source: int, num_to_keep: int) -> None:
     stop_index = -num_to_keep - 1  # redis is inclusive of endpoint
     suggestion_timestamp_key = self.services.redis_key_service.create_suggestion_timestamp_key(
       experiment_id,
@@ -197,7 +206,9 @@ class UnprocessedSuggestionService(Service):
       self.services.redis_service.remove_from_hash(suggestion_protobuf_key, *suggestions_to_drop)
       self.services.redis_service.remove_from_sorted_set(suggestion_timestamp_key, *suggestions_to_drop)
 
-  def _store_unprocessed_suggestions(self, experiment_id, unprocessed_suggestions, timestamp=None):
+  def _store_unprocessed_suggestions(
+    self, experiment_id: int, unprocessed_suggestions: Sequence[UnprocessedSuggestion], timestamp: float | None = None
+  ) -> None:
     # pylint: disable=too-many-locals
     sources_key = self.services.redis_key_service.create_sources_key(experiment_id)
     suggestions_by_source = as_grouped_dict(unprocessed_suggestions, lambda s: s.source)
@@ -234,7 +245,9 @@ class UnprocessedSuggestionService(Service):
       "experiment": (str(unprocessed_suggestions[0].experiment_id) if len(unprocessed_suggestions) else None),
     },
   )
-  def insert_unprocessed_suggestions(self, unprocessed_suggestions, timestamp=None):
+  def insert_unprocessed_suggestions(
+    self, unprocessed_suggestions: Sequence[UnprocessedSuggestion], timestamp: float | None = None
+  ) -> None:
     if not unprocessed_suggestions:
       return
     suggestions_by_experiment_id = as_grouped_dict(unprocessed_suggestions, lambda s: s.experiment_id)
@@ -258,7 +271,7 @@ class UnprocessedSuggestionService(Service):
       "suggestion": str(suggestion.id),
     },
   )
-  def remove_from_available_suggestions(self, suggestion, tolerate_failure=True):
+  def remove_from_available_suggestions(self, suggestion: UnprocessedSuggestion, tolerate_failure: bool = True) -> None:
     experiment_id = suggestion.experiment_id
     source = suggestion.source
     uuid_value = str(suggestion.uuid_value)
