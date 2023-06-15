@@ -52,7 +52,7 @@ class Permission(Base):
   client_id = Column(BigInteger)
   organization_id = Column(BigInteger)
   user_id = Column(BigInteger)
-  permission_meta = ProtobufColumn(
+  permission_meta: PermissionMetaProxy = ProtobufColumn(
     PermissionMeta,
     proxy=PermissionMetaProxy,
     name="permission_meta_json",
@@ -61,7 +61,7 @@ class Permission(Base):
 
   def __init__(self, user_id, client_id, organization_id, permission_meta=None, **kwargs):
     if permission_meta is None:
-      permission_meta = Permission.permission_meta.default_value()
+      permission_meta = PermissionMeta()
     super().__init__(
       user_id=user_id, client_id=client_id, organization_id=organization_id, permission_meta=permission_meta, **kwargs
     )
