@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import datetime
+from typing import Sequence
+
+from sqlalchemy.orm import Query
 
 from zigopt.common import *
 from zigopt.client.model import Client
@@ -12,12 +15,15 @@ from zigopt.invite.constant import ADMIN_ROLE
 from zigopt.invite.model import Invite
 from zigopt.json.builder import MembershipJsonBuilder
 from zigopt.membership.model import MembershipType
+from zigopt.net.errors import NotFoundError
 from zigopt.organization.model import Organization
 from zigopt.permission.pending.model import PendingPermission
+from zigopt.protobuf.gen.api.paging_pb2 import PagingMarker
 from zigopt.protobuf.gen.client.clientmeta_pb2 import ClientMeta
 from zigopt.protobuf.gen.organization.organizationmeta_pb2 import OrganizationMeta
 from zigopt.services.base import Service
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
+from zigopt.user.model import User
 
 
 class OrganizationService(Service):
@@ -28,10 +34,10 @@ class OrganizationService(Service):
     UnprocessedSuggestion.Source.EXPLICIT_RANDOM,
   )
 
-  def find_by_id(self, organization_id, include_deleted=False):
+  def find_by_id(self, organization_id: int, include_deleted: bool = False) -> Organization | None:
     return list_get(self.find_by_ids([organization_id], include_deleted=include_deleted), 0)
 
-  def find_by_ids(self, organization_ids, include_deleted=False):
+  def find_by_ids(self, organization_ids: Sequence[int], include_deleted: bool = False) -> Sequence[Organization]:
     if organization_ids:
       return self.services.database_service.all(
         self._include_deleted_clause(
@@ -41,34 +47,46 @@ class OrganizationService(Service):
       )
     return []
 
-  def _include_deleted_clause(self, include_deleted, q):
+  def _include_deleted_clause(self, include_deleted: bool, q: Query) -> Query:
     if not include_deleted:
       return q.filter(Organization.date_deleted.is_(None))
     return q
 
-  def _query_all(self, include_deleted=False):
+  def _query_all(self, include_deleted: bool = False) -> Query:
     return self._include_deleted_clause(include_deleted, self.services.database_service.query(Organization))
 
-  def find_all(self, limit=None, before=None, after=None, include_deleted=False):
+  def find_all(
+    self,
+    limit: int | None = None,
+    before: PagingMarker | None = None,
+    after: PagingMarker | None = None,
+    include_deleted: bool = False,
+  ) -> Sequence[Organization]:
     q = self._query_all(include_deleted)
     return self.services.query_pager.get_page_results(q, Organization.id, limit=limit, before=before, after=after)
 
-  def count_all(self, limit=None, before=None, after=None, include_deleted=False):
+  def count_all(
+    self,
+    limit: int | None = None,
+    before: PagingMarker | None = None,
+    after: PagingMarker | None = None,
+    include_deleted: bool = False,
+  ) -> int:
     q = self._query_all(include_deleted)
     return self.services.database_service.count(q)
 
-  def insert(self, organization):
+  def insert(self, organization: Organization) -> Organization:
     self.services.database_service.insert(organization)
     return organization
 
-  def delete(self, organization):
+  def delete(self, organization: Organization) -> bool:
     date_deleted = current_datetime()
     did_update = self.delete_by_id(organization.id, date_deleted=date_deleted)
     if did_update:
       organization.date_deleted = date_deleted
     return did_update
 
-  def delete_by_id(self, organization_id, date_deleted=None):
+  def delete_by_id(self, organization_id: int, date_deleted: datetime.datetime | None = None) -> bool:
     date_deleted = date_deleted or current_datetime()
     self.services.invite_service.delete_by_organization_id(organization_id)
     self.services.membership_service.delete_by_organization_id(organization_id)
@@ -81,13 +99,13 @@ class OrganizationService(Service):
 
   def set_up_new_organization(
     self,
-    organization_name,
-    client_name,
-    user,
-    allow_users_to_see_experiments_by_others,
-    requestor,
-    academic=None,
-    user_is_owner=False,
+    organization_name: str,
+    client_name: str,
+    user: User | None,
+    allow_users_to_see_experiments_by_others: bool | None,
+    requestor: User,
+    academic: bool | None = None,
+    user_is_owner: bool = False,
   ):
     organization_meta = OrganizationMeta(academic=academic)
     organization = Organization(name=organization_name, organization_meta=organization_meta)
@@ -129,9 +147,13 @@ class OrganizationService(Service):
 
     return (organization, client)
 
-  def merge_organizations_into_destination(self, dest_organization_id, organization_ids, requestor):
+  def merge_organizations_into_destination(
+    self, dest_organization_id: int, organization_ids: Sequence[int], requestor: User
+  ):
     # pylint: disable=too-many-locals
     dest_organization = self.find_by_id(dest_organization_id)
+    if not dest_organization:
+      raise NotFoundError()
 
     for organization_id in organization_ids:
       clients = self.services.client_service.find_by_organization_id(organization_id)
@@ -190,16 +212,27 @@ class OrganizationService(Service):
       self.services.membership_service.delete_by_organization_id(organization_id)
       self.delete_by_id(organization_id)
 
-  def get_optimized_runs_in_billing_cycle(self, organization_id, start_date, end_date, look_in_cache=True):
+  def get_optimized_runs_in_billing_cycle(
+    self,
+    organization_id: int,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime,
+    look_in_cache: bool = True,
+  ) -> int:
     if look_in_cache:
-      count = self._get_optimized_runs_in_billing_cycle_cache(organization_id, start_date, end_date)
-      if count is not None:
-        return count
+      cache_count = self._get_optimized_runs_in_billing_cycle_cache(organization_id, start_date, end_date)
+      if cache_count is not None:
+        return cache_count
     count = self._get_optimized_runs_in_billing_cycle(organization_id, start_date, end_date)
     self._write_optimized_runs_in_billing_cycle_cache(organization_id, start_date, end_date, count)
     return count
 
-  def _get_optimized_runs_in_billing_cycle_cache(self, organization_id, start_date, end_date):
+  def _get_optimized_runs_in_billing_cycle_cache(
+    self,
+    organization_id: int,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime,
+  ) -> int | None:
     optimized_runs_key = self.services.redis_key_service.create_optimized_run_by_org_billing_key(
       organization_id, start_date
     )
@@ -208,7 +241,12 @@ class OrganizationService(Service):
       count = self.services.redis_service.get(optimized_runs_key)
     return napply(count, int)
 
-  def _get_optimized_runs_in_billing_cycle(self, organization_id, start_date, end_date):
+  def _get_optimized_runs_in_billing_cycle(
+    self,
+    organization_id: int,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime,
+  ) -> int:
     q = (
       self.services.database_service.query(Client)
       .join(Experiment, Client.id == Experiment.client_id)
@@ -223,7 +261,13 @@ class OrganizationService(Service):
     count = self.services.database_service.count(q)
     return count
 
-  def _write_optimized_runs_in_billing_cycle_cache(self, organization_id, start_date, end_date, count):
+  def _write_optimized_runs_in_billing_cycle_cache(
+    self,
+    organization_id: int,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime,
+    count: int,
+  ) -> None:
     optimized_runs_key = self.services.redis_key_service.create_optimized_run_by_org_billing_key(
       organization_id, start_date
     )
@@ -238,15 +282,20 @@ class OrganizationService(Service):
       if expire_at is not None:
         self.services.redis_service.set_expire_at(optimized_runs_key, expire_at)
 
-  def get_optimized_runs_from_organization_id(self, organization_id):
+  def get_optimized_runs_from_organization_id(self, organization_id: int) -> int:
     start_interval, end_interval = get_month_interval()
     return self.get_optimized_runs_in_billing_cycle(organization_id, start_interval, end_interval)
 
-  def get_total_runs_from_organization_id(self, organization_id):
+  def get_total_runs_from_organization_id(self, organization_id: int) -> int:
     start_interval, end_interval = get_month_interval()
     return self.get_total_runs_in_billing_cycle(organization_id, start_interval, end_interval)
 
-  def get_total_runs_in_billing_cycle(self, organization_id, start_date, end_date):
+  def get_total_runs_in_billing_cycle(
+    self,
+    organization_id: int,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime,
+  ) -> int:
     q = (
       self.services.database_service.query(Client)
       .join(Experiment, Client.id == Experiment.client_id)
