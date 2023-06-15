@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import datetime as dt
+from typing import Any
 
 from zigopt.common import *
 from zigopt.services.base import Service
@@ -18,69 +19,69 @@ TEN_MINUTES_IN_SECONDS = 60 * 10
 
 class RateLimiter(Service):
   @property
-  def enabled(self):
+  def enabled(self) -> bool:
     return self.services.config_broker.get("ratelimit.enabled", True)
 
-  def _get_value(self, config_key, default):
+  def _get_value(self, config_key: str, default: Any) -> Any:
     return self.services.config_broker.get(config_key, default)
 
   @property
-  def login_max_attempts(self):
+  def login_max_attempts(self) -> int:
     return self._get_value(
       config_key="ratelimit.login.max_attempts",
       default=5,
     )
 
   @property
-  def login_window_length_seconds(self):
+  def login_window_length_seconds(self) -> int:
     return self._get_value(
       config_key="ratelimit.login.window_length",
       default=TEN_MINUTES_IN_SECONDS,
     )
 
   @property
-  def token_non_mutating_max_attempts(self):
+  def token_non_mutating_max_attempts(self) -> int:
     return self._get_value(
       config_key="ratelimit.token_non_mutating.max_attempts",
       default=100,
     )
 
   @property
-  def token_non_mutating_window_length_seconds(self):
+  def token_non_mutating_window_length_seconds(self) -> int:
     return self._get_value(
       config_key="ratelimit.token_non_mutating.window_length",
       default=1,
     )
 
   @property
-  def token_mutating_max_attempts(self):
+  def token_mutating_max_attempts(self) -> int:
     return self._get_value(
       config_key="ratelimit.token_mutating.max_attempts",
       default=50,
     )
 
   @property
-  def token_mutating_window_length_seconds(self):
+  def token_mutating_window_length_seconds(self) -> int:
     return self._get_value(
       config_key="ratelimit.token_mutating.window_length",
       default=1,
     )
 
   @property
-  def object_enumeration_max_attempts(self):
+  def object_enumeration_max_attempts(self) -> int:
     return self._get_value(
       config_key="ratelimit.object_enumeration.max_attempts",
       default=10,
     )
 
   @property
-  def object_enumeration_window_length_seconds(self):
+  def object_enumeration_window_length_seconds(self) -> int:
     return self._get_value(
       config_key="ratelimit.object_enumeration.window_length",
       default=TEN_MINUTES_IN_SECONDS,
     )
 
-  def max_attempts(self, rate_limit_type):
+  def max_attempts(self, rate_limit_type: str) -> int:
     return {
       LOGIN_RATE_LIMIT: self.login_max_attempts,
       API_TOKEN_NON_MUTATING_RATE_LIMIT: self.token_non_mutating_max_attempts,
@@ -88,7 +89,7 @@ class RateLimiter(Service):
       OBJECT_ENUMERATION_RATE_LIMIT: self.object_enumeration_max_attempts,
     }[rate_limit_type]
 
-  def window_length_seconds(self, rate_limit_type):
+  def window_length_seconds(self, rate_limit_type: str) -> int:
     return {
       LOGIN_RATE_LIMIT: self.login_window_length_seconds,
       API_TOKEN_NON_MUTATING_RATE_LIMIT: self.token_non_mutating_window_length_seconds,
@@ -96,15 +97,15 @@ class RateLimiter(Service):
       OBJECT_ENUMERATION_RATE_LIMIT: self.object_enumeration_window_length_seconds,
     }[rate_limit_type]
 
-  def _get_snapped_time(self, rate_limit_type):
+  def _get_snapped_time(self, rate_limit_type: str) -> int:
     now = self.services.redis_service.get_time()
     window_length = self.window_length_seconds(rate_limit_type)
     return now - (now % window_length)
 
-  def _key(self, rate_limit_type, identifier, time):
+  def _key(self, rate_limit_type: str, identifier: Any, time: int) -> str:
     return self.services.redis_key_service.create_rate_limit_key(rate_limit_type, identifier, time)
 
-  def still_within_rate_limit(self, rate_limit_type, identifier, increment=True):
+  def still_within_rate_limit(self, rate_limit_type: str, identifier: Any, increment: bool = True) -> bool:
     time = self._get_snapped_time(rate_limit_type)
     key = self._key(rate_limit_type, identifier, time)
     if increment:
@@ -116,7 +117,7 @@ class RateLimiter(Service):
     max_attempts = self.max_attempts(rate_limit_type)
     return count <= max_attempts
 
-  def clear_rate_limit(self, rate_limit_type, identifier):
+  def clear_rate_limit(self, rate_limit_type: str, identifier: Any) -> None:
     time = self._get_snapped_time(rate_limit_type)
     key = self._key(rate_limit_type, identifier, time)
     self.services.redis_service.delete(key)
