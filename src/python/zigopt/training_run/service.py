@@ -1,13 +1,19 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import datetime
+from collections.abc import Mapping, Sequence
+
 from sqlalchemy import func
+from sqlalchemy.orm import Query
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import current_datetime
+from zigopt.experiment.model import Experiment
 from zigopt.pagination.lib import DefinedField, FieldApiType
 from zigopt.services.base import Service
 from zigopt.training_run.defined_fields import TrainingRunDefinedFieldsExtractor
+from zigopt.training_run.field_types import FieldDetails
 from zigopt.training_run.model import TrainingRun
 
 
@@ -15,25 +21,25 @@ _NO_ARG = object()
 
 
 class TrainingRunService(Service):
-  def insert_training_runs(self, training_runs):
+  def insert_training_runs(self, training_runs: Sequence[TrainingRun]) -> None:
     self.services.database_service.insert_all(training_runs)
 
-  def find_by_id(self, training_run_id):
+  def find_by_id(self, training_run_id: int) -> TrainingRun | None:
     return self.services.database_service.one_or_none(
       self.services.database_service.query(TrainingRun).filter(TrainingRun.id == training_run_id)
     )
 
-  def find_by_ids(self, training_run_ids):
+  def find_by_ids(self, training_run_ids: Sequence[int]) -> Sequence[TrainingRun]:
     if len(training_run_ids) == 0:
       return []
 
     query = self.services.database_service.query(TrainingRun).filter(TrainingRun.id.in_(training_run_ids))
     return self.services.database_service.all(query)
 
-  def count_by_project(self, client_id, project_id):
+  def count_by_project(self, client_id: int, project_id: int) -> int:
     return self.count_by_projects(client_id, [project_id]).get(project_id, 0)
 
-  def count_by_projects(self, client_id, project_ids):
+  def count_by_projects(self, client_id, project_ids: Sequence[int]) -> Mapping[int, int]:
     return dict(
       self.services.database_service.all(
         self.services.database_service.query(TrainingRun.project_id, func.count(TrainingRun.id))
@@ -44,7 +50,7 @@ class TrainingRunService(Service):
       )
     )
 
-  def mark_as_updated(self, training_run, timestamp=None):
+  def mark_as_updated(self, training_run: TrainingRun, timestamp: datetime.datetime | None = None) -> None:
     if timestamp is None:
       timestamp = current_datetime()
     self.services.database_service.update_one_or_none(
@@ -56,7 +62,7 @@ class TrainingRunService(Service):
       },
     )
 
-  def set_deleted(self, training_run_id, deleted=True):
+  def set_deleted(self, training_run_id: int, deleted: bool = True) -> None:
     tr = self.services.database_service.one_or_none(
       self.services.database_service.query(TrainingRun).filter(TrainingRun.id == training_run_id)
     )
@@ -76,7 +82,7 @@ class TrainingRunService(Service):
       },
     )
 
-  def delete_runs_in_experiment(self, experiment):
+  def delete_runs_in_experiment(self, experiment: Experiment) -> None:
     self.services.database_service.update(
       self.services.database_service.query(TrainingRun).filter(TrainingRun.experiment_id == experiment.id),
       {TrainingRun.deleted: True},
@@ -84,7 +90,7 @@ class TrainingRunService(Service):
     self.services.processed_suggestion_service.delete_all_for_experiment(experiment)
     self.services.observation_service.delete_all_for_experiment(experiment)
 
-  def assert_is_training_run_query(self, query):
+  def assert_is_training_run_query(self, query: Query) -> Query:
     assert any(
       column.get("entity") is TrainingRun for column in query.column_descriptions
     ), "No entity for the query is Training Run. Cannot perform Training Run query operation on it."
@@ -122,7 +128,7 @@ class TrainingRunService(Service):
       return value_name
     return field.name
 
-  def _insert_custom_fields(self, fields):
+  def _insert_custom_fields(self, fields: list[DefinedField]) -> None:
     id_field = find(fields, lambda f: f.key == "id")
     assert id_field
     id_count = id_field.field_count
@@ -151,9 +157,8 @@ class TrainingRunService(Service):
         ),
       ]
     )
-    return fields
 
-  def _sanitize_defined_fields(self, fields):
+  def _sanitize_defined_fields(self, fields: Sequence[DefinedField]) -> None:
     # TODO(SN-1129): Make this more generic
     for field in fields:
       name_parts = field.key.split(".")
@@ -161,24 +166,29 @@ class TrainingRunService(Service):
         name_parts[2] = "value_stddev"
         field.key = ".".join(name_parts)
         field.name = ".".join(name_parts)
-    return fields
 
-  def _insert_readable_names(self, fields):
+  def _insert_readable_names(self, fields: Sequence[DefinedField]) -> None:
     readable_names = distinct([self._readable_name(field) for field in fields])
     if len(readable_names) == len(fields):
       for field, readable_name in zip(fields, readable_names):
         field.name = readable_name
-    return fields
 
-  def fetch_stored_fields(self, training_run_query, fields_details=None, by_organization=False):
+  def fetch_stored_fields(
+    self,
+    training_run_query: Query,
+    fields_details: Sequence[FieldDetails] | None = None,
+    by_organization: bool = False,
+  ) -> list[DefinedField]:
     query = self.assert_is_training_run_query(training_run_query)
-    return TrainingRunDefinedFieldsExtractor(self.services, query, fields_details=fields_details).extract_info(
-      by_organization=by_organization
-    )
+    return TrainingRunDefinedFieldsExtractor(
+      self.services.database_service,
+      query,
+      fields_details=fields_details,
+    ).extract_info(by_organization=by_organization)
 
-  def get_defined_fields(self, training_run_query, by_organization=False):
+  def get_defined_fields(self, training_run_query: Query, by_organization: bool = False) -> Sequence[DefinedField]:
     fields = self.fetch_stored_fields(training_run_query, by_organization=by_organization)
-    fields = self._insert_custom_fields(fields)
-    fields = self._sanitize_defined_fields(fields)
-    fields = self._insert_readable_names(fields)
+    self._insert_custom_fields(fields)
+    self._sanitize_defined_fields(fields)
+    self._insert_readable_names(fields)
     return fields
