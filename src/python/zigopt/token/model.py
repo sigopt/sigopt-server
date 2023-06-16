@@ -28,7 +28,7 @@ class Token(Base):
   token_type = Column(TOKEN_TYPE_DB_ENUM)
   client_id = Column(BigInteger, ForeignKey("clients.id", name="tokens_client_id_fkey"), index=True)
   user_id = Column(BigInteger, ForeignKey("users.id", name="tokens_user_id_fkey", ondelete="CASCADE"), index=True)
-  meta = ProtobufColumn(TokenMeta, name="token_meta_json")
+  meta: TokenMeta = ProtobufColumn(TokenMeta, name="token_meta_json")
 
   def __init__(self, *args, **kwargs):
     if not kwargs.get("meta"):
