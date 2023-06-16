@@ -20,7 +20,7 @@ from integration.base import RaisesApiException
 from integration.connection import IntegrationTestConnection
 from integration.utils.random_assignment import random_assignments
 from integration.v1.constants import DEFAULT_AI_EXPERIMENT_META
-from integration.v1.test_base import Connection, V1Base
+from integration.v1.test_base import V1Base, V1Connection
 
 
 class TestAuth(V1Base):
@@ -895,8 +895,9 @@ class TestAuth(V1Base):
     # Ensure that a token that has an associated client id can't swap client ids
     all_tokens = list(owner_connection.clients(owner_connection.client_id).tokens().fetch().iterate_pages())
     client_token = next(t for t in all_tokens if t.user == owner_connection.user_id and not t.development)
-    client_connection = Connection(
-      IntegrationTestConnection(api_url, client_token.token),
+    client_connection = V1Connection(
+      api_url=api_url,
+      client_token=client_token.token,
       email=owner_connection.email,
       password=owner_connection.password,
       client_id=client_token.client,

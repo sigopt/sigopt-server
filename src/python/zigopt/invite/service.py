@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Iterable, Sequence
+from collections.abc import Generator, Sequence
 
 from sqlalchemy.orm import Query
 
@@ -234,7 +234,7 @@ class InviteService(Service):
   # This is probably not worth it since it would require that downstream callers take greater care
   # with the invites returned from this method, and is likely a niche use case
   @generator_to_list
-  def _filter_to_valid_invites(self, invites: Sequence[Invite]) -> Iterable[Invite]:
+  def _filter_to_valid_invites(self, invites: Sequence[Invite]) -> Generator[Invite, None, None]:
     organization_ids = [invite.organization_id for invite in invites]
     inviter_ids = [i.inviter for i in invites]
     inviters = to_map_by_key(self.services.user_service.find_by_ids(inviter_ids), lambda u: u.id)
@@ -279,7 +279,7 @@ class InviteService(Service):
   @generator_to_list
   def create_memberships_and_permissions_from_invites(
     self, user: User, invites: Sequence[Invite], requestor: User
-  ) -> Iterable[tuple[Membership, Permission, Client]]:
+  ) -> Generator[tuple[Membership, Permission, Client], None, None]:
     # pylint: disable=too-many-locals
     invite_ids = [invite.id for invite in invites]
     inviters = to_map_by_key(self.services.user_service.find_by_ids([i.inviter for i in invites]), lambda u: u.id)

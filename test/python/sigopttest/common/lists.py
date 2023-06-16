@@ -586,11 +586,11 @@ class TestLists:
     assert not is_set((i for i in range(4)))
 
   def test_safe_iterator(self):
-    assert list(safe_iterator([])) == []
-    assert list(safe_iterator([1, 2, 3])) == [1, 2, 3]
-    assert list(safe_iterator(range(1, 4))) == [1, 2, 3]
+    assert list(safe_iterator(iter([]))) == []
+    assert list(safe_iterator(iter([1, 2, 3]))) == [1, 2, 3]
+    assert list(safe_iterator(iter(range(1, 4)))) == [1, 2, 3]
     assert list(safe_iterator((i for i in range(1, 4)))) == [1, 2, 3]
-    it = safe_iterator([1, 2, 3])
+    it = safe_iterator(iter([1, 2, 3]))
     assert next(it) == 1
     assert next(it) == 2
     assert next(it) == 3

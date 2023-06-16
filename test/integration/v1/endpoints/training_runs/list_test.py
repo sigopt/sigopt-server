@@ -22,7 +22,7 @@ from zigopt.training_run.model import TrainingRun
 from zigopt.user.model import User
 
 from integration.base import RaisesApiException
-from integration.v1.test_base import Connection, V1Base
+from integration.v1.test_base import V1Base, V1Connection
 
 
 # NOTE: Fields that are defined on all Training Runs one gets from a API request
@@ -168,7 +168,7 @@ def is_null(field):
 
 class TestTrainingRunsList(V1Base):
   # pylint: disable=too-many-public-methods
-  _connection: Connection
+  _connection: V1Connection
   _project: Project
 
   @pytest.fixture(autouse=True)

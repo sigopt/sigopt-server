@@ -4,6 +4,7 @@
 import logging
 import ssl
 import time
+from collections.abc import Generator, Iterator
 from datetime import timedelta
 from functools import wraps
 from typing import Any, Callable, Iterable, Mapping, ParamSpec, Sequence, TypeVar
@@ -427,11 +428,11 @@ class DatabaseService(Service):
   # NOTE: Read this caveat before using this method
   # http://www.mail-archive.com/sqlalchemy@googlegroups.com/msg12443.html
   @sanitize_errors
-  def stream(self, batch_size: int, q: Query) -> Iterable[Any]:
+  def stream(self, batch_size: int, q: Query) -> Iterator[Any]:
     return self._stream_generator(batch_size, q)
 
   @generator_to_safe_iterator
-  def _stream_generator(self, batch_size: int, q: Query) -> Iterable[Any]:
+  def _stream_generator(self, batch_size: int, q: Query) -> Generator[Any, None, None]:
     for r in q.yield_per(batch_size):
       self._expunge(r)
       yield r

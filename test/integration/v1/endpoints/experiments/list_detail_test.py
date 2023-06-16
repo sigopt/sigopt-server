@@ -8,7 +8,6 @@ from time import sleep
 import pytest
 
 from zigopt.api.paging import deserialize_paging_marker, serialize_paging_marker
-from zigopt.common.context import MultiContext
 from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.common.strings import random_string
 from zigopt.experiment.model import Experiment
@@ -21,6 +20,7 @@ from zigopt.protobuf.gen.api.paging_pb2 import PagingMarker, PagingSymbol
 from integration.base import RaisesApiException
 from integration.v1.constants import DEFAULT_AI_EXPERIMENT_META
 from integration.v1.experiments_test_base import ExperimentsTestBase
+from integration.v1.test_base import V1Connection
 
 
 def id_from_paging_marker(serialized_marker):
@@ -104,20 +104,19 @@ class TestListExperiments(ExperimentsTestBase):
       assert paging.data[1].id == e1.id
       assert paging.data[1].project == project1.reference_id
 
-  def test_experiment_list_all(self, connection, fetcher):
-    with MultiContext(connection.create_any_experiment() for _ in range(3)) as (e1, e2, e3):
-      paging = fetcher()
-      assert paging.count == 3
-      assert paging.paging.before is None
-      assert id_from_paging_marker(paging.paging.after) == e3.id
-      assert len(paging.data) == 3
-      assert [d.id for d in paging.data] == [e3.id, e2.id, e1.id]
+  def test_experiment_list_all(self, connection: V1Connection, fetcher):
+    e1, e2, e3 = (connection.create_any_experiment() for _ in range(3))
+    paging = fetcher()
+    assert paging.count == 3
+    assert paging.paging.before is None
+    assert id_from_paging_marker(paging.paging.after) == e3.id
+    assert len(paging.data) == 3
+    assert [d.id for d in paging.data] == [e3.id, e2.id, e1.id]
 
   def test_experiments_list_omit_development(self, connection, development_connection, fetcher):
-    with MultiContext(connection.create_any_experiment() for _ in range(2)) as (
-      _,
-      _,
-    ), development_connection.create_any_experiment() as dev:
+    for _ in range(2):
+      connection.create_any_experiment()
+    with development_connection.create_any_experiment() as dev:
       paging = fetcher()
       assert paging.count == 3
       paging = fetcher(development=True)
@@ -131,17 +130,18 @@ class TestListExperiments(ExperimentsTestBase):
     ai_experiment = (
       connection.clients(project.client).projects(project.id).aiexperiments().create(**DEFAULT_AI_EXPERIMENT_META)
     )
-    with MultiContext(connection.create_any_experiment() for _ in range(2)):
-      paging = fetcher()
-      assert paging.count == 2
-      paging = fetcher(include_ai=True)
-      assert paging.count == 3
-      assert ai_experiment.id in [e.id for e in paging.data]
-      found_ai_experiment = next(e for e in paging.data if e.id == ai_experiment.id)
-      assert found_ai_experiment.to_json()["object"] == "aiexperiment"
-      paging = fetcher(include_ai=False)
-      assert paging.count == 2
-      assert ai_experiment.id not in [e.id for e in paging.data]
+    for _ in range(2):
+      connection.create_any_experiment()
+    paging = fetcher()
+    assert paging.count == 2
+    paging = fetcher(include_ai=True)
+    assert paging.count == 3
+    assert ai_experiment.id in [e.id for e in paging.data]
+    found_ai_experiment = next(e for e in paging.data if e.id == ai_experiment.id)
+    assert found_ai_experiment.to_json()["object"] == "aiexperiment"
+    paging = fetcher(include_ai=False)
+    assert paging.count == 2
+    assert ai_experiment.id not in [e.id for e in paging.data]
 
   def test_experiment_list_private(self, connection, client_id, config_broker, api, auth_provider, inbox):
     other_connection = self.make_v1_connection(config_broker, api, auth_provider)
@@ -164,56 +164,56 @@ class TestListExperiments(ExperimentsTestBase):
         assert len(admin_connection.clients(client_id).experiments().fetch().data) == 2
 
   def test_experiment_list_paging(self, connection):
-    with MultiContext(connection.create_any_experiment() for _ in range(3)) as (e1, e2, e3):
+    e1, e2, e3 = (connection.create_any_experiment() for _ in range(3))
 
-      def fetcher(*a, **kw):
-        return connection.clients(connection.client_id).experiments().fetch(*a, **kw)
+    def fetcher(*a, **kw):
+      return connection.clients(connection.client_id).experiments().fetch(*a, **kw)
 
-      paging = fetcher(limit=1)
-      assert paging.count == 3
-      assert id_from_paging_marker(paging.paging.before) == e3.id
-      assert id_from_paging_marker(paging.paging.after) == e3.id
-      assert len(paging.data) == 1
-      assert paging.data[0].id == e3.id
+    paging = fetcher(limit=1)
+    assert paging.count == 3
+    assert id_from_paging_marker(paging.paging.before) == e3.id
+    assert id_from_paging_marker(paging.paging.after) == e3.id
+    assert len(paging.data) == 1
+    assert paging.data[0].id == e3.id
 
-      paging = fetcher(limit=2)
-      assert paging.count == 3
-      assert id_from_paging_marker(paging.paging.before) == e2.id
-      assert id_from_paging_marker(paging.paging.after) == e3.id
-      assert len(paging.data) == 2
-      assert paging.data[0].id == e3.id
-      assert paging.data[1].id == e2.id
+    paging = fetcher(limit=2)
+    assert paging.count == 3
+    assert id_from_paging_marker(paging.paging.before) == e2.id
+    assert id_from_paging_marker(paging.paging.after) == e3.id
+    assert len(paging.data) == 2
+    assert paging.data[0].id == e3.id
+    assert paging.data[1].id == e2.id
 
-      paging = fetcher(limit=1, after=paging_marker_from_id(e1.id))
-      assert paging.count == 3
-      assert id_from_paging_marker(paging.paging.before) == e2.id
-      assert id_from_paging_marker(paging.paging.after) == e2.id
-      assert len(paging.data) == 1
-      assert paging.data[0].id == e2.id
+    paging = fetcher(limit=1, after=paging_marker_from_id(e1.id))
+    assert paging.count == 3
+    assert id_from_paging_marker(paging.paging.before) == e2.id
+    assert id_from_paging_marker(paging.paging.after) == e2.id
+    assert len(paging.data) == 1
+    assert paging.data[0].id == e2.id
 
-      paging = fetcher(limit=2, after=paging_marker_from_id(e1.id))
-      assert paging.count == 3
-      assert id_from_paging_marker(paging.paging.before) == e2.id
-      assert paging.paging.after is None
-      assert len(paging.data) == 2
-      assert paging.data[0].id == e3.id
-      assert paging.data[1].id == e2.id
+    paging = fetcher(limit=2, after=paging_marker_from_id(e1.id))
+    assert paging.count == 3
+    assert id_from_paging_marker(paging.paging.before) == e2.id
+    assert paging.paging.after is None
+    assert len(paging.data) == 2
+    assert paging.data[0].id == e3.id
+    assert paging.data[1].id == e2.id
 
-      paging = fetcher(limit=1, before=paging_marker_from_id(e3.id))
-      assert paging.count == 3
-      assert id_from_paging_marker(paging.paging.before) == e2.id
-      assert id_from_paging_marker(paging.paging.after) == e2.id
-      assert len(paging.data) == 1
-      assert paging.data[0].id == e2.id
+    paging = fetcher(limit=1, before=paging_marker_from_id(e3.id))
+    assert paging.count == 3
+    assert id_from_paging_marker(paging.paging.before) == e2.id
+    assert id_from_paging_marker(paging.paging.after) == e2.id
+    assert len(paging.data) == 1
+    assert paging.data[0].id == e2.id
 
-      paging = fetcher(limit=2, before=paging_marker_from_id(e3.id))
+    paging = fetcher(limit=2, before=paging_marker_from_id(e3.id))
 
-      assert paging.count == 3
-      assert paging.paging.before is None
-      assert id_from_paging_marker(paging.paging.after) == e2.id
-      assert len(paging.data) == 2
-      assert paging.data[0].id == e2.id
-      assert paging.data[1].id == e1.id
+    assert paging.count == 3
+    assert paging.paging.before is None
+    assert id_from_paging_marker(paging.paging.after) == e2.id
+    assert len(paging.data) == 2
+    assert paging.data[0].id == e2.id
+    assert paging.data[1].id == e1.id
 
   @pytest.mark.parametrize("prefix", ("", ","))
   def test_experiment_invalid_paging(self, connection, client_id, prefix):
@@ -303,119 +303,117 @@ class TestListExperiments(ExperimentsTestBase):
             assert [e.id for e in search_by_id] == [e3.id, e1.id]
 
   def test_experiment_list_period(self, connection, client_id, services):
-    with MultiContext(connection.create_any_experiment() for _ in range(3)) as (e1, e2, e3):
-      e1_date_created = current_datetime() - datetime.timedelta(seconds=4)
-      e2_date_created = current_datetime()
-      e3_date_created = current_datetime() + datetime.timedelta(seconds=4)
+    e1, e2, e3 = (connection.create_any_experiment() for _ in range(3))
+    e1_date_created = current_datetime() - datetime.timedelta(seconds=4)
+    e2_date_created = current_datetime()
+    e3_date_created = current_datetime() + datetime.timedelta(seconds=4)
 
-      update_tuples = [(e1, e1_date_created), (e2, e2_date_created), (e3, e3_date_created)]
-      for update in update_tuples:
-        services.database_service.update(
-          services.database_service.query(Experiment).filter_by(id=update[0].id),
-          {Experiment.date_created: update[1]},
-        )
-
-      e1 = connection.experiments(e1.id).fetch()
-      e2 = connection.experiments(e2.id).fetch()
-      e3 = connection.experiments(e3.id).fetch()
-
-      experiments = connection.clients(client_id).experiments().fetch(period_end=e1.created)
-      assert len(experiments.data) == 0
-
-      experiments = connection.clients(client_id).experiments().fetch(period_start=e2.created)
-      assert len(experiments.data) == 2
-      experiment_ids = [e.id for e in experiments.data]
-      assert e1.id not in experiment_ids
-      assert e2.id in experiment_ids
-      assert e3.id in experiment_ids
-
-      experiments = connection.clients(client_id).experiments().fetch(period_end=e2.created + 1)
-      assert len(experiments.data) == 2
-      experiment_ids = [e.id for e in experiments.data]
-      assert e1.id in experiment_ids
-      assert e2.id in experiment_ids
-      assert e3.id not in experiment_ids
-
-      experiments = (
-        connection.clients(client_id).experiments().fetch(period_start=e2.created, period_end=e2.created + 1)
+    update_tuples = [(e1, e1_date_created), (e2, e2_date_created), (e3, e3_date_created)]
+    for update in update_tuples:
+      services.database_service.update(
+        services.database_service.query(Experiment).filter_by(id=update[0].id),
+        {Experiment.date_created: update[1]},
       )
-      assert len(experiments.data) == 1
-      experiment_ids = [e.id for e in experiments.data]
-      assert e1.id not in experiment_ids
-      assert e2.id in experiment_ids
-      assert e3.id not in experiment_ids
 
-      experiments = connection.clients(client_id).experiments().fetch(period_start=e3.created + 1)
-      assert len(experiments.data) == 0
+    e1 = connection.experiments(e1.id).fetch()
+    e2 = connection.experiments(e2.id).fetch()
+    e3 = connection.experiments(e3.id).fetch()
 
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        experiments = connection.clients(client_id).experiments().fetch(period_start=1000, period_end=999)
+    experiments = connection.clients(client_id).experiments().fetch(period_end=e1.created)
+    assert len(experiments.data) == 0
+
+    experiments = connection.clients(client_id).experiments().fetch(period_start=e2.created)
+    assert len(experiments.data) == 2
+    experiment_ids = [e.id for e in experiments.data]
+    assert e1.id not in experiment_ids
+    assert e2.id in experiment_ids
+    assert e3.id in experiment_ids
+
+    experiments = connection.clients(client_id).experiments().fetch(period_end=e2.created + 1)
+    assert len(experiments.data) == 2
+    experiment_ids = [e.id for e in experiments.data]
+    assert e1.id in experiment_ids
+    assert e2.id in experiment_ids
+    assert e3.id not in experiment_ids
+
+    experiments = connection.clients(client_id).experiments().fetch(period_start=e2.created, period_end=e2.created + 1)
+    assert len(experiments.data) == 1
+    experiment_ids = [e.id for e in experiments.data]
+    assert e1.id not in experiment_ids
+    assert e2.id in experiment_ids
+    assert e3.id not in experiment_ids
+
+    experiments = connection.clients(client_id).experiments().fetch(period_start=e3.created + 1)
+    assert len(experiments.data) == 0
+
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      experiments = connection.clients(client_id).experiments().fetch(period_start=1000, period_end=999)
 
   def test_experiment_list_paging_and_period(self, connection, client_id, services):
-    with MultiContext(connection.create_any_experiment() for _ in range(3)) as (e1, e2, e3):
-      e1_date_created = current_datetime() - datetime.timedelta(seconds=4)
-      e2_date_created = current_datetime()
-      e3_date_created = current_datetime() + datetime.timedelta(seconds=4)
+    e1, e2, e3 = (connection.create_any_experiment() for _ in range(3))
+    e1_date_created = current_datetime() - datetime.timedelta(seconds=4)
+    e2_date_created = current_datetime()
+    e3_date_created = current_datetime() + datetime.timedelta(seconds=4)
 
-      update_tuples = [(e1, e1_date_created), (e2, e2_date_created), (e3, e3_date_created)]
-      for update in update_tuples:
-        services.database_service.update(
-          services.database_service.query(Experiment).filter_by(id=update[0].id),
-          {Experiment.date_created: update[1]},
-        )
-
-      e1 = connection.experiments(e1.id).fetch()
-      e2 = connection.experiments(e2.id).fetch()
-      e3 = connection.experiments(e3.id).fetch()
-
-      experiments = (
-        connection.clients(client_id)
-        .experiments()
-        .fetch(
-          period_start=e2.created,
-          before=paging_marker_from_id(e3.id),
-        )
+    update_tuples = [(e1, e1_date_created), (e2, e2_date_created), (e3, e3_date_created)]
+    for update in update_tuples:
+      services.database_service.update(
+        services.database_service.query(Experiment).filter_by(id=update[0].id),
+        {Experiment.date_created: update[1]},
       )
-      assert len(experiments.data) == 1
-      experiment_ids = [e.id for e in experiments.data]
-      assert e1.id not in experiment_ids
-      assert e2.id in experiment_ids
-      assert e3.id not in experiment_ids
 
-      experiments = (
-        connection.clients(client_id)
-        .experiments()
-        .fetch(
-          period_start=e2.created,
-          before=paging_marker_from_id(e2.id),
-        )
+    e1 = connection.experiments(e1.id).fetch()
+    e2 = connection.experiments(e2.id).fetch()
+    e3 = connection.experiments(e3.id).fetch()
+
+    experiments = (
+      connection.clients(client_id)
+      .experiments()
+      .fetch(
+        period_start=e2.created,
+        before=paging_marker_from_id(e3.id),
       )
-      assert len(experiments.data) == 0
+    )
+    assert len(experiments.data) == 1
+    experiment_ids = [e.id for e in experiments.data]
+    assert e1.id not in experiment_ids
+    assert e2.id in experiment_ids
+    assert e3.id not in experiment_ids
+
+    experiments = (
+      connection.clients(client_id)
+      .experiments()
+      .fetch(
+        period_start=e2.created,
+        before=paging_marker_from_id(e2.id),
+      )
+    )
+    assert len(experiments.data) == 0
 
   @pytest.mark.slow
   def test_experiment_list_ascending(self, connection, client_id):
     paging_limit = 10
-    with MultiContext(connection.create_any_experiment() for _ in range(paging_limit + 1)) as (e_first, *_, e_last):
-      sort_methods = ("id", "recent")
-      for sort in sort_methods:
+    e_first, *_, e_last = (connection.create_any_experiment() for _ in range(paging_limit + 1))
+    sort_methods = ("id", "recent")
+    for sort in sort_methods:
 
-        def fetcher(*a, **kw):
-          return connection.clients(connection.client_id).experiments().fetch(*a, **kw)
+      def fetcher(*a, **kw):
+        return connection.clients(connection.client_id).experiments().fetch(*a, **kw)
 
-        paging = fetcher(limit=paging_limit, sort=sort)
-        before = paging.paging.before
-        assert len(paging.data) == paging_limit
-        assert paging.data[0].id == e_last.id
+      paging = fetcher(limit=paging_limit, sort=sort)
+      before = paging.paging.before
+      assert len(paging.data) == paging_limit
+      assert paging.data[0].id == e_last.id
 
-        paging = fetcher(limit=paging_limit, sort=sort, before=before)
-        assert len(paging.data) == 1
-        assert paging.data[0].id == e_first.id
+      paging = fetcher(limit=paging_limit, sort=sort, before=before)
+      assert len(paging.data) == 1
+      assert paging.data[0].id == e_first.id
 
-        paging = fetcher(limit=paging_limit, sort=sort, ascending=True)
-        after = paging.paging.after
-        assert len(paging.data) == paging_limit
-        assert paging.data[0].id == e_first.id
+      paging = fetcher(limit=paging_limit, sort=sort, ascending=True)
+      after = paging.paging.after
+      assert len(paging.data) == paging_limit
+      assert paging.data[0].id == e_first.id
 
-        paging = fetcher(limit=paging_limit, sort=sort, ascending=True, after=after)
-        assert len(paging.data) == 1
-        assert paging.data[0].id == e_last.id
+      paging = fetcher(limit=paging_limit, sort=sort, ascending=True, after=after)
+      assert len(paging.data) == 1
+      assert paging.data[0].id == e_last.id

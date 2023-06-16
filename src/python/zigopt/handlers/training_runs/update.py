@@ -13,7 +13,6 @@ from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.handlers.training_runs.parser import TrainingRunRequestParams, TrainingRunRequestParser
 from zigopt.handlers.validate.training_run import validate_assignments_meta
 from zigopt.json.builder.training_run import TrainingRunJsonBuilder
-from zigopt.net.errors import NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.training_run.model import TrainingRun, is_completed_state
@@ -206,10 +205,12 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
       self.emit_update(update_clause)
 
     training_run = self.services.training_run_service.find_by_id(self.training_run.id)
+    assert training_run
 
     if is_completed_state(training_run.training_run_data.state):
       self._ensure_observation_exists(training_run, now)
       training_run = self.services.training_run_service.find_by_id(self.training_run.id)
+      assert training_run
 
     if params.skip_response_content:
       return None
