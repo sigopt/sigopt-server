@@ -1,27 +1,33 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-def authentication_result(
-  token=None,
-  client=None,
-  user=None,
-  permission=None,
-  membership=None,
-  authenticated_from_email_link=None,
-  authenticated_public_cert=None,
-  authorization_response=None,
-  session_expiration=None,
-  organization=None,
-):
-  return {
-    "token": token,
-    "client": client,
-    "user": user,
-    "permission": permission,
-    "membership": membership,
-    "authenticated_from_email_link": authenticated_from_email_link,
-    "authenticated_public_cert": authenticated_public_cert,
-    "authorization_response": authorization_response,
-    "session_expiration": session_expiration,
-    "organization": organization,
-  }
+from dataclasses import dataclass
+
+from zigopt.client.model import Client
+from zigopt.membership.model import Membership
+from zigopt.organization.model import Organization
+from zigopt.permission.model import Permission
+from zigopt.token.model import Token
+from zigopt.user.model import User
+
+
+@dataclass(frozen=True)
+class ClientAuthenticationResult:
+  client: Client
+  permission: Permission | None = None
+
+
+@dataclass(frozen=True)
+class OrganizationAuthenticationResult:
+  membership: Membership
+  organization: Organization | None = None
+
+
+@dataclass(frozen=True)
+class AuthenticationResult:
+  authenticated_from_email_link: bool = False
+  session_expiration: int | None = None
+  token: Token | None = None
+  user: User | None = None
+  organization_authentication_result: OrganizationAuthenticationResult | None = None
+  client_authentication_result: ClientAuthenticationResult | None = None
