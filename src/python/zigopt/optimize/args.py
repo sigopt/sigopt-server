@@ -1,20 +1,26 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections.abc import Iterator, Sequence
+
 from zigopt.common import *
+from zigopt.observation.model import Observation
+from zigopt.optimization_aux.service import Hyperparams
+from zigopt.optimize.sources.base import OptimizationSource
+from zigopt.suggestion.model import Suggestion
 
 
 class OptimizationArgs:  # pylint: disable=too-many-instance-attributes
   def __init__(
     self,
-    source,
-    observation_iterator,
-    observation_count,
-    failure_count,
-    max_observation_id,
-    old_hyperparameters,
-    open_suggestions,
-    last_observation,
+    source: OptimizationSource,
+    observation_iterator: Iterator[Observation],
+    observation_count: int,
+    failure_count: int,
+    max_observation_id: int | None,
+    old_hyperparameters: Hyperparams | None,
+    open_suggestions: Sequence[Suggestion],
+    last_observation: Observation | None,
   ):
     self._source = source
     self._observation_count = observation_count
@@ -26,47 +32,47 @@ class OptimizationArgs:  # pylint: disable=too-many-instance-attributes
     self._last_observation = last_observation
 
   @property
-  def observation_iterator(self):
+  def observation_iterator(self) -> Iterator[Observation]:
     return self._observation_iter
 
   @property
-  def source(self):
+  def source(self) -> OptimizationSource:
     return self._source
 
   @property
-  def observation_count(self):
+  def observation_count(self) -> int:
     return self._observation_count
 
   @property
-  def failure_count(self):
+  def failure_count(self) -> int:
     return self._failure_count
 
   @property
-  def open_suggestions(self):
+  def open_suggestions(self) -> Sequence[Suggestion]:
     return self._open_suggestions
 
   @property
-  def old_hyperparameters(self):
+  def old_hyperparameters(self) -> Hyperparams | None:
     return self._old_hyperparameters
 
   @property
-  def max_observation_id(self):
+  def max_observation_id(self) -> int | None:
     return self._max_observation_id
 
   @property
-  def last_observation(self):
+  def last_observation(self) -> Observation | None:
     return self._last_observation
 
   def copy_and_set(
     self,
-    source=None,
-    observation_iterator=None,
-    observation_count=None,
-    failure_count=None,
-    max_observation_id=None,
-    old_hyperparameters=None,
-    open_suggestions=None,
-    last_observation=None,
+    source: OptimizationSource | None = None,
+    observation_iterator: Iterator[Observation] | None = None,
+    observation_count: int | None = None,
+    failure_count: int | None = None,
+    max_observation_id: int | None = None,
+    old_hyperparameters: Hyperparams | None = None,
+    open_suggestions: Sequence[Suggestion] | None = None,
+    last_observation: Observation | None = None,
   ):
     return OptimizationArgs(
       source=coalesce(source, self.source),

@@ -1,13 +1,18 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections.abc import Iterator, Sequence
+
 import numpy
 
 from zigopt.common import *
 from zigopt.assignments.model import extract_array_for_computation_from_assignments
 from zigopt.common.sigopt_datetime import current_datetime
+from zigopt.experiment.model import Experiment
 from zigopt.observation.model import Observation
+from zigopt.observation.service import ObservationCounts
 from zigopt.optimize.args import OptimizationArgs
+from zigopt.optimize.sources.base import OptimizationSource
 from zigopt.optimize.sources.categorical import CategoricalOptimizationSource
 from zigopt.optimize.sources.conditional import ConditionalOptimizationSource
 from zigopt.optimize.sources.search import SearchOptimizationSource
@@ -15,12 +20,13 @@ from zigopt.optimize.sources.spe import SPEOptimizationSource
 from zigopt.protobuf.lib import copy_protobuf
 from zigopt.redis.service import RedisServiceTimeoutError
 from zigopt.services.base import Service
+from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 from libsigopt.aux.geometry_utils import compute_distance_matrix_squared
 
 
 class OptimizerService(Service):
-  def trigger_next_points(self, experiment):
+  def trigger_next_points(self, experiment: Experiment) -> int | None:
     optimization_args = self.fetch_optimization_args(experiment)
 
     suggestions = optimization_args.source.get_suggestions(optimization_args)
@@ -48,7 +54,7 @@ class OptimizerService(Service):
 
     return optimization_args.max_observation_id
 
-  def trigger_hyperparameter_optimization(self, experiment):
+  def trigger_hyperparameter_optimization(self, experiment: Experiment) -> int | None:
     optimization_args = self.fetch_optimization_args(experiment)
     source = optimization_args.source
 
@@ -63,7 +69,7 @@ class OptimizerService(Service):
     )
     return optimization_args.max_observation_id
 
-  def fetch_observation_iter(self, experiment):
+  def fetch_observation_iter(self, experiment: Experiment) -> tuple[Iterator[Observation], ObservationCounts]:
     counts = self.services.observation_service.get_observation_counts(experiment.id)
 
     query = (
@@ -77,7 +83,7 @@ class OptimizerService(Service):
 
     return observation_iter, counts
 
-  def fetch_optimization_args(self, experiment):
+  def fetch_optimization_args(self, experiment: Experiment) -> OptimizationArgs:
     observation_iter, counts = self.fetch_observation_iter(experiment)
     observation_count = counts.observation_count
     failure_count = counts.failure_count
@@ -106,13 +112,15 @@ class OptimizerService(Service):
       last_observation=last_observation,
     )
 
-  def ensure_not_deleted(self, experiment):
+  def ensure_not_deleted(self, experiment: Experiment) -> Experiment | None:
     return self.services.experiment_service.find_by_id(experiment.id)
 
-  def persist_suggestions(self, experiment, suggestions, timestamp=None):
+  def persist_suggestions(
+    self, experiment: Experiment, suggestions: Sequence[UnprocessedSuggestion], timestamp: int | None = None
+  ) -> None:
     if suggestions:
-      experiment = self.ensure_not_deleted(experiment)
-      if experiment:
+      real_experiment = self.ensure_not_deleted(experiment)
+      if real_experiment:
         try:
           self.services.unprocessed_suggestion_service.insert_unprocessed_suggestions(suggestions, timestamp)
         except RedisServiceTimeoutError as e:
@@ -120,11 +128,11 @@ class OptimizerService(Service):
             e,
             extra={
               "function_name": "insert_unprocessed_suggestions",
-              "experiment_id": experiment.id,
+              "experiment_id": real_experiment.id,
             },
           )
 
-  def should_use_spe(self, experiment, num_observations):
+  def should_use_spe(self, experiment: Experiment, num_observations: int) -> bool:
     if self.services.config_broker.get("model.force_spe", False):
       return True
     if experiment.conditionals:
@@ -133,9 +141,9 @@ class OptimizerService(Service):
 
   def get_inferred_optimization_source(
     self,
-    experiment,
-    num_observations,
-  ):
+    experiment: Experiment,
+    num_observations: int,
+  ) -> OptimizationSource:
     if experiment.conditionals:
       return ConditionalOptimizationSource(self.services, experiment)
     if self.should_use_spe(experiment, num_observations):
@@ -144,7 +152,12 @@ class OptimizerService(Service):
       return SearchOptimizationSource(self.services, experiment)
     return CategoricalOptimizationSource(self.services, experiment)
 
-  def exclude_duplicate_suggestions(self, optimization_args, suggestions, experiment):
+  def exclude_duplicate_suggestions(
+    self,
+    optimization_args: OptimizationArgs,
+    suggestions: Sequence[UnprocessedSuggestion],
+    experiment: Experiment,
+  ) -> Sequence[UnprocessedSuggestion]:
     # pylint: disable=too-many-locals
     tol = 0
     if not suggestions:
