@@ -11,16 +11,19 @@ if TYPE_CHECKING:
   from zigopt.services.api import ApiRequestLocalServiceBag, ApiServiceBag
 
 
-class HasLoggingService(Protocol):
-  logging_service: "LoggingService"
-
-
 class BaseService:
   """
     Base class for all services.
     """
 
+
+class HasLoggingService(Protocol):
+  logging_service: "LoggingService"
+
+
+class HasLogger:
   services: HasLoggingService
+  logger_name: str
 
   @property
   def logger(self) -> logging.LoggerAdapter | logging.Logger:
@@ -31,7 +34,7 @@ class BaseService:
     return self.services.logging_service.getLogger(logger_name)
 
 
-class GlobalService(BaseService):
+class GlobalService(HasLogger, BaseService):
   """
     Base class for services that will be available in the global service bag.
     """
@@ -42,7 +45,7 @@ class GlobalService(BaseService):
     self.services = services
 
 
-class Service(BaseService):
+class Service(HasLogger, BaseService):
   """
     Base class for services available in the request local service bag.
     """

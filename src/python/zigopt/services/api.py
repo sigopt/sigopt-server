@@ -111,7 +111,7 @@ class ApiServiceBag(ServiceBag, ApiServiceBagProtocol):  # pylint: disable=too-m
 
     s3_user_upload_service: DisabledService | S3UserUploadService
     if self.is_qworker:
-      s3_user_upload_service = DisabledService(self)
+      s3_user_upload_service = DisabledService()
     else:
       s3_user_upload_service = S3UserUploadService(self)
     self.s3_user_upload_service = s3_user_upload_service
