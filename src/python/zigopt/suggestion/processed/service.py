@@ -46,7 +46,9 @@ class ProcessedSuggestionService(Service):
       ),
     )
 
-  def find_open_by_experiment(self, experiment_id: int, include_deleted: bool = False) -> Sequence[ProcessedSuggestion]:
+  def find_open_by_experiment(
+    self, experiment_id: int, include_deleted: DeleteClause | bool = False
+  ) -> Sequence[ProcessedSuggestion]:
     return self.services.database_service.all(
       self.query_open_by_experiment(experiment_id, include_deleted).order_by(desc(ProcessedSuggestion.processed_time))
     )

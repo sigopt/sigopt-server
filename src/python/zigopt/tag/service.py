@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import sqlalchemy
+from sqlalchemy.orm import Query
 
 from zigopt.common import *
 from zigopt.services.base import Service
@@ -9,17 +10,17 @@ from zigopt.tag.model import Tag
 
 
 class TagExistsException(Exception):
-  def __init__(self, name):
+  def __init__(self, name: str):
     self.name = name
     super().__init__(f"The tag {self.name} already exists")
 
 
 class TagService(Service):
   @property
-  def tag_query(self):
+  def tag_query(self) -> Query:
     return self.services.database_service.query(Tag)
 
-  def find_by_client_id_query(self, client_id):
+  def find_by_client_id_query(self, client_id: int) -> Query:
     return self.tag_query.filter_by(client_id=client_id)
 
   def find_by_client_and_id_query(self, client_id, tag_id):

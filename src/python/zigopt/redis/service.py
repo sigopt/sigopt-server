@@ -13,7 +13,7 @@ from zigopt.common.conversions import maybe_decode
 from zigopt.common.lists import distinct, list_get
 from zigopt.common.sigopt_datetime import datetime_to_seconds
 from zigopt.common.strings import is_string
-from zigopt.services.base import Service
+from zigopt.services.base import GlobalService
 
 
 TParams = ParamSpec("TParams")
@@ -83,7 +83,7 @@ def decode_args(func: TWrapped) -> TWrapped:
   return wrapper
 
 
-class RedisKeyService(Service):
+class RedisKeyService(GlobalService):
   # Keeps track of all methods used to generate redis keys to ensure that there are no collisions
 
   DIVIDER = ":"
@@ -171,7 +171,7 @@ class RedisKeyService(Service):
     return self._RedisKey(f"rate-limit{self.DIVIDER}{rate_limit_type}{self.DIVIDER}{time}{self.DIVIDER}{identifier}")
 
 
-class RedisService(Service):
+class RedisService(GlobalService):
   # pylint: disable=too-many-public-methods
   logger_name = "sigopt.redis"
   SHORT_TIMEOUT = 1.0  # in seconds

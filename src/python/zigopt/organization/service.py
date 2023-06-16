@@ -14,7 +14,7 @@ from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import ADMIN_ROLE
 from zigopt.invite.model import Invite
 from zigopt.json.builder import MembershipJsonBuilder
-from zigopt.membership.model import MembershipType
+from zigopt.membership.model import Membership, MembershipType
 from zigopt.net.errors import NotFoundError
 from zigopt.organization.model import Organization
 from zigopt.permission.pending.model import PendingPermission
@@ -147,6 +147,35 @@ class OrganizationService(Service):
 
     return (organization, client)
 
+  def _merge_memberships_into_destination(
+    self,
+    dest_organization: Organization,
+    memberships: Sequence[Membership],
+    clients: Sequence[Client],
+    requestor: User,
+  ) -> None:
+    for m in memberships:
+      self.services.membership_service.create_if_not_exists(
+        user_id=m.user_id, organization_id=dest_organization.id, membership_type=MembershipType.member
+      )
+
+      # Create permission for each client if it is an owner membership in the source org
+      # and the user is not an owner in the destination org
+      destination_membership = self.services.membership_service.find_by_user_and_organization(
+        m.user_id, dest_organization.id
+      )
+      if not destination_membership:
+        continue
+
+      if m.is_owner and not destination_membership.is_owner:
+        user = self.services.user_service.find_by_id(m.user_id)
+        for c in clients:
+          self.services.permission_service.upsert_from_role(ADMIN_ROLE, c, user, requestor=requestor)
+
+      # Delete their permissions in the source organization so they aren't copied over in the cascade
+      if not m.is_owner and destination_membership.is_owner:
+        self.services.permission_service.delete_by_organization_and_user(m.organization_id, m.user_id)
+
   def merge_organizations_into_destination(
     self, dest_organization_id: int, organization_ids: Sequence[int], requestor: User
   ):
@@ -159,24 +188,7 @@ class OrganizationService(Service):
       clients = self.services.client_service.find_by_organization_id(organization_id)
 
       memberships = self.services.membership_service.find_by_organization_id(organization_id)
-      for m in memberships:
-        self.services.membership_service.create_if_not_exists(
-          user_id=m.user_id, organization_id=dest_organization.id, membership_type=MembershipType.member
-        )
-
-        # Create permission for each client if it is an owner membership in the source org
-        # and the user is not an owner in the destination org
-        destination_membership = self.services.membership_service.find_by_user_and_organization(
-          m.user_id, dest_organization.id
-        )
-        if m.is_owner and not destination_membership.is_owner:
-          user = self.services.user_service.find_by_id(m.user_id)
-          for c in clients:
-            self.services.permission_service.upsert_from_role(ADMIN_ROLE, c, user, requestor=requestor)
-
-        # Delete their permissions in the source organization so they aren't copied over in the cascade
-        if not m.is_owner and destination_membership.is_owner:
-          self.services.permission_service.delete_by_organization_and_user(m.organization_id, m.user_id)
+      self._merge_memberships_into_destination(dest_organization, memberships, clients, requestor)
 
       invites_to_organization = self.services.invite_service.find_by_organization_id(organization_id)
       for i in invites_to_organization:

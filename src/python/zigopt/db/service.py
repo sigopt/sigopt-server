@@ -23,7 +23,7 @@ from sqlalchemy.sql.elements import ClauseElement
 import zigopt.db.all_models as _all_models  # pylint: disable=unused-import
 from zigopt.common import *
 from zigopt.db.declarative import Base
-from zigopt.services.base import Service
+from zigopt.services.base import GlobalService, Service
 
 
 del _all_models
@@ -119,7 +119,7 @@ class DatabaseConnection:
     return _sanitized_params(params)
 
 
-class DatabaseConnectionService(Service):
+class DatabaseConnectionService(GlobalService):
   @classmethod
   def make_engine(cls, config: dict[str, Any], poolclass: type[Pool] | None = None, **kwargs) -> Engine:
     full_config: dict[str, Any] = {}

@@ -6,10 +6,10 @@ import uuid
 from collections.abc import Generator
 
 from zigopt.common.sigopt_datetime import unix_timestamp
-from zigopt.services.base import Service
+from zigopt.services.base import GlobalService
 
 
-class BaseMessageTrackingService(Service):
+class BaseMessageTrackingService(GlobalService):
   def count_processing_messages(self, queue_name: str) -> int:
     raise NotImplementedError()
 

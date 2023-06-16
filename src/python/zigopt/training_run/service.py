@@ -60,11 +60,14 @@ class TrainingRunService(Service):
     tr = self.services.database_service.one_or_none(
       self.services.database_service.query(TrainingRun).filter(TrainingRun.id == training_run_id)
     )
+    if not tr:
+      return
     exp = self.services.experiment_service.find_by_id(tr.experiment_id, include_deleted=True)
-    if tr and tr.suggestion_id:
-      self.services.processed_suggestion_service.set_delete_by_ids(exp, [tr.suggestion_id], deleted=deleted)
-    if tr and tr.observation_id:
-      self.services.observation_service.set_delete(exp, tr.observation_id, deleted=deleted)
+    if exp:
+      if tr.suggestion_id:
+        self.services.processed_suggestion_service.set_delete_by_ids(exp, [tr.suggestion_id], deleted=deleted)
+      if tr.observation_id:
+        self.services.observation_service.set_delete(exp, tr.observation_id, deleted=deleted)
 
     self.services.database_service.update_one_or_none(
       self.services.database_service.query(TrainingRun).filter(TrainingRun.id == training_run_id),

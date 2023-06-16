@@ -5,7 +5,7 @@ import datetime as dt
 from typing import Any
 
 from zigopt.common import *
-from zigopt.services.base import Service
+from zigopt.services.base import GlobalService
 
 
 LOGIN_RATE_LIMIT = "login"
@@ -17,7 +17,7 @@ OBJECT_ENUMERATION_RATE_LIMIT = "object-enumeration"
 TEN_MINUTES_IN_SECONDS = 60 * 10
 
 
-class RateLimiter(Service):
+class RateLimiter(GlobalService):
   @property
   def enabled(self) -> bool:
     return self.services.config_broker.get("ratelimit.enabled", True)

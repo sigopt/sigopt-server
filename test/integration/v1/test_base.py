@@ -14,7 +14,7 @@ from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.experiments.observations.create import CreatesObservationsMixin
 from zigopt.handlers.validate.observation import validate_observation_json_dict_for_create
 from zigopt.membership.model import MembershipType
-from zigopt.observation.model import Observation
+from zigopt.observation.model import Observation, ObservationDataProxy
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, READ, WRITE
 
@@ -403,7 +403,7 @@ class V1Base(BaseTest):
         observation=obs,
         observation_data=observation_data,
       )
-      obs.data = observation_data
+      obs.data = ObservationDataProxy(observation_data)
       ret.append(obs)
     self.services.database_service.insert_all(ret)
     if not no_optimize:

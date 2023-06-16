@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.email.model import HtmlEmail
-from zigopt.services.base import Service
+from zigopt.services.base import GlobalService
 
 
-class BaseEmailService(Service):
+class BaseEmailService(GlobalService):
   def should_send(self, email):
     internal_email_domains = self.services.config_broker.get("email.additional_internal_domains", [])
     return bool(

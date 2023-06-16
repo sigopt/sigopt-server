@@ -15,7 +15,7 @@ from zigopt.json.builder import ObservationJsonBuilder, PaginationJsonBuilder
 from zigopt.net.errors import BadParamError, ForbiddenError
 from zigopt.observation.data import create_observation_data
 from zigopt.observation.from_json import set_observation_data_assignments_task_from_json
-from zigopt.observation.model import Observation
+from zigopt.observation.model import Observation, ObservationDataProxy
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 from zigopt.services.api import ApiRequestLocalServiceBag
@@ -102,7 +102,7 @@ class CreatesObservationsMixin:
       observation_data_create_update_handler=create_observation_data,
     )
 
-    observation.data = observation_data
+    observation.data = ObservationDataProxy(observation_data)
     return observation
 
   def enqueue_optimization(self, num_observations_before, num_failures_before, new_observations):

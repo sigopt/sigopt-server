@@ -174,7 +174,7 @@ class ExperimentService(Service):
     self._set_cached_count_by_organization_id_for_billing(organization_id, time_interval, count)
     return count
 
-  def insert(self, experiment: Experiment) -> Experiment:
+  def insert(self, experiment: Experiment) -> None:
     return_val = self.services.database_service.insert(experiment)
     if experiment.project_id is not None:
       self.services.project_service.mark_as_updated_by_experiment(

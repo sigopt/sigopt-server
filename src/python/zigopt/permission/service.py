@@ -10,6 +10,7 @@ from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import ADMIN_ROLE, READ_ONLY_ROLE, USER_ROLE
 from zigopt.json.builder import PermissionJsonBuilder
 from zigopt.membership.model import Membership
+from zigopt.net.errors import NotFoundError
 from zigopt.permission.model import Permission, PermissionMetaProxy
 from zigopt.protobuf.gen.permission.permissionmeta_pb2 import PermissionMeta
 from zigopt.services.base import Service
@@ -126,6 +127,8 @@ class PermissionService(Service):
     old_client_id = permission.client_id
     client_permissions = self.find_by_client_id(new_client_id)
     new_client = self.services.client_service.find_by_id(new_client_id)
+    if not new_client:
+      raise NotFoundError(f"Client {new_client_id} was not found")
 
     user_already_exists = any(p.user_id == permission.user_id for p in client_permissions)
     if not user_already_exists:
@@ -148,7 +151,7 @@ class PermissionService(Service):
     can_write: bool,
     can_read: bool,
     requestor: User,
-    role_for_logging: int,
+    role_for_logging: str,
   ) -> Permission:
     membership = self.services.membership_service.find_by_user_and_organization(
       user_id=user.id,
@@ -189,7 +192,7 @@ class PermissionService(Service):
       f" User: {user and user.id}, client: {client and client.id}"
     )
 
-  def upsert_from_role(self, invite_role: int, client: Client, user: User, requestor: User) -> Permission:
+  def upsert_from_role(self, invite_role: str, client: Client, user: User, requestor: User) -> Permission:
     if invite_role == ADMIN_ROLE:
       return self.upsert(
         client,

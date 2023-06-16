@@ -34,7 +34,9 @@ class Observation(Base):
     ForeignKey("suggestions_processed.suggestion_id", ondelete="CASCADE"),
     index=True,
   )
-  data: ObservationData = ProtobufColumn(ObservationData, proxy=ObservationDataProxy, name="data_json", nullable=False)
+  data: ObservationDataProxy = ProtobufColumn(
+    ObservationData, proxy=ObservationDataProxy, name="data_json", nullable=False
+  )
 
   def __init__(self, *args, **kwargs):
     kwargs["data"] = kwargs.get("data", ObservationData())

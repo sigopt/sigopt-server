@@ -203,6 +203,8 @@ class InviteService(Service):
         user_id=inviter.id,
         organization_id=client.organization_id,
       )
+      if not inviter_membership:
+        return False
       inviter_permission = self.services.permission_service.find_by_client_and_user(
         client_id=client.id,
         user_id=inviter.id,

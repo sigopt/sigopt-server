@@ -62,10 +62,25 @@ from zigopt.user.service import UserService
 from zigopt.web_data.service import WebDataService
 
 
-class ApiServiceBag(ServiceBag):  # pylint: disable=too-many-instance-attributes
+class ApiServiceBagProtocol:
+  database_connection_service: DatabaseConnectionService
+  email_queue_service: EmailQueueService
+  email_router: EmailRouterService
+  exception_logger: ExceptionLogger
+  immediate_email_sender: EmailSenderService
+  logging_service: LoggingService
+  message_router: MessageRouter
+  message_tracking_service: MessageTrackingService
+  queue_message_grouper: QueueMessageGrouper
+  rate_limiter: RateLimiter
+  redis_service: RedisService
+  redis_key_service: RedisKeyService
+  smtp_email_service: SmtpEmailService
   queue_service: BaseQueueService
-  s3_user_upload_service: S3UserUploadService | DisabledService
+  s3_user_upload_service: DisabledService | S3UserUploadService
 
+
+class ApiServiceBag(ServiceBag, ApiServiceBagProtocol):  # pylint: disable=too-many-instance-attributes
   def __init__(self, config_broker, is_qworker):
     self.is_qworker = is_qworker
     super().__init__(config_broker)
@@ -87,15 +102,19 @@ class ApiServiceBag(ServiceBag):  # pylint: disable=too-many-instance-attributes
     self.smtp_email_service = SmtpEmailService(self)
 
     queue_type = self.config_broker.get("queue.type", default="async")
+    queue_service: BaseQueueService
     if queue_type == "sync":
-      self.queue_service = LocalQueueService(self, request_local_cls=ApiRequestLocalServiceBag)
+      queue_service = LocalQueueService(self, request_local_cls=ApiRequestLocalServiceBag)
     else:
-      self.queue_service = QueueService(self, make_providers(self))
+      queue_service = QueueService(self, make_providers(self))
+    self.queue_service = queue_service
 
+    s3_user_upload_service: DisabledService | S3UserUploadService
     if self.is_qworker:
-      self.s3_user_upload_service = DisabledService(self)
+      s3_user_upload_service = DisabledService(self)
     else:
-      self.s3_user_upload_service = S3UserUploadService(self)
+      s3_user_upload_service = S3UserUploadService(self)
+    self.s3_user_upload_service = s3_user_upload_service
 
   def _warmup_services(self):
     super()._warmup_services()
@@ -108,7 +127,9 @@ class ApiServiceBag(ServiceBag):  # pylint: disable=too-many-instance-attributes
     return cls(config_broker, is_qworker)
 
 
-class ApiRequestLocalServiceBag(RequestLocalServiceBag):  # pylint: disable=too-many-instance-attributes
+class ApiRequestLocalServiceBag(
+  RequestLocalServiceBag, ApiServiceBagProtocol
+):  # pylint: disable=too-many-instance-attributes
   def __init__(self, underlying, request=None):
     super().__init__(underlying, request=None)
     self.best_practices_service = BestPracticesService(self)
