@@ -1,6 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections.abc import Sequence
+
 import sqlalchemy
 from sqlalchemy.orm import Query
 
@@ -23,27 +25,27 @@ class TagService(Service):
   def find_by_client_id_query(self, client_id: int) -> Query:
     return self.tag_query.filter_by(client_id=client_id)
 
-  def find_by_client_and_id_query(self, client_id, tag_id):
+  def find_by_client_and_id_query(self, client_id: int, tag_id: int) -> Query:
     return self.tag_query.filter_by(id=tag_id, client_id=client_id)
 
-  def find_by_client_and_id(self, client_id, tag_id):
+  def find_by_client_and_id(self, client_id: int, tag_id: int) -> Tag | None:
     if tag_id is None:
       return None
     return self.services.database_service.one_or_none(
       self.find_by_client_and_id_query(tag_id=tag_id, client_id=client_id),
     )
 
-  def find_by_client_id(self, client_id):
+  def find_by_client_id(self, client_id: int) -> Sequence[Tag]:
     return self.services.database_service.all(
       self.tag_query.filter_by(client_id=client_id),
     )
 
-  def count_by_client_id(self, client_id):
+  def count_by_client_id(self, client_id: int) -> int:
     return self.services.database_service.count(
       self.tag_query.filter_by(client_id=client_id),
     )
 
-  def insert(self, tag):
+  def insert(self, tag: Tag) -> Tag:
     try:
       self.services.database_service.insert(tag)
     except sqlalchemy.exc.IntegrityError as ie:
