@@ -5,7 +5,6 @@ from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.handlers.training_runs.base import TrainingRunHandler
 from zigopt.json.builder import TrainingRunJsonBuilder
-from zigopt.net.errors import NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import WRITE
 
 

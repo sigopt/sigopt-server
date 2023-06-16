@@ -4,10 +4,10 @@
 import logging
 import ssl
 import time
-from collections.abc import Generator, Iterator
+from collections.abc import Callable, Generator, Iterable, Iterator, Mapping, Sequence
 from datetime import timedelta
 from functools import wraps
-from typing import Any, Callable, Iterable, Mapping, ParamSpec, Sequence, TypeVar
+from typing import Any, ParamSpec, TypeVar
 
 from sqlalchemy import Column, create_engine, event, inspect, literal, select, update
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert

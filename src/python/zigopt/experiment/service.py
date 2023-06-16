@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import datetime
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from sqlalchemy import Column, func
 from sqlalchemy.orm import Query

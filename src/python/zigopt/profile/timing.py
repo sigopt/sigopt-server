@@ -4,8 +4,9 @@
 import json
 import logging
 import time
+from collections.abc import Callable, Mapping
 from functools import wraps
-from typing import Any, Callable, Mapping, ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar
 
 from zigopt.common import *
 

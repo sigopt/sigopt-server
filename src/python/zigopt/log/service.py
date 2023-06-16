@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 import logging
 import pprint
-from typing import Any, Mapping, MutableMapping
+from collections.abc import Mapping, MutableMapping
+from typing import Any
 
 from zigopt.common import *
 from zigopt.api.request import RequestProxy

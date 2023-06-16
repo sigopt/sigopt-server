@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy
 from sklearn.ensemble import ExtraTreesRegressor

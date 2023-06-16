@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 import functools
-from collections.abc import Generator, Iterator
-from typing import Callable, Generic, Hashable, ParamSpec, TypeVar
+from collections.abc import Callable, Generator, Hashable, Iterator
+from typing import Generic, ParamSpec, TypeVar
 
 
 T = TypeVar("T")

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import json
 import operator
-from typing import Sequence
+from collections.abc import Sequence
 
 from sqlalchemy import cast as sql_cast
 from sqlalchemy import func

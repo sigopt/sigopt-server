@@ -1,8 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 from sqlalchemy import case, desc, func
 from sqlalchemy.orm import Query

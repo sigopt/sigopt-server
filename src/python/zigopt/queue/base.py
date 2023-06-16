@@ -1,7 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Sequence
+from collections.abc import Sequence
 
 from zigopt.common import *
 from zigopt.common.sigopt_datetime import unix_timestamp

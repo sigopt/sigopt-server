@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache License 2.0
 import datetime
 import functools
-from typing import Any, Callable, Mapping, ParamSpec, Sequence, TypeVar
+from collections.abc import Callable, Mapping, Sequence
+from typing import Any, ParamSpec, TypeVar
 
 import backoff
 import redis

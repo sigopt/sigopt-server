@@ -1,7 +1,8 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from sqlalchemy.orm import Query
 

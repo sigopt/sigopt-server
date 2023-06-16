@@ -150,7 +150,6 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
       self._create_observation_from_suggestion(training_run, updated_timestamp)
 
   def handle(self, params):
-    # pylint: disable=too-many-branches
     assert self.auth is not None
     assert self.training_run is not None
     assert self.project is not None
