@@ -169,6 +169,7 @@ class OrganizationService(Service):
 
       if m.is_owner and not destination_membership.is_owner:
         user = self.services.user_service.find_by_id(m.user_id)
+        assert user
         for c in clients:
           self.services.permission_service.upsert_from_role(ADMIN_ROLE, c, user, requestor=requestor)
 
