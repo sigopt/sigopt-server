@@ -51,5 +51,6 @@ class WebDataUpdateHandler(WebDataBaseHandler):
       parent_resource_id,
       web_data_id,
     )
+    assert updated
 
     return WebDataJsonBuilder(updated)
