@@ -66,6 +66,6 @@ class QueueService(BaseQueueService):
     assert provider
     return provider
 
-  def get_provider_from_message_type(self, message_type) -> QueueProvider:
+  def get_provider_from_message_type(self, message_type: str) -> QueueProvider:
     queue_name = self.get_queue_name_from_message_type(message_type)
     return self.get_provider_from_queue_name(queue_name)
