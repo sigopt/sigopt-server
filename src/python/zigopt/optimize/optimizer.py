@@ -75,9 +75,10 @@ class OptimizerService(Service):
     query = (
       self.services.database_service.query(Observation)
       .filter(Observation.experiment_id == experiment.id)
-      .filter(Observation.id <= counts.max_observation_id)
       .filter(~Observation.data.deleted)
     )
+    if counts.max_observation_id is not None:
+      query = query.filter(Observation.id <= counts.max_observation_id)
 
     observation_iter = self.services.database_service.stream(500, query.limit(counts.observation_count))
 
