@@ -171,9 +171,8 @@ def wait_for_title_text(driver, title_text, *args, **kwargs):
     wait_for(driver, our_title_contains(title_text), *args, **kwargs)
   except TimeoutErrorInTest as e:
     raise ErrorInTest(f"Failed to read page title after {e.time} seconds") from e
-  else:
-    title = driver.title
-    if title == "Leaving Hosted Site - SigOpt":
-      pytest.skip()
-    elif title_text not in title:
-      raise ErrorInTest(f"Waited for page title `{title_text}`, instead has page title `{title}`")
+  title = driver.title
+  if title == "Leaving Hosted Site - SigOpt":
+    pytest.skip()
+  elif title_text not in title:
+    raise ErrorInTest(f"Waited for page title `{title_text}`, instead has page title `{title}`")
