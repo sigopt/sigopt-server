@@ -27,56 +27,56 @@ class TestSuggestions(V1Base):
       assert assignment is not None
 
   def test_create_custom_suggestion(self, connection):
-    with connection.create_experiment(self.offline_categorical_experiment_meta) as experiment:
-      suggestion = (
-        connection.experiments(experiment.id)
-        .suggestions()
-        .create(
-          assignments={
-            "x": 1,
-            "y": 2,
-            "c": "b",
-          }
-        )
+    experiment = connection.create_experiment(self.offline_categorical_experiment_meta)
+    suggestion = (
+      connection.experiments(experiment.id)
+      .suggestions()
+      .create(
+        assignments={
+          "x": 1,
+          "y": 2,
+          "c": "b",
+        }
       )
-      assert suggestion.state == "open"
-      assert suggestion.experiment == experiment.id
-      assert suggestion.created is not None
-      assert suggestion.assignments.get("x") == 1
-      assert suggestion.assignments.get("y") == 2
-      assert suggestion.assignments.get("c") == "b"
+    )
+    assert suggestion.state == "open"
+    assert suggestion.experiment == experiment.id
+    assert suggestion.created is not None
+    assert suggestion.assignments.get("x") == 1
+    assert suggestion.assignments.get("y") == 2
+    assert suggestion.assignments.get("c") == "b"
 
   def test_invalid_create_custom(self, connection):
-    with connection.create_experiment(self.offline_categorical_experiment_meta) as experiment:
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).suggestions().create(
-          assignments={
-            "x": 1,
-          }
-        )
+    experiment = connection.create_experiment(self.offline_categorical_experiment_meta)
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).suggestions().create(
+        assignments={
+          "x": 1,
+        }
+      )
 
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).suggestions().create(
-          assignments={
-            "x": 1,
-            "y": 2,
-            "c": "b",
-            "d": 3,
-          }
-        )
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).suggestions().create(
+        assignments={
+          "x": 1,
+          "y": 2,
+          "c": "b",
+          "d": 3,
+        }
+      )
 
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).suggestions().create(
-          assignments={
-            "x": "a",
-            "y": 2,
-            "c": "b",
-            "d": 3,
-          }
-        )
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).suggestions().create(
+        assignments={
+          "x": "a",
+          "y": 2,
+          "c": "b",
+          "d": 3,
+        }
+      )
 
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).suggestions().create(task="not_multitask")
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).suggestions().create(task="not_multitask")
 
   def test_suggestion_state(self, connection):
     experiment = connection.create_any_experiment()

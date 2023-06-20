@@ -13,13 +13,11 @@ from integration.v1.test_base import V1Base
 class TestUpdateObservations(V1Base):
   @pytest.fixture
   def experiment(self, connection):
-    with connection.create_experiment(self.offline_experiment_meta) as experiment:
-      yield experiment
+    return connection.create_experiment(self.offline_experiment_meta)
 
   @pytest.fixture
   def multimetric_experiment(self, connection):
-    with connection.create_experiment(self.offline_multimetric_experiment_meta) as multimetric_experiment:
-      yield multimetric_experiment
+    return connection.create_experiment(self.offline_multimetric_experiment_meta)
 
   @pytest.fixture
   def suggestion(self, connection, experiment):
@@ -263,16 +261,16 @@ class TestUpdateObservations(V1Base):
     ],
   )
   def test_update_observation_from_failed(self, connection, invalid_update):
-    with connection.create_experiment(self.offline_named_metric_experiment_meta) as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      observation = (
-        connection.experiments(experiment.id)
-        .observations()
-        .create(
-          failed=True,
-          suggestion=suggestion.id,
-        )
+    experiment = connection.create_experiment(self.offline_named_metric_experiment_meta)
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    observation = (
+      connection.experiments(experiment.id)
+      .observations()
+      .create(
+        failed=True,
+        suggestion=suggestion.id,
       )
+    )
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       connection.experiments(experiment.id).observations(observation.id).update(**invalid_update)
 
@@ -297,13 +295,13 @@ class TestUpdateObservations(V1Base):
       connection.experiments(multimetric_experiment.id).observations(observation.id).update(**invalid_update)
 
   def test_invalid_suggestion(self, connection, experiment, suggestion, observation_from_suggestion):
-    with connection.create_experiment(self.offline_experiment_meta) as other_experiment:
-      s = connection.experiments(other_experiment.id).suggestions().create()
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).observations(observation_from_suggestion.id).update(suggestion=s.id)
-      connection.experiments(experiment.id).observations(observation_from_suggestion.id).update(
-        suggestion=suggestion.id,
-      )
+    other_experiment = connection.create_experiment(self.offline_experiment_meta)
+    s = connection.experiments(other_experiment.id).suggestions().create()
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).observations(observation_from_suggestion.id).update(suggestion=s.id)
+    connection.experiments(experiment.id).observations(observation_from_suggestion.id).update(
+      suggestion=suggestion.id,
+    )
 
 
 class TestUpdateObservationsWithStoredMetrics(V1Base, StoredMetricsMixin):

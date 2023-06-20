@@ -151,16 +151,16 @@ class TestListExperiments(ExperimentsTestBase):
     admin_user = admin_connection.users(admin_connection.user_id).fetch()
     connection.clients(client_id).invites().create(email=admin_user.email, role=ADMIN_ROLE, old_role=NO_ROLE)
 
-    with connection.create_experiment_as(client_id):
-      with other_connection.create_experiment_as(client_id):
-        assert len(connection.clients(client_id).experiments().fetch().data) == 2
-        assert len(other_connection.clients(client_id).experiments().fetch().data) == 2
-        assert len(admin_connection.clients(client_id).experiments().fetch().data) == 2
+    connection.create_experiment_as(client_id)
+    other_connection.create_experiment_as(client_id)
+    assert len(connection.clients(client_id).experiments().fetch().data) == 2
+    assert len(other_connection.clients(client_id).experiments().fetch().data) == 2
+    assert len(admin_connection.clients(client_id).experiments().fetch().data) == 2
 
-        connection.clients(client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
-        assert len(connection.clients(client_id).experiments().fetch().data) == 2
-        assert len(other_connection.clients(client_id).experiments().fetch().data) == 1
-        assert len(admin_connection.clients(client_id).experiments().fetch().data) == 2
+    connection.clients(client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
+    assert len(connection.clients(client_id).experiments().fetch().data) == 2
+    assert len(other_connection.clients(client_id).experiments().fetch().data) == 1
+    assert len(admin_connection.clients(client_id).experiments().fetch().data) == 2
 
   def test_experiment_list_paging(self, connection):
     e1, e2, e3 = (connection.create_any_experiment() for _ in range(3))
@@ -226,20 +226,20 @@ class TestListExperiments(ExperimentsTestBase):
       connection.clients(client_id).experiments().fetch(before=prefix + "1", sort=EXPERIMENT_RECENCY)
 
   def test_experiment_list_search(self, connection, client_id):
-    with connection.create_experiment(
+    e = connection.create_experiment(
       {
         "name": "string to search for",
         "parameters": [
           {"name": "a", "type": "int", "bounds": {"min": 1, "max": 50}},
         ],
       }
-    ) as e:
-      paging = connection.clients(client_id).experiments().fetch(search="search")
-      assert paging.count == 1
-      assert paging.paging.before is None
-      assert id_from_paging_marker(paging.paging.after) == e.id
-      assert len(paging.data) == 1
-      assert [d.id for d in paging.data] == [e.id]
+    )
+    paging = connection.clients(client_id).experiments().fetch(search="search")
+    assert paging.count == 1
+    assert paging.paging.before is None
+    assert id_from_paging_marker(paging.paging.after) == e.id
+    assert len(paging.data) == 1
+    assert [d.id for d in paging.data] == [e.id]
 
   # TODO(SN-1139): Speed up this test, can we avoid sleeps?
   @pytest.mark.slow

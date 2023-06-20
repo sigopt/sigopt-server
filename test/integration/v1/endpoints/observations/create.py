@@ -16,8 +16,7 @@ from integration.v1.test_base import V1Base
 class TestCreateObservations(V1Base):
   @pytest.fixture
   def experiment(self, connection):
-    with connection.create_experiment(self.offline_experiment_meta) as experiment:
-      yield experiment
+    return connection.create_experiment(self.offline_experiment_meta)
 
   @pytest.fixture
   def suggestion(self, connection, experiment):
