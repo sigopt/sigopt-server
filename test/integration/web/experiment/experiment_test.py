@@ -14,17 +14,17 @@ from integration.web.experiment.test_base import ExperimentWebBase
 
 class TestExperiment(ExperimentWebBase):
   def test_properties(self, api_connection, logged_in_web_connection):
-    with api_connection.create_any_experiment() as e:
-      user = api_connection.sessions().fetch().user
-      assert user.name in logged_in_web_connection.get(f"/experiment/{e.id}/properties")
+    e = api_connection.create_any_experiment()
+    user = api_connection.sessions().fetch().user
+    assert user.name in logged_in_web_connection.get(f"/experiment/{e.id}/properties")
 
   def test_reset(self, api_connection, logged_in_web_connection):
-    with api_connection.create_any_experiment() as e:
-      s = api_connection.experiments(e.id).suggestions().create()
-      api_connection.experiments(e.id).observations().create(suggestion=s.id, values=make_values(e), no_optimize=True)
-      assert api_connection.experiments(e.id).fetch().progress.observation_count == 1
-      logged_in_web_connection.post(f"/experiment/{e.id}/reset")
-      assert api_connection.experiments(e.id).fetch().progress.observation_count == 0
+    e = api_connection.create_any_experiment()
+    s = api_connection.experiments(e.id).suggestions().create()
+    api_connection.experiments(e.id).observations().create(suggestion=s.id, values=make_values(e), no_optimize=True)
+    assert api_connection.experiments(e.id).fetch().progress.observation_count == 1
+    logged_in_web_connection.post(f"/experiment/{e.id}/reset")
+    assert api_connection.experiments(e.id).fetch().progress.observation_count == 0
 
   def test_experiment_does_not_exist(self, web_connection, logged_in_web_connection):
     route = "/experiment/1234567890"

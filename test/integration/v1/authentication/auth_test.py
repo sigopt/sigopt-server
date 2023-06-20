@@ -242,20 +242,20 @@ class TestAuth(V1Base):
       attacker.files(file_info.id).fetch()
 
   def test_experiment(self, connection, any_attacker):
-    with connection.create_any_experiment() as e:
-      update_meta = {"parameters": [pick(p.to_json(), "name") for p in e.parameters]}
-      connection.experiments(e.id).fetch()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).fetch()
+    e = connection.create_any_experiment()
+    update_meta = {"parameters": [pick(p.to_json(), "name") for p in e.parameters]}
+    connection.experiments(e.id).fetch()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).fetch()
 
-      connection.experiments(e.id).update(**update_meta)
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).update(**update_meta)
+    connection.experiments(e.id).update(**update_meta)
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).update(**update_meta)
 
-      # Delete occurs automatically at end
-      # connection.experiments(e.id).delete()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).delete()
+    # Delete occurs automatically at end
+    # connection.experiments(e.id).delete()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).delete()
 
   def test_ai_experiment(self, connection, any_attacker):
     p = connection.clients(connection.client_id).projects().create(id="test-auth-project", name="Test auth project")
@@ -286,13 +286,13 @@ class TestAuth(V1Base):
     with RaisesApiException(HTTPStatus.FORBIDDEN):
       development_connection.clients(connection.client_id).tokens().fetch()
 
-    with connection.create_any_experiment() as experiment:
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        development_connection.experiments(experiment.id).fetch()
+    experiment = connection.create_any_experiment()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      development_connection.experiments(experiment.id).fetch()
 
-    with development_connection.create_any_experiment() as development_experiment:
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        connection.as_client_only().experiments(development_experiment.id).fetch()
+    development_experiment = development_connection.create_any_experiment()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      connection.as_client_only().experiments(development_experiment.id).fetch()
 
   def test_client_read_write(self, read_connection, write_connection):
     # Read, writes can't update client
@@ -317,25 +317,25 @@ class TestAuth(V1Base):
   def test_experiment_read_write(self, read_connection_same_client, write_connection_same_client):
     read_connection = read_connection_same_client
     write_connection = write_connection_same_client
-    with write_connection.create_experiment_as(read_connection.client_id) as e:
-      assert e.client == read_connection.client_id
-      read_connection.experiments(e.id).fetch()
-      # Read can't create guest tokens
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).tokens().create()
-      # Read cannot alter experiments
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).update(name="new name")
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).delete()
-      # Read cannot create experiments
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.create_any_experiment()
+    e = write_connection.create_experiment_as(read_connection.client_id)
+    assert e.client == read_connection.client_id
+    read_connection.experiments(e.id).fetch()
+    # Read can't create guest tokens
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).tokens().create()
+    # Read cannot alter experiments
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).update(name="new name")
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).delete()
+    # Read cannot create experiments
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.create_any_experiment()
 
-    with write_connection.create_experiment_as(write_connection.client_id) as e:
-      assert e.client == write_connection.client_id
-      write_connection.experiments(e.id).fetch()
-      write_connection.experiments(e.id).tokens().create()
+    e = write_connection.create_experiment_as(write_connection.client_id)
+    assert e.client == write_connection.client_id
+    write_connection.experiments(e.id).fetch()
+    write_connection.experiments(e.id).tokens().create()
 
   @pytest.fixture(params=["production", "development"])
   def guest_token_connection(self, request, connection, development_connection):
@@ -345,10 +345,8 @@ class TestAuth(V1Base):
     return development_connection
 
   @pytest.fixture
-  @unsafe_generator
-  def guest_experiment(self, request, connection):
-    with connection.create_any_experiment() as e:
-      yield e
+  def guest_experiment(self, connection):
+    return connection.create_any_experiment()
 
   def _make_experiment_guest_connection(self, connection, experiment, api, config_broker):
     token = connection.experiments(experiment.id).tokens().create()
@@ -363,23 +361,22 @@ class TestAuth(V1Base):
   @pytest.fixture(params=["experiment", "training_run"])
   def any_guest(self, request, connection, api, config_broker):
     if request.param == "experiment":
-      with connection.create_any_experiment() as e:
-        yield self._make_experiment_guest_connection(connection, e, api, config_broker)
-    else:
-      assert request.param == "training_run"
-      project_id = random_string(str_length=20).lower()
-      connection.clients(connection.client_id).projects().create(name=project_id, id=project_id)
-      training_run = connection.clients(connection.client_id).projects(project_id).training_runs().create(name="run")
-      token = connection.training_runs(training_run.id).tokens().create()
-      assert token.training_run == training_run.id
-      assert token.experiment is None
-      assert token.development == connection.development
-      yield self.make_v1_guest_connection(config_broker, api, token.token)
+      e = connection.create_any_experiment()
+      return self._make_experiment_guest_connection(connection, e, api, config_broker)
+    assert request.param == "training_run"
+    project_id = random_string(str_length=20).lower()
+    connection.clients(connection.client_id).projects().create(name=project_id, id=project_id)
+    training_run = connection.clients(connection.client_id).projects(project_id).training_runs().create(name="run")
+    token = connection.training_runs(training_run.id).tokens().create()
+    assert token.training_run == training_run.id
+    assert token.experiment is None
+    assert token.development == connection.development
+    return self.make_v1_guest_connection(config_broker, api, token.token)
 
   def test_experiment_guest_token_dev(self, development_connection, attacker, config_broker):
-    with development_connection.create_any_experiment() as e:
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        development_connection.experiments(e.id).tokens().create()
+    e = development_connection.create_any_experiment()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      development_connection.experiments(e.id).tokens().create()
 
   @pytest.mark.slow
   def test_experiment_guest_token(self, connection, guest_with_experiment, guest_experiment, attacker):
@@ -443,23 +440,23 @@ class TestAuth(V1Base):
       guest_with_experiment.experiments(guest_experiment.id).observations().delete()
 
     # Guests cannot view other experiments from the host client
-    with connection.create_any_experiment() as e_2:
-      connection.experiments(e_2.id).fetch()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        attacker.experiments(e_2.id).fetch()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        guest_with_experiment.experiments(e_2.id).fetch()
+    e_2 = connection.create_any_experiment()
+    connection.experiments(e_2.id).fetch()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      attacker.experiments(e_2.id).fetch()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      guest_with_experiment.experiments(e_2.id).fetch()
 
     # Guests also cannot view any experiments from other clients
-    with attacker.create_any_experiment() as attacker_e:
-      attacker.experiments(attacker_e.id).fetch()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        connection.experiments(attacker_e.id).fetch()
+    attacker_e = attacker.create_any_experiment()
+    attacker.experiments(attacker_e.id).fetch()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      connection.experiments(attacker_e.id).fetch()
 
     # Guests also cannot view any experiments from other clients
-    with attacker.create_any_experiment() as attacker_e:
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        guest_with_experiment.experiments(attacker_e.id).fetch()
+    attacker_e = attacker.create_any_experiment()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      guest_with_experiment.experiments(attacker_e.id).fetch()
 
   def test_client_guest_token(self, connection, any_guest, attacker):
     # Guests cannot access non-experiment endpoints
@@ -525,26 +522,26 @@ class TestAuth(V1Base):
     connection.tokens(client_token).delete()
 
   def test_suggestion(self, connection, any_attacker):
-    with connection.create_any_experiment() as e:
-      suggestion = connection.experiments(e.id).suggestions().create()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).suggestions().create()
+    e = connection.create_any_experiment()
+    suggestion = connection.experiments(e.id).suggestions().create()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).suggestions().create()
 
-      connection.experiments(e.id).suggestions(suggestion.id).fetch()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).suggestions(suggestion.id).fetch()
+    connection.experiments(e.id).suggestions(suggestion.id).fetch()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).suggestions(suggestion.id).fetch()
 
-      connection.experiments(e.id).suggestions().fetch()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).suggestions().fetch()
+    connection.experiments(e.id).suggestions().fetch()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).suggestions().fetch()
 
-      connection.experiments(e.id).suggestions(suggestion.id).delete()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).suggestions(suggestion.id).delete()
+    connection.experiments(e.id).suggestions(suggestion.id).delete()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).suggestions(suggestion.id).delete()
 
-      connection.experiments(e.id).suggestions().delete()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).suggestions().delete()
+    connection.experiments(e.id).suggestions().delete()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).suggestions().delete()
 
   def test_observation(self, connection, any_attacker):
     experiment_meta = {
@@ -559,59 +556,59 @@ class TestAuth(V1Base):
       },
       "values": [{"value": 10}],
     }
-    with connection.create_experiment(experiment_meta) as e:
-      observation = connection.experiments(e.id).observations().create(**observation_data)
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).observations().create(**observation_data)
+    e = connection.create_experiment(experiment_meta)
+    observation = connection.experiments(e.id).observations().create(**observation_data)
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).observations().create(**observation_data)
 
-      connection.experiments(e.id).observations(observation.id).fetch()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).observations(observation.id).fetch()
+    connection.experiments(e.id).observations(observation.id).fetch()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).observations(observation.id).fetch()
 
-      connection.experiments(e.id).observations(observation.id).update(**observation_data)
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).observations(observation.id).update(**observation_data)
+    connection.experiments(e.id).observations(observation.id).update(**observation_data)
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).observations(observation.id).update(**observation_data)
 
-      connection.experiments(e.id).observations(observation.id).delete()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).observations(observation.id).delete()
+    connection.experiments(e.id).observations(observation.id).delete()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).observations(observation.id).delete()
 
-      connection.experiments(e.id).observations().delete()
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        any_attacker.experiments(e.id).observations().delete()
+    connection.experiments(e.id).observations().delete()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      any_attacker.experiments(e.id).observations().delete()
 
   def test_read_observation_suggestion(self, write_connection_same_client, read_connection_same_client):
     read_connection = read_connection_same_client
     write_connection = write_connection_same_client
 
-    with write_connection.create_experiment_as(read_connection.client_id) as e:
-      assert e.client == read_connection.client_id
-      read_connection.experiments(e.id).fetch()
+    e = write_connection.create_experiment_as(read_connection.client_id)
+    assert e.client == read_connection.client_id
+    read_connection.experiments(e.id).fetch()
 
-      suggestion = write_connection.experiments(e.id).suggestions().create()
+    suggestion = write_connection.experiments(e.id).suggestions().create()
 
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).suggestions().create()
-      read_connection.experiments(e.id).suggestions(suggestion.id).fetch()
-      read_connection.experiments(e.id).suggestions().fetch()
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).suggestions(suggestion.id).delete()
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).suggestions().delete()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).suggestions().create()
+    read_connection.experiments(e.id).suggestions(suggestion.id).fetch()
+    read_connection.experiments(e.id).suggestions().fetch()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).suggestions(suggestion.id).delete()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).suggestions().delete()
 
-      observation = (
-        write_connection.experiments(e.id).observations().create(suggestion=suggestion.id, values=[{"value": 1}])
-      )
+    observation = (
+      write_connection.experiments(e.id).observations().create(suggestion=suggestion.id, values=[{"value": 1}])
+    )
 
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).observations().create(suggestion=suggestion.id, values=[{"value": 1}])
-      read_connection.experiments(e.id).observations(observation.id).fetch()
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).observations(observation.id).update(values=[{"value": 1}])
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).observations(observation.id).delete()
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        read_connection.experiments(e.id).observations().delete()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).observations().create(suggestion=suggestion.id, values=[{"value": 1}])
+    read_connection.experiments(e.id).observations(observation.id).fetch()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).observations(observation.id).update(values=[{"value": 1}])
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).observations(observation.id).delete()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      read_connection.experiments(e.id).observations().delete()
 
   def test_training_run_attacker(self, connection, any_attacker):
     client_id = connection.client_id
@@ -1002,84 +999,84 @@ class TestAuth(V1Base):
 class TestTokens(V1Base):
   def test_guest_not_expired(self, connection, db_connection, api, api_url):
     now = unix_timestamp()
-    with connection.create_any_experiment() as e:
-      token = Token(
-        token_type=TokenType.GUEST,
-        client_id=connection.client_id,
-        user_id=None,
-        meta=TokenMeta(
-          date_created=now,
-          guest_experiment_id=int(e.id),
-          guest_permissions=READ,
-        ),
-      )
-      db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, token.token)
-      token_obj = new_connection.tokens("self").fetch()
-      assert token_obj.token == token.token
-      assert token_obj.token_type == "guest"
-      assert token_obj.permissions == "read"
-      assert token_obj.development is False
-      assert token_obj.client == connection.client_id
-      assert token_obj.user is None
-      assert token_obj.experiment == e.id
-      assert token_obj.expires > now
-      assert new_connection.experiments(e.id).fetch().id == e.id
+    e = connection.create_any_experiment()
+    token = Token(
+      token_type=TokenType.GUEST,
+      client_id=connection.client_id,
+      user_id=None,
+      meta=TokenMeta(
+        date_created=now,
+        guest_experiment_id=int(e.id),
+        guest_permissions=READ,
+      ),
+    )
+    db_connection.insert(token)
+    new_connection = IntegrationTestConnection(api_url, token.token)
+    token_obj = new_connection.tokens("self").fetch()
+    assert token_obj.token == token.token
+    assert token_obj.token_type == "guest"
+    assert token_obj.permissions == "read"
+    assert token_obj.development is False
+    assert token_obj.client == connection.client_id
+    assert token_obj.user is None
+    assert token_obj.experiment == e.id
+    assert token_obj.expires > now
+    assert new_connection.experiments(e.id).fetch().id == e.id
 
   def test_guest_expired(self, connection, db_connection, api, api_url):
-    with connection.create_any_experiment() as e:
-      token = Token(
-        token_type=TokenType.GUEST,
-        client_id=connection.client_id,
-        user_id=None,
-        meta=TokenMeta(
-          date_created=1,
-          guest_experiment_id=int(e.id),
-          guest_permissions=READ,
-        ),
-      )
-      db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, token.token)
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        new_connection.tokens("self").fetch()
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        new_connection.experiments(e.id).fetch()
+    e = connection.create_any_experiment()
+    token = Token(
+      token_type=TokenType.GUEST,
+      client_id=connection.client_id,
+      user_id=None,
+      meta=TokenMeta(
+        date_created=1,
+        guest_experiment_id=int(e.id),
+        guest_permissions=READ,
+      ),
+    )
+    db_connection.insert(token)
+    new_connection = IntegrationTestConnection(api_url, token.token)
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      new_connection.tokens("self").fetch()
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      new_connection.experiments(e.id).fetch()
 
   def test_guest_write_not_expired(self, connection, db_connection, api, api_url):
-    with connection.create_any_experiment() as e:
-      token = Token(
-        token_type=TokenType.GUEST,
-        client_id=connection.client_id,
-        user_id=None,
-        meta=TokenMeta(
-          date_created=1,
-          guest_permissions=WRITE,
-        ),
-      )
-      db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, token.token)
-      token_obj = new_connection.tokens("self").fetch()
-      assert token_obj.expires is None
-      assert new_connection.experiments(e.id).fetch().id == e.id
+    e = connection.create_any_experiment()
+    token = Token(
+      token_type=TokenType.GUEST,
+      client_id=connection.client_id,
+      user_id=None,
+      meta=TokenMeta(
+        date_created=1,
+        guest_permissions=WRITE,
+      ),
+    )
+    db_connection.insert(token)
+    new_connection = IntegrationTestConnection(api_url, token.token)
+    token_obj = new_connection.tokens("self").fetch()
+    assert token_obj.expires is None
+    assert new_connection.experiments(e.id).fetch().id == e.id
 
   def test_guest_lasts_forever(self, connection, db_connection, api, api_url):
-    with connection.create_any_experiment() as e:
-      token = Token(
-        token_type=TokenType.GUEST,
-        client_id=connection.client_id,
-        user_id=None,
-        meta=TokenMeta(
-          date_created=1,
-          guest_experiment_id=int(e.id),
-          guest_permissions=READ,
-          lasts_forever=True,
-        ),
-      )
-      db_connection.insert(token)
-      new_connection = IntegrationTestConnection(api_url, token.token)
-      token_obj = new_connection.tokens("self").fetch()
-      assert token_obj.expires is None
-      assert new_connection.experiments(e.id).fetch().id == e.id
+    e = connection.create_any_experiment()
+    token = Token(
+      token_type=TokenType.GUEST,
+      client_id=connection.client_id,
+      user_id=None,
+      meta=TokenMeta(
+        date_created=1,
+        guest_experiment_id=int(e.id),
+        guest_permissions=READ,
+        lasts_forever=True,
+      ),
+    )
+    db_connection.insert(token)
+    new_connection = IntegrationTestConnection(api_url, token.token)
+    token_obj = new_connection.tokens("self").fetch()
+    assert token_obj.expires is None
+    assert new_connection.experiments(e.id).fetch().id == e.id
 
 
 class TestPermissions(V1Base):
@@ -1179,36 +1176,36 @@ class TestPermissions(V1Base):
       write_connection.clients(write_connection.client_id).invites().delete(email=other_user.email)
 
     # Guests can't view, invite, or uninvite
-    with connection.create_any_experiment() as e:
-      token = connection.experiments(e.id).tokens().create()
-      guest = self.make_v1_guest_connection(config_broker, api, token.token)
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        guest.clients(connection.client_id).pending_permissions().fetch()
-      guest.client_id = connection.client_id
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        self.invite(guest, other_user.email)
-      with RaisesApiException(HTTPStatus.FORBIDDEN):
-        guest.clients(connection.client_id).invites().delete(email=other_user.email)
+    e = connection.create_any_experiment()
+    token = connection.experiments(e.id).tokens().create()
+    guest = self.make_v1_guest_connection(config_broker, api, token.token)
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      guest.clients(connection.client_id).pending_permissions().fetch()
+    guest.client_id = connection.client_id
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      self.invite(guest, other_user.email)
+    with RaisesApiException(HTTPStatus.FORBIDDEN):
+      guest.clients(connection.client_id).invites().delete(email=other_user.email)
 
   def test_read_user_cant_see_private_exp(self, connection, read_connection_same_client):
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
 
-    with connection.create_experiment_as(connection.client_id) as e:
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        read_connection_same_client.experiments(e.id).fetch()
+    e = connection.create_experiment_as(connection.client_id)
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      read_connection_same_client.experiments(e.id).fetch()
 
   def test_write_user_cant_see_private_exp(self, connection, write_connection_same_client):
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
 
-    with connection.create_experiment_as(connection.client_id) as e:
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        write_connection_same_client.experiments(e.id).fetch()
+    e = connection.create_experiment_as(connection.client_id)
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      write_connection_same_client.experiments(e.id).fetch()
 
   def test_admin_user_can_see_private_exp(self, connection, admin_connection_same_client):
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
 
-    with connection.create_experiment_as(connection.client_id) as e:
-      admin_connection_same_client.experiments(e.id).fetch()
+    e = connection.create_experiment_as(connection.client_id)
+    admin_connection_same_client.experiments(e.id).fetch()
 
   def test_read_client_only(self, connection, config_broker, api, auth_provider, api_url):
     other_connection = self.make_v1_connection(config_broker, api, auth_provider)
@@ -1219,9 +1216,9 @@ class TestPermissions(V1Base):
     client_only_connection = IntegrationTestConnection(api_url, client_token=client_token)
 
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
-    with connection.create_any_experiment() as e:
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        client_only_connection.experiments(e.id).fetch()
+    e = connection.create_any_experiment()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      client_only_connection.experiments(e.id).fetch()
 
   def test_write_client_only(self, connection, config_broker, api, auth_provider, api_url):
     other_connection = self.make_v1_connection(config_broker, api, auth_provider)
@@ -1232,9 +1229,9 @@ class TestPermissions(V1Base):
     client_only_connection = IntegrationTestConnection(api_url, client_token=client_token)
 
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
-    with connection.create_any_experiment() as e:
-      with RaisesApiException(HTTPStatus.NOT_FOUND):
-        client_only_connection.experiments(e.id).fetch()
+    e = connection.create_any_experiment()
+    with RaisesApiException(HTTPStatus.NOT_FOUND):
+      client_only_connection.experiments(e.id).fetch()
 
   def test_admin_client_only(self, connection, config_broker, api, auth_provider, api_url):
     other_connection = self.make_v1_connection(config_broker, api, auth_provider)
@@ -1245,8 +1242,8 @@ class TestPermissions(V1Base):
     client_only_connection = IntegrationTestConnection(api_url, client_token=client_token)
 
     connection.clients(connection.client_id).update(client_security={"allow_users_to_see_experiments_by_others": False})
-    with connection.create_any_experiment() as e:
-      client_only_connection.experiments(e.id).fetch()
+    e = connection.create_any_experiment()
+    client_only_connection.experiments(e.id).fetch()
 
   def test_token_signup_scope(self, owner_connection, config_broker, api, api_url):
     token = owner_connection.clients(owner_connection.client_id).tokens().create()

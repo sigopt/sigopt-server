@@ -53,48 +53,48 @@ class TestMultipleValueObservations(V1Base):
 
   def test_create_observation_with_too_few_values(self, connection):
     e_meta = deepcopy(DEFAULT_MULTICRITERIA_EXPERIMENT_META)
-    with connection.create_any_experiment(**e_meta) as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
-        connection.experiments(experiment.id).observations().create(
-          values=[{"name": "value1", "value": 6}],
-          suggestion=suggestion.id,
-        )
-      assert "must be equal" in str(e.value)
+    experiment = connection.create_any_experiment(**e_meta)
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
+      connection.experiments(experiment.id).observations().create(
+        values=[{"name": "value1", "value": 6}],
+        suggestion=suggestion.id,
+      )
+    assert "must be equal" in str(e.value)
 
   def test_create_observation_with_legacy_value(self, connection):
     e_meta = deepcopy(DEFAULT_MULTICRITERIA_EXPERIMENT_META)
-    with connection.create_any_experiment(**e_meta) as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).observations().create(
-          values=[{"value": 6}],
-          suggestion=suggestion.id,
-        )
+    experiment = connection.create_any_experiment(**e_meta)
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).observations().create(
+        values=[{"value": 6}],
+        suggestion=suggestion.id,
+      )
 
   def test_create_observation_with_too_many_values(self, connection):
     e_meta = deepcopy(DEFAULT_MULTICRITERIA_EXPERIMENT_META)
     e_meta["metrics"].pop(0)
     assert "value1" not in [m["name"] for m in e_meta["metrics"]]
-    with connection.create_any_experiment(**e_meta) as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
-        connection.experiments(experiment.id).observations().create(
-          values=[{"name": "value1", "value": 6}, {"name": "value2", "value": -8.1234}],
-          suggestion=suggestion.id,
-        )
-      assert "must be equal" in str(e.value)
+    experiment = connection.create_any_experiment(**e_meta)
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
+      connection.experiments(experiment.id).observations().create(
+        values=[{"name": "value1", "value": 6}, {"name": "value2", "value": -8.1234}],
+        suggestion=suggestion.id,
+      )
+    assert "must be equal" in str(e.value)
 
   def test_create_observation_invalid_values(self, connection):
     e_meta = deepcopy(DEFAULT_MULTICRITERIA_EXPERIMENT_META)
-    with connection.create_any_experiment(**e_meta) as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
-        connection.experiments(experiment.id).observations().create(
-          values=[1, 2],
-          suggestion=suggestion.id,
-        )
-      assert "Invalid type for" in str(e.value)
+    experiment = connection.create_any_experiment(**e_meta)
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
+      connection.experiments(experiment.id).observations().create(
+        values=[1, 2],
+        suggestion=suggestion.id,
+      )
+    assert "Invalid type for" in str(e.value)
 
   def test_create_multiple_values(self, connection, config_broker):
     with connection.create_experiment(DEFAULT_MULTICRITERIA_EXPERIMENT_META) as experiment:

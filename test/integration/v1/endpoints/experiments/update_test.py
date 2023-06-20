@@ -61,15 +61,15 @@ class TestUpdateExperiments(ExperimentsTestBase):
     self.assert_experiment_updated(e, lambda e: e.state == "deleted")
 
   def test_experiment_update_budget(self, connection):
-    with connection.create_any_experiment() as e:
-      e = connection.experiments(e.id).update(observation_budget=20)
-      self.assert_experiment_updated(e, lambda e: e.observation_budget == 20)
+    e = connection.create_any_experiment()
+    e = connection.experiments(e.id).update(observation_budget=20)
+    self.assert_experiment_updated(e, lambda e: e.observation_budget == 20)
 
   def test_experiment_update_type(self, connection):
     # Cannot include type key in json dict
-    with connection.create_any_experiment() as e:
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(type="offline")
+    e = connection.create_any_experiment()
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(type="offline")
 
   def test_bad_parameters_update(self, connection, any_meta):
     # NOTE: cannot update parameters for an experiment with constraints
@@ -514,93 +514,93 @@ class TestUpdateExperiments(ExperimentsTestBase):
       )
 
   def test_experiment_update_project(self, connection, project):
-    with connection.create_any_experiment() as e:
-      for _ in range(2):
-        updated_experiment = connection.experiments(e.id).update(project=project.id)
-        self.assert_experiment_updated(
-          updated_experiment,
-          lambda e: e.project == project.id,
-        )
-
-  def test_experiment_clear_project(self, connection, project):
-    with connection.create_any_experiment(project=project.id) as e:
+    e = connection.create_any_experiment()
+    for _ in range(2):
       updated_experiment = connection.experiments(e.id).update(project=project.id)
       self.assert_experiment_updated(
         updated_experiment,
         lambda e: e.project == project.id,
       )
-      for _ in range(2):
-        updated_experiment = connection.experiments(e.id).update(project=None)
-        self.assert_experiment_updated(
-          updated_experiment,
-          lambda e: e.project is None,
-        )
+
+  def test_experiment_clear_project(self, connection, project):
+    e = connection.create_any_experiment(project=project.id)
+    updated_experiment = connection.experiments(e.id).update(project=project.id)
+    self.assert_experiment_updated(
+      updated_experiment,
+      lambda e: e.project == project.id,
+    )
+    for _ in range(2):
+      updated_experiment = connection.experiments(e.id).update(project=None)
+      self.assert_experiment_updated(
+        updated_experiment,
+        lambda e: e.project is None,
+      )
 
   def test_experiment_update_bad_project(self, connection):
-    with connection.create_any_experiment() as e:
-      assert e.project is None
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(
-          project=random_string(MAX_PROJECT_ID_LENGTH).lower(),
-        )
-      updated_e = connection.experiments(e.id).fetch()
-      assert updated_e.project is None
+    e = connection.create_any_experiment()
+    assert e.project is None
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(
+        project=random_string(MAX_PROJECT_ID_LENGTH).lower(),
+      )
+    updated_e = connection.experiments(e.id).fetch()
+    assert updated_e.project is None
 
   def test_experiment_update_changes_time(self, services, connection):
-    with connection.create_any_experiment() as e:
-      services.database_service.update(
-        services.database_service.query(Experiment).filter(Experiment.id == int(e.id)),
-        {Experiment.date_updated: unix_epoch},
-      )
-      assert connection.experiments(e.id).fetch().updated == unix_epoch_timestamp
-      updated_e = connection.experiments(e.id).update()
-      assert updated_e.updated > unix_epoch_timestamp
-      fetched_e = connection.experiments(e.id).fetch()
-      assert fetched_e.updated > unix_epoch_timestamp
-      assert updated_e.updated == fetched_e.updated
+    e = connection.create_any_experiment()
+    services.database_service.update(
+      services.database_service.query(Experiment).filter(Experiment.id == int(e.id)),
+      {Experiment.date_updated: unix_epoch},
+    )
+    assert connection.experiments(e.id).fetch().updated == unix_epoch_timestamp
+    updated_e = connection.experiments(e.id).update()
+    assert updated_e.updated > unix_epoch_timestamp
+    fetched_e = connection.experiments(e.id).fetch()
+    assert fetched_e.updated > unix_epoch_timestamp
+    assert updated_e.updated == fetched_e.updated
 
   def _compare_metric_lists(self, metric_list_1, metric_list_2):
     assert [m.to_json() for m in metric_list_1] == [m.to_json() for m in metric_list_2]
 
   def test_update_strategy_same_value(self, services, connection):
     metrics = [{"name": "metric1"}, {"name": "stored", "strategy": MetricStrategyNames.STORE}]
-    with connection.create_any_experiment(metrics=metrics) as e:
-      updated_e = connection.experiments(e.id).update(metrics=metrics)
-      self._compare_metric_lists(updated_e.metrics, e.metrics)
-      fetched_e = connection.experiments(e.id).fetch()
-      self._compare_metric_lists(fetched_e.metrics, updated_e.metrics)
+    e = connection.create_any_experiment(metrics=metrics)
+    updated_e = connection.experiments(e.id).update(metrics=metrics)
+    self._compare_metric_lists(updated_e.metrics, e.metrics)
+    fetched_e = connection.experiments(e.id).fetch()
+    self._compare_metric_lists(fetched_e.metrics, updated_e.metrics)
 
   def test_update_strategy_change_raises(self, services, connection):
     metrics = [{"name": "metric1", "strategy": MetricStrategyNames.OPTIMIZE}]
-    with connection.create_any_experiment(metrics=metrics) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0]["strategy"] = MetricStrategyNames.STORE
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(metrics=new_metrics)
-      fetched_e = connection.experiments(e.id).fetch()
-      self._compare_metric_lists(fetched_e.metrics, e.metrics)
+    e = connection.create_any_experiment(metrics=metrics)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0]["strategy"] = MetricStrategyNames.STORE
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(metrics=new_metrics)
+    fetched_e = connection.experiments(e.id).fetch()
+    self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
     metrics = [
       {"name": "optimized1"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
     ]
-    with connection.create_any_experiment(metrics=metrics) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[1]["strategy"] = MetricStrategyNames.CONSTRAINT
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(metrics=new_metrics)
-      fetched_e = connection.experiments(e.id).fetch()
-      self._compare_metric_lists(fetched_e.metrics, e.metrics)
+    e = connection.create_any_experiment(metrics=metrics)
+    new_metrics = deepcopy(metrics)
+    new_metrics[1]["strategy"] = MetricStrategyNames.CONSTRAINT
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(metrics=new_metrics)
+    fetched_e = connection.experiments(e.id).fetch()
+    self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_one_optimized_one_stored_raises(self, services, connection):
     metrics: list[dict[str, Any]] = [{"name": "optimized"}, {"name": "stored", "strategy": MetricStrategyNames.STORE}]
-    with connection.create_any_experiment(metrics=metrics) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0]["threshold"] = 1.23
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(metrics=new_metrics)
-      fetched_e = connection.experiments(e.id).fetch()
-      self._compare_metric_lists(fetched_e.metrics, e.metrics)
+    e = connection.create_any_experiment(metrics=metrics)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0]["threshold"] = 1.23
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(metrics=new_metrics)
+    fetched_e = connection.experiments(e.id).fetch()
+    self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_only_optimized(self, services, connection):
     metrics: list[dict[str, Any]] = [
@@ -608,18 +608,18 @@ class TestUpdateExperiments(ExperimentsTestBase):
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
     ]
-    with connection.create_any_experiment(metrics=metrics, observation_budget=10) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0]["threshold"] = 1.23
-      new_metrics[1]["threshold"] = 4.56
-      updated_e = connection.experiments(e.id).update(metrics=new_metrics)
-      assert updated_e.metrics[0].threshold == 1.23
-      assert updated_e.metrics[1].threshold == 4.56
-      assert updated_e.metrics[2].threshold is None
-      fetched_e = connection.experiments(e.id).fetch()
-      assert fetched_e.metrics[0].threshold == 1.23
-      assert fetched_e.metrics[1].threshold == 4.56
-      assert fetched_e.metrics[2].threshold is None
+    e = connection.create_any_experiment(metrics=metrics, observation_budget=10)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0]["threshold"] = 1.23
+    new_metrics[1]["threshold"] = 4.56
+    updated_e = connection.experiments(e.id).update(metrics=new_metrics)
+    assert updated_e.metrics[0].threshold == 1.23
+    assert updated_e.metrics[1].threshold == 4.56
+    assert updated_e.metrics[2].threshold is None
+    fetched_e = connection.experiments(e.id).fetch()
+    assert fetched_e.metrics[0].threshold == 1.23
+    assert fetched_e.metrics[1].threshold == 4.56
+    assert fetched_e.metrics[2].threshold is None
 
   def test_update_threshold_on_stored_stays_none(self, services, connection):
     metrics: list[dict[str, Any]] = [
@@ -627,19 +627,19 @@ class TestUpdateExperiments(ExperimentsTestBase):
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
     ]
-    with connection.create_any_experiment(metrics=metrics, observation_budget=10) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0]["threshold"] = 1.23
-      new_metrics[1]["threshold"] = 4.56
-      new_metrics[2]["threshold"] = None
-      updated_e = connection.experiments(e.id).update(metrics=new_metrics)
-      assert updated_e.metrics[0].threshold == 1.23
-      assert updated_e.metrics[1].threshold == 4.56
-      assert updated_e.metrics[2].threshold is None
-      fetched_e = connection.experiments(e.id).fetch()
-      assert fetched_e.metrics[0].threshold == 1.23
-      assert fetched_e.metrics[1].threshold == 4.56
-      assert fetched_e.metrics[2].threshold is None
+    e = connection.create_any_experiment(metrics=metrics, observation_budget=10)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0]["threshold"] = 1.23
+    new_metrics[1]["threshold"] = 4.56
+    new_metrics[2]["threshold"] = None
+    updated_e = connection.experiments(e.id).update(metrics=new_metrics)
+    assert updated_e.metrics[0].threshold == 1.23
+    assert updated_e.metrics[1].threshold == 4.56
+    assert updated_e.metrics[2].threshold is None
+    fetched_e = connection.experiments(e.id).fetch()
+    assert fetched_e.metrics[0].threshold == 1.23
+    assert fetched_e.metrics[1].threshold == 4.56
+    assert fetched_e.metrics[2].threshold is None
 
   def test_update_threshold_on_stored_raises(self, services, connection):
     metrics: list[dict[str, Any]] = [
@@ -647,47 +647,47 @@ class TestUpdateExperiments(ExperimentsTestBase):
       {"name": "optimized2"},
       {"name": "stored", "strategy": MetricStrategyNames.STORE},
     ]
-    with connection.create_any_experiment(metrics=metrics, observation_budget=10) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0]["threshold"] = 1.23
-      new_metrics[1]["threshold"] = 4.56
-      new_metrics[2]["threshold"] = 7.89
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(metrics=new_metrics)
-      fetched_e = connection.experiments(e.id).fetch()
-      self._compare_metric_lists(fetched_e.metrics, e.metrics)
+    e = connection.create_any_experiment(metrics=metrics, observation_budget=10)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0]["threshold"] = 1.23
+    new_metrics[1]["threshold"] = 4.56
+    new_metrics[2]["threshold"] = 7.89
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(metrics=new_metrics)
+    fetched_e = connection.experiments(e.id).fetch()
+    self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   def test_update_threshold_on_constraint_metric(self, services, connection):
     metrics: list[dict[str, Any]] = [
       {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT, "threshold": 0.1},
       {"name": "optimized1"},
     ]
-    with connection.create_any_experiment(metrics=metrics, observation_budget=10) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0]["threshold"] = 4.56
-      updated_e = connection.experiments(e.id).update(metrics=new_metrics)
-      assert updated_e.metrics[0].threshold == 4.56
+    e = connection.create_any_experiment(metrics=metrics, observation_budget=10)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0]["threshold"] = 4.56
+    updated_e = connection.experiments(e.id).update(metrics=new_metrics)
+    assert updated_e.metrics[0].threshold == 4.56
 
   def test_update_remove_threshold_on_constraint_raises(self, services, connection):
     metrics: list[dict[str, Any]] = [
       {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT, "threshold": 0.1},
       {"name": "optimized"},
     ]
-    with connection.create_any_experiment(metrics=metrics, observation_budget=10) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0] = {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT}
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(metrics=new_metrics)
-      fetched_e = connection.experiments(e.id).fetch()
-      self._compare_metric_lists(fetched_e.metrics, e.metrics)
+    e = connection.create_any_experiment(metrics=metrics, observation_budget=10)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0] = {"name": "constraint", "strategy": MetricStrategyNames.CONSTRAINT}
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(metrics=new_metrics)
+    fetched_e = connection.experiments(e.id).fetch()
+    self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
-    with connection.create_any_experiment(metrics=metrics, observation_budget=10) as e:
-      new_metrics = deepcopy(metrics)
-      new_metrics[0]["threshold"] = None
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(metrics=new_metrics)
-      fetched_e = connection.experiments(e.id).fetch()
-      self._compare_metric_lists(fetched_e.metrics, e.metrics)
+    e = connection.create_any_experiment(metrics=metrics, observation_budget=10)
+    new_metrics = deepcopy(metrics)
+    new_metrics[0]["threshold"] = None
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(metrics=new_metrics)
+    fetched_e = connection.experiments(e.id).fetch()
+    self._compare_metric_lists(fetched_e.metrics, e.metrics)
 
   @pytest.mark.parametrize(
     "prior",

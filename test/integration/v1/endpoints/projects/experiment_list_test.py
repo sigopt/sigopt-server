@@ -39,12 +39,12 @@ class TestProjectExperimentList(V1Base):
     )
 
   def test_list_single(self, connection, client_id, project):
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      page = connection.clients(client_id).projects(project.reference_id).experiments().fetch()
-      assert page.count == 1
-      assert len(page.data) == 1
-      assert page.data[0].id == e.id
-      assert page.data[0].project == project.reference_id
+    e = connection.create_any_experiment(project=project.reference_id)
+    page = connection.clients(client_id).projects(project.reference_id).experiments().fetch()
+    assert page.count == 1
+    assert len(page.data) == 1
+    assert page.data[0].id == e.id
+    assert page.data[0].project == project.reference_id
 
   def test_list_excludes_other_projects(
     self,
@@ -53,16 +53,14 @@ class TestProjectExperimentList(V1Base):
     project,
     another_project,
   ):
-    with connection.create_any_experiment(
-      project=project.reference_id
-    ) as e, connection.create_any_experiment(), connection.create_any_experiment(
-      project=another_project.reference_id
-    ):
-      page = connection.clients(client_id).projects(project.reference_id).experiments().fetch()
-      assert page.count == 1
-      assert len(page.data) == 1
-      assert page.data[0].id == e.id
-      assert page.data[0].project == project.reference_id
+    e = connection.create_any_experiment(project=project.reference_id)
+    connection.create_any_experiment()
+    connection.create_any_experiment(project=another_project.reference_id)
+    page = connection.clients(client_id).projects(project.reference_id).experiments().fetch()
+    assert page.count == 1
+    assert len(page.data) == 1
+    assert page.data[0].id == e.id
+    assert page.data[0].project == project.reference_id
 
   def test_list_multiple_pages(
     self,

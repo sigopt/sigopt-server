@@ -36,23 +36,23 @@ class TestCopy(ExperimentWebBase):
     project = (
       api_connection.clients(api_connection.client_id).projects().create(id="other-project", name="Other project")
     )
-    with api_connection.create_any_experiment(project=project.id) as e:
-      e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
-      assert e2.project == e.project
+    e = api_connection.create_any_experiment(project=project.id)
+    e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
+    assert e2.project == e.project
 
   def test_copy_new_client(self, api_connection, logged_in_web_connection):
     new_client = api_connection.clients().create(name="Other client")
     project = api_connection.clients(new_client.id).projects().create(id="other-project", name="Other project")
-    with api_connection.create_any_experiment(client_id=new_client.id, project=project.id) as e:
-      assert e.client == new_client.id
-      e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
-      assert e2.client == api_connection.client_id
-      assert e2.project is None
+    e = api_connection.create_any_experiment(client_id=new_client.id, project=project.id)
+    assert e.client == new_client.id
+    e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
+    assert e2.client == api_connection.client_id
+    assert e2.project is None
 
   def test_copy_long_name(self, api_connection, logged_in_web_connection):
-    with api_connection.create_any_experiment(name="01234567890123456789012345678901234567890123456789") as e:
-      e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
-      assert e2.name == "012345678901234567890123456789012345678901... Copy"
+    e = api_connection.create_any_experiment(name="01234567890123456789012345678901234567890123456789")
+    e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
+    assert e2.name == "012345678901234567890123456789012345678901... Copy"
 
   def test_copy_do_not_include_observations(self, api_connection, logged_in_web_connection, meta):
     with api_connection.create_experiment(meta) as e:
@@ -108,13 +108,13 @@ class TestCopy(ExperimentWebBase):
 
   def test_copy_large_experiment(self, api_connection, logged_in_web_connection, config_broker):
     observation_count = config_broker["features.maxObservationsCreateCount"] + 1
-    with api_connection.create_any_experiment() as e:
-      s = api_connection.experiments(e.id).suggestions().create()
-      observations = [{"assignments": s.assignments, "values": make_values(e)} for _ in range(observation_count)]
-      for batch in (observations[: len(observations) // 2], observations[len(observations) // 2 :]):
-        api_connection.experiments(e.id).observations().create_batch(observations=batch, no_optimize=True)
-      e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
-      assert e2.progress.observation_count == observation_count
+    e = api_connection.create_any_experiment()
+    s = api_connection.experiments(e.id).suggestions().create()
+    observations = [{"assignments": s.assignments, "values": make_values(e)} for _ in range(observation_count)]
+    for batch in (observations[: len(observations) // 2], observations[len(observations) // 2 :]):
+      api_connection.experiments(e.id).observations().create_batch(observations=batch, no_optimize=True)
+    e2 = self.copy_experiment(e.id, api_connection, logged_in_web_connection, include_observations=True)
+    assert e2.progress.observation_count == observation_count
 
   def test_copy_deleted(self, api_connection, logged_in_web_connection):
     e = api_connection.create_any_experiment()

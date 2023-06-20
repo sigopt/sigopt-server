@@ -27,8 +27,8 @@ class TestCreateBatch(V1Base):
     connection.experiments(experiment.id).observations().create_batch(observations=[])
 
   def test_invalid_suggestion(self, connection, experiment):
-    with connection.create_any_experiment() as other_experiment:
-      s = connection.experiments(other_experiment.id).suggestions().create()
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).observations().create(suggestion=s.id, values=[{"value": 1}])
-      connection.experiments(other_experiment.id).observations().create(suggestion=s.id, values=[{"value": 1}])
+    other_experiment = connection.create_any_experiment()
+    s = connection.experiments(other_experiment.id).suggestions().create()
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).observations().create(suggestion=s.id, values=[{"value": 1}])
+    connection.experiments(other_experiment.id).observations().create(suggestion=s.id, values=[{"value": 1}])

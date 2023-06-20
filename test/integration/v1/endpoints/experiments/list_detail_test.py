@@ -72,13 +72,13 @@ class TestListExperiments(ExperimentsTestBase):
     return None
 
   def test_experiment_list_single(self, connection, fetcher):
-    with connection.create_any_experiment() as e:
-      paging = fetcher()
-      assert paging.count == 1
-      assert paging.paging.before is None
-      assert id_from_paging_marker(paging.paging.after) == e.id
-      assert len(paging.data) == 1
-      assert paging.data[0].id == e.id
+    e = connection.create_any_experiment()
+    paging = fetcher()
+    assert paging.count == 1
+    assert paging.paging.before is None
+    assert id_from_paging_marker(paging.paging.after) == e.id
+    assert len(paging.data) == 1
+    assert paging.data[0].id == e.id
 
   def test_experiment_list_with_projects(self, services, connection, fetcher):
     project1 = self.make_project(
@@ -91,18 +91,17 @@ class TestListExperiments(ExperimentsTestBase):
       connection,
       "another test project for experiment list",
     )
-    with connection.create_any_experiment(project=project1.reference_id) as e1, connection.create_any_experiment(
-      project=project2.reference_id
-    ) as e2:
-      paging = fetcher()
-      assert paging.count == 2
-      assert paging.paging.before is None
-      assert id_from_paging_marker(paging.paging.after) == e2.id
-      assert len(paging.data) == 2
-      assert paging.data[0].id == e2.id
-      assert paging.data[0].project == project2.reference_id
-      assert paging.data[1].id == e1.id
-      assert paging.data[1].project == project1.reference_id
+    e1 = connection.create_any_experiment(project=project1.reference_id)
+    e2 = connection.create_any_experiment(project=project2.reference_id)
+    paging = fetcher()
+    assert paging.count == 2
+    assert paging.paging.before is None
+    assert id_from_paging_marker(paging.paging.after) == e2.id
+    assert len(paging.data) == 2
+    assert paging.data[0].id == e2.id
+    assert paging.data[0].project == project2.reference_id
+    assert paging.data[1].id == e1.id
+    assert paging.data[1].project == project1.reference_id
 
   def test_experiment_list_all(self, connection: V1Connection, fetcher):
     e1, e2, e3 = (connection.create_any_experiment() for _ in range(3))
@@ -116,15 +115,15 @@ class TestListExperiments(ExperimentsTestBase):
   def test_experiments_list_omit_development(self, connection, development_connection, fetcher):
     for _ in range(2):
       connection.create_any_experiment()
-    with development_connection.create_any_experiment() as dev:
-      paging = fetcher()
-      assert paging.count == 3
-      paging = fetcher(development=True)
-      assert paging.count == 1
-      assert dev.id in [e.id for e in paging.data]
-      paging = fetcher(development=False)
-      assert paging.count == 2
-      assert dev.id not in [e.id for e in paging.data]
+    dev = development_connection.create_any_experiment()
+    paging = fetcher()
+    assert paging.count == 3
+    paging = fetcher(development=True)
+    assert paging.count == 1
+    assert dev.id in [e.id for e in paging.data]
+    paging = fetcher(development=False)
+    assert paging.count == 2
+    assert dev.id not in [e.id for e in paging.data]
 
   def test_experiments_list_omit_ai(self, connection, project, fetcher):
     ai_experiment = (
@@ -248,59 +247,59 @@ class TestListExperiments(ExperimentsTestBase):
     # NOTE: sorting by time so must have some delay
     # since minimum timestep is 1s for observations
     match = "floop"
-    with connection.create_any_experiment(name=match) as e1:
+    e1 = connection.create_any_experiment(name=match)
+    sleep(1)
+    e2 = connection.create_any_experiment(name="no match")
+    sleep(1)
+    e3 = connection.create_any_experiment(name=match)
+    for e in (e3, e1):
       sleep(1)
-      with connection.create_any_experiment(name="no match") as e2:
-        sleep(1)
-        with connection.create_any_experiment(name=match) as e3:
-          for e in (e3, e1):
-            sleep(1)
-            s = connection.experiments(e.id).suggestions().create()
-            connection.experiments(e.id).observations().create(suggestion=s.id, values=[{"value": 1}])
-          for page_size in (1, 2, 3, 100):
-            # used only on the admin
-            last_updated = (
-              connection.clients(client_id)
-              .experiments()
-              .fetch(
-                sort=EXPERIMENT_RECENCY,
-                limit=page_size,
-              )
-              .iterate_pages()
-            )
-            assert [e.id for e in last_updated] == [e1.id, e3.id, e2.id]
-            last_created = (
-              connection.clients(client_id)
-              .experiments()
-              .fetch(
-                sort="id",
-                limit=page_size,
-              )
-              .iterate_pages()
-            )
-            assert [e.id for e in last_created] == [e3.id, e2.id, e1.id]
-            search_by_recency = (
-              connection.clients(client_id)
-              .experiments()
-              .fetch(
-                search=match,
-                sort=EXPERIMENT_RECENCY,
-                limit=page_size,
-              )
-              .iterate_pages()
-            )
-            assert [e.id for e in search_by_recency] == [e1.id, e3.id]
-            search_by_id = (
-              connection.clients(client_id)
-              .experiments()
-              .fetch(
-                search=match,
-                sort="id",
-                limit=page_size,
-              )
-              .iterate_pages()
-            )
-            assert [e.id for e in search_by_id] == [e3.id, e1.id]
+      s = connection.experiments(e.id).suggestions().create()
+      connection.experiments(e.id).observations().create(suggestion=s.id, values=[{"value": 1}])
+    for page_size in (1, 2, 3, 100):
+      # used only on the admin
+      last_updated = (
+        connection.clients(client_id)
+        .experiments()
+        .fetch(
+          sort=EXPERIMENT_RECENCY,
+          limit=page_size,
+        )
+        .iterate_pages()
+      )
+      assert [e.id for e in last_updated] == [e1.id, e3.id, e2.id]
+      last_created = (
+        connection.clients(client_id)
+        .experiments()
+        .fetch(
+          sort="id",
+          limit=page_size,
+        )
+        .iterate_pages()
+      )
+      assert [e.id for e in last_created] == [e3.id, e2.id, e1.id]
+      search_by_recency = (
+        connection.clients(client_id)
+        .experiments()
+        .fetch(
+          search=match,
+          sort=EXPERIMENT_RECENCY,
+          limit=page_size,
+        )
+        .iterate_pages()
+      )
+      assert [e.id for e in search_by_recency] == [e1.id, e3.id]
+      search_by_id = (
+        connection.clients(client_id)
+        .experiments()
+        .fetch(
+          search=match,
+          sort="id",
+          limit=page_size,
+        )
+        .iterate_pages()
+      )
+      assert [e.id for e in search_by_id] == [e3.id, e1.id]
 
   def test_experiment_list_period(self, connection, client_id, services):
     e1, e2, e3 = (connection.create_any_experiment() for _ in range(3))

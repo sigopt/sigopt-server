@@ -53,19 +53,19 @@ class TestExperimentMetadata(ExperimentsTestBase):
   def test_update_metadata(self, connection, client_id):
     metadata: dict[str, Any] | None
 
-    with connection.create_any_experiment(client_id=client_id) as e:
-      # set metadata
-      metadata = {"foo": "bar"}
-      e = connection.experiments(e.id).update(metadata=metadata)
-      assert e.metadata.to_json() == metadata
-      # change metadata
-      metadata = {"biz": "baz"}
-      e = connection.experiments(e.id).update(metadata=metadata)
-      assert e.metadata.to_json() == metadata
-      # update with no effect
-      e = connection.experiments(e.id).update()
-      assert e.metadata.to_json() == metadata
-      # unset metadata
-      metadata = None
-      e = connection.experiments(e.id).update(metadata=metadata)
-      assert e.metadata is None
+    e = connection.create_any_experiment(client_id=client_id)
+    # set metadata
+    metadata = {"foo": "bar"}
+    e = connection.experiments(e.id).update(metadata=metadata)
+    assert e.metadata.to_json() == metadata
+    # change metadata
+    metadata = {"biz": "baz"}
+    e = connection.experiments(e.id).update(metadata=metadata)
+    assert e.metadata.to_json() == metadata
+    # update with no effect
+    e = connection.experiments(e.id).update()
+    assert e.metadata.to_json() == metadata
+    # unset metadata
+    metadata = None
+    e = connection.experiments(e.id).update(metadata=metadata)
+    assert e.metadata is None

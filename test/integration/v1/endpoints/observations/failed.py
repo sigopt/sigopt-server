@@ -12,8 +12,7 @@ from integration.v1.test_base import V1Base
 class TestValueFailed(V1Base):
   @pytest.fixture
   def experiment(self, connection):
-    with connection.create_any_experiment() as experiment:
-      yield experiment
+    return connection.create_any_experiment()
 
   @pytest.fixture
   def suggestion(self, connection, experiment):
@@ -73,104 +72,104 @@ class TestValueFailed(V1Base):
       connection.experiments(experiment.id).observations(observation.id).update(failed=True, values=[{"value": 1}])
 
   def test_update_just_failed(self, connection):
-    with connection.create_any_experiment() as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      failed_observation = (
-        connection.experiments(experiment.id)
-        .observations()
-        .create(
-          suggestion=suggestion.id,
-          failed=True,
-          no_optimize=True,
-        )
+    experiment = connection.create_any_experiment()
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    failed_observation = (
+      connection.experiments(experiment.id)
+      .observations()
+      .create(
+        suggestion=suggestion.id,
+        failed=True,
+        no_optimize=True,
       )
-      updated = (
-        connection.experiments(experiment.id)
-        .observations(failed_observation.id)
-        .update(
-          failed=True,
-          no_optimize=True,
-        )
+    )
+    updated = (
+      connection.experiments(experiment.id)
+      .observations(failed_observation.id)
+      .update(
+        failed=True,
+        no_optimize=True,
       )
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).observations(failed_observation.id).update(
-          failed=False,
-          no_optimize=True,
-        )
-      assert updated.failed is True
-      assert not updated.values
-      value_observation = (
-        connection.experiments(experiment.id)
-        .observations()
-        .create(
-          suggestion=suggestion.id,
-          values=[{"value": 1}],
-          no_optimize=True,
-        )
+    )
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).observations(failed_observation.id).update(
+        failed=False,
+        no_optimize=True,
       )
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).observations(value_observation.id).update(
-          failed=True,
-          no_optimize=True,
-        )
-      updated = (
-        connection.experiments(experiment.id)
-        .observations(value_observation.id)
-        .update(
-          failed=False,
-          no_optimize=True,
-        )
+    assert updated.failed is True
+    assert not updated.values
+    value_observation = (
+      connection.experiments(experiment.id)
+      .observations()
+      .create(
+        suggestion=suggestion.id,
+        values=[{"value": 1}],
+        no_optimize=True,
       )
-      assert updated.failed is False
-      assert updated.values[0].value == 1
+    )
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).observations(value_observation.id).update(
+        failed=True,
+        no_optimize=True,
+      )
+    updated = (
+      connection.experiments(experiment.id)
+      .observations(value_observation.id)
+      .update(
+        failed=False,
+        no_optimize=True,
+      )
+    )
+    assert updated.failed is False
+    assert updated.values[0].value == 1
 
   def test_update_just_value(self, connection):
-    with connection.create_any_experiment() as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      failed_observation = (
-        connection.experiments(experiment.id)
-        .observations()
-        .create(
-          suggestion=suggestion.id,
-          failed=True,
-          no_optimize=True,
-        )
+    experiment = connection.create_any_experiment()
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    failed_observation = (
+      connection.experiments(experiment.id)
+      .observations()
+      .create(
+        suggestion=suggestion.id,
+        failed=True,
+        no_optimize=True,
       )
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).observations(failed_observation.id).update(
-          values=[{"value": 3}],
-          no_optimize=True,
-        )
-      updated = (
-        connection.experiments(experiment.id)
-        .observations(failed_observation.id)
-        .update(
-          values=None,
-          no_optimize=True,
-        )
+    )
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).observations(failed_observation.id).update(
+        values=[{"value": 3}],
+        no_optimize=True,
       )
-      assert updated.failed is True
-      assert not updated.values
+    updated = (
+      connection.experiments(experiment.id)
+      .observations(failed_observation.id)
+      .update(
+        values=None,
+        no_optimize=True,
+      )
+    )
+    assert updated.failed is True
+    assert not updated.values
 
-      value_observation = (
-        connection.experiments(experiment.id)
-        .observations()
-        .create(
-          suggestion=suggestion.id,
-          values=[{"value": 1}],
-          no_optimize=True,
-        )
+    value_observation = (
+      connection.experiments(experiment.id)
+      .observations()
+      .create(
+        suggestion=suggestion.id,
+        values=[{"value": 1}],
+        no_optimize=True,
       )
-      updated = (
-        connection.experiments(experiment.id)
-        .observations(value_observation.id)
-        .update(
-          values=[{"value": 3}],
-          no_optimize=True,
-        )
+    )
+    updated = (
+      connection.experiments(experiment.id)
+      .observations(value_observation.id)
+      .update(
+        values=[{"value": 3}],
+        no_optimize=True,
       )
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(experiment.id).observations(value_observation.id).update(
-          no_optimize=True,
-          values=[{"value": None}],
-        )
+    )
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(experiment.id).observations(value_observation.id).update(
+        no_optimize=True,
+        values=[{"value": None}],
+      )

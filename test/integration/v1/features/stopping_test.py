@@ -23,94 +23,94 @@ class TestExperimentStoppingCriteria(V1Base):
     return connection.client_id
 
   def test_stopping_stagnation(self, connection):
-    with connection.create_any_experiment(observation_budget=499) as e:
-      dim = len(e.parameters)
-      stagnation_check_length = LOOKBACK_FACTOR * dim + NUM_TOP_RESULTS_TO_CHECK
+    e = connection.create_any_experiment(observation_budget=499)
+    dim = len(e.parameters)
+    stagnation_check_length = LOOKBACK_FACTOR * dim + NUM_TOP_RESULTS_TO_CHECK
 
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert not stopping_criteria.should_stop
+
+    for value in range(NUM_TOP_RESULTS_TO_CHECK):
+      connection.experiments(e.id).observations().create(**self.make_observation(e, [value]))
       stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
       assert not stopping_criteria.should_stop
 
-      for value in range(NUM_TOP_RESULTS_TO_CHECK):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [value]))
-        stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-        assert not stopping_criteria.should_stop
-
-      for value in range(stagnation_check_length - NUM_TOP_RESULTS_TO_CHECK - 1):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [-1]))
-        stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-        assert not stopping_criteria.should_stop
-
+    for value in range(stagnation_check_length - NUM_TOP_RESULTS_TO_CHECK - 1):
       connection.experiments(e.id).observations().create(**self.make_observation(e, [-1]))
       stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-      assert stopping_criteria.should_stop
-      assert set(stopping_criteria.reasons) == {"possible_stagnation"}
+      assert not stopping_criteria.should_stop
 
+    connection.experiments(e.id).observations().create(**self.make_observation(e, [-1]))
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert stopping_criteria.should_stop
+    assert set(stopping_criteria.reasons) == {"possible_stagnation"}
+
+    connection.experiments(e.id).observations().create(**self.make_observation(e, [NUM_TOP_RESULTS_TO_CHECK]))
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert not stopping_criteria.should_stop
+
+    for _ in range(stagnation_check_length - 2):
       connection.experiments(e.id).observations().create(**self.make_observation(e, [NUM_TOP_RESULTS_TO_CHECK]))
       stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
       assert not stopping_criteria.should_stop
 
-      for _ in range(stagnation_check_length - 2):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [NUM_TOP_RESULTS_TO_CHECK]))
-        stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-        assert not stopping_criteria.should_stop
-
-      for _ in range(NUM_TOP_RESULTS_TO_CHECK):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [NUM_TOP_RESULTS_TO_CHECK]))
-        stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-        assert stopping_criteria.should_stop
-        assert set(stopping_criteria.reasons) == {"possible_stagnation"}
-
-      connection.experiments(e.id).observations().delete()
+    for _ in range(NUM_TOP_RESULTS_TO_CHECK):
+      connection.experiments(e.id).observations().create(**self.make_observation(e, [NUM_TOP_RESULTS_TO_CHECK]))
       stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-      assert not stopping_criteria.should_stop
-
-  def test_stopping_stagnation_minimized(self, connection, config_broker):
-    with connection.create_any_experiment(metrics=[dict(name="metric", objective="minimize")]) as e:
-      stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-      assert not stopping_criteria.should_stop
-
-      dim = len(e.parameters)
-      stagnation_check_length = LOOKBACK_FACTOR * dim + NUM_TOP_RESULTS_TO_CHECK
-
-      for i in range(stagnation_check_length):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [-i]))
-        stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-        assert not stopping_criteria.should_stop
-
-      for i in range(stagnation_check_length):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [i]))
-        stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-
       assert stopping_criteria.should_stop
       assert set(stopping_criteria.reasons) == {"possible_stagnation"}
 
+    connection.experiments(e.id).observations().delete()
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert not stopping_criteria.should_stop
+
+  def test_stopping_stagnation_minimized(self, connection, config_broker):
+    e = connection.create_any_experiment(metrics=[dict(name="metric", objective="minimize")])
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert not stopping_criteria.should_stop
+
+    dim = len(e.parameters)
+    stagnation_check_length = LOOKBACK_FACTOR * dim + NUM_TOP_RESULTS_TO_CHECK
+
+    for i in range(stagnation_check_length):
+      connection.experiments(e.id).observations().create(**self.make_observation(e, [-i]))
+      stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+      assert not stopping_criteria.should_stop
+
+    for i in range(stagnation_check_length):
+      connection.experiments(e.id).observations().create(**self.make_observation(e, [i]))
+      stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+
+    assert stopping_criteria.should_stop
+    assert set(stopping_criteria.reasons) == {"possible_stagnation"}
+
   def test_stopping_budget(self, connection):
-    with connection.create_any_experiment(observation_budget=5) as e:
-      dim = len(e.parameters)
+    e = connection.create_any_experiment(observation_budget=5)
+    dim = len(e.parameters)
 
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert not stopping_criteria.should_stop
+
+    for k in range(e.observation_budget):
+      connection.experiments(e.id).observations().create(**self.make_observation(e, [k]))
       stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
       assert not stopping_criteria.should_stop
 
-      for k in range(e.observation_budget):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [k]))
-        stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-        assert not stopping_criteria.should_stop
+    connection.experiments(e.id).observations().create(**self.make_observation(e, [0]))
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert stopping_criteria.should_stop
+    assert set(stopping_criteria.reasons) == {"observation_budget_reached"}
 
+    for _ in range(LOOKBACK_FACTOR * dim - 1):
       connection.experiments(e.id).observations().create(**self.make_observation(e, [0]))
-      stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-      assert stopping_criteria.should_stop
-      assert set(stopping_criteria.reasons) == {"observation_budget_reached"}
 
-      for _ in range(LOOKBACK_FACTOR * dim - 1):
-        connection.experiments(e.id).observations().create(**self.make_observation(e, [0]))
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert stopping_criteria.should_stop
+    assert set(stopping_criteria.reasons) == {"possible_stagnation", "observation_budget_reached"}
 
-      stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-      assert stopping_criteria.should_stop
-      assert set(stopping_criteria.reasons) == {"possible_stagnation", "observation_budget_reached"}
-
-      connection.experiments(e.id).observations().delete()
-      stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
-      assert not stopping_criteria.should_stop
+    connection.experiments(e.id).observations().delete()
+    stopping_criteria = connection.experiments(e.id).stopping_criteria().fetch()
+    assert not stopping_criteria.should_stop
 
   def test_multimetric_stopping_criteria(self, connection, client_id):
     meta = {

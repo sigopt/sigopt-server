@@ -40,9 +40,9 @@ class TestExperimentsMultimetric(MultimetricExperimentFeaturesTestBase):
 
   def test_update_budget(self, connection, meta):
     # Cannot change the budget for a multimetric experiment
-    with connection.create_any_experiment(**meta) as e:
-      with RaisesApiException(HTTPStatus.BAD_REQUEST):
-        connection.experiments(e.id).update(observation_budget=meta["observation_budget"] + 1)
+    e = connection.create_any_experiment(**meta)
+    with RaisesApiException(HTTPStatus.BAD_REQUEST):
+      connection.experiments(e.id).update(observation_budget=meta["observation_budget"] + 1)
 
   # NOTE: May need to modify or supplement test to account for alphabetical return of metrics
   @pytest.mark.parametrize(

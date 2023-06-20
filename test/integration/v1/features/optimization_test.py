@@ -137,68 +137,64 @@ class TestOptimization(V1Base):
     db_connection,
     wait_for_empty_optimization_queue,
   ):
-    with connection.create_any_experiment() as experiment:
-      db_experiment = self.get_db_experiment(db_connection, experiment)
-      assert db_experiment
-      assert self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is None
-      assert services.unprocessed_suggestion_service.get_suggestions_per_source(experiment) == []
-      assert services.processed_suggestion_service.find_by_experiment(experiment) == []
+    experiment = connection.create_any_experiment()
+    db_experiment = self.get_db_experiment(db_connection, experiment)
+    assert db_experiment
+    assert self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is None
+    assert services.unprocessed_suggestion_service.get_suggestions_per_source(experiment) == []
+    assert services.processed_suggestion_service.find_by_experiment(experiment) == []
 
+    s = connection.experiments(experiment.id).suggestions().create()
+    assert self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is None
+    # actually processed suggestion, but we need source
+    unprocessed_suggestions = services.unprocessed_suggestion_service.find_by_experiment(experiment)
+    assert len(unprocessed_suggestions) == 1
+    initial_suggestion = unprocessed_suggestions[0]
+    if any(p.prior is not None for p in experiment.parameters):
+      assert initial_suggestion.source == UnprocessedSuggestion.Source.LOW_DISCREPANCY_RANDOM
+    else:
+      assert initial_suggestion.source == UnprocessedSuggestion.Source.LATIN_HYPERCUBE
+
+    connection.experiments(experiment.id).observations().create(
+      suggestion=s.id,
+      values=[{"value": 2.6}],
+      no_optimize=False,
+    )
+    # NOTE: the optimization messages for the previous call sometimes take longer than 10s to process
+    wait_for(
+      lambda: self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is not None,
+      timeout=20,
+    )
+
+    redis_unprocessed_suggestions = services.unprocessed_suggestion_service.get_suggestions_per_source(db_experiment)
+    redis_generated_suggestions = [
+      s for s in redis_unprocessed_suggestions if s.uuid_value != initial_suggestion.uuid_value
+    ]
+    assert not redis_generated_suggestions
+
+    for k in range(MINIMUM_SUCCESSES_TO_COMPUTE_EI):
       s = connection.experiments(experiment.id).suggestions().create()
-      assert self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is None
-      # actually processed suggestion, but we need source
-      unprocessed_suggestions = services.unprocessed_suggestion_service.find_by_experiment(experiment)
-      assert len(unprocessed_suggestions) == 1
-      initial_suggestion = unprocessed_suggestions[0]
-      if any(p.prior is not None for p in experiment.parameters):
-        assert initial_suggestion.source == UnprocessedSuggestion.Source.LOW_DISCREPANCY_RANDOM
-      else:
-        assert initial_suggestion.source == UnprocessedSuggestion.Source.LATIN_HYPERCUBE
-
       connection.experiments(experiment.id).observations().create(
         suggestion=s.id,
-        values=[{"value": 2.6}],
+        values=[{"value": 2.6 + k}],
         no_optimize=False,
       )
-      # NOTE: the optimization messages for the previous call sometimes take longer than 10s to process
-      wait_for(
-        lambda: self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is not None,
-        timeout=20,
-      )
 
+    def get_redis_suggestions():
       redis_unprocessed_suggestions = services.unprocessed_suggestion_service.get_suggestions_per_source(db_experiment)
       redis_generated_suggestions = [
         s for s in redis_unprocessed_suggestions if s.uuid_value != initial_suggestion.uuid_value
       ]
-      assert not redis_generated_suggestions
+      return redis_generated_suggestions
 
-      for k in range(MINIMUM_SUCCESSES_TO_COMPUTE_EI):
-        s = connection.experiments(experiment.id).suggestions().create()
-        connection.experiments(experiment.id).observations().create(
-          suggestion=s.id,
-          values=[{"value": 2.6 + k}],
-          no_optimize=False,
-        )
+    redis_generated_suggestions = wait_for(get_redis_suggestions)
+    assert all(s.source == EXPECTED_GP_OPTIMIZATION_SOURCE for s in redis_generated_suggestions)
 
-      def get_redis_suggestions():
-        redis_unprocessed_suggestions = services.unprocessed_suggestion_service.get_suggestions_per_source(
-          db_experiment
-        )
-        redis_generated_suggestions = [
-          s for s in redis_unprocessed_suggestions if s.uuid_value != initial_suggestion.uuid_value
-        ]
-        return redis_generated_suggestions
-
-      redis_generated_suggestions = wait_for(get_redis_suggestions)
-      assert all(s.source == EXPECTED_GP_OPTIMIZATION_SOURCE for s in redis_generated_suggestions)
-
-      unprocessed_suggestions = services.unprocessed_suggestion_service.find_by_experiment(experiment)
-      generated_suggestions = [s for s in unprocessed_suggestions if s.id != initial_suggestion.id]
-      assert generated_suggestions
-      assert not all(s.source == EXPECTED_GP_OPTIMIZATION_SOURCE for s in generated_suggestions)
-      assert all(
-        s.source in (EXPECTED_GP_OPTIMIZATION_SOURCE, initial_suggestion.source) for s in generated_suggestions
-      )
+    unprocessed_suggestions = services.unprocessed_suggestion_service.find_by_experiment(experiment)
+    generated_suggestions = [s for s in unprocessed_suggestions if s.id != initial_suggestion.id]
+    assert generated_suggestions
+    assert not all(s.source == EXPECTED_GP_OPTIMIZATION_SOURCE for s in generated_suggestions)
+    assert all(s.source in (EXPECTED_GP_OPTIMIZATION_SOURCE, initial_suggestion.source) for s in generated_suggestions)
 
   @pytest.mark.parametrize("experiment_type", ["random", "grid"])
   def test_no_optimize_experiments(
@@ -209,14 +205,14 @@ class TestOptimization(V1Base):
     experiment_type,
     wait_for_empty_optimization_queue,
   ):
-    with connection.create_any_experiment(type=experiment_type) as experiment:
-      s = connection.experiments(experiment.id).suggestions().create()
-      connection.experiments(experiment.id).observations().create(
-        suggestion=s.id,
-        values=[{"value": 2.6}],
-        no_optimize=False,
-      )
-      assert self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is None
+    experiment = connection.create_any_experiment(type=experiment_type)
+    s = connection.experiments(experiment.id).suggestions().create()
+    connection.experiments(experiment.id).observations().create(
+      suggestion=s.id,
+      values=[{"value": 2.6}],
+      no_optimize=False,
+    )
+    assert self.get_hyperparameters(db_connection, experiment, wait_for_empty_optimization_queue) is None
 
   def get_db_experiment(self, db_connection, experiment):
     return db_connection.first(db_connection.query(Experiment).filter_by(id=experiment.id))
