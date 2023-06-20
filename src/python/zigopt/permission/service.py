@@ -11,7 +11,7 @@ from zigopt.invite.constant import ADMIN_ROLE, READ_ONLY_ROLE, USER_ROLE
 from zigopt.json.builder import PermissionJsonBuilder
 from zigopt.membership.model import Membership
 from zigopt.net.errors import NotFoundError
-from zigopt.permission.model import Permission, PermissionMetaProxy
+from zigopt.permission.model import Permission
 from zigopt.protobuf.gen.permission.permissionmeta_pb2 import PermissionMeta
 from zigopt.services.base import Service
 from zigopt.user.model import User
@@ -226,7 +226,7 @@ class PermissionService(Service):
     raise Exception(f"Unrecognized invite role: {invite_role}\n")
 
   def update_meta(self, permission: Permission, meta: PermissionMeta) -> int:
-    permission.permission_meta = PermissionMetaProxy(meta)
+    permission.permission_meta = meta
     return self.services.database_service.update_one(
       self.services.database_service.query(Permission).filter(Permission.id == permission.id),
       {Permission.permission_meta: meta},
