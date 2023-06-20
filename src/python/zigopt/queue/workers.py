@@ -133,10 +133,8 @@ class QueueWorkers(QueueMessageHandler):
       # are not proceeding in an unrecoverable state
       self.logger.error("QueueWorkers shutting down due to fatal error")
       raise
-
-    else:
-      if not consumed:
-        time.sleep(non_crypto_random.uniform(1, 2))
+    if not consumed:
+      time.sleep(non_crypto_random.uniform(1, 2))
 
     return consumed
 
