@@ -38,9 +38,9 @@ class TrainingRunHandler(Handler):
       maybe_raise_for_incorrect_development_access(auth=self.auth, experiment=self.experiment, docs_url=docs_url)
 
   def find_objects(self):
-    training_run, project = self._find_training_run(self.training_run_id)
-    client = self._find_client(training_run.client_id)
+    training_run = self._find_training_run(self.training_run_id)
     project = self._find_project(training_run.project_id, training_run.client_id, training_run.id)
+    client = self._find_client(training_run.client_id)
     experiment = self._maybe_find_experiment(self.experiment_id)
     return extend_dict(
       super().find_objects(),
