@@ -18,6 +18,7 @@ ignored-modules=google.protobuf
 disable=
   abstract-method,
   arguments-differ,
+  broad-exception-raised,
   duplicate-code,
   invalid-name,
   missing-docstring,

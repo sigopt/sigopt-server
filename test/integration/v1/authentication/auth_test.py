@@ -34,7 +34,7 @@ class TestAuth(V1Base):
   @pytest.fixture(scope="function", params=["api", "dev"])
   def any_attacker(cls, config_broker, api, auth_provider, request, attacker, dev_attacker):
     del dev_attacker
-    return cls.make_v1_connection(config_broker, api, auth_provider, development=(request.param == "dev"))
+    return cls.make_v1_connection(config_broker, api, auth_provider, development=request.param == "dev")
 
   @classmethod
   @pytest.fixture(scope="function")
