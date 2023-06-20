@@ -33,7 +33,6 @@ class Permission(Base):
   user_id = Column(BigInteger)
   permission_meta: PermissionMeta = ProtobufColumn(
     PermissionMeta,
-    proxy=PermissionMeta,
     name="permission_meta_json",
     nullable=False,
   )
@@ -47,7 +46,7 @@ class Permission(Base):
 
   @validates("permission_meta")
   def validator(self, key, meta):
-    return ProtobufColumnValidator(meta, proxy=PermissionMeta)
+    return ProtobufColumnValidator(meta)
 
   @property
   def can_admin(self):
