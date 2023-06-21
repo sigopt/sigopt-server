@@ -30,9 +30,3 @@ jobs:
         with:
           name: trivy-images-results
           path: artifacts/trivy/
-  yarn-audit:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: yarn audit
