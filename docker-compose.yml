@@ -60,6 +60,10 @@ services:
       - integration.utils.mail
       - --send-port=6001
       - --receive-port=6002
+    networks:
+      default:
+        aliases:
+          - smtp.internal.sigopt.ninja
     deploy:
       resources:
         limits:
@@ -149,7 +153,7 @@ services:
     networks:
       default:
         aliases:
-          - api-server.ninja
+          - api.internal.sigopt.ninja
     deploy:
       resources:
         limits:
@@ -187,7 +191,7 @@ services:
     networks:
       default:
         aliases:
-          - app-server.ninja
+          - app.internal.sigopt.ninja
     deploy:
       resources:
         limits:
@@ -320,14 +324,14 @@ services:
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
+        mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-cookiejar
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
+        mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-user-uploads
   minio:
     restart: on-failure:5
@@ -344,6 +348,10 @@ services:
     volumes:
       - minio-data:/var/lib/minio/data
       - minio-config:/root/.minio
+    networks:
+      default:
+        aliases:
+          - minio.internal.sigopt.ninja
     deploy:
       resources:
         limits:

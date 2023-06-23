@@ -220,7 +220,7 @@ services:
     networks:
       default:
         aliases:
-          - api-server.ninja
+          - api.internal.sigopt.ninja
     deploy:
       resources:
         limits:
@@ -410,7 +410,7 @@ services:
     networks:
       default:
         aliases:
-          - webpack.ninja
+          - webpack.internal.sigopt.ninja
     deploy:
       resources:
         limits:
@@ -461,7 +461,7 @@ services:
     networks:
       default:
         aliases:
-          - app-server.ninja
+          - app.internal.sigopt.ninja
     deploy:
       resources:
         limits:
@@ -500,6 +500,10 @@ services:
       - ./scratch:/sigopt-server/scratch:ro
       - ./src/python/zigopt:/sigopt-server/src/python/zigopt:ro,cached
       - ./test/integration:/sigopt-server/test/integration:ro,cached
+    networks:
+      default:
+        aliases:
+          - smtp.internal.sigopt.ninja
     working_dir: /sigopt-server
     deploy:
       resources:
@@ -577,7 +581,7 @@ services:
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER CHANGEME123
         mc mb --ignore-existing sigopt/sigopt-cookiejar
     depends_on:
       - minio
@@ -586,7 +590,7 @@ services:
     entrypoint: ["/bin/sh", "-e", "-c"]
     command:
       - |
-        mc alias set sigopt http://minio:9000 ROOTUSER CHANGEME123
+        mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER CHANGEME123
         mc mb --ignore-existing sigopt/sigopt-user-uploads
     depends_on:
       - minio
@@ -599,7 +603,7 @@ services:
     networks:
       default:
         aliases:
-          - minio
+          - minio.internal.sigopt.ninja
     environment:
       - MINIO_ROOT_USER=ROOTUSER
       - MINIO_ROOT_PASSWORD=CHANGEME123
