@@ -98,14 +98,14 @@
     }
   },
   "redis": {
-    "host": "redis",
+    "host": "redis.internal.sigopt.ninja",
     "ssl": false
   },
   "smtp": {
     "enabled": true,
-    "host": "smtp",
+    "host": "smtp.internal.sigopt.ninja",
     "port": 6001,
-    "receive_host": "smtp",
+    "receive_host": "smtp.internal.sigopt.ninja",
     "receive_port": 6002
   },
   "test": {
