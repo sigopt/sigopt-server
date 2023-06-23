@@ -10,45 +10,36 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - id: trivy
-        uses: pozetroninc/github-action-get-latest-release@master
+      - run: mkdir -p artifacts/trivy
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@master
         with:
-          owner: aquasecurity
-          repo: trivy
-      - run: |
-          TRIVY_VERSION="${{ steps.trivy.outputs.release }}"
-          TRIVY_VERSION="${TRIVY_VERSION#v}"
-          curl -fSsLo trivy.deb \
-            "https://github.com/aquasecurity/trivy/releases/download/v$TRIVY_VERSION/trivy_${TRIVY_VERSION}_Linux-64bit.deb"
-          sudo dpkg -i trivy.deb
-          rm trivy.deb
-      - run: mkdir -p artifacts/trivy && trivy fs . --debug
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: trivy-fs-results
-          path: artifacts/trivy/results.json
+          scan-type: fs
+          scan-ref: .
+          trivy_config: trivy.yaml
   trivy-scan-images:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - id: trivy
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          owner: aquasecurity
-          repo: trivy
-      - run: |
-          TRIVY_VERSION="${{ steps.trivy.outputs.release }}"
-          TRIVY_VERSION="${TRIVY_VERSION#v}"
-          curl -fSsLo trivy.deb \
-            "https://github.com/aquasecurity/trivy/releases/download/v$TRIVY_VERSION/trivy_${TRIVY_VERSION}_Linux-64bit.deb"
-          sudo dpkg -i trivy.deb
-          rm trivy.deb
       - run: make submodules
-      - run: ./ci/trivy_scan_images.sh --ignore-unfixed --debug
-      - uses: actions/upload-artifact@v3
+      - run: ./ci/trivy_build_images.sh --ignore-unfixed --debug
+      - run: mkdir -p artifacts/trivy
+      - name: Trivy scan nginx
         if: always()
+        uses: aquasecurity/trivy-action@master
         with:
-          name: trivy-images-results
-          path: artifacts/trivy/
+          image-ref: sigopt/nginx:scan
+          trivy_config: trivy.yaml
+      - name: Trivy scan web
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/web:scan
+          trivy_config: trivy.yaml
+      - name: Trivy scan zigopt
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/zigopt:scan
+          trivy_config: trivy.yaml
