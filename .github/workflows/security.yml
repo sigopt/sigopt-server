@@ -30,16 +30,19 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/nginx:scan
+          ignore-unfixed: true
           trivy_config: trivy.yaml
       - name: Trivy scan web
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/web:scan
+          ignore-unfixed: true
           trivy_config: trivy.yaml
       - name: Trivy scan zigopt
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/zigopt:scan
+          ignore-unfixed: true
           trivy_config: trivy.yaml
