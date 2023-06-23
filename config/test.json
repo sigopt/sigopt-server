@@ -120,7 +120,7 @@
       "aws_secret_access_key": "CHANGEME123",
       "bucket": "sigopt-user-uploads",
       "enabled": true,
-      "external_url": "https://sigopt.ninja:9000"
+      "external_url": "https://sigopt.ninja:4443/minio"
     }
   },
   "web": {

@@ -3,5 +3,5 @@ user_uploads:
     aws_access_key_id: ROOTUSER
     bucket: sigopt-user-uploads
     enabled: true
-    external_url: https://sigopt.ninja:9000
+    external_url: https://sigopt.ninja:4443/minio
     region: us-east-1
