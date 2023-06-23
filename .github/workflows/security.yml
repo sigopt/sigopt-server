@@ -10,7 +10,18 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.42.1/trivy_0.42.1_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
+      - id: trivy
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: aquasecurity
+          repo: trivy
+      - run: |
+          TRIVY_VERSION="${{ steps.trivy.outputs.release }}"
+          TRIVY_VERSION="${TRIVY_VERSION#v}"
+          curl -fSsLo trivy.deb \
+            "https://github.com/aquasecurity/trivy/releases/download/v$TRIVY_VERSION/trivy_${TRIVY_VERSION}_Linux-64bit.deb"
+          sudo dpkg -i trivy.deb
+          rm trivy.deb
       - run: mkdir -p artifacts/trivy && trivy fs . --debug
       - uses: actions/upload-artifact@v3
         if: always()
@@ -22,7 +33,18 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.42.1/trivy_0.42.1_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
+      - id: trivy
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: aquasecurity
+          repo: trivy
+      - run: |
+          TRIVY_VERSION="${{ steps.trivy.outputs.release }}"
+          TRIVY_VERSION="${TRIVY_VERSION#v}"
+          curl -fSsLo trivy.deb \
+            "https://github.com/aquasecurity/trivy/releases/download/v$TRIVY_VERSION/trivy_${TRIVY_VERSION}_Linux-64bit.deb"
+          sudo dpkg -i trivy.deb
+          rm trivy.deb
       - run: make submodules
       - run: ./ci/trivy_scan_images.sh --ignore-unfixed --debug
       - uses: actions/upload-artifact@v3
