@@ -14,6 +14,3 @@ docker build . --tag=sigopt/zigopt:scan --file=docker/images/zigopt/Dockerfile \
   --build-arg=PROTOBUF_VERSION="$PROTOBUF_VERSION" \
   --build-arg=PYTHON_MAJOR="$PYTHON_MAJOR" \
   --build-arg=PYTHON_MINOR="$PYTHON_MINOR"
-
-mkdir -p artifacts/trivy
-python ./docker/scan_application_images.py --registry=sigopt --tag=scan -- "$@"
