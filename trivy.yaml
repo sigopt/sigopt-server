@@ -6,7 +6,7 @@ db:
   skip-update: false
 debug: false
 exit-code: 1
-format: json
+format: table
 image:
   removed-pkgs: false
 insecure: false
@@ -20,7 +20,6 @@ license:
   restricted: []
   unencumbered: []
 list-all-pkgs: false
-output: artifacts/trivy/results.json
 quiet: false
 scan:
   file-patterns: []
