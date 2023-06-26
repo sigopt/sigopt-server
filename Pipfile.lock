@@ -85,11 +85,11 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:21d0c2cb1461f2676e41a896e6e551c7da09e923f416322182520851b179ebda",
-                "sha256:44b26a5468402bb9e5028d8f9ef2eba973cde016979aa72f87db32ef9000dab4"
+                "sha256:15d38dae978aba829daaf8d1b02ba2f2b73d4c1e4edc75234163d65a1328c1b5",
+                "sha256:dacf41787978c0d550321d334e0001a488145200f8a6c9bd893fb8e281b25cf7"
             ],
             "index": "pypi",
-            "version": "==1.29.156"
+            "version": "==1.29.160"
         },
         "click": {
             "hashes": [
@@ -800,10 +800,11 @@
         },
         "zope.event": {
             "hashes": [
-                "sha256:73d9e3ef750cca14816a9c322c7250b0d7c9dbc337df5d1b807ff8d3d0b9e97c",
-                "sha256:81d98813046fc86cc4136e3698fee628a3282f9c320db18658c21749235fce80"
+                "sha256:2832e95014f4db26c47a13fdaef84cef2f4df37e66b59d8f1f4a8f319a632c26",
+                "sha256:bac440d8d9891b4068e2b5a2c5e2c9765a9df762944bda6955f96bb9b91e67cd"
             ],
-            "version": "==4.6"
+            "markers": "python_version >= '3.7'",
+            "version": "==5.0"
         },
         "zope.interface": {
             "hashes": [
@@ -1504,11 +1505,11 @@
         },
         "keyring": {
             "hashes": [
-                "sha256:4e87665a19c514c7edada8b15015cf89bd99b8d7edabc5c43cca77166fa8dfad",
-                "sha256:770f609eed2a16c65a6349f3ba1545d00c73f9fed4254c13766c674fe6d0d22b"
+                "sha256:4901caaf597bfd3bbd78c9a0c7c4c29fcd8310dab2cffefe749e916b6527acd6",
+                "sha256:ca0746a19ec421219f4d713f848fa297a661a8a8c1504867e55bfb5e09091509"
             ],
-            "markers": "python_version >= '3.7'",
-            "version": "==24.0.0"
+            "markers": "python_version >= '3.8'",
+            "version": "==24.2.0"
         },
         "lazy-object-proxy": {
             "hashes": [
@@ -1554,11 +1555,11 @@
         },
         "lsprotocol": {
             "hashes": [
-                "sha256:133c339a7cccb299a5b357f9b8ef6aebe27616e0daf4ba54e63476afe0e12e47",
-                "sha256:32edfd4856abba1349bf5a070567445b3d7286951afba3644b472629796f82d0"
+                "sha256:80aae7e39171b49025876a524937c10be2eb986f4be700ca22ee7d186b8488aa",
+                "sha256:c4f2f77712b50d065b17f9b50d2b88c480dc2ce4bbaa56eea8269dbf54bc9701"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2023.0.0a1"
+            "version": "==2023.0.0a2"
         },
         "lxml": {
             "hashes": [
@@ -1868,11 +1869,11 @@
         },
         "platformdirs": {
             "hashes": [
-                "sha256:57e28820ca8094678b807ff529196506d7a21e17156cb1cddb3e74cebce54640",
-                "sha256:ffa199e3fbab8365778c4a10e1fbf1b9cd50707de826eb304b50e57ec0cc8d38"
+                "sha256:b0cabcb11063d21a0b261d557acb0a9d2126350e63b70cdf7db6347baea456dc",
+                "sha256:ca9ed98ce73076ba72e092b23d3c93ea6c4e186b3f1c3dad6edd98ff6ffcca2e"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==3.6.0"
+            "version": "==3.8.0"
         },
         "playwright": {
             "hashes": [
@@ -1889,11 +1890,11 @@
         },
         "pluggy": {
             "hashes": [
-                "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159",
-                "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"
+                "sha256:c2fd55a7d7a3863cba1a013e4e2414658b1d07b6bc57b3919e0c63c9abb99849",
+                "sha256:d12f0c4b579b15f5e054301bb226ee85eeeba08ffec228092f8defbaa3a4c4b3"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==1.0.0"
+            "markers": "python_version >= '3.7'",
+            "version": "==1.2.0"
         },
         "pre-commit": {
             "hashes": [
@@ -2324,10 +2325,10 @@
         },
         "types-pyopenssl": {
             "hashes": [
-                "sha256:43e307e8dfb3a7a8208a19874ca060305f460c529d4eaca8a2669ea89499f244",
-                "sha256:ba803a99440b0c2e9ab4e197084aeefc55bdfe8a580d367b2aa4210810a21240"
+                "sha256:0568553f104466f1b8e0db3360fbe6770137d02e21a1a45c209bf2b1b03d90d4",
+                "sha256:beeb5d22704c625a1e4b6dc756355c5b4af0b980138b702a9d9f932acf020903"
             ],
-            "version": "==23.2.0.0"
+            "version": "==23.2.0.1"
         },
         "types-pytz": {
             "hashes": [
