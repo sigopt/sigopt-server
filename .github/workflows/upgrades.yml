@@ -19,6 +19,7 @@ jobs:
           commit-message: yarn upgrade
           title: "Weekly `yarn upgrade` - ${{ steps.date.outputs.DATE }}"
           body: "Automatic changes made by Github Actions workflow specified in: `.github/workflows/upgrades.yml`"
+          reviewers: dwanderson-intel,tjs-intel
       - name: Check outputs
         if: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
