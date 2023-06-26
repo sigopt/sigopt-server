@@ -9,3 +9,12 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: yarn upgrade
+      - run: ! git diff
+      - name: Create pull request
+        if: ${{ failure() }}
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+      - name: Check outputs
+        if: ${{ steps.cpr.outputs.pull-request-url }}
+        run: |
+          echo "Pull Request Created - ${{ steps.cpr.outputs.pull-request-url }}"
