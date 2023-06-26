@@ -2,4 +2,4 @@ web:
   cookiejar_bucket: sigopt-cookiejar
   cookiejar_credentials:
     accessKeyId: ROOTUSER
-  cookiejar_endpoint: http://minio:9000
+  cookiejar_endpoint: http://minio.internal.sigopt.ninja:9000

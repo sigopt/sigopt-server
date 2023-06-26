@@ -10,29 +10,39 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.41.0/trivy_0.41.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
-      - run: mkdir -p artifacts/trivy && trivy fs . --debug
-      - uses: actions/upload-artifact@v3
-        if: always()
+      - run: mkdir -p artifacts/trivy
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@master
         with:
-          name: trivy-fs-results
-          path: artifacts/trivy/results.json
+          scan-type: fs
+          scan-ref: .
+          trivy_config: trivy.yaml
   trivy-scan-images:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: curl -fSsLo trivy.deb https://github.com/aquasecurity/trivy/releases/download/v0.41.0/trivy_0.41.0_Linux-64bit.deb && sudo dpkg -i trivy.deb && rm trivy.deb
       - run: make submodules
-      - run: ./ci/trivy_scan_images.sh --ignore-unfixed --debug
-      - uses: actions/upload-artifact@v3
+      - run: ./ci/trivy_build_images.sh --ignore-unfixed --debug
+      - run: mkdir -p artifacts/trivy
+      - name: Trivy scan nginx
         if: always()
+        uses: aquasecurity/trivy-action@master
         with:
-          name: trivy-images-results
-          path: artifacts/trivy/
-  yarn-audit:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: yarn audit
+          image-ref: sigopt/nginx:scan
+          ignore-unfixed: true
+          trivy_config: trivy.yaml
+      - name: Trivy scan web
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/web:scan
+          ignore-unfixed: true
+          trivy_config: trivy.yaml
+      - name: Trivy scan zigopt
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/zigopt:scan
+          ignore-unfixed: true
+          trivy_config: trivy.yaml
