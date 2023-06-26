@@ -86,8 +86,7 @@ class TestTrainingRunsDetail(V1Base):
     assert training_run.model.type == "xgboost"
     assert training_run.name == "Test training run"
     assert training_run.observation is None
-    assert training_run.project is None
-    assert training_run.project is None
+    assert training_run.project == project.id
     assert training_run.source_code.hash == "abcdef"
     assert training_run.source_code.content == 'print("hello")'
     assert training_run.state == "active"
