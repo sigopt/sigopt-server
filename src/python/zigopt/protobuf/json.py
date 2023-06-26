@@ -211,7 +211,8 @@ def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknow
     return [parse_json_with_descriptor(v, next_descriptor, message_factory, ignore_unknown_fields) for v in value]
   if isinstance(descriptor, Descriptor):
     if is_mapping(value):
-      Cls = message_factory.GetPrototype(descriptor)
+      # pylint: disable-next=protected-access
+      Cls = message_factory._classes[descriptor]
       return dict_to_protobuf(Cls, value, ignore_unknown_fields=ignore_unknown_fields)
     raise ValueError(f"Invalid value for protobuf descriptor {descriptor.full_name}: {value}")
   if isinstance(descriptor, FieldDescriptor):
@@ -226,7 +227,8 @@ def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknow
       raise ValueError(f"Invalid value for map descriptor {descriptor.full_name}: {value}")
     if is_valid_field_descriptor_for_value(value, descriptor, is_emit=False):
       if is_mapping(value):
-        Cls = message_factory.GetPrototype(descriptor.message_type)
+        # pylint: disable-next=protected-access
+        Cls = message_factory._classes[descriptor]
         return dict_to_protobuf(Cls, value, ignore_unknown_fields=ignore_unknown_fields)
       return value
     raise ValueError(f"Invalid value for field descriptor {descriptor.full_name}: {value}")

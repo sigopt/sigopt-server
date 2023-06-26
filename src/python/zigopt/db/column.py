@@ -115,7 +115,8 @@ def _raise_for_is_usage():
 
 def _default_value_for_descriptor(message_factory, descriptor):
   if isinstance(descriptor, google.protobuf.descriptor.Descriptor):
-    Cls = message_factory.GetPrototype(descriptor)
+    # pylint: disable-next=protected-access
+    Cls = message_factory._classes[descriptor]
     return Cls()
   if isinstance(descriptor, google.protobuf.descriptor.FieldDescriptor):
     if descriptor.label == google.protobuf.descriptor.FieldDescriptor.LABEL_REPEATED:
