@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.common.sigopt_datetime import unix_timestamp
+from zigopt.project.model import Project
 from zigopt.protobuf.dict import dict_to_protobuf_struct
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import (
   Dataset,
@@ -17,9 +18,15 @@ from integration.v1.test_base import V1Base
 
 
 class TestTrainingRunsDetail(V1Base):
-  def test_detail(self, connection):
+  def test_detail(self, services, connection, project):
+    db_project = services.database_service.one(
+      services.database_service.query(Project)
+      .filter(Project.client_id == connection.client_id)
+      .filter(Project.reference_id == project.id)
+    )
     db_training_run = TrainingRun(
       client_id=connection.client_id,
+      project_id=db_project.id,
       created_by=connection.user_id,
       training_run_data=TrainingRunData(
         datasets={
