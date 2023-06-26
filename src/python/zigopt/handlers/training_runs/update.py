@@ -174,6 +174,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     if params.training_run_params.deleted is not None:
       update_clause[TrainingRun.deleted] = params.training_run_params.deleted
 
+    new_project = None
     if params.training_run_params.project:
       new_project = self.services.project_service.find_by_client_and_reference_id(
         self.training_run.client_id,
@@ -218,5 +219,5 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     return TrainingRunJsonBuilder(
       training_run=training_run,
       checkpoint_count=checkpoint_count,
-      project=self.project,
+      project=new_project or self.project,
     )
