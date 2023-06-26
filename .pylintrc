@@ -2,7 +2,6 @@
 ignore-patterns=.*_pb2.py
 reports=n
 extension-pkg-allow-list=lxml.etree
-load-plugins=pylint_protobuf
 
 [FORMAT]
 indent-string='  '
