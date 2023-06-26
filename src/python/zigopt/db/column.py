@@ -8,6 +8,7 @@ import google.protobuf.descriptor
 import google.protobuf.json_format
 import sqlalchemy
 import sqlalchemy.dialects.postgresql.json as json_operators
+from google.protobuf.message_factory import GetMessageClass  # type: ignore
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.sql import default_comparator, operators
@@ -113,10 +114,9 @@ def _raise_for_is_usage():
   )
 
 
-def _default_value_for_descriptor(message_factory, descriptor):
+def _default_value_for_descriptor(descriptor):
   if isinstance(descriptor, google.protobuf.descriptor.Descriptor):
-    # pylint: disable-next=protected-access
-    Cls = message_factory._classes[descriptor]
+    Cls = GetMessageClass(descriptor)
     return Cls()
   if isinstance(descriptor, google.protobuf.descriptor.FieldDescriptor):
     if descriptor.label == google.protobuf.descriptor.FieldDescriptor.LABEL_REPEATED:
@@ -132,10 +132,9 @@ def _default_value_for_descriptor(message_factory, descriptor):
 class _ProtobufColumnType(TypeDecorator):
   impl = JSONB
 
-  def __init__(self, descriptor, message_factory, proxy=None, with_default=True):
+  def __init__(self, descriptor, proxy=None, with_default=True):
     self._descriptor = descriptor
     self._proxy = proxy
-    self._message_factory = message_factory
     self._with_default = with_default
     super().__init__(none_as_null=True)
 
@@ -152,12 +151,11 @@ class _ProtobufColumnType(TypeDecorator):
 
   def process_result_value(self, value, dialect):
     if value is None:
-      result = _default_value_for_descriptor(self._message_factory, self._descriptor)
+      result = _default_value_for_descriptor(self._descriptor)
     else:
       result = parse_json_with_descriptor(
         value,
         self._descriptor,
-        self._message_factory,
         ignore_unknown_fields=True,
       )
     if self._proxy:
@@ -170,7 +168,7 @@ class _ProtobufColumnType(TypeDecorator):
     return self.process_result_value(value, dialect)
 
   def copy(self, **kw):
-    return _ProtobufColumnType(self._descriptor, self._message_factory, self._proxy, self._with_default)
+    return _ProtobufColumnType(self._descriptor, self._proxy, self._with_default)
 
   # pylint: disable=invalid-overridden-method
   def comparator_factory(self, *args, **kwargs):
@@ -178,15 +176,14 @@ class _ProtobufColumnType(TypeDecorator):
     type_ = expr.type
     if isinstance(type_, JSONB) and not isinstance(type_, _ProtobufColumnType):
       return super().comparator_factory(*args, **kwargs)
-    return _ProtobufColumnType.Comparator(self._descriptor, self._message_factory, self._with_default, *args, **kwargs)
+    return _ProtobufColumnType.Comparator(self._descriptor, self._with_default, *args, **kwargs)
 
   # pylint: enable=invalid-overridden-method
 
   class Comparator(JSONB.Comparator):
-    def __init__(self, descriptor, message_factory, with_default, *args, **kwargs):
+    def __init__(self, descriptor, with_default, *args, **kwargs):
       super().__init__(*args, **kwargs)
       self._descriptor = descriptor
-      self._message_factory = message_factory
       self._with_default = with_default
 
     @classmethod
@@ -200,7 +197,7 @@ class _ProtobufColumnType(TypeDecorator):
         raise Exception(
           "Invalid descriptor for default values - it is likely you are trying to cast repeated/composite field"
         )
-      default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
+      default_value = _default_value_for_descriptor(self._descriptor)
       return sql_coalesce(clause, default_value) if self._with_default else clause
 
     def as_primitive(self, with_default=True):
@@ -260,7 +257,7 @@ class _ProtobufColumnType(TypeDecorator):
         clause = self.as_primitive(with_default=operator not in OPERATORS_FORBIDDING_DEFAULTS)
       else:
         if operator in OPERATORS_REQUIRING_DEFAULTS:
-          default_value = _default_value_for_descriptor(self._message_factory, self._descriptor)
+          default_value = _default_value_for_descriptor(self._descriptor)
           with_default = sql_coalesce(self.expr, adapt_for_jsonb(default_value))
           # NOTE: This implementation is taken from `operate` in `sqlalchemy.sql.type_api`
           o = default_comparator.operator_lookup[operator.__name__]
@@ -287,7 +284,7 @@ class _ProtobufColumnType(TypeDecorator):
         next_cls = get_json_key(self._descriptor, key, json=True)
       except ValueError as e:
         raise KeyError(key) from e
-      next_type = _ProtobufColumnType(next_cls, self._message_factory, with_default=with_default)
+      next_type = _ProtobufColumnType(next_cls, with_default=with_default)
       return self.operate(operator, right_expr, result_type=next_type)
 
     def _get_field_descriptor(self, key):
@@ -361,8 +358,7 @@ class ProtobufColumn(sqlalchemy.Column):
   _constructor = sqlalchemy.Column
 
   def __init__(self, cls, proxy=None, **kwargs):
-    message_factory = google.protobuf.symbol_database.Default()  # type: ignore
-    super().__init__(type_=_ProtobufColumnType(cls.DESCRIPTOR, message_factory, proxy=proxy), **kwargs)
+    super().__init__(type_=_ProtobufColumnType(cls.DESCRIPTOR, proxy=proxy), **kwargs)
     self._cls = cls
     self._proxy = proxy
 

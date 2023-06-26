@@ -1,9 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-import google.protobuf.descriptor_pool
 import pytest
-from google.protobuf.symbol_database import SymbolDatabase
 
 from zigopt.protobuf.gen.test.message_pb2 import Child, Parent
 from zigopt.protobuf.json import *
@@ -14,13 +12,6 @@ def _field_descriptor(field_name):
 
 
 class TestUtils:
-  @pytest.fixture
-  def message_factory(self):
-    factory = SymbolDatabase(pool=google.protobuf.descriptor_pool.Default())
-    factory.RegisterMessage(Parent)
-    factory.RegisterMessage(Child)
-    return factory
-
   def test_get_json_key(self):
     assert get_json_key(Parent.DESCRIPTOR, "optional_double_field") == float
     assert get_json_key(Parent.DESCRIPTOR, "optional_string_field") == str
@@ -112,9 +103,9 @@ class TestUtils:
       ),
     ],
   )
-  def test_emit_json_with_descriptor(self, value, descriptor, eq, message_factory):
+  def test_emit_json_with_descriptor(self, value, descriptor, eq):
     assert emit_json_with_descriptor(value, descriptor) == eq
-    assert parse_json_with_descriptor(eq, descriptor, message_factory, ignore_unknown_fields=True) == value
+    assert parse_json_with_descriptor(eq, descriptor, ignore_unknown_fields=True) == value
 
   @pytest.mark.parametrize(
     "value, descriptor",
@@ -204,6 +195,6 @@ class TestUtils:
       ({"a": 1.0}, _field_descriptor("recursive_map_field")),
     ],
   )
-  def test_invalid_parse_json_with_descriptor(self, value, descriptor, message_factory):
+  def test_invalid_parse_json_with_descriptor(self, value, descriptor):
     with pytest.raises(ValueError):
-      parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknown_fields=True)
+      parse_json_with_descriptor(value, descriptor, ignore_unknown_fields=True)
