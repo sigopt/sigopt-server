@@ -16,7 +16,7 @@ from integration.v1.test_base import V1Base
 
 class TestTokenUpdate(V1Base):
   def test_rotate(self, connection, config_broker, api):
-    token_value = connection.conn.user_token
+    token_value = connection.user_token
     user_id = connection.sessions().fetch().user
     new_token = connection.tokens("self").update(token="rotate").token
     assert new_token != token_value
