@@ -113,7 +113,7 @@ class ProjectService(Service):
       remove_nones_mapping(updates),
     )
 
-  def projects_for_experiments(self, experiments: Sequence[Experiment]) -> Mapping[tuple[int, int], Project]:
+  def projects_for_experiments(self, experiments: Sequence[Experiment]) -> Mapping[tuple[int, int], Project | None]:
     if not experiments:
       return {}
     project_client_pairs = distinct([(e.project_id, e.client_id) for e in experiments if e.project_id is not None])
@@ -121,7 +121,7 @@ class ProjectService(Service):
       return {}
     projects = self.project_query.filter(tuple_(Project.id, Project.client_id).in_(project_client_pairs))
     project_map = {(p.id, p.client_id): p for p in projects}
-    return {e.id: project_map[(e.project_id, e.client_id)] for e in experiments}
+    return {e.id: project_map.get((e.project_id, e.client_id)) for e in experiments}
 
   def mark_as_updated_by_experiment(self, experiment: Experiment, project_id: int | None = None) -> None:
     timestamp = experiment.date_updated
