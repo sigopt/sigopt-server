@@ -5,6 +5,7 @@
 set -e
 set -o pipefail
 
+docker build -f docker/images/python-development/Dockerfile . -t sigopt/python-development:latest
 ./scripts/launch/compose.sh run --rm \
-  protowatch \
+  sigopt/python-development:latest \
   ./tools/protobuf/compile.sh
