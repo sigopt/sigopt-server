@@ -17,7 +17,6 @@ ignored-modules=google.protobuf
 disable=
   abstract-method,
   arguments-differ,
-  attr-defined,  # rely on mypy for detecting attribute errors
   broad-exception-raised,
   duplicate-code,
   invalid-name,
