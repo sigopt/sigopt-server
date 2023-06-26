@@ -15,6 +15,6 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v5
       - name: Check outputs
-        if: ${{ steps.cpr.outputs.pull-request-url }}
+        if: ${{ failure() && steps.cpr.outputs.pull-request-url }}
         run: |
           echo "Pull Request Created - ${{ steps.cpr.outputs.pull-request-url }}"
