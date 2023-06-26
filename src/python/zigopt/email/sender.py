@@ -25,7 +25,7 @@ class EmailSenderService(BaseEmailService):
     self.from_address = self.services.config_broker.get("email.from_address", default=None)
     assert self.method in ("smtp",)
 
-  def _sanitize(self, email: HtmlEmail):
+  def _sanitize(self, email: HtmlEmail) -> HtmlEmail:
     if self.from_address:
       email.from_address = self.from_address
     return email
