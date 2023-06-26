@@ -6,15 +6,20 @@ jobs:
   yarn:
     runs-on: ubuntu-latest
     steps:
+      - name: Get current date
+        id: date
+        run: echo "DATE=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: yarn upgrade
-      - run: "! git diff"
       - name: Create pull request
-        if: ${{ failure() }}
         id: cpr
         uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: yarn upgrade
+          title: "Weekly `yarn upgrade` - ${{ steps.date.outputs.DATE }}"
+          body: "Automatic changes made by Github Actions workflow specified in: `.github/workflows/upgrades.yml`"
       - name: Check outputs
-        if: ${{ failure() && steps.cpr.outputs.pull-request-url }}
+        if: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
           echo "Pull Request Created - ${{ steps.cpr.outputs.pull-request-url }}"
