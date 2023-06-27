@@ -20,8 +20,8 @@ class SuggestionBrokerTestBase(ServiceBase):
   @pytest.fixture
   def optimization_args(self):
     return OptimizationArgs(
-      source=None,
-      observation_iterator=[],
+      source=None,  # type: ignore
+      observation_iterator=iter(()),
       observation_count=0,
       failure_count=0,
       max_observation_id=None,

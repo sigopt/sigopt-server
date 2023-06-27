@@ -18,10 +18,10 @@ def partial_opt_args(**kwargs):
     failure_count=0,
     max_observation_id=0,
     observation_count=0,
-    observation_iterator=[],
+    observation_iterator=iter([]),
     old_hyperparameters=None,
     open_suggestions=[],
-    source=None,
+    source=None,  # type: ignore
     last_observation=None,
   )
   return args.copy_and_set(**kwargs)

@@ -4,20 +4,27 @@
 import logging
 import ssl
 import time
+from collections.abc import Callable, Generator, Iterable, Iterator, Mapping, Sequence
 from datetime import timedelta
+from functools import wraps
+from typing import Any, ParamSpec, TypeVar
 
-from sqlalchemy import create_engine, event, inspect, literal, select, update
+from sqlalchemy import Column, create_engine, event, inspect, literal, select, update
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert
+from sqlalchemy.engine import Connection, Engine, ResultProxy
 from sqlalchemy.engine.url import URL
 from sqlalchemy.exc import DatabaseError, OperationalError, StatementError
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Mapper, Query, Session, sessionmaker
 from sqlalchemy.orm.attributes import instance_state
 from sqlalchemy.orm.exc import NO_STATE, MultipleResultsFound, NoResultFound
+from sqlalchemy.pool import Pool
 from sqlalchemy.sql import text
+from sqlalchemy.sql.elements import ClauseElement
 
 import zigopt.db.all_models as _all_models  # pylint: disable=unused-import
 from zigopt.common import *
-from zigopt.services.base import Service
+from zigopt.db.declarative import Base
+from zigopt.services.base import GlobalService, Service
 
 
 del _all_models
@@ -36,11 +43,11 @@ class DatabaseConnection:
     event.listen(self.engine, "after_cursor_execute", self.after_cursor_execute)
 
   @property
-  def _read_logger(self):
+  def _read_logger(self) -> logging.Logger:
     return self._logger_factory.getLogger("sigopt.sql.read")
 
   @property
-  def _write_logger(self):
+  def _write_logger(self) -> logging.Logger:
     return self._logger_factory.getLogger("sigopt.sql")
 
   # senstive_logger is what gets backed up and logged permanently
@@ -48,33 +55,49 @@ class DatabaseConnection:
   # to avoid logging credentials to logger as well. but it is helpful to be able to inspect in more detail what's
   # happening in prod. so we use some heuristics below to try to detect sensitive values
   @property
-  def _sensitive_logger(self):
+  def _sensitive_logger(self) -> logging.Logger:
     return self._logger_factory.getLogger("sigopt.rawsql")
 
   @property
-  def _timing_logger(self):
+  def _timing_logger(self) -> logging.Logger:
     return self._logger_factory.getLogger("sigopt.rawsql.timing")
 
-  def test(self):
+  def test(self) -> None:
     session = self.create_session()
     try:
       session.execute("SELECT 1 AS connection_test;")
     finally:
       session.close()
 
-  def create_session(self):
+  def create_session(self) -> Session:
     return self._session_factory()
 
-  def close_session(self, session):
+  def close_session(self, session: Session) -> None:
     session.close()
 
-  def before_cursor_execute(self, conn, cursor, statement, parameters, context, executemany):
+  def before_cursor_execute(
+    self,
+    conn: Connection,
+    cursor,
+    statement: str,
+    parameters: Any,
+    context,
+    executemany,
+  ) -> None:
     del executemany
     params_to_log = self.sanitized_params(parameters)
     conn.info.setdefault("query_start_time", []).append(time.time())
     self._sensitive_logger.debug("%s\n%s", statement, params_to_log)
 
-  def after_cursor_execute(self, conn, cursor, statement, parameters, context, executemany):
+  def after_cursor_execute(
+    self,
+    conn: Connection,
+    cursor,
+    statement: str,
+    parameters: Any,
+    context,
+    executemany,
+  ) -> None:
     del executemany
     total = time.time() - conn.info["query_start_time"].pop(-1)
     total_ms = total * 1000
@@ -82,7 +105,7 @@ class DatabaseConnection:
     query_logger.info("%s", statement, extra={"query_time": total_ms})
     self._timing_logger.debug("%s ms", total_ms)
 
-  def sanitized_params(self, params):
+  def sanitized_params(self, params: Any) -> Any:
     def _sanitized_params(params_to_log):
       if is_sequence(params_to_log):
         return [_sanitized_params(p) for p in params_to_log]
@@ -97,14 +120,15 @@ class DatabaseConnection:
     return _sanitized_params(params)
 
 
-class DatabaseConnectionService(Service):
+class DatabaseConnectionService(GlobalService):
   @classmethod
-  def make_engine(cls, config, poolclass=None, **kwargs):
-    config = extend_dict({}, config, kwargs)
-    echo = config.get("echo", False)
-    ssl_context = config.get("ssl_context", None)
+  def make_engine(cls, config: dict[str, Any], poolclass: type[Pool] | None = None, **kwargs) -> Engine:
+    full_config: dict[str, Any] = {}
+    extend_dict(full_config, config, kwargs)
+    echo = full_config.get("echo", False)
+    ssl_context = full_config.get("ssl_context", None)
 
-    use_ssl = config.get("ssl", True)
+    use_ssl = full_config.get("ssl", True)
     connect_args = {}
     context_to_use = ssl_context or ssl.create_default_context()
     connect_args = {"ssl_context": context_to_use if use_ssl else None}
@@ -113,24 +137,24 @@ class DatabaseConnectionService(Service):
     default_pool_kwargs = dict(
       # Maximum number of persistent connections this engine will keep in the pool, reusing until pool_recycle seconds
       # This is per-process (and only used by code that takes advantage of threading, such as API but not QWorker)
-      pool_size=config.get("pool_size", 30),
+      pool_size=full_config.get("pool_size", 30),
       # we'd rather not waste time building and tearing down ephemeral connections
       max_overflow=0,
       # Timeout in seconds after which the Engine will automatically close
       # connections. -1 means do this never.
-      pool_recycle=config.get("pool_recycle", DEFAULT_POOL_RECYCLE_TIME),
+      pool_recycle=full_config.get("pool_recycle", DEFAULT_POOL_RECYCLE_TIME),
     )
     pool_kwargs = override_pool_kwargs or default_pool_kwargs
 
     return create_engine(
       URL(
         "postgresql+pg8000",
-        username=config.get("user", "postgres"),
-        password=config.get("password"),
-        host=config.get("host"),
-        port=config.get("port"),
-        database=config.get("path"),
-        query=config.get("query"),
+        username=full_config.get("user", "postgres"),
+        password=full_config.get("password"),
+        host=full_config.get("host"),
+        port=full_config.get("port"),
+        database=full_config.get("path"),
+        query=full_config.get("query"),
       ),
       connect_args=connect_args,
       execution_options={
@@ -140,7 +164,7 @@ class DatabaseConnectionService(Service):
       echo=echo,
     )
 
-  def warmup_db(self):
+  def warmup_db(self) -> DatabaseConnection | None:
     if self.services.config_broker.get("db.enabled", True):
       config = self.services.config_broker.get("db")
       db_connection = DatabaseConnection(
@@ -152,10 +176,15 @@ class DatabaseConnectionService(Service):
     return None
 
 
-def sanitize_errors(func):
+TParams = ParamSpec("TParams")
+TResult = TypeVar("TResult")
+
+
+def sanitize_errors(func: Callable[TParams, TResult]) -> Callable[TParams, TResult]:
   # SQLAlchemy includes the full statement and params in the exception error message, so we strip those out
   # so it can be logged safely
-  def wrapper(*args, **kwargs):
+  @wraps(func)
+  def wrapper(*args, **kwargs) -> TResult:
     try:
       return func(*args, **kwargs)
     except StatementError as e:
@@ -172,20 +201,23 @@ def sanitize_errors(func):
 
 # Retries the query if there is a DB connection error. Only appropriate for read-only functions, otherwise
 # we could potentially write data twice.
-def retry_on_error(func):
-  def wrapper(self, *args, **kwargs):
+def retry_on_error(func: Callable[TParams, TResult]) -> Callable[TParams, TResult]:
+  @wraps(func)
+  def wrapper(*args, **kwargs) -> TResult:
+    self: DatabaseService = args[0]
     with self.services.exception_logger.tolerate_exceptions(_TOLERATED_ERRORS):
-      return func(self, *args, **kwargs)
+      return func(*args, **kwargs)
     self.rollback_session()
-    return func(self, *args, **kwargs)
+    return func(*args, **kwargs)
 
   return wrapper
 
 
 class DatabaseService(Service):
   # pylint: disable=too-many-public-methods
+  _session: Session | None
 
-  def __init__(self, services, connection):
+  def __init__(self, services, connection: DatabaseConnection):
     super().__init__(services)
     self._session = None
     self._connection = connection
@@ -193,18 +225,18 @@ class DatabaseService(Service):
     self._flush_after_writes = True
 
   @property
-  def engine(self):
+  def engine(self) -> Engine:
     return self._connection.engine
 
-  def execute(self, stmt, **kwargs):
+  def execute(self, stmt: str, **kwargs) -> ResultProxy:
     return self.engine.execute(stmt, **kwargs)
 
-  def start_session(self):
+  def start_session(self) -> None:
     if self._session is not None:
       raise Exception("Started redundant session")
     self._session = self._connection.create_session()
 
-  def end_session(self):
+  def end_session(self) -> None:
     if self._session:
       self._connection.close_session(self._session)
     self._session = None
@@ -215,7 +247,7 @@ class DatabaseService(Service):
   # insert them rather than throwing an error. This is because self._session.add(obj)
   # is (almost) a noop when obj._sa_instance_state (has a key and is not attached) == detached
   # https://github.com/zzzeek/sqlalchemy/blob/dd755ca59b173dfd94c7198557553604ccdfa1c2/lib/sqlalchemy/orm/state.py#L227
-  def _ensure_safe_to_insert(self, obj):
+  def _ensure_safe_to_insert(self, obj: object) -> None:
     if inspect(obj).detached:
       msg = (
         "Cannot insert a detached ORM object. "
@@ -227,18 +259,18 @@ class DatabaseService(Service):
       raise ValueError(msg)
 
   @sanitize_errors
-  def flush_session(self):
+  def flush_session(self) -> None:
     assert self._session is not None
     self._session.flush()
 
   @sanitize_errors
-  def rollback_session(self):
+  def rollback_session(self) -> None:
     assert self._session is not None
     self._session.rollback()
     self._session.expunge_all()
 
   @sanitize_errors
-  def insert(self, obj):
+  def insert(self, obj) -> None:
     assert self._session is not None
     self._ensure_safe_to_insert(obj)
     self._session.add(obj)
@@ -260,7 +292,13 @@ class DatabaseService(Service):
   #   )
   #   returns [(X,)] where X is the result of the Example.key_2 insert
   @sanitize_errors
-  def insert_from(self, obj, insert_dict, returning, where_clause=lambda s: s):
+  def insert_from(
+    self,
+    obj: Base,
+    insert_dict: dict[Column, Any],
+    returning: Column | tuple[Column, ...],
+    where_clause: Callable[[Query], Query] = lambda s: s,
+  ) -> Sequence[Any]:
     column_properties = inspect(obj.__class__).column_attrs
     assert [len(prop.columns) == 1 for prop in column_properties]
     columns_and_values = [(prop.columns[0], getattr(obj, prop.key)) for prop in column_properties]
@@ -287,7 +325,7 @@ class DatabaseService(Service):
   # leaving whatever values that were in the db previously.
   # Given that storing None values can be desirable, skip_none is an optional behaviour.
   @sanitize_errors
-  def upsert(self, obj, where=None, skip_none=False):
+  def upsert(self, obj: Base, where: ClauseElement | None = None, skip_none: bool = False) -> None:
     column_values = self._get_column_values(obj)
     if skip_none:
       column_values = remove_nones_mapping(column_values)
@@ -302,13 +340,13 @@ class DatabaseService(Service):
     )
     self._commit()
 
-  def _get_column_values(self, obj):
+  def _get_column_values(self, obj: Base) -> dict[str, Any]:
     column_properties = inspect(obj.__class__).column_attrs
     assert [len(prop.columns) == 1 for prop in column_properties]
-    return dict(((prop.columns[0].name, getattr(obj, prop.key)) for prop in column_properties))
+    return {prop.columns[0].name: getattr(obj, prop.key) for prop in column_properties}
 
   @sanitize_errors
-  def reserve_ids(self, sequence_name, count):
+  def reserve_ids(self, sequence_name: str, count: int) -> Sequence[int]:
     generated_ids = self.execute(
       text("SELECT nextval(:sequence_name) from generate_series(1,:count)"),
       sequence_name=sequence_name,
@@ -323,7 +361,7 @@ class DatabaseService(Service):
   # are inserted one-at-a-time. This is the most common case and could likely
   # be improved.
   @sanitize_errors
-  def insert_all(self, objs, return_defaults=True):
+  def insert_all(self, objs: Sequence[Base], return_defaults: bool = True) -> None:
     for obj in objs:
       self._ensure_safe_to_insert(obj)
     if objs:
@@ -332,19 +370,19 @@ class DatabaseService(Service):
       self._commit()
 
   @sanitize_errors
-  def update_all(self, mapper, mappings):
+  def update_all(self, mapper: Mapper, mappings: Iterable[Mapping[str, Any]]) -> None:
     assert self._session is not None
     self._session.bulk_update_mappings(mapper, mappings)
     self._commit()
 
   @sanitize_errors
-  def query(self, *args):
+  def query(self, *args) -> Query:
     assert self._session is not None
     return self._session.query(*args)
 
   @sanitize_errors
   @retry_on_error
-  def first(self, q):
+  def first(self, q: Query) -> Any:
     ret = q.first()
     self._expunge(ret)
     self._rollback()
@@ -352,7 +390,7 @@ class DatabaseService(Service):
 
   @sanitize_errors
   @retry_on_error
-  def all(self, q):
+  def all(self, q: Query) -> Sequence[Any]:
     ret = q.all()
     for r in ret:
       self._expunge(r)
@@ -361,7 +399,7 @@ class DatabaseService(Service):
 
   @sanitize_errors
   @retry_on_error
-  def one(self, q):
+  def one(self, q: Query) -> Any:
     ret = q.one()
     self._expunge_one(ret)
     self._rollback()
@@ -369,7 +407,7 @@ class DatabaseService(Service):
 
   @sanitize_errors
   @retry_on_error
-  def one_or_none(self, q):
+  def one_or_none(self, q: Query) -> Any | None:
     ret = q.one_or_none()
     if ret is not None:
       self._expunge_one(ret)
@@ -378,11 +416,11 @@ class DatabaseService(Service):
 
   @sanitize_errors
   @retry_on_error
-  def scalar(self, q):
+  def scalar(self, q: Query) -> Any:
     return q.scalar()
 
   # NOTE: q is a nested query, self.query is required to execute the `exists` clause.
-  def exists(self, q):
+  def exists(self, q: Query) -> bool:
     return self.scalar(self.query(q.exists()))
 
   # Yields rows while only fetching `batch_size` rows into memory at a time.
@@ -390,11 +428,11 @@ class DatabaseService(Service):
   # NOTE: Read this caveat before using this method
   # http://www.mail-archive.com/sqlalchemy@googlegroups.com/msg12443.html
   @sanitize_errors
-  def stream(self, batch_size, q):
+  def stream(self, batch_size: int, q: Query) -> Iterator[Any]:
     return self._stream_generator(batch_size, q)
 
   @generator_to_safe_iterator
-  def _stream_generator(self, batch_size, q):
+  def _stream_generator(self, batch_size: int, q: Query) -> Generator[Any, None, None]:
     for r in q.yield_per(batch_size):
       self._expunge(r)
       yield r
@@ -402,13 +440,13 @@ class DatabaseService(Service):
 
   @sanitize_errors
   @retry_on_error
-  def count(self, q):
+  def count(self, q: Query) -> int:
     ret = q.count()
     self._rollback()
     return ret
 
   @sanitize_errors
-  def delete(self, q):
+  def delete(self, q: Query) -> int:
     return self._commit_modification_if_allowed(
       q.delete(synchronize_session=False),
       allow_more_than_one=True,
@@ -416,7 +454,7 @@ class DatabaseService(Service):
     )
 
   @sanitize_errors
-  def delete_one(self, q):
+  def delete_one(self, q: Query) -> int:
     return self._commit_modification_if_allowed(
       q.delete(synchronize_session=False),
       allow_more_than_one=False,
@@ -424,7 +462,7 @@ class DatabaseService(Service):
     )
 
   @sanitize_errors
-  def delete_one_or_none(self, q):
+  def delete_one_or_none(self, q: Query) -> int:
     return self._commit_modification_if_allowed(
       q.delete(synchronize_session=False),
       allow_more_than_one=False,
@@ -432,7 +470,7 @@ class DatabaseService(Service):
     )
 
   @sanitize_errors
-  def update(self, q, params):
+  def update(self, q: Query, params: dict[Column, Any]) -> int:
     return self._commit_modification_if_allowed(
       q.update(params, synchronize_session=False),
       allow_more_than_one=True,
@@ -440,7 +478,7 @@ class DatabaseService(Service):
     )
 
   @sanitize_errors
-  def update_one(self, q, params):
+  def update_one(self, q: Query, params: dict[Column, Any]) -> int:
     return self._commit_modification_if_allowed(
       q.update(params, synchronize_session=False),
       allow_more_than_one=False,
@@ -448,7 +486,7 @@ class DatabaseService(Service):
     )
 
   @sanitize_errors
-  def update_one_or_none(self, q, params):
+  def update_one_or_none(self, q: Query, params: dict[Column, Any]) -> int:
     return self._commit_modification_if_allowed(
       q.update(params, synchronize_session=False),
       allow_more_than_one=False,
@@ -456,7 +494,7 @@ class DatabaseService(Service):
     )
 
   @sanitize_errors
-  def update_returning(self, model, where, values):
+  def update_returning(self, model: type[Base], where: ClauseElement, values: dict[Column, Any]) -> Sequence[Base]:
     assert self._session is not None
     rows = self._session.execute(update(model).where(where).values(**values).returning(*model.__table__.columns))
     self._commit()
@@ -466,7 +504,7 @@ class DatabaseService(Service):
     objs = [model(**{key: row[value] for key, value in kwarg_map.items()}) for row in rows]
     return objs
 
-  def _commit_modification_if_allowed(self, count, allow_more_than_one, allow_zero):
+  def _commit_modification_if_allowed(self, count: int, allow_more_than_one: bool, allow_zero: bool) -> int:
     assert is_number(count)
     try:
       if not allow_zero:
@@ -479,15 +517,15 @@ class DatabaseService(Service):
     self._commit()
     return count
 
-  def _maybe_raise_multiple_results_found(self, count):
+  def _maybe_raise_multiple_results_found(self, count: int) -> None:
     if count > 1:
       raise MultipleResultsFound(f"Expected exactly one result - {count} found")
 
-  def _maybe_raise_no_result_found(self, count):
+  def _maybe_raise_no_result_found(self, count: int) -> None:
     if count == 0:
       raise NoResultFound("Expected exactly one result - none found")
 
-  def _commit(self):
+  def _commit(self) -> None:
     if self._in_transaction:
       if self._flush_after_writes:
         self.flush_session()
@@ -495,12 +533,12 @@ class DatabaseService(Service):
       assert self._session is not None
       self._session.commit()
 
-  def _rollback(self):
+  def _rollback(self) -> None:
     if not self._in_transaction:
       assert self._session is not None
       self._session.rollback()
 
-  def _expunge(self, obj):
+  def _expunge(self, obj: Any | Sequence[Any]) -> None:
     if obj:
       if is_sequence(obj):
         for o in obj:
@@ -508,7 +546,7 @@ class DatabaseService(Service):
       else:
         self._expunge_one(obj)
 
-  def _expunge_one(self, obj):
+  def _expunge_one(self, obj: Any) -> None:
     if not self._in_transaction:
       try:
         instance_state(obj)

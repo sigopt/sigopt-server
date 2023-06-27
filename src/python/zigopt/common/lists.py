@@ -95,7 +95,7 @@ def partition(lis: Sequence[T], predicate: Callable[[T], bool]) -> tuple[list[T]
 @deal.ensure(lambda lis, result: set(lis) == set(result))
 @deal.post(lambda result: len(result) == len(set(result)))
 @deal.pure
-def distinct(lis: list[THashable] | tuple[THashable, ...]) -> Sequence[THashable]:
+def distinct(lis: Sequence[THashable]) -> Sequence[THashable]:
   """
     Returns a copy of lis with only distinct elements, preserving order.
     """

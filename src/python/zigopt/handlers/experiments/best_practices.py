@@ -12,5 +12,7 @@ class ExperimentsBestPracticesHandler(ExperimentHandler):
   required_permissions = READ
 
   def handle(self):
-    errors = list(self.services.best_practices_service.check_experiment(self.experiment))
+    errors = []
+    if self.experiment:
+      errors = list(self.services.best_practices_service.check_experiment(self.experiment))
     return BestPracticesJsonBuilder(violations=errors)

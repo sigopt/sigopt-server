@@ -59,112 +59,112 @@ class TestProjectDateUpdated(V1Base):
 
   def test_experiment_create_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      assert e.project == project.reference_id
-      project = self.refresh_project(services, project)
-      assert project.date_updated >= update_time
-      assert datetime_to_seconds(project.date_updated) == e.updated
+    e = connection.create_any_experiment(project=project.reference_id)
+    assert e.project == project.reference_id
+    project = self.refresh_project(services, project)
+    assert project.date_updated >= update_time
+    assert datetime_to_seconds(project.date_updated) == e.updated
 
   def test_add_experiment_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment() as e:
-      assert e.project is None
-      self.reset_date_updated(services, project, e)
-      updated_e = connection.experiments(e.id).update(project=project.reference_id)
-      assert updated_e.project == project.reference_id
-      project = self.refresh_project(services, project)
-      assert project.date_updated >= update_time
-      assert datetime_to_seconds(project.date_updated) == updated_e.updated
+    e = connection.create_any_experiment()
+    assert e.project is None
+    self.reset_date_updated(services, project, e)
+    updated_e = connection.experiments(e.id).update(project=project.reference_id)
+    assert updated_e.project == project.reference_id
+    project = self.refresh_project(services, project)
+    assert project.date_updated >= update_time
+    assert datetime_to_seconds(project.date_updated) == updated_e.updated
 
   def test_remove_experiment_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      assert e.project == project.reference_id
-      self.reset_date_updated(services, project, e)
-      updated_e = connection.experiments(e.id).update(project=None)
-      assert updated_e.project is None
-      project = self.refresh_project(services, project)
-      assert project.date_updated >= update_time
-      assert datetime_to_seconds(project.date_updated) == updated_e.updated
+    e = connection.create_any_experiment(project=project.reference_id)
+    assert e.project == project.reference_id
+    self.reset_date_updated(services, project, e)
+    updated_e = connection.experiments(e.id).update(project=None)
+    assert updated_e.project is None
+    project = self.refresh_project(services, project)
+    assert project.date_updated >= update_time
+    assert datetime_to_seconds(project.date_updated) == updated_e.updated
 
   def test_experiment_archive_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      assert e.project == project.reference_id
-      self.reset_date_updated(services, project, e)
-      connection.experiments(e.id).delete()
-      assert e.project == project.reference_id
-      project = self.refresh_project(services, project)
-      assert project.date_updated >= update_time
+    e = connection.create_any_experiment(project=project.reference_id)
+    assert e.project == project.reference_id
+    self.reset_date_updated(services, project, e)
+    connection.experiments(e.id).delete()
+    assert e.project == project.reference_id
+    project = self.refresh_project(services, project)
+    assert project.date_updated >= update_time
 
   @pytest.mark.skip(reason="suggestions dont actually update experiments")
   def test_create_suggestion_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      assert e.project == project.reference_id
-      self.reset_date_updated(services, project, e)
-      suggestion = connection.experiments(e.id).suggestions().create()
-      project = self.refresh_project(services, project)
-      assert datetime_to_seconds(project.date_updated) == suggestion.created
+    e = connection.create_any_experiment(project=project.reference_id)
+    assert e.project == project.reference_id
+    self.reset_date_updated(services, project, e)
+    suggestion = connection.experiments(e.id).suggestions().create()
+    project = self.refresh_project(services, project)
+    assert datetime_to_seconds(project.date_updated) == suggestion.created
 
   def test_create_observation_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      assert e.project == project.reference_id
-      suggestion = connection.experiments(e.id).suggestions().create()
-      self.reset_date_updated(services, project, e)
-      observation = (
-        connection.experiments(e.id)
-        .observations()
-        .create(
-          suggestion=suggestion.id,
-          values=[{"value": 0}],
-        )
+    e = connection.create_any_experiment(project=project.reference_id)
+    assert e.project == project.reference_id
+    suggestion = connection.experiments(e.id).suggestions().create()
+    self.reset_date_updated(services, project, e)
+    observation = (
+      connection.experiments(e.id)
+      .observations()
+      .create(
+        suggestion=suggestion.id,
+        values=[{"value": 0}],
       )
-      project = self.refresh_project(services, project)
-      assert project.date_updated >= update_time
-      assert datetime_to_seconds(project.date_updated) == observation.created
+    )
+    project = self.refresh_project(services, project)
+    assert project.date_updated >= update_time
+    assert datetime_to_seconds(project.date_updated) == observation.created
 
   def test_observation_update_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      assert e.project == project.reference_id
-      suggestion = connection.experiments(e.id).suggestions().create()
-      observation = (
-        connection.experiments(e.id)
-        .observations()
-        .create(
-          suggestion=suggestion.id,
-          values=[{"value": 0}],
-        )
+    e = connection.create_any_experiment(project=project.reference_id)
+    assert e.project == project.reference_id
+    suggestion = connection.experiments(e.id).suggestions().create()
+    observation = (
+      connection.experiments(e.id)
+      .observations()
+      .create(
+        suggestion=suggestion.id,
+        values=[{"value": 0}],
       )
-      self.reset_date_updated(services, project, e)
-      observation = (
-        connection.experiments(e.id)
-        .observations(observation.id)
-        .update(
-          values=[{"value": 1}],
-        )
+    )
+    self.reset_date_updated(services, project, e)
+    observation = (
+      connection.experiments(e.id)
+      .observations(observation.id)
+      .update(
+        values=[{"value": 1}],
       )
-      project = self.refresh_project(services, project)
-      assert project.date_updated >= update_time
-      experiment = connection.experiments(e.id).fetch()
-      assert datetime_to_seconds(project.date_updated) == experiment.updated
+    )
+    project = self.refresh_project(services, project)
+    assert project.date_updated >= update_time
+    experiment = connection.experiments(e.id).fetch()
+    assert datetime_to_seconds(project.date_updated) == experiment.updated
 
   def test_observation_delete_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
-    with connection.create_any_experiment(project=project.reference_id) as e:
-      assert e.project == project.reference_id
-      suggestion = connection.experiments(e.id).suggestions().create()
-      observation = (
-        connection.experiments(e.id)
-        .observations()
-        .create(
-          suggestion=suggestion.id,
-          values=[{"value": 0}],
-        )
+    e = connection.create_any_experiment(project=project.reference_id)
+    assert e.project == project.reference_id
+    suggestion = connection.experiments(e.id).suggestions().create()
+    observation = (
+      connection.experiments(e.id)
+      .observations()
+      .create(
+        suggestion=suggestion.id,
+        values=[{"value": 0}],
       )
-      self.reset_date_updated(services, project, e)
-      connection.experiments(e.id).observations(observation.id).delete()
-      project = self.refresh_project(services, project)
-      assert project.date_updated >= update_time
+    )
+    self.reset_date_updated(services, project, e)
+    connection.experiments(e.id).observations(observation.id).delete()
+    project = self.refresh_project(services, project)
+    assert project.date_updated >= update_time

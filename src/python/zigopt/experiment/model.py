@@ -179,7 +179,7 @@ class Experiment(Base):
   project_id = Column(BigInteger)
   name = Column(String)
   date_created = Column(ImpliedUTCDateTime)
-  experiment_meta = ProtobufColumn(
+  experiment_meta: ExperimentMetaProxy = ProtobufColumn(
     ExperimentMeta,
     proxy=ExperimentMetaProxy,
     name="experiment_meta_json",
@@ -201,7 +201,7 @@ class Experiment(Base):
   )
 
   def __init__(self, *args, **kwargs):
-    kwargs["experiment_meta"] = kwargs.get("experiment_meta", Experiment.experiment_meta.default_value())
+    kwargs.setdefault("experiment_meta", ExperimentMeta())
     super().__init__(*args, **kwargs)
 
   @validates("experiment_meta", "_experiment_meta")

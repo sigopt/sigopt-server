@@ -30,18 +30,18 @@ class TestExperimentProgress(ExperimentsTestBase):
     assert experiment.progress.first_observation.values[0].value == -1
 
   def test_empty_experiment_progress(self, connection):
-    with connection.create_any_experiment() as experiment:
-      self.assert_progress_is_not_none(experiment)
+    experiment = connection.create_any_experiment()
+    self.assert_progress_is_not_none(experiment)
 
   def test_experiment_progress(self, connection):
-    with connection.create_any_experiment() as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      for i in [-1, 0, 1, 2, 1]:
-        connection.experiments(experiment.id).observations().create(
-          suggestion=suggestion.id, values=[{"value": i}], no_optimize=True
-        )
-      experiment = connection.experiments(experiment.id).fetch()
-      self.assert_progress(experiment)
+    experiment = connection.create_any_experiment()
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    for i in [-1, 0, 1, 2, 1]:
+      connection.experiments(experiment.id).observations().create(
+        suggestion=suggestion.id, values=[{"value": i}], no_optimize=True
+      )
+    experiment = connection.experiments(experiment.id).fetch()
+    self.assert_progress(experiment)
 
   def test_multitask_best_observation(self, connection):
     kwargs = dict(
@@ -52,20 +52,20 @@ class TestExperimentProgress(ExperimentsTestBase):
       ],
       observation_budget=10,
     )
-    with connection.create_any_experiment(**kwargs) as experiment:
-      connection.experiments(experiment.id).observations().create(
-        assignments=dict(x=1),
-        task=dict(name="cheap"),
-        values=[{"value": 100}],
-      )
-      connection.experiments(experiment.id).observations().create(
-        assignments=dict(x=2),
-        task=dict(name="true"),
-        values=[{"value": 1}],
-      )
-      experiment = connection.experiments(experiment.id).fetch()
-      assert experiment.progress.best_observation is not None
-      assert experiment.progress.best_observation.values[0].value == 1
+    experiment = connection.create_any_experiment(**kwargs)
+    connection.experiments(experiment.id).observations().create(
+      assignments=dict(x=1),
+      task=dict(name="cheap"),
+      values=[{"value": 100}],
+    )
+    connection.experiments(experiment.id).observations().create(
+      assignments=dict(x=2),
+      task=dict(name="true"),
+      values=[{"value": 1}],
+    )
+    experiment = connection.experiments(experiment.id).fetch()
+    assert experiment.progress.best_observation is not None
+    assert experiment.progress.best_observation.values[0].value == 1
 
   @pytest.mark.parametrize(
     "experiment_type",
@@ -75,9 +75,9 @@ class TestExperimentProgress(ExperimentsTestBase):
     ],
   )
   def test_empty_experiment_progress_benchmarked(self, connection, experiment_type):
-    with connection.create_any_experiment(type=experiment_type) as experiment:
-      assert experiment.type == experiment_type
-      self.assert_progress_is_not_none(experiment)
+    experiment = connection.create_any_experiment(type=experiment_type)
+    assert experiment.type == experiment_type
+    self.assert_progress_is_not_none(experiment)
 
   @pytest.mark.parametrize(
     "experiment_type",
@@ -87,15 +87,15 @@ class TestExperimentProgress(ExperimentsTestBase):
     ],
   )
   def test_experiment_progress_benchmarked(self, connection, experiment_type):
-    with connection.create_any_experiment(type=experiment_type) as experiment:
-      assert experiment.type == experiment_type
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      for i in [-1, 0, 1, 2, 1]:
-        connection.experiments(experiment.id).observations().create(
-          suggestion=suggestion.id, values=[{"value": i}], no_optimize=True
-        )
-      experiment = connection.experiments(experiment.id).fetch()
-      self.assert_progress(experiment)
+    experiment = connection.create_any_experiment(type=experiment_type)
+    assert experiment.type == experiment_type
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    for i in [-1, 0, 1, 2, 1]:
+      connection.experiments(experiment.id).observations().create(
+        suggestion=suggestion.id, values=[{"value": i}], no_optimize=True
+      )
+    experiment = connection.experiments(experiment.id).fetch()
+    self.assert_progress(experiment)
 
   def test_experiment_progress_objectives(self, connection, client_id, config_broker):
     min_metrics_json = [dict(name="cost", objective="minimize")]

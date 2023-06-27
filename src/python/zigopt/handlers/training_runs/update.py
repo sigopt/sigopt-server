@@ -152,6 +152,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
   def handle(self, params):
     assert self.auth is not None
     assert self.training_run is not None
+    assert self.project is not None
 
     self._ensure_field_cannot_be_removed(params, "state")
     self._ensure_field_cannot_be_removed(params, "name")
@@ -173,6 +174,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     if params.training_run_params.deleted is not None:
       update_clause[TrainingRun.deleted] = params.training_run_params.deleted
 
+    new_project = None
     if params.training_run_params.project:
       new_project = self.services.project_service.find_by_client_and_reference_id(
         self.training_run.client_id,
@@ -203,18 +205,19 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
       self.emit_update(update_clause)
 
     training_run = self.services.training_run_service.find_by_id(self.training_run.id)
+    assert training_run
 
     if is_completed_state(training_run.training_run_data.state):
       self._ensure_observation_exists(training_run, now)
       training_run = self.services.training_run_service.find_by_id(self.training_run.id)
+      assert training_run
 
     if params.skip_response_content:
       return None
 
-    project = self.services.project_service.find_by_client_and_id(training_run.client_id, training_run.project_id)
     checkpoint_count = self.services.checkpoint_service.count_by_training_run(self.training_run.id)
     return TrainingRunJsonBuilder(
       training_run=training_run,
       checkpoint_count=checkpoint_count,
-      project=project,
+      project=new_project or self.project,
     )

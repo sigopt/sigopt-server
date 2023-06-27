@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 import json
 import operator
+from collections.abc import Sequence
 
 from sqlalchemy import cast as sql_cast
 from sqlalchemy import func
@@ -20,6 +21,7 @@ from zigopt.handlers.projects.base import ProjectHandler
 from zigopt.handlers.training_runs.parser import TrainingRunRequestParser
 from zigopt.handlers.validate.validate_dict import ValidationType, get_unvalidated, get_with_validation
 from zigopt.json.builder import PaginationJsonBuilder, TrainingRunJsonBuilder
+from zigopt.project.model import Project
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 from zigopt.protobuf.gen.training_run.training_run_data_pb2 import TrainingRunData
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
@@ -260,6 +262,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
     count = next(f for f in defined_fields if f.key == "id").field_count
     checkpoint_counts = self.services.checkpoint_service.count_by_training_run_ids([t.id for t in training_runs])
 
+    projects: Sequence[Project]
     if project:
       projects = [project]
     elif client:
@@ -269,13 +272,15 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
       )
     else:
       unique_client_and_project_id = distinct([(t.client_id, t.project_id) for t in training_runs])
-      projects = [
-        self.services.project_service.find_by_client_and_id(
-          client_id=t_cid,
-          project_id=t_pid,
-        )
-        for (t_cid, t_pid) in unique_client_and_project_id
-      ]
+      projects = remove_nones_sequence(
+        [
+          self.services.project_service.find_by_client_and_id(
+            client_id=t_cid,
+            project_id=t_pid,
+          )
+          for (t_cid, t_pid) in unique_client_and_project_id
+        ]
+      )
 
     projects_by_id = to_map_by_key(projects, key=lambda p: p.id)
 

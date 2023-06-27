@@ -17,9 +17,9 @@ from integration.v1.experiments_test_base import ExperimentsTestBase
 
 class TestDetailExperiments(ExperimentsTestBase):
   def test_experiment_detail(self, connection):
-    with connection.create_any_experiment() as e:
-      detail = connection.experiments(e.id).fetch()
-      assert detail.id == e.id
+    e = connection.create_any_experiment()
+    detail = connection.experiments(e.id).fetch()
+    assert detail.id == e.id
 
   def test_parameter_order(self, connection, client_id):
     e = (

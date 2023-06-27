@@ -14,7 +14,7 @@ from zigopt.handlers.experiments.base import ExperimentHandler
 from zigopt.handlers.experiments.observations.create import CreatesObservationsMixin
 from zigopt.handlers.validate.observation import validate_observation_json_dict_for_create
 from zigopt.membership.model import MembershipType
-from zigopt.observation.model import Observation
+from zigopt.observation.model import Observation, ObservationDataProxy
 from zigopt.protobuf.gen.observation.observationdata_pb2 import ObservationData
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN, READ, WRITE
 
@@ -24,20 +24,32 @@ from integration.connection import IntegrationTestConnection
 from integration.utils.emails import extract_verify_code
 
 
-class Connection:
+class V1Connection(IntegrationTestConnection):
   def __init__(
-    self, sigopt_connection, client_id, organization_id, user_id=None, email=None, password=None, development=False
+    self,
+    *,
+    api_url,
+    client_id,
+    organization_id,
+    user_token=None,
+    client_token=None,
+    user_id=None,
+    email=None,
+    password=None,
+    development=False,
   ):
-    self.conn = sigopt_connection
+    super().__init__(
+      api_url=api_url,
+      user_token=user_token,
+      client_token=client_token,
+      development=development,
+    )
     self.client_id = client_id
     self.organization_id = organization_id
     self.user_id = user_id
     self.email = email
     self.password = password
     self.development = development
-
-  def __getattr__(self, name):
-    return getattr(self.conn, name)
 
 
 class _TestObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler):
@@ -102,14 +114,12 @@ class V1Base(BaseTest):
 
   @classmethod
   @pytest.fixture(scope="function")
-  def anonymous_connection(cls, config_broker, api):
+  def anonymous_connection(cls, config_broker, api) -> V1Connection:
     api_url = cls.get_api_url(config_broker)
-    conn = Connection(
-      IntegrationTestConnection(
-        api_url=api_url,
-        user_token=None,
-        client_token="_",
-      ),
+    conn = V1Connection(
+      api_url=api_url,
+      user_token=None,
+      client_token="_",
       client_id=None,
       organization_id=None,
       user_id=None,
@@ -119,17 +129,17 @@ class V1Base(BaseTest):
 
   @classmethod
   @pytest.fixture(scope="function")
-  def connection(cls, config_broker, api, auth_provider):
+  def connection(cls, config_broker, api, auth_provider) -> V1Connection:
     return cls.make_v1_connection(config_broker, api, auth_provider, membership=MembershipType.member)
 
   @classmethod
   @pytest.fixture(scope="function")
-  def owner_connection(cls, config_broker, api, auth_provider):
+  def owner_connection(cls, config_broker, api, auth_provider) -> V1Connection:
     return cls.make_v1_connection(config_broker, api, auth_provider, membership=MembershipType.owner)
 
   @classmethod
   @pytest.fixture(scope="function")
-  def owner_connection_same_organization(cls, config_broker, api, auth_provider, connection):
+  def owner_connection_same_organization(cls, config_broker, api, auth_provider, connection) -> V1Connection:
     return cls._make_same_client_connection(
       config_broker,
       api,
@@ -141,12 +151,12 @@ class V1Base(BaseTest):
 
   @classmethod
   @pytest.fixture(scope="function")
-  def admin_connection_same_client(cls, config_broker, api, auth_provider, connection):
+  def admin_connection_same_client(cls, config_broker, api, auth_provider, connection) -> V1Connection:
     return cls._make_same_client_connection(config_broker, api, auth_provider, connection, permission=ADMIN)
 
   @classmethod
   @pytest.fixture(scope="function")
-  def read_connection(cls, config_broker, api, auth_provider):
+  def read_connection(cls, config_broker, api, auth_provider) -> V1Connection:
     return cls.make_v1_connection(config_broker, api, auth_provider, permission=READ)
 
   @classmethod
@@ -220,7 +230,7 @@ class V1Base(BaseTest):
     organization_id=None,
     development=False,
     has_verified_email=True,
-  ):
+  ) -> V1Connection:
     # pylint: disable=too-many-locals
     api_url = cls.get_api_url(config_broker)
     email = email or AuthProvider.randomly_generated_email()
@@ -236,13 +246,10 @@ class V1Base(BaseTest):
       membership_type=membership,
       development=development,
     )
-    return Connection(
-      IntegrationTestConnection(
-        api_url=api_url,
-        user_token=user_token,
-        client_token=client_token,
-        development=development,
-      ),
+    return V1Connection(
+      api_url=api_url,
+      user_token=user_token,
+      client_token=client_token,
       client_id=client_id,
       organization_id=organization_id,
       user_id=user_id,
@@ -262,18 +269,16 @@ class V1Base(BaseTest):
     client_id=None,
     organization_id=None,
     membership_type=MembershipType.member,
-  ):
+  ) -> V1Connection:
     if config_broker.get("features.requireInvite"):
       pytest.skip()
     client_id = client_id or connection.client_id
     organization_id = organization_id or connection.organization_id
     api_url = cls.get_api_url(config_broker)
     user_id, user_token = auth_provider.create_user_tokens(has_verified_email=True)
-    client_conn = Connection(
-      IntegrationTestConnection(
-        api_url=api_url,
-        user_token=user_token,
-      ),
+    client_conn = V1Connection(
+      api_url=api_url,
+      user_token=user_token,
       client_id=client_id,
       organization_id=organization_id,
       user_id=user_id,
@@ -286,55 +291,49 @@ class V1Base(BaseTest):
 
   @classmethod
   @pytest.fixture(scope="function")
-  def development_connection(cls, connection, config_broker, api):
+  def development_connection(cls, connection, config_broker, api) -> V1Connection:
     api_url = cls.get_api_url(config_broker)
     development_token = next(t for t in connection.clients(connection.client_id).tokens().fetch().data if t.development)
-    return Connection(
-      IntegrationTestConnection(
-        api_url,
-        client_token=development_token.token,
-      ),
+    return V1Connection(
+      api_url=api_url,
+      client_token=development_token.token,
       client_id=connection.client_id,
       organization_id=connection.organization_id,
       development=True,
     )
 
   @classmethod
-  def make_development_connection(cls, config_broker, api, auth_provider):
+  def make_development_connection(cls, config_broker, api, auth_provider) -> V1Connection:
     return cls.make_v1_connection(config_broker, api, auth_provider, development=True)
 
   @classmethod
   @pytest.fixture(scope="function")
-  def logged_out_connection(cls, config_broker, api):
+  def logged_out_connection(cls, config_broker, api) -> V1Connection:
     return cls.make_logged_out_connection(config_broker, api)
 
   @classmethod
-  def make_logged_out_connection(cls, config_broker, api):
+  def make_logged_out_connection(cls, config_broker, api) -> V1Connection:
     api_url = cls.get_api_url(config_broker)
-    return Connection(
-      IntegrationTestConnection(
-        api_url=api_url,
-        user_token=None,
-        client_token=None,
-      ),
+    return V1Connection(
+      api_url=api_url,
+      user_token=None,
+      client_token=None,
       client_id=None,
       organization_id=None,
     )
 
   @classmethod
   @pytest.fixture(scope="function")
-  def admin_connection(cls, config_broker, api, auth_provider):
+  def admin_connection(cls, config_broker, api, auth_provider) -> V1Connection:
     return cls.make_admin_connection(config_broker, api, auth_provider)
 
   @classmethod
-  def make_admin_connection(cls, config_broker, api, auth_provider):
+  def make_admin_connection(cls, config_broker, api, auth_provider) -> V1Connection:
     api_url = cls.get_api_url(config_broker)
-    return Connection(
-      IntegrationTestConnection(
-        api_url=api_url,
-        user_token=auth_provider.create_user_token(),
-        client_token=auth_provider.create_user_client_token(),
-      ),
+    return V1Connection(
+      api_url=api_url,
+      user_token=auth_provider.create_user_token(),
+      client_token=auth_provider.create_user_client_token(),
       client_id=auth_provider.get_admin_client_id(),
       organization_id=auth_provider.get_admin_organization_id(),
       user_id=auth_provider.get_admin_user_id(),
@@ -342,30 +341,30 @@ class V1Base(BaseTest):
     )
 
   @classmethod
-  def make_v1_guest_connection(cls, config_broker, api, guest_token=None):
+  def make_v1_guest_connection(cls, config_broker, api, guest_token=None) -> V1Connection:
     api_url = cls.get_api_url(config_broker)
-    return Connection(
-      IntegrationTestConnection(api_url=api_url, user_token=None, client_token=guest_token),
+    return V1Connection(
+      api_url=api_url,
+      user_token=None,
+      client_token=guest_token,
       client_id=None,
       organization_id=None,
     )
 
   @classmethod
   @pytest.fixture(scope="function")
-  def client_only_connection(cls, config_broker, api, auth_provider):
+  def client_only_connection(cls, config_broker, api, auth_provider) -> V1Connection:
     return cls.make_v1_client_only_connection(config_broker, api, auth_provider)
 
   @classmethod
-  def make_v1_client_only_connection(cls, config_broker, api, auth_provider):
+  def make_v1_client_only_connection(cls, config_broker, api, auth_provider) -> V1Connection:
     api_url = cls.get_api_url(config_broker)
     client_id, client_token, organization_id = auth_provider.create_client_tokens()
-    return Connection(
-      IntegrationTestConnection(
-        api_url=api_url,
-        client_token=client_token,
-      ),
-      client_id,
-      organization_id,
+    return V1Connection(
+      api_url=api_url,
+      client_token=client_token,
+      client_id=client_id,
+      organization_id=organization_id,
     )
 
   @classmethod
@@ -403,7 +402,7 @@ class V1Base(BaseTest):
         observation=obs,
         observation_data=observation_data,
       )
-      obs.data = observation_data
+      obs.data = ObservationDataProxy(observation_data)
       ret.append(obs)
     self.services.database_service.insert_all(ret)
     if not no_optimize:

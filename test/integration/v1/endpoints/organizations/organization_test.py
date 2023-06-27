@@ -144,74 +144,74 @@ class TestOrganizationSuggestions(V1Base):
     # create five suggestions, 1 before the start time, 1 with default rules, 1 as generated suggestion, 1 as queued,
     #    1 after stop time only the default should count as optimized run then expand time boundaries and confirm that
     #    all but generated and queued suggestion are counted
-    with connection.create_experiment_as(client_id=connection.client_id) as experiment:
-      connection.experiments(experiment.id).suggestions().create()
-      time.sleep(1)
-      # often sleeps are a sign of code smells- but I'm not sure how to override the time created on a suggestion, so
-      # I'm putting in pauses to make sure that the times are separated out and we get the results we expect
-      start_time = current_datetime()
-      time.sleep(1)
-      connection.experiments(experiment.id).suggestions().create()
-      connection.experiments(experiment.id).suggestions().create(
-        assignments={
-          "a": 1.5,
-        }
-      )
-      connection.experiments(experiment.id).queued_suggestions().create(
-        assignments={
-          "a": 1.5,
-        }
-      )
-      connection.experiments(experiment.id).suggestions().create()
-      time.sleep(1)
-      stop_time = current_datetime()
-      time.sleep(1)
-      connection.experiments(experiment.id).suggestions().create()
-      test = services.organization_service.get_optimized_runs_in_billing_cycle(
-        connection.organization_id, start_time, stop_time
-      )
-      assert test == 1
-      test = services.organization_service.get_optimized_runs_in_billing_cycle(
-        connection.organization_id, start_time - dt.timedelta(seconds=1000), stop_time + dt.timedelta(seconds=1000)
-      )
-      assert test == 3
+    experiment = connection.create_experiment_as(client_id=connection.client_id)
+    connection.experiments(experiment.id).suggestions().create()
+    time.sleep(1)
+    # often sleeps are a sign of code smells- but I'm not sure how to override the time created on a suggestion, so
+    # I'm putting in pauses to make sure that the times are separated out and we get the results we expect
+    start_time = current_datetime()
+    time.sleep(1)
+    connection.experiments(experiment.id).suggestions().create()
+    connection.experiments(experiment.id).suggestions().create(
+      assignments={
+        "a": 1.5,
+      }
+    )
+    connection.experiments(experiment.id).queued_suggestions().create(
+      assignments={
+        "a": 1.5,
+      }
+    )
+    connection.experiments(experiment.id).suggestions().create()
+    time.sleep(1)
+    stop_time = current_datetime()
+    time.sleep(1)
+    connection.experiments(experiment.id).suggestions().create()
+    test = services.organization_service.get_optimized_runs_in_billing_cycle(
+      connection.organization_id, start_time, stop_time
+    )
+    assert test == 1
+    test = services.organization_service.get_optimized_runs_in_billing_cycle(
+      connection.organization_id, start_time - dt.timedelta(seconds=1000), stop_time + dt.timedelta(seconds=1000)
+    )
+    assert test == 3
 
   @pytest.mark.slow
   def test_count_all_runs(self, connection, services):
     # create five suggestions, 1 before the start time, 1 with default rules, 1 as generated suggestion, 1 as queued,
     # 1 after stop time only the middle three should count as optimized run then expand time boundaries
     # and confirm that all are counted
-    with connection.create_experiment_as(client_id=connection.client_id) as experiment:
-      connection.experiments(experiment.id).suggestions().create()
-      time.sleep(1)
-      # often sleeps are a sign of code smells- but I'm not sure how to override the time created on a suggestion, so
-      # I'm putting in pauses to make sure that the times are separated out and we get the results we expect
-      start_time = current_datetime()
-      time.sleep(1)
-      connection.experiments(experiment.id).suggestions().create()
-      connection.experiments(experiment.id).suggestions().create(
-        assignments={
-          "a": 1.5,
-        }
-      )
-      connection.experiments(experiment.id).queued_suggestions().create(
-        assignments={
-          "a": 1.5,
-        }
-      )
-      connection.experiments(experiment.id).suggestions().create()
-      time.sleep(1)
-      stop_time = current_datetime()
-      time.sleep(1)
-      connection.experiments(experiment.id).suggestions().create()
-      test = services.organization_service.get_total_runs_in_billing_cycle(
-        connection.organization_id, start_time, stop_time
-      )
-      assert test == 3
-      test = services.organization_service.get_total_runs_in_billing_cycle(
-        connection.organization_id, start_time - dt.timedelta(seconds=1000), stop_time + dt.timedelta(seconds=1000)
-      )
-      assert test == 5
+    experiment = connection.create_experiment_as(client_id=connection.client_id)
+    connection.experiments(experiment.id).suggestions().create()
+    time.sleep(1)
+    # often sleeps are a sign of code smells- but I'm not sure how to override the time created on a suggestion, so
+    # I'm putting in pauses to make sure that the times are separated out and we get the results we expect
+    start_time = current_datetime()
+    time.sleep(1)
+    connection.experiments(experiment.id).suggestions().create()
+    connection.experiments(experiment.id).suggestions().create(
+      assignments={
+        "a": 1.5,
+      }
+    )
+    connection.experiments(experiment.id).queued_suggestions().create(
+      assignments={
+        "a": 1.5,
+      }
+    )
+    connection.experiments(experiment.id).suggestions().create()
+    time.sleep(1)
+    stop_time = current_datetime()
+    time.sleep(1)
+    connection.experiments(experiment.id).suggestions().create()
+    test = services.organization_service.get_total_runs_in_billing_cycle(
+      connection.organization_id, start_time, stop_time
+    )
+    assert test == 3
+    test = services.organization_service.get_total_runs_in_billing_cycle(
+      connection.organization_id, start_time - dt.timedelta(seconds=1000), stop_time + dt.timedelta(seconds=1000)
+    )
+    assert test == 5
 
   @pytest.mark.skip(reason="optimized runs by plan bounds no longer relevant")
   def test_create_suggestion_cache(self, connection, services):
@@ -222,50 +222,50 @@ class TestOrganizationSuggestions(V1Base):
     # ensure the SQL and cache values are the same
     # N.B. Because of the way the redis keys work, this has to have correct billing info and
     # use the entire period, not as flexible as the SQL results
-    with connection.create_experiment_as(client_id=connection.client_id) as experiment:
-      start_interval, end_interval = get_month_interval()
+    experiment = connection.create_experiment_as(client_id=connection.client_id)
+    start_interval, end_interval = get_month_interval()
 
-      connection.experiments(experiment.id).suggestions().create()
-      # pylint: disable=protected-access
-      test_redis = services.organization_service._get_optimized_runs_in_billing_cycle_cache(
-        connection.organization_id,
-        start_interval,
-        end_interval,
-      )
-      test_sql = services.organization_service._get_optimized_runs_in_billing_cycle(
-        connection.organization_id,
-        start_interval,
-        end_interval,
-      )
-      assert int(test_redis) == test_sql
-      assert test_sql is not None and test_sql > 0
-      connection.experiments(experiment.id).suggestions().create()
-      connection.experiments(experiment.id).suggestions().create()
-      connection.experiments(experiment.id).suggestions().create(
-        assignments={
-          "a": 1.5,
-        }
-      )
-      connection.experiments(experiment.id).queued_suggestions().create(
-        assignments={
-          "a": 1.5,
-        }
-      )
-      connection.experiments(experiment.id).suggestions().create()
-      test_redis_2 = services.organization_service._get_optimized_runs_in_billing_cycle_cache(
-        connection.organization_id,
-        start_interval,
-        end_interval,
-      )
-      test_sql_2 = services.organization_service._get_optimized_runs_in_billing_cycle(
-        connection.organization_id,
-        start_interval,
-        end_interval,
-      )
-      # pylint: enable=protected-access
-      assert int(test_redis_2) == test_sql_2
-      assert test_sql_2 is not None and test_sql_2 > 0
-      assert test_sql_2 > test_sql
+    connection.experiments(experiment.id).suggestions().create()
+    # pylint: disable=protected-access
+    test_redis = services.organization_service._get_optimized_runs_in_billing_cycle_cache(
+      connection.organization_id,
+      start_interval,
+      end_interval,
+    )
+    test_sql = services.organization_service._get_optimized_runs_in_billing_cycle(
+      connection.organization_id,
+      start_interval,
+      end_interval,
+    )
+    assert int(test_redis) == test_sql
+    assert test_sql is not None and test_sql > 0
+    connection.experiments(experiment.id).suggestions().create()
+    connection.experiments(experiment.id).suggestions().create()
+    connection.experiments(experiment.id).suggestions().create(
+      assignments={
+        "a": 1.5,
+      }
+    )
+    connection.experiments(experiment.id).queued_suggestions().create(
+      assignments={
+        "a": 1.5,
+      }
+    )
+    connection.experiments(experiment.id).suggestions().create()
+    test_redis_2 = services.organization_service._get_optimized_runs_in_billing_cycle_cache(
+      connection.organization_id,
+      start_interval,
+      end_interval,
+    )
+    test_sql_2 = services.organization_service._get_optimized_runs_in_billing_cycle(
+      connection.organization_id,
+      start_interval,
+      end_interval,
+    )
+    # pylint: enable=protected-access
+    assert int(test_redis_2) == test_sql_2
+    assert test_sql_2 is not None and test_sql_2 > 0
+    assert test_sql_2 > test_sql
 
 
 class TestOrganizationPermissions(InviteTestBase):

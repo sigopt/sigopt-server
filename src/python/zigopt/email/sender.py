@@ -2,18 +2,18 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 from zigopt.email.model import HtmlEmail
-from zigopt.services.base import Service
+from zigopt.services.base import GlobalService
 
 
-class BaseEmailService(Service):
-  def should_send(self, email):
+class BaseEmailService(GlobalService):
+  def should_send(self, email: HtmlEmail) -> bool:
     internal_email_domains = self.services.config_broker.get("email.additional_internal_domains", [])
     return bool(
       not self.services.config_broker.get("email.internal_only")
       or all(e.endswith(tuple(internal_email_domains)) for e in email.to)
     )
 
-  def send(self, email):
+  def send(self, email: HtmlEmail) -> None:
     raise NotImplementedError()
 
 
@@ -25,13 +25,12 @@ class EmailSenderService(BaseEmailService):
     self.from_address = self.services.config_broker.get("email.from_address", default=None)
     assert self.method in ("smtp",)
 
-  def _sanitize(self, email):
+  def _sanitize(self, email: HtmlEmail) -> HtmlEmail:
     if self.from_address:
       email.from_address = self.from_address
     return email
 
   def send(self, email):
-    assert isinstance(email, HtmlEmail)
     email = self._sanitize(email)
     subject_prefix = self.services.config_broker.get("email.subject_prefix", "")
     email.subject = subject_prefix + email.subject

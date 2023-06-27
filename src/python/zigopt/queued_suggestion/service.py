@@ -1,8 +1,11 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from sqlalchemy.orm import Query
+
 from zigopt.common import *
 from zigopt.assignments.build import set_assignments_map_from_proxy
+from zigopt.experiment.model import Experiment
 from zigopt.protobuf.gen.suggest.suggestion_pb2 import SuggestionData, SuggestionMeta
 from zigopt.protobuf.lib import copy_protobuf
 from zigopt.queued_suggestion.model import QueuedSuggestion
@@ -12,10 +15,10 @@ from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
 class QueuedSuggestionService(Service):
-  def insert(self, queued):
+  def insert(self, queued: QueuedSuggestion) -> None:
     return self.services.database_service.insert(queued)
 
-  def find_next(self, experiment_id, include_deleted=False):
+  def find_next(self, experiment_id: int, include_deleted: bool = False) -> QueuedSuggestion:
     claimed_ids = flatten(
       self.services.database_service.all(
         self.services.database_service.query(ProcessedSuggestion.queued_id)
@@ -30,22 +33,24 @@ class QueuedSuggestionService(Service):
     q = q.order_by(QueuedSuggestion.id)
     return self.services.database_service.first(q)
 
-  def find_by_id(self, experiment_id, queued_id, include_deleted=False):
+  def find_by_id(self, experiment_id: int, queued_id: int, include_deleted: bool = False) -> QueuedSuggestion | None:
     q = self.services.database_service.query(QueuedSuggestion).filter_by(experiment_id=experiment_id, id=queued_id)
     q = self._include_deleted_clause(include_deleted, q)
     return self.services.database_service.one_or_none(q)
 
-  def delete_by_id(self, experiment_id, queued_id):
+  def delete_by_id(self, experiment_id: int, queued_id: int) -> None:
     suggestion = self.find_by_id(experiment_id, queued_id)
     if suggestion:
-      meta = copy_protobuf(suggestion.meta)
+      meta: SuggestionMeta = copy_protobuf(suggestion.meta)
       meta.deleted = True
       self.services.database_service.update_one(
         self.services.database_service.query(QueuedSuggestion).filter_by(experiment_id=experiment_id, id=queued_id),
         {QueuedSuggestion.meta: meta},
       )
 
-  def create_unprocessed_suggestion(self, experiment, queued_suggestion):
+  def create_unprocessed_suggestion(
+    self, experiment: Experiment, queued_suggestion: QueuedSuggestion
+  ) -> UnprocessedSuggestion:
     if experiment.id != queued_suggestion.experiment_id:
       raise Exception(
         f"Experiment {experiment.id}"
@@ -64,13 +69,13 @@ class QueuedSuggestionService(Service):
     self.services.database_service.insert(unprocessed_suggestion)
     return unprocessed_suggestion
 
-  def query_by_experiment_id(self, experiment_id, include_deleted=False):
+  def query_by_experiment_id(self, experiment_id: int, include_deleted: bool = False) -> Query:
     return self._include_deleted_clause(
       include_deleted,
       self.services.database_service.query(QueuedSuggestion).filter_by(experiment_id=experiment_id),
     )
 
-  def _include_deleted_clause(self, include_deleted, q):
+  def _include_deleted_clause(self, include_deleted: bool, q: Query) -> Query:
     if not include_deleted:
       return q.filter(~QueuedSuggestion.meta.deleted)
     return q

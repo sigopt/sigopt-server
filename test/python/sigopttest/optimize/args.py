@@ -11,8 +11,8 @@ from zigopt.optimize.args import *
 class TestOptimizationArgs:
   def make_args(self, ids):
     return OptimizationArgs(
-      source=None,
-      observation_iterator=[Observation(id=i) for i in ids],
+      source=None,  # type: ignore
+      observation_iterator=(Observation(id=i) for i in ids),
       observation_count=len(ids),
       failure_count=0,
       max_observation_id=max_option(ids),

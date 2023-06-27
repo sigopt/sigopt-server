@@ -36,24 +36,24 @@ class TestCsrf(WebBase):
     ],
   )
   def test_csrf_logged_in(self, api_connection, logged_in_web_connection, url):
-    with api_connection.create_any_experiment() as e:
-      self.check_csrf(
-        logged_in_web_connection,
-        url.format(
-          client_id=api_connection.client_id,
-          experiment_id=e.id,
-        ),
-      )
+    e = api_connection.create_any_experiment()
+    self.check_csrf(
+      logged_in_web_connection,
+      url.format(
+        client_id=api_connection.client_id,
+        experiment_id=e.id,
+      ),
+    )
 
   def test_csrf_logged_in_file(self, api_connection, logged_in_web_connection):
-    with api_connection.create_any_experiment() as e:
-      self.check_csrf(
-        logged_in_web_connection,
-        f"/experiment/{e.id}/report/file",
-        files={
-          "bulk-file": io.StringIO(""),
-        },
-      )
+    e = api_connection.create_any_experiment()
+    self.check_csrf(
+      logged_in_web_connection,
+      f"/experiment/{e.id}/report/file",
+      files={
+        "bulk-file": io.StringIO(""),
+      },
+    )
 
   def test_bad_urls(self, any_connection):
     with RaisesHttpError(HTTPStatus.NOT_FOUND):

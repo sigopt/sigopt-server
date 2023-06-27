@@ -3,9 +3,11 @@
 # SPDX-License-Identifier: Apache License 2.0
 import json
 import uuid
+from typing import Any
 
 from zigopt.common.sigopt_datetime import unix_timestamp
 from zigopt.services.base import Service
+from zigopt.user.model import User
 
 
 class IamEvent:
@@ -81,14 +83,14 @@ ALL_IAM_RESPONSE_STATUSES = {IamResponseStatus.SUCCESS, IamResponseStatus.FAILUR
 class IamLoggingService(Service):
   def _log_iam(
     self,
-    event_name,
-    request_parameters,
-    response_element,
-    response_status,
-    requestor=None,
-    event_time=None,
-    event_id=None,
-  ):
+    event_name: str,
+    request_parameters: dict[str, Any] | None,
+    response_element: dict[str, Any] | None,
+    response_status: str,
+    requestor: User | None = None,
+    event_time: int | None = None,
+    event_id: str | None = None,
+  ) -> str | None:
     assert response_status in ALL_IAM_RESPONSE_STATUSES, f"Unknown IamResponseStatus {response_status}"
     request_parameters = request_parameters or {}
     response_element = response_element or {}
@@ -122,14 +124,14 @@ class IamLoggingService(Service):
 
   def log_iam(
     self,
-    requestor,
-    event_name,
-    request_parameters,
-    response_element,
-    response_status,
-    event_time=None,
-    event_id=None,
-  ):
+    requestor: User,
+    event_name: str,
+    request_parameters: dict[str, Any] | None,
+    response_element: dict[str, Any] | None,
+    response_status: str,
+    event_time: int | None = None,
+    event_id: str | None = None,
+  ) -> None:
     assert requestor and requestor.id and requestor.email, "Must have valid requestor"
     assert event_name in _REQUESTOR_EVENTS, f"Unknown IamEvent event {event_name}"
     self._log_iam(
@@ -143,13 +145,13 @@ class IamLoggingService(Service):
   # NOTE: user log in failures and rate-limiting will not have requestor
   def log_iam_no_requestor(
     self,
-    event_name,
-    request_parameters,
-    response_element,
-    response_status,
-    event_time=None,
-    event_id=None,
-  ):
+    event_name: str,
+    request_parameters: dict[str, Any] | None,
+    response_element: dict[str, Any] | None,
+    response_status: str,
+    event_time: int | None = None,
+    event_id: str | None = None,
+  ) -> None:
     assert event_name in _NO_REQUESTOR_EVENTS
     self._log_iam(
       event_name=event_name,
@@ -162,13 +164,13 @@ class IamLoggingService(Service):
 
   def log_iam_log_in(
     self,
-    event_name,
-    request_parameters,
-    response_element,
-    response_status,
-    event_time=None,
-    event_id=None,
-    requestor=None,
+    event_name: str,
+    request_parameters: dict[str, Any] | None,
+    response_element: dict[str, Any] | None,
+    response_status: str,
+    event_time: int | None = None,
+    event_id: str | None = None,
+    requestor: User | None = None,
   ):
     assert event_name in _LOG_IN_EVENTS
     if response_status == IamResponseStatus.SUCCESS:
@@ -186,5 +188,5 @@ class IamLoggingService(Service):
     )
 
   @classmethod
-  def iam_event_id(cls):
+  def iam_event_id(cls) -> str:
     return str(uuid.uuid4())

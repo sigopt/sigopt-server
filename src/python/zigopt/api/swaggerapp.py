@@ -20,11 +20,11 @@ class DummyServiceBag(ServiceBag):
   def __init__(self, config_broker):
     super().__init__(config_broker)
     super()._create_services(config_broker)
-    self.database_connection_service = DisabledService(self)
+    self.database_connection_service = DisabledService()
     self.exception_logger = ExceptionLogger(self)
-    self.immediate_email_sender = DisabledService(self)
+    self.immediate_email_sender = DisabledService()
     self.logging_service = LoggingService(self)
-    self.smtp_email_service = DisabledService(self)
+    self.smtp_email_service = DisabledService()
 
 
 class SwaggerApp(Flask):

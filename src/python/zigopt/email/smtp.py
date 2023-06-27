@@ -7,8 +7,10 @@ import email.mime
 import email.mime.multipart
 import email.mime.text
 import smtplib
+from collections.abc import Generator
 from contextlib import contextmanager
 
+from zigopt.email.model import HtmlEmail
 from zigopt.services.base import Service
 
 
@@ -38,7 +40,7 @@ class SmtpEmailService(Service):
     self.smtp = None
 
   @contextmanager
-  def _make_connection(self):
+  def _make_connection(self) -> Generator[smtplib.SMTP, None, None]:
     if not self.enabled or self.connection_info is None:
       raise Exception("SMTP service not enabled")
     smtp = smtplib.SMTP(timeout=self.timeout)
@@ -50,16 +52,17 @@ class SmtpEmailService(Service):
     yield smtp
     smtp.quit()
 
-  def test_connection(self):
+  def test_connection(self) -> None:
     if self.enabled:
       with self._make_connection() as smtp:
         status, message = smtp.noop()
       if status != 250:
+        message_str = message.decode("utf-8")
         raise Exception(
-          f"SMTP is enabled but failed to connect to SMTP server! Received status {status}, message {message}",
+          f"SMTP is enabled but failed to connect to SMTP server! Received status {status}, message {message_str}",
         )
 
-  def send(self, message):
+  def send(self, message: HtmlEmail) -> None:
     msg_root = email.mime.multipart.MIMEMultipart("related")
     msg_text = email.mime.text.MIMEText(message.body_html, "html", "utf-8")
     msg_root.attach(msg_text)
