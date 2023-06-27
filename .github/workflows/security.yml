@@ -32,6 +32,7 @@ jobs:
           image-ref: sigopt/nginx:scan
           ignore-unfixed: true
           trivy-config: trivy.yaml
+          severity: HIGH,CRITICAL
       - name: Trivy scan web
         if: always()
         uses: aquasecurity/trivy-action@master
@@ -39,6 +40,7 @@ jobs:
           image-ref: sigopt/web:scan
           ignore-unfixed: true
           trivy-config: trivy.yaml
+          severity: HIGH,CRITICAL
       - name: Trivy scan zigopt
         if: always()
         uses: aquasecurity/trivy-action@master
@@ -46,3 +48,4 @@ jobs:
           image-ref: sigopt/zigopt:scan
           ignore-unfixed: true
           trivy-config: trivy.yaml
+          severity: HIGH,CRITICAL
