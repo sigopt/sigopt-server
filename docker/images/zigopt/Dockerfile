@@ -33,7 +33,7 @@ RUN set -ex \
   ; :
 
 
-FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster
+FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster-slim
 
 RUN set -ex \
   ; apt-get update -yqq >dev/null \
