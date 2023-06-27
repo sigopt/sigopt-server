@@ -1,7 +1,8 @@
 name: auto upgrades
 run-name: Auto upgrades for ${{ github.repository }}@${{ github.ref }}
 on:
-  push: {}
+  schedule:
+    - cron: "0 8 * * 1"
 jobs:
   yarn:
     runs-on: ubuntu-latest
