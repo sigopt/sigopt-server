@@ -6,12 +6,6 @@ ARG NGINX_VERSION
 
 FROM nginx:${NGINX_VERSION}-alpine-slim
 
-RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get upgrade -yqq >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
 COPY nginx/ /etc/nginx/
 
 RUN mkdir -p /var/run/nginx
