@@ -22,6 +22,7 @@ jobs:
           reviewers: dwanderson-intel,tjs-intel
           branch: auto-upgrade/yarn-upgrade-${{ steps.date.outputs.DATE }}
           delete-branch: true
+          token: ${{ secrets.AUTO_UPGRADES_GITHUB_TOKEN }}
       - name: Check outputs
         if: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
