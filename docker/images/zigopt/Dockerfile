@@ -36,6 +36,11 @@ RUN set -ex \
 FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster
 
 RUN set -ex \
+  ; apt-get uninstall -yqq curl >/dev/null \
+  ; apt-get autoremove -yqq \
+  ; :
+
+RUN set -ex \
   ; apt-get update -yqq >dev/null \
   ; apt-get upgrade -yqq >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \

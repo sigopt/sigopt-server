@@ -4,7 +4,7 @@
 ARG NGINX_VERSION
 
 
-FROM nginx:${NGINX_VERSION}
+FROM nginx:${NGINX_VERSION}-alpine-slim
 
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
