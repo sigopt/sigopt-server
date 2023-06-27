@@ -10,7 +10,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: mkdir -p artifacts/trivy
       - name: Run Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -24,7 +23,6 @@ jobs:
         uses: actions/checkout@v3
       - run: make submodules
       - run: ./ci/trivy_build_images.sh --ignore-unfixed --debug
-      - run: mkdir -p artifacts/trivy
       - name: Trivy scan nginx
         if: always()
         uses: aquasecurity/trivy-action@master
