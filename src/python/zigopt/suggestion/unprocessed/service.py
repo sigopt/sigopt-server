@@ -177,7 +177,7 @@ class UnprocessedSuggestionService(Service):
             generated_time=generated_time,
             source=int(source),
             uuid_value=uuid.UUID(suggestion_uuid.decode("utf-8")),
-            suggestion_meta=SuggestionMeta.FromString(  # pylint: disable=protobuf-undefined-attribute
+            suggestion_meta=SuggestionMeta.FromString(
               suggestion_meta_protobuf,
             ),
           )
