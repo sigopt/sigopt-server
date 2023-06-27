@@ -25,27 +25,51 @@ jobs:
       - run: make submodules
       - run: ./ci/trivy_build_images.sh
       - run: mkdir -p artifacts/trivy
-      - name: Trivy scan nginx
+      - name: Trivy scan nginx HIGH, CRITICAL
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/nginx:scan
+          ignore-unfixed: false
+          trivy-config: trivy.yaml
+          severity: HIGH,CRITICAL
+      - name: Trivy scan nginx fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/nginx:scan
           ignore-unfixed: true
           trivy-config: trivy.yaml
+          severity: LOW,MEDIUM,UNKNOWN
+      - name: Trivy scan web HIGH, CRITICAL
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/web:scan
+          ignore-unfixed: false
+          trivy-config: trivy.yaml
           severity: HIGH,CRITICAL
-      - name: Trivy scan web
+      - name: Trivy scan web fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/web:scan
           ignore-unfixed: true
           trivy-config: trivy.yaml
+          severity: LOW,MEDIUM,UNKNOWN
+      - name: Trivy scan zigopt HIGH, CRITICAL
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/zigopt:scan
+          ignore-unfixed: false
+          trivy-config: trivy.yaml
           severity: HIGH,CRITICAL
-      - name: Trivy scan zigopt
+      - name: Trivy scan zigopt fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/zigopt:scan
           ignore-unfixed: true
           trivy-config: trivy.yaml
-          severity: HIGH,CRITICAL
+          severity: LOW,MEDIUM,UNKNOWN
