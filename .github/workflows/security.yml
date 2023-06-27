@@ -10,21 +10,21 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: mkdir -p artifacts/trivy
       - name: Run Trivy
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           scan-ref: .
           trivy-config: trivy.yaml
-  trivy-scan-images:
+  trivy-scan-nginx:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: make submodules
-      - run: ./ci/trivy_build_images.sh
-      - run: mkdir -p artifacts/trivy
+      - run: |
+          source .env
+          docker build . --tag=sigopt/nginx:scan --file=docker/images/nginx/Dockerfile \
+            --build-arg=NGINX_VERSION="$NGINX_VERSION"
       - name: Trivy scan nginx HIGH, CRITICAL
         if: always()
         uses: aquasecurity/trivy-action@master
@@ -41,6 +41,16 @@ jobs:
           ignore-unfixed: true
           trivy-config: trivy.yaml
           severity: LOW,MEDIUM,UNKNOWN
+  trivy-scan-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: make submodules
+      - run: |
+          source .env
+          docker build . --tag=sigopt/web:scan --file=docker/images/web/Dockerfile \
+            --build-arg=NODE_MAJOR="$NODE_MAJOR"
       - name: Trivy scan web HIGH, CRITICAL
         if: always()
         uses: aquasecurity/trivy-action@master
@@ -57,6 +67,17 @@ jobs:
           ignore-unfixed: true
           trivy-config: trivy.yaml
           severity: LOW,MEDIUM,UNKNOWN
+  trivy-scan-zigopt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: |
+          source .env
+          docker build . --tag=sigopt/zigopt:scan --file=docker/images/zigopt/Dockerfile \
+            --build-arg=PROTOBUF_VERSION="$PROTOBUF_VERSION" \
+            --build-arg=PYTHON_MAJOR="$PYTHON_MAJOR" \
+            --build-arg=PYTHON_MINOR="$PYTHON_MINOR"
       - name: Trivy scan zigopt HIGH, CRITICAL
         if: always()
         uses: aquasecurity/trivy-action@master
