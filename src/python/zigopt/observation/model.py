@@ -65,7 +65,6 @@ class Observation(Base):
   @property
   def data_proxy(self) -> ObservationDataProxy:
     """Explicitly returns ObservationDataProxy which helps with linting"""
-    # pylint: disable=protobuf-undefined-attribute
     return ObservationDataProxy(self.data.underlying)  # type: ignore
 
   @property

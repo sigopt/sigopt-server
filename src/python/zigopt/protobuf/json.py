@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache License 2.0
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.json_format import _IsMapEntry as IsMapEntry  # type: ignore
+from google.protobuf.message_factory import GetMessageClass  # type: ignore
 
 from zigopt.common import *
 from zigopt.protobuf.dict import dict_to_protobuf, is_protobuf_struct_descriptor, protobuf_to_dict
@@ -203,15 +204,15 @@ def emit_json_with_descriptor(value, descriptor):
   raise ValueError(f"Invalid value for scalar descriptor {descriptor}: {value}")
 
 
-def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknown_fields):
+def parse_json_with_descriptor(value, descriptor, ignore_unknown_fields):
   # pylint: disable=too-many-return-statements
   is_array = _validate_array(value, descriptor, is_emit=False)
   if is_array:
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
-    return [parse_json_with_descriptor(v, next_descriptor, message_factory, ignore_unknown_fields) for v in value]
+    return [parse_json_with_descriptor(v, next_descriptor, ignore_unknown_fields) for v in value]
   if isinstance(descriptor, Descriptor):
     if is_mapping(value):
-      Cls = message_factory.GetPrototype(descriptor)
+      Cls = GetMessageClass(descriptor)
       return dict_to_protobuf(Cls, value, ignore_unknown_fields=ignore_unknown_fields)
     raise ValueError(f"Invalid value for protobuf descriptor {descriptor.full_name}: {value}")
   if isinstance(descriptor, FieldDescriptor):
@@ -220,13 +221,13 @@ def parse_json_with_descriptor(value, descriptor, message_factory, ignore_unknow
         value_field = descriptor.message_type.fields_by_name["value"]
         next_descriptor = next_descriptor_for_field_descriptor(value_field)
         return map_dict(
-          lambda v: parse_json_with_descriptor(v, next_descriptor, message_factory, ignore_unknown_fields),
+          lambda v: parse_json_with_descriptor(v, next_descriptor, ignore_unknown_fields),
           value,
         )
       raise ValueError(f"Invalid value for map descriptor {descriptor.full_name}: {value}")
     if is_valid_field_descriptor_for_value(value, descriptor, is_emit=False):
       if is_mapping(value):
-        Cls = message_factory.GetPrototype(descriptor.message_type)
+        Cls = GetMessageClass(descriptor.message_type)
         return dict_to_protobuf(Cls, value, ignore_unknown_fields=ignore_unknown_fields)
       return value
     raise ValueError(f"Invalid value for field descriptor {descriptor.full_name}: {value}")
