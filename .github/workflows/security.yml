@@ -23,7 +23,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: make submodules
-      - run: ./ci/trivy_build_images.sh --ignore-unfixed --debug
+      - run: ./ci/trivy_build_images.sh
       - run: mkdir -p artifacts/trivy
       - name: Trivy scan nginx
         if: always()
