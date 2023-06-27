@@ -31,16 +31,16 @@ jobs:
         with:
           image-ref: sigopt/nginx:scan
           ignore-unfixed: false
-          trivy-config: trivy.yaml
           severity: HIGH,CRITICAL
+          exit-code: "1"
       - name: Trivy scan nginx fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/nginx:scan
           ignore-unfixed: true
-          trivy-config: trivy.yaml
           severity: LOW,MEDIUM,UNKNOWN
+          exit-code: "1"
   trivy-scan-web:
     runs-on: ubuntu-latest
     steps:
@@ -57,16 +57,16 @@ jobs:
         with:
           image-ref: sigopt/web:scan
           ignore-unfixed: false
-          trivy-config: trivy.yaml
           severity: HIGH,CRITICAL
+          exit-code: "1"
       - name: Trivy scan web fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/web:scan
           ignore-unfixed: true
-          trivy-config: trivy.yaml
           severity: LOW,MEDIUM,UNKNOWN
+          exit-code: "1"
   trivy-scan-zigopt:
     runs-on: ubuntu-latest
     steps:
@@ -84,13 +84,13 @@ jobs:
         with:
           image-ref: sigopt/zigopt:scan
           ignore-unfixed: false
-          trivy-config: trivy.yaml
           severity: HIGH,CRITICAL
+          exit-code: "1"
       - name: Trivy scan zigopt fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/zigopt:scan
           ignore-unfixed: true
-          trivy-config: trivy.yaml
           severity: LOW,MEDIUM,UNKNOWN
+          exit-code: "1"
