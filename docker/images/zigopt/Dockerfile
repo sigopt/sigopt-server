@@ -60,9 +60,11 @@ RUN set -ex \
   ; :
 
 RUN set -ex \
-  ; apt-get purge -yqq \
+  ; apt-get purge -yqq --allow-remove-essential \
       gcc \
       git \
+      linux-libc-dev \
+      perl* \
   ; apt-get autoremove -yqq \
   ; :
 
