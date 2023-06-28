@@ -22,12 +22,12 @@ class Client(Base):
 
   id = Column(BigInteger, primary_key=True)
   name = Column(String)
-  client_meta = ProtobufColumn(ClientMeta, name="client_meta_json")
+  client_meta: ClientMeta = ProtobufColumn(ClientMeta, name="client_meta_json")
   organization_id = Column(BigInteger, ForeignKey("organizations.id"), nullable=False)
 
   def __init__(self, organization_id, client_meta=None, **kwargs):
     if client_meta is None:
-      client_meta = Client.client_meta.default_value()
+      client_meta = ClientMeta()
     super().__init__(organization_id=organization_id, client_meta=client_meta, **kwargs)
 
   @validates("client_meta")

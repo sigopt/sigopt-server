@@ -77,7 +77,7 @@ class QueryPager(Service):
 
     results = self.services.database_service.all(q)
     if not start_from_before:
-      results.reverse()
+      results = list(reversed(results))
     return results
 
   def fetch_page(self, q, Field, paging, use_having=False, ascending=False, nulls_descendant=False):

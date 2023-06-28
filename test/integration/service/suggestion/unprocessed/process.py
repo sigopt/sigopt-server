@@ -6,7 +6,7 @@ import pytest
 from zigopt.handlers.experiments.suggestions.create import SuggestionsCreateHandler
 from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 from zigopt.protobuf.gen.queued_suggestion.queued_suggestion_meta_pb2 import QueuedSuggestionMeta
-from zigopt.protobuf.gen.suggest.suggestion_pb2 import ProcessedSuggestionMeta
+from zigopt.protobuf.gen.suggest.suggestion_pb2 import ProcessedSuggestionMeta, SuggestionData
 from zigopt.queued_suggestion.model import QueuedSuggestion
 from zigopt.suggestion.lib import SuggestionAlreadyProcessedError
 
@@ -87,7 +87,7 @@ class TestProcess(UnprocessedSuggestionServiceTestBase):
   def test_process_with_queued_id(self, services, experiment, unprocessed_suggestion):
     queued = QueuedSuggestion(
       experiment_id=experiment.id,
-      meta=QueuedSuggestionMeta(),
+      meta=QueuedSuggestionMeta(suggestion_data=SuggestionData()),
     )
     services.queued_suggestion_service.insert(queued)
     assert services.queued_suggestion_service.find_by_id(experiment.id, queued.id) is not None

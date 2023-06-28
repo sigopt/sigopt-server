@@ -15,8 +15,8 @@ class TestPages(WebBase):
   @pytest.fixture(params=[p for p in Routes.ALL_ROUTES if p.startswith("/experiment/:experimentId")])
   def test_experiment_urls(self, api_connection, logged_in_web_connection, request):
     url = request.param
-    with api_connection.create_any_experiment() as e:
-      logged_in_web_connection.get(url.replace(":experimentId", e.id))
+    e = api_connection.create_any_experiment()
+    logged_in_web_connection.get(url.replace(":experimentId", e.id))
 
   @pytest.fixture(params=[p for p in Routes.ALL_ROUTES if p.startswith("/experiment/:experimentId")])
   def test_experiment_urls_invalid_id(self, api_connection, logged_in_web_connection, request):

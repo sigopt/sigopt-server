@@ -1,13 +1,17 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections.abc import Sequence
 from urllib.parse import urlencode
 
 from zigopt.common import *
 from zigopt.authentication.login import PASSWORD_RESET_EXPIRY_IN_HOURS
 from zigopt.brand.constant import PRODUCT_NAME
-from zigopt.email.model import create_mako_email
+from zigopt.client.model import Client
+from zigopt.email.model import HtmlEmail, create_mako_email
+from zigopt.organization.model import Organization
 from zigopt.services.base import Service
+from zigopt.user.model import User
 
 
 class EmailTemplates(Service):
@@ -22,10 +26,10 @@ class EmailTemplates(Service):
     self.base_template = self.services.config_broker.get("email.base_template")
 
   @property
-  def base_url(self):
+  def base_url(self) -> str:
     return self.services.config_broker["address.app_url"].rstrip("/")
 
-  def create(self, template, subject, to, bypass_list_management=False, **kwargs):
+  def create(self, template: str, subject: str, to: str, bypass_list_management: bool = False, **kwargs) -> HtmlEmail:
     params = kwargs.copy()
     params["team_name"] = self.team_name
     params["to"] = to
@@ -42,7 +46,7 @@ class EmailTemplates(Service):
       bypass_list_management=bypass_list_management,
     )
 
-  def reset_password_email(self, user, code):
+  def reset_password_email(self, user: User, code: str) -> HtmlEmail:
     return self.create(
       "./templates/reset_password.mako",
       to=user.email,
@@ -53,7 +57,7 @@ class EmailTemplates(Service):
       bypass_list_management=True,
     )
 
-  def no_user_cant_reset_password_email(self, email):
+  def no_user_cant_reset_password_email(self, email: str) -> HtmlEmail:
     return self.create(
       "./templates/cant_reset_password.mako",
       to=email,
@@ -62,7 +66,7 @@ class EmailTemplates(Service):
       reason=f"However, we don't have a record of an account with the email address {email}.",
     )
 
-  def no_password_cant_reset_password_email(self, user):
+  def no_password_cant_reset_password_email(self, user: User) -> HtmlEmail:
     return self.create(
       "./templates/cant_reset_password.mako",
       to=user.email,
@@ -71,7 +75,7 @@ class EmailTemplates(Service):
       reason="However, your password cannot be reset because you use an alternate login method.",
     )
 
-  def user_password_change_email(self, user):
+  def user_password_change_email(self, user: User) -> HtmlEmail:
     return self.create(
       "./templates/password_change.mako",
       to=user.email,
@@ -80,7 +84,7 @@ class EmailTemplates(Service):
       bypass_list_management=True,
     )
 
-  def verification_email(self, user, code):
+  def verification_email(self, user: User, code: str) -> HtmlEmail:
     return self.create(
       "./templates/verify_email.mako",
       to=user.email,
@@ -90,7 +94,7 @@ class EmailTemplates(Service):
       user_name=user.name,
     )
 
-  def user_email_change_email(self, old_email, new_email):
+  def user_email_change_email(self, old_email: str, new_email: str) -> HtmlEmail:
     return self.create(
       "./templates/email_change.mako",
       to=old_email,
@@ -100,7 +104,9 @@ class EmailTemplates(Service):
       bypass_list_management=True,
     )
 
-  def verification_reprompt_email(self, user, organization, clients, invite_link):
+  def verification_reprompt_email(
+    self, user: User, organization: Organization, clients: Client, invite_link: str
+  ) -> HtmlEmail:
     return self.create(
       "./templates/verification_reprompt.mako",
       to=user.email,
@@ -111,7 +117,7 @@ class EmailTemplates(Service):
       user_name=user.name,
     )
 
-  def verification_reprompt_owner_email(self, user, organization, invite_link):
+  def verification_reprompt_owner_email(self, user: User, organization: Organization, invite_link: str) -> HtmlEmail:
     return self.create(
       "./templates/verification_reprompt_owner.mako",
       to=user.email,
@@ -121,7 +127,7 @@ class EmailTemplates(Service):
       user_name=user.name,
     )
 
-  def invited_owner_email(self, organization, email, invite_link, inviter):
+  def invited_owner_email(self, organization: Organization, email: str, invite_link: str, inviter: User) -> HtmlEmail:
     return self.create(
       "./templates/invited_owner.mako",
       to=email,
@@ -131,7 +137,7 @@ class EmailTemplates(Service):
       inviter=inviter,
     )
 
-  def invited_owner_existing_email(self, organization, email, inviter):
+  def invited_owner_existing_email(self, organization: Organization, email: str, inviter: User) -> HtmlEmail:
     return self.create(
       "./templates/invited_owner_existing.mako",
       to=email,
@@ -141,7 +147,9 @@ class EmailTemplates(Service):
       inviter=inviter,
     )
 
-  def invited_email(self, organization, clients, email, invite_link, inviter):
+  def invited_email(
+    self, organization: Organization, clients: Client, email: str, invite_link: str, inviter: User
+  ) -> HtmlEmail:
     return self.create(
       "./templates/invited.mako",
       to=email,
@@ -153,7 +161,9 @@ class EmailTemplates(Service):
       title="Your team is waiting for you to join them",
     )
 
-  def invited_existing_email(self, organization, clients, email, inviter):
+  def invited_existing_email(
+    self, organization: Organization, clients: Sequence[Client], email: str, inviter: User
+  ) -> HtmlEmail:
     return self.create(
       "./templates/invited_existing.mako",
       to=email,
@@ -164,7 +174,7 @@ class EmailTemplates(Service):
       inviter=inviter,
     )
 
-  def welcome_email(self, user):
+  def welcome_email(self, user: User) -> HtmlEmail:
     return self.create(
       "./templates/welcome_email.mako",
       to=user.email,
@@ -174,7 +184,7 @@ class EmailTemplates(Service):
       title=f"Welcome to {PRODUCT_NAME}, {user.name}!",
     )
 
-  def existing_email(self, user):
+  def existing_email(self, user: User) -> HtmlEmail:
     return self.create(
       "./templates/existing_email.mako",
       to=user.email,
@@ -182,23 +192,23 @@ class EmailTemplates(Service):
       app_url=self.services.config_broker["address.app_url"],
     )
 
-  def _make_url(self, page, code, email):
+  def _make_url(self, page: str, code: str, email: str) -> str:
     url_params = self._url_params([("code", code), ("email", email)])
     return f"{self.base_url}/{page}?{url_params}"
 
-  def _change_password_link(self, code, email):
+  def _change_password_link(self, code: str, email: str) -> str:
     return self._make_url("change_password", code, email)
 
-  def verify_email_link(self, code, email):
+  def verify_email_link(self, code: str, email: str) -> str:
     return self._make_url("verify", code, email)
 
-  def accept_invite_link(self, code, email, organization):
+  def accept_invite_link(self, code: str, email: str, organization: str) -> str:
     return self._make_url("signup", code, email)
 
-  def _url_params(self, params):
+  def _url_params(self, params: Sequence[tuple[str, str]]) -> str:
     return urlencode([(k.encode("utf-8"), v.encode("utf-8")) for k, v in params if v is not None])
 
-  def login_ratelimit(self, email):
+  def login_ratelimit(self, email: str) -> HtmlEmail:
     return self.create(
       "./templates/login_ratelimit.mako",
       to=email,

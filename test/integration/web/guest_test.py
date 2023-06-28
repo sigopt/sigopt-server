@@ -91,25 +91,25 @@ class TestGuestWebCreate(GuestWebTestBase):
     # pylint: disable=too-many-locals
     del cookie_testing_enabled
     logged_in_web_connection.get("/experiment/" + experiment.id)
-    with api_connection.create_any_experiment() as second_experiment:
-      second_guest_token = api_connection.experiments(second_experiment.id).tokens().create().token
-      second_guest_url = "/guest?guest_token=" + second_guest_token
+    second_experiment = api_connection.create_any_experiment()
+    second_guest_token = api_connection.experiments(second_experiment.id).tokens().create().token
+    second_guest_url = "/guest?guest_token=" + second_guest_token
 
-      response1 = logged_in_web_connection.get(experiment_guest_url)
-      cookie1 = response1.response.headers["Set-Cookie"]
-      cookie1_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie1}, verify=False, timeout=5).json()
-      assert cookie1_contents["loginState"]["clientId"] is None
-      assert cookie1_contents["loginState"]["organizationId"] is None
-      assert cookie1_contents["loginState"]["apiToken"] == experiment_guest_token
+    response1 = logged_in_web_connection.get(experiment_guest_url)
+    cookie1 = response1.response.headers["Set-Cookie"]
+    cookie1_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie1}, verify=False, timeout=5).json()
+    assert cookie1_contents["loginState"]["clientId"] is None
+    assert cookie1_contents["loginState"]["organizationId"] is None
+    assert cookie1_contents["loginState"]["apiToken"] == experiment_guest_token
 
-      response2 = logged_in_web_connection.get(second_guest_url)
-      cookie2 = response2.response.headers["Set-Cookie"]
-      cookie2_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie2}, verify=False, timeout=5).json()
-      assert cookie2_contents["loginState"]["clientId"] is None
-      assert cookie2_contents["loginState"]["organizationId"] is None
-      assert cookie2_contents["loginState"]["apiToken"] == second_guest_token
+    response2 = logged_in_web_connection.get(second_guest_url)
+    cookie2 = response2.response.headers["Set-Cookie"]
+    cookie2_contents = requests.get(f"{app_url}/cookie", headers={"Cookie": cookie2}, verify=False, timeout=5).json()
+    assert cookie2_contents["loginState"]["clientId"] is None
+    assert cookie2_contents["loginState"]["organizationId"] is None
+    assert cookie2_contents["loginState"]["apiToken"] == second_guest_token
 
-      assert cookie1_contents["loginState"]["parentState"] == cookie2_contents["loginState"]["parentState"]
+    assert cookie1_contents["loginState"]["parentState"] == cookie2_contents["loginState"]["parentState"]
 
   def test_logged_in_guest_create(self, api_connection, logged_in_web_connection, experiment, experiment_guest_url):
     logged_in_web_connection.get("/experiment/" + experiment.id)

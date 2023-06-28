@@ -76,7 +76,6 @@ class BaseUsersCreateHandler(Handler):
       has_verified_email=has_verified_email,
       pending_client_id=None,
     )
-    inviter = self.services.user_service.find_by_id(verified_invite.inviter)
 
     # TODO(SN-1098): I believe all of these checks are no longer needed, since they are
     # checked in invite_service.invite_is_still_valid
@@ -88,6 +87,9 @@ class BaseUsersCreateHandler(Handler):
       if not is_owner:
         raise ForbiddenError("Owners must be invited by organization owners.")
     else:
+      inviter = self.services.user_service.find_by_id(verified_invite.inviter)
+      if inviter is None:
+        raise ForbiddenError("You must be invited by a member of your organization.")
       membership = self.services.membership_service.find_by_user_and_organization(
         user_id=inviter.id, organization_id=verified_invite.organization_id
       )

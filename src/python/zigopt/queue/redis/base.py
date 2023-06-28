@@ -41,10 +41,10 @@ class BaseRedisQueueProvider(QueueProvider):
   def get_queue_name_key(cls, services, queue_name):
     return services.redis_key_service.create_queue_name_key(cls.redis_key_prefix, queue_name, DIVIDER)
 
-  def delete(self, session, received_message):
+  def delete(self, received_message):
     pass
 
-  def reject(self, session, received_message):
+  def reject(self, received_message):
     # TODO(SN-1120): can we support reject by re-enqueueing?
     # would need to make sure we don't get stuck in a loop forever
     pass

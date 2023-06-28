@@ -86,9 +86,9 @@ class ExperimentImportancesTestBase(V1Base):
     return e
 
   def base_test_importances_no_observations(self, connection, client_id):
-    with connection.create_any_experiment() as e:
-      with RaisesApiException(HTTPStatus.UNPROCESSABLE_ENTITY):
-        self.endpoint(connection, e)
+    e = connection.create_any_experiment()
+    with RaisesApiException(HTTPStatus.UNPROCESSABLE_ENTITY):
+      self.endpoint(connection, e)
 
   def base_test_importances_not_enough(self, connection, client_id):
     e = connection.clients(client_id).experiments().create(**self.experiment_meta)

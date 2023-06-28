@@ -12,7 +12,7 @@ from zigopt.iam_logging.service import IamEvent, IamResponseStatus
 from zigopt.invite.constant import NO_ROLE
 from zigopt.json.builder import PendingPermissionJsonBuilder
 from zigopt.membership.model import MembershipType
-from zigopt.net.errors import ForbiddenError
+from zigopt.net.errors import ForbiddenError, NotFoundError
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import ADMIN
 
 from libsigopt.aux.errors import InvalidValueError, SigoptValidationError
@@ -60,6 +60,8 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
     invitee = self.services.user_service.find_by_email(email)
     self.check_can_set(user_id=invitee.id if invitee else None, invite_role=role)
     organization = self.services.organization_service.find_by_id(client.organization_id)
+    if not organization:
+      raise NotFoundError()
 
     # TODO(SN-1085): More granular error messages here
     if not self.services.invite_service.inviter_can_invite_to_client(

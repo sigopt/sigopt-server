@@ -115,10 +115,10 @@ class TestUser(BrowserTest):
     logged_in_page.wait_for_selector("text=Home")
 
   def test_guest_signup(self, page, api_connection, inbox, routes):
-    with api_connection.create_any_experiment() as e:
-      guest_token = api_connection.experiments(e.id).tokens().create().token
-      guest_url = "/guest?guest_token=" + guest_token
-      page.goto(routes.get_full_url(guest_url))
+    e = api_connection.create_any_experiment()
+    guest_token = api_connection.experiments(e.id).tokens().create().token
+    guest_url = "/guest?guest_token=" + guest_token
+    page.goto(routes.get_full_url(guest_url))
 
     email = AuthProvider.randomly_generated_email()
     api_connection.clients(api_connection.client_id).invites().create(email=email, role=ADMIN_ROLE, old_role=NO_ROLE)

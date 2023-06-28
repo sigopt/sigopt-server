@@ -21,6 +21,8 @@ class ExperimentsBestAssignmentsHandler(ExperimentHandler):
     return self.Params(path=request.path)
 
   def best_observations(self):
+    assert self.experiment is not None
+
     return self.services.experiment_best_observation_service.get_best_observations(
       self.experiment,
       self.services.observation_service.all_data(self.experiment),

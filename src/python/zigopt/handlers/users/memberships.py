@@ -1,12 +1,15 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from typing import Sequence
+
 from zigopt.common import *
 from zigopt.api.auth import api_token_authentication
 from zigopt.common.struct import ImmutableStruct
 from zigopt.handlers.users.base import UserHandler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_opt_with_validation
 from zigopt.json.builder import MembershipJsonBuilder, PaginationJsonBuilder
+from zigopt.membership.model import Membership
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import READ
 
 
@@ -27,7 +30,7 @@ class UsersMembershipsListDetailHandler(UserHandler):
   def handle(self, params):
     assert self.user is not None
 
-    memberships = []
+    memberships: Sequence[Membership] = []
     if params.organization:
       single_membership = self.services.membership_service.find_by_user_and_organization(
         self.user.id, params.organization.id

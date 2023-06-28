@@ -7,7 +7,7 @@ from zigopt.optimize.worker import HyperparameterOptimizationWorker, NextPointsW
 from zigopt.queue.message import QueueMessage
 from zigopt.queue.message_groups import MessageGroup
 from zigopt.queue.worker import QueueWorker
-from zigopt.services.base import Service
+from zigopt.services.base import GlobalService
 
 
 WORKER_CLASSES = [
@@ -32,7 +32,7 @@ def assign_worker_classes_by_message_type():
 assign_worker_classes_by_message_type()
 
 
-class MessageRouter(Service):
+class MessageRouter(GlobalService):
   @classmethod
   def get_worker_class_for_message(cls, message_type):
     return WORKER_CLASSES_BY_MESSAGE_TYPE.get(message_type)

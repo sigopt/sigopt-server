@@ -2,7 +2,6 @@
 ignore-patterns=.*_pb2.py
 reports=n
 extension-pkg-allow-list=lxml.etree
-load-plugins=pylint_protobuf
 
 [FORMAT]
 indent-string='  '
@@ -23,10 +22,12 @@ disable=
   invalid-name,
   missing-docstring,
   no-member,
+  no-name-in-module,  # delegate to mypy which has better protobuf support
   too-few-public-methods,
   too-many-ancestors,
   too-many-arguments,
   too-many-nested-blocks,
+  undefined-variable,  # delegate to mypy which has better protobuf support
   unused-argument,
   unused-wildcard-import,
   use-dict-literal,

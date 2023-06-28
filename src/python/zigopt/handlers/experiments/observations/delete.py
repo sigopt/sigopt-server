@@ -16,6 +16,7 @@ class ObservationsDeleteHandler(ObservationHandler):
 
   def handle(self, no_optimize):
     assert self.observation is not None
+    assert self.experiment is not None
 
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
     self.services.observation_service.set_delete(self.experiment, self.observation.id)
@@ -35,6 +36,8 @@ class ObservationsDeleteAllHandler(ExperimentHandler):
   required_permissions = WRITE
 
   def handle(self):
+    assert self.experiment is not None
+
     self.services.observation_service.delete_all_for_experiment(self.experiment)
     self.services.aux_service.reset_hyperparameters(self.experiment)
     return {}

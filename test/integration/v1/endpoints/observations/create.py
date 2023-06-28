@@ -16,8 +16,7 @@ from integration.v1.test_base import V1Base
 class TestCreateObservations(V1Base):
   @pytest.fixture
   def experiment(self, connection):
-    with connection.create_experiment(self.offline_experiment_meta) as experiment:
-      yield experiment
+    return connection.create_experiment(self.offline_experiment_meta)
 
   @pytest.fixture
   def suggestion(self, connection, experiment):
@@ -178,33 +177,33 @@ class TestCreateObservations(V1Base):
     pytest.skip()
     e_meta = deepcopy(DEFAULT_EXPERIMENT_META_NO_METRIC)
     assert "metrics" not in e_meta and "metric" not in e_meta
-    with connection.create_any_experiment(**e_meta) as experiment:
-      suggestion = connection.experiments(experiment.id).suggestions().create()
-      observation1 = (
-        connection.experiments(experiment.id)
-        .observations()
-        .create(
-          values=[{"value": 4}],
-          suggestion=suggestion.id,
-        )
+    experiment = connection.create_any_experiment(**e_meta)
+    suggestion = connection.experiments(experiment.id).suggestions().create()
+    observation1 = (
+      connection.experiments(experiment.id)
+      .observations()
+      .create(
+        values=[{"value": 4}],
+        suggestion=suggestion.id,
       )
-      assert observation1.values[0].value == 4
-      observation2 = (
-        connection.experiments(experiment.id)
-        .observations()
-        .create(
-          values=[{"name": None, "value": 4}],
-          suggestion=suggestion.id,
-        )
+    )
+    assert observation1.values[0].value == 4
+    observation2 = (
+      connection.experiments(experiment.id)
+      .observations()
+      .create(
+        values=[{"name": None, "value": 4}],
+        suggestion=suggestion.id,
       )
-      assert observation2.values[0].value == 4
-      assert observation1.id != observation2.id
-      with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
-        connection.experiments(experiment.id).observations().create(
-          values=[{"name": "I was never given a name", "value": 4}],
-          suggestion=suggestion.id,
-        )
-      assert '"I was never given a name"' in str(e.value)
+    )
+    assert observation2.values[0].value == 4
+    assert observation1.id != observation2.id
+    with RaisesApiException(HTTPStatus.BAD_REQUEST) as e:
+      connection.experiments(experiment.id).observations().create(
+        values=[{"name": "I was never given a name", "value": 4}],
+        suggestion=suggestion.id,
+      )
+    assert '"I was never given a name"' in str(e.value)
 
   def test_assignments_have_valid_log_transform_bounds(self, connection):
     meta = deepcopy(DEFAULT_EXPERIMENT_META)

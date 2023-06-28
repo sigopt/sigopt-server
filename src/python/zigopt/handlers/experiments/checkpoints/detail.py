@@ -21,7 +21,7 @@ class CheckpointsDetailHandler(TrainingRunHandler):
     assert self.training_run is not None
 
     checkpoint = self.services.checkpoint_service.find_by_id(self._checkpoint_id)
-    if checkpoint.training_run_id != self.training_run.id:
+    if not checkpoint or checkpoint.training_run_id != self.training_run.id:
       raise NotFoundError(f"No checkpoint with id {self._checkpoint_id} found for training run {self.training_run.id}")
     return CheckpointJsonBuilder(checkpoint)
 

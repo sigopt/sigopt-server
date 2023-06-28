@@ -203,61 +203,60 @@ class QueueWorkers(QueueMessageHandler):
   def _consume_message_from_queue(self, queue_name, process_message, wait_time_seconds):
     assert self.tracer is not None
 
-    with self.global_services.queue_service.start_session(queue_name) as session:
-      message = None
-      with self.global_services.exception_logger.tolerate_exceptions(Exception):
-        message = self.global_services.queue_service.dequeue(session, queue_name, wait_time_seconds=wait_time_seconds)
-      if not message:
+    message = None
+    with self.global_services.exception_logger.tolerate_exceptions(Exception):
+      message = self.global_services.queue_service.dequeue(queue_name, wait_time_seconds=wait_time_seconds)
+    if not message:
+      return False
+
+    message_type = message.message_type
+    self.global_services.exception_logger.add_extra(message_type=message_type)
+
+    with self.tracer.trace_background_task(message.message_type, "Message"):
+      base64_encoded_body = base64.b64encode(message.serialized_body)
+
+      self.tracer.set_attribute("queue_name", queue_name)
+      self.tracer.set_attribute("body", base64_encoded_body)
+      self.tracer.set_attribute("message_type", message.message_type)
+
+      WorkerClass = self.global_services.message_router.get_worker_class_for_message(message.message_type)
+      if not WorkerClass:
+        # Indicates that this qworker does not know how to handle this message.
+        # Previously, we would re-enqueue this, but that could lead to a runaway
+        # message that is re-enqueued indefinitely. Instead, we will prefer to
+        # fail fast here and let the deadletter queue capture any messages that
+        # were not handled
+        self.global_services.exception_logger.soft_exception(f"No worker to handle {message.message_type}")
+        self.global_services.queue_service.reject(message, queue_name)
         return False
 
-      message_type = message.message_type
-      self.global_services.exception_logger.add_extra(message_type=message_type)
+      self.logger.info("%s %s", message.message_type, message.deserialized_message)
+      readable_message_content = message.deserialized_message and str(message.deserialized_message)
+      self.tracer.set_attribute("message", readable_message_content)
+      self.global_services.exception_logger.add_extra(
+        queue_message={
+          "body": base64_encoded_body,
+          "message": readable_message_content,
+          "message_type": message_type,
+        },
+      )
 
-      with self.tracer.trace_background_task(message.message_type, "Message"):
-        base64_encoded_body = base64.b64encode(message.serialized_body)
-
-        self.tracer.set_attribute("queue_name", queue_name)
-        self.tracer.set_attribute("body", base64_encoded_body)
-        self.tracer.set_attribute("message_type", message.message_type)
-
-        WorkerClass = self.global_services.message_router.get_worker_class_for_message(message.message_type)
-        if not WorkerClass:
-          # Indicates that this qworker does not know how to handle this message.
-          # Previously, we would re-enqueue this, but that could lead to a runaway
-          # message that is re-enqueued indefinitely. Instead, we will prefer to
-          # fail fast here and let the deadletter queue capture any messages that
-          # were not handled
-          self.global_services.exception_logger.soft_exception(f"No worker to handle {message.message_type}")
-          self.global_services.queue_service.reject(session, message, queue_name)
-          return False
-
-        self.logger.info("%s %s", message.message_type, message.deserialized_message)
-        readable_message_content = message.deserialized_message and str(message.deserialized_message)
-        self.tracer.set_attribute("message", readable_message_content)
-        self.global_services.exception_logger.add_extra(
-          queue_message={
-            "body": base64_encoded_body,
-            "message": readable_message_content,
-            "message_type": message_type,
-          },
-        )
-
-        services = self.request_local_services_factory(self.global_services)
-        services.database_service.start_session()
-        try:
-          with self.monitor_message(services, queue_name, message):
-            process_message(WorkerClass, services, message)
-        except SigoptComputeError as e:
-          self.global_services.queue_service.reject(session, message, queue_name)
-          raise AlreadyLoggedException(e) from e
-        except AssertionError:
-          raise
-        except Exception as e:
-          self.global_services.exception_logger.log_exception(e)
-          self.global_services.queue_service.reject(session, message, queue_name)
-          raise AlreadyLoggedException(e) from e
-        else:
-          self.global_services.queue_service.delete(session, message, queue_name)
-        finally:
-          services.database_service.end_session()
-      return True
+      services = self.request_local_services_factory(self.global_services)
+      services.database_service.start_session()
+      try:
+        with self.monitor_message(services, queue_name, message):
+          process_message(WorkerClass, services, message)
+      except SigoptComputeError as e:
+        self.global_services.queue_service.reject(message, queue_name)
+        raise AlreadyLoggedException(e) from e
+      except AssertionError:
+        raise
+      except Exception as e:
+        self.global_services.exception_logger.log_exception(e)
+        self.global_services.queue_service.reject(message, queue_name)
+        raise AlreadyLoggedException(e) from e
+      else:
+        self.global_services.queue_service.delete(message, queue_name)
+      finally:
+        services.database_service.end_session()
+    return True

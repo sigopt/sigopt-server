@@ -7,6 +7,7 @@ from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.experiments.base import maybe_raise_for_incorrect_development_access
 from zigopt.handlers.training_runs.utils import get_json_paths_and_values
 from zigopt.net.errors import NotFoundError
+from zigopt.project.model import Project
 from zigopt.protobuf.gen.token.tokenmeta_pb2 import TokenMeta
 from zigopt.training_run.model import TrainingRun
 
@@ -14,6 +15,9 @@ from zigopt.training_run.model import TrainingRun
 class TrainingRunHandler(Handler):
   permitted_scopes = (TokenMeta.ALL_ENDPOINTS, TokenMeta.SHARED_EXPERIMENT_SCOPE)
   allow_development = True
+
+  training_run: TrainingRun | None
+  project: Project | None
 
   def __init__(self, services, request, *, training_run_id, experiment_id=None):
     super().__init__(services, request)
@@ -24,6 +28,7 @@ class TrainingRunHandler(Handler):
     self.client = None
     self.experiment = None
     self.training_run = None
+    self.project = None
 
   def prepare(self):
     super().prepare()
@@ -34,6 +39,7 @@ class TrainingRunHandler(Handler):
 
   def find_objects(self):
     training_run = self._find_training_run(self.training_run_id)
+    project = self._find_project(training_run.project_id, training_run.client_id, training_run.id)
     client = self._find_client(training_run.client_id)
     experiment = self._maybe_find_experiment(self.experiment_id)
     return extend_dict(
@@ -43,6 +49,7 @@ class TrainingRunHandler(Handler):
           "client": client,
           "experiment": experiment,
           "training_run": training_run,
+          "project": project,
         }
       ),
     )
@@ -69,6 +76,14 @@ class TrainingRunHandler(Handler):
     if client:
       return client
     raise NotFoundError(f"Client {client_id} not found")
+
+  def _find_project(self, project_id, client_id, training_run_id):
+    if project_id is None:
+      raise NotFoundError(f"Training run {training_run_id} not found")
+    project = self.services.project_service.find_by_client_and_id(client_id, project_id)
+    if project is None:
+      raise NotFoundError(f"Training run {training_run_id} not found")
+    return project
 
   def can_act_on_objects(self, requested_permission, objects):
     assert self.auth is not None

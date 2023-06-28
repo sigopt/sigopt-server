@@ -76,10 +76,16 @@ class UsersRequestPermissionsHandler(UserHandler):
     return client_id
 
   def handle(self, client_id):
+    assert self.user is not None
     if not self.services.email_verification_service.has_verified_email_if_needed(self.user):
       raise ForbiddenError("You must verify your email")
+    not_authorized_error = ForbiddenError("You are not authorized to join this client")
     client: Client | None = self.services.client_service.find_by_id(client_id)
-    organization = napply(client, lambda c: self.services.organization_service.find_by_id(c.organization_id))
+    if not client:
+      raise not_authorized_error
+    organization = self.services.organization_service.find_by_id(client.organization_id)
+    if not organization:
+      raise not_authorized_error
     could_signup, _ = self.services.invite_service.signup_to_client_if_permitted(
       user=self.user,
       organization=organization,
@@ -90,4 +96,4 @@ class UsersRequestPermissionsHandler(UserHandler):
       # we just never return anything to avoid writing code that depends on a permission
       # always being returned.
       return {}
-    raise ForbiddenError("You are not authorized to join this client")
+    raise not_authorized_error

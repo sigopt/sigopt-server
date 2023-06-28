@@ -1,7 +1,6 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-# pylint: disable=protobuf-undefined-attribute
 import json
 
 import pytest
@@ -139,7 +138,7 @@ def test_large_floats():
 
 
 def test_setattr():
-  # pylint: disable=assigning-non-slot,protobuf-type-error
+  # pylint: disable=assigning-non-slot
   empty = Parent()
   assert not empty.HasField("optional_double_field")
   assert not empty.optional_composite_field.HasField("name")

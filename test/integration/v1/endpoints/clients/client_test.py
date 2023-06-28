@@ -27,10 +27,10 @@ class TestClients(V1Base):
     assert int(this_connection.organization_id) == int(client_detail.organization)
 
   def test_experiments(self, this_connection):
-    with this_connection.create_any_experiment() as e:
-      client_experiments = this_connection.clients(this_connection.client_id).experiments().fetch().data
-      assert len(client_experiments) == 1
-      assert client_experiments[0].id == e.id
+    e = this_connection.create_any_experiment()
+    client_experiments = this_connection.clients(this_connection.client_id).experiments().fetch().data
+    assert len(client_experiments) == 1
+    assert client_experiments[0].id == e.id
 
 
 class TestClientCreate(V1Base):

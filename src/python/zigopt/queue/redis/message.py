@@ -32,7 +32,7 @@ class RedisMessageQueueProvider(BaseRedisQueueProvider):
     ]
     self._add_to_queue(self.redis_key, redis_messages)
 
-  def dequeue(self, session, wait_time_seconds=None):
+  def dequeue(self, wait_time_seconds=None):
     wait_time_seconds = coalesce(wait_time_seconds, self.wait_time_seconds)
     redis_body = self._pop_from_queue(self.redis_key, wait_time_seconds)
     if redis_body is None:

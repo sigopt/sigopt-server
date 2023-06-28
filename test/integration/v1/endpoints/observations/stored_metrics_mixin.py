@@ -27,8 +27,7 @@ class StoredMetricsMixin:
       dict(name=optimized_metric_name),
       dict(name=stored_metric_name, strategy=MetricStrategyNames.STORE),
     ]
-    with connection.create_experiment(e_meta) as experiment:
-      yield experiment
+    return connection.create_experiment(e_meta)
 
   @pytest.fixture
   def suggestion(self, connection, experiment):

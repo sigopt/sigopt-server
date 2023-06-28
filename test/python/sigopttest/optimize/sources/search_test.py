@@ -99,5 +99,5 @@ class TestSearchExperimentProgress:
     service = Mock()
     with patch("zigopt.optimize.optimizer.ConditionalOptimizationSource"):
       optimizer = OptimizerService(service)
-      source = optimizer.get_inferred_optimization_source(not_search_experiment, None)
+      source = optimizer.get_inferred_optimization_source(not_search_experiment, 0)
       assert not isinstance(source, SearchOptimizationSource)

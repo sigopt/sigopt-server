@@ -107,9 +107,9 @@ class TestRedisService(ServiceBase):
     num_removed = services.redis_service.remove_from_sorted_set(sorted_set_key, member1)
     assert num_removed == 0
 
-    # removing no members (empty list expansion) returns none
+    # removing no members (empty list expansion) returns 0
     num_removed = services.redis_service.remove_from_sorted_set(sorted_set_key)
-    assert num_removed is None
+    assert num_removed == 0
 
   def test_add_to_set(self, services, set_key):
     member1 = "member1"

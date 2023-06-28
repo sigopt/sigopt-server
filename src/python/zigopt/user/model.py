@@ -33,7 +33,7 @@ class User(Base):
   name = Column(String)
   email = Column(String, index=True, unique=True)
   hashed_password = Column(String)
-  user_meta = ProtobufColumn(UserMeta, name="user_meta_json", nullable=False)
+  user_meta: UserMeta = ProtobufColumn(UserMeta, name="user_meta_json", nullable=False)
 
   @validates("user_meta")
   def validator(self, key, meta):
@@ -44,7 +44,7 @@ class User(Base):
       kwargs["hashed_password"] = password_hash(kwargs.pop("plaintext_password", None))
     else:
       assert "plaintext_password" not in kwargs
-    kwargs["user_meta"] = kwargs.get("user_meta", User.user_meta.default_value())
+    kwargs["user_meta"] = kwargs.get("user_meta", UserMeta())
     super().__init__(*args, **kwargs)
 
   @validates("email")

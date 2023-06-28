@@ -15,22 +15,22 @@ class TestAlertBrokerErrors(BrowserTest):
     driver.wait_for_element_by_css_selector(css_selector=".alert-danger")
 
   def test_token_expires(self, logged_in_driver, api_connection, login_state):
-    with api_connection.create_any_experiment() as e:
-      logged_in_driver.get_path(f"/experiment/{e.id}/suggestions")
-      logged_in_driver.wait_while_present(css_selector=".history-table-row")
-      logged_in_driver.find_and_click(element_text="Generate Suggestion")
-      logged_in_driver.wait_for_element_by_css_selector(css_selector=".history-table-row")
-      logged_in_driver.wait_while_present(css_selector=".alert-danger")
-      logged_in_driver.wait_while_present(css_selector=".alert-warning")
+    e = api_connection.create_any_experiment()
+    logged_in_driver.get_path(f"/experiment/{e.id}/suggestions")
+    logged_in_driver.wait_while_present(css_selector=".history-table-row")
+    logged_in_driver.find_and_click(element_text="Generate Suggestion")
+    logged_in_driver.wait_for_element_by_css_selector(css_selector=".history-table-row")
+    logged_in_driver.wait_while_present(css_selector=".alert-danger")
+    logged_in_driver.wait_while_present(css_selector=".alert-warning")
 
-      api_connection.sessions().update(
-        old_password=login_state.password,
-        new_password=login_state.password + "1",
-      )
+    api_connection.sessions().update(
+      old_password=login_state.password,
+      new_password=login_state.password + "1",
+    )
 
-      logged_in_driver.find_and_click(element_text="Generate Suggestion")
-      logged_in_driver.wait_for_element_by_css_selector(css_selector=".alert-danger")
-      logged_in_driver.wait_while_present(css_selector=".alert-warning")
+    logged_in_driver.find_and_click(element_text="Generate Suggestion")
+    logged_in_driver.wait_for_element_by_css_selector(css_selector=".alert-danger")
+    logged_in_driver.wait_while_present(css_selector=".alert-warning")
 
   def test_lose_write_permissions(
     self,
@@ -51,21 +51,21 @@ class TestAlertBrokerErrors(BrowserTest):
     driver.web_connection = web_connection
     driver.login()
 
-    with api_connection.create_any_experiment(client_id=client_id) as e:
-      driver.get_path(f"/experiment/{e.id}/suggestions")
-      driver.wait_while_present(css_selector=".history-table-row")
-      driver.find_and_click(element_text="Generate Suggestion")
-      driver.wait_for_element_by_css_selector(css_selector=".history-table-row")
-      driver.wait_while_present(css_selector=".alert-danger")
-      driver.wait_while_present(css_selector=".alert-warning")
+    e = api_connection.create_any_experiment(client_id=client_id)
+    driver.get_path(f"/experiment/{e.id}/suggestions")
+    driver.wait_while_present(css_selector=".history-table-row")
+    driver.find_and_click(element_text="Generate Suggestion")
+    driver.wait_for_element_by_css_selector(css_selector=".history-table-row")
+    driver.wait_while_present(css_selector=".alert-danger")
+    driver.wait_while_present(css_selector=".alert-warning")
 
-      # Reset the user to be read-only
-      api_connection.clients(client_id).invites().create(
-        email=email,
-        old_role="user",
-        role="read-only",
-      )
+    # Reset the user to be read-only
+    api_connection.clients(client_id).invites().create(
+      email=email,
+      old_role="user",
+      role="read-only",
+    )
 
-      driver.find_and_click(element_text="Generate Suggestion")
-      driver.wait_for_element_by_css_selector(css_selector=".alert-danger")
-      driver.wait_while_present(css_selector=".alert-warning")
+    driver.find_and_click(element_text="Generate Suggestion")
+    driver.wait_for_element_by_css_selector(css_selector=".alert-danger")
+    driver.wait_while_present(css_selector=".alert-warning")

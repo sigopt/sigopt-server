@@ -4,6 +4,7 @@
 from flask import request
 
 from zigopt.common import *
+from zigopt.experiment.model import Experiment
 from zigopt.handlers.base.handler import Handler
 from zigopt.handlers.validate.validate_dict import ValidationType, get_with_validation
 from zigopt.json.builder import ExperimentJsonBuilder
@@ -58,6 +59,8 @@ class ExperimentHandler(Handler):
   JsonBuilder = ExperimentJsonBuilder
   redirect_ai_experiments = False
 
+  experiment: Experiment | None
+
   def __init__(self, services, req, experiment_id):
     if experiment_id is None:
       raise Exception("Experiment id required")
@@ -109,6 +112,8 @@ class ExperimentHandler(Handler):
     )
 
   def _reset_hyperparameters(self):
+    assert self.experiment is not None
+
     self.services.aux_service.reset_hyperparameters(self.experiment)
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
     self.services.optimize_queue_service.enqueue_optimization(

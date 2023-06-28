@@ -4,24 +4,11 @@
 import time
 from copy import deepcopy
 
+from sigopt.objects import Experiment
+
 from integration.enhanced_info_connection import EnhancedInfoConnection
 from integration.request import IntegrationTestRequestor
 from integration.v1.constants import ALL_META, AnyParameterMetaType, CoreExperimentMetaType
-
-
-class WithExperiment:
-  def __init__(self, conn, experiment):
-    self.conn = conn
-    self.experiment = experiment
-
-  def __getattr__(self, name):
-    return getattr(self.experiment, name)
-
-  def __enter__(self):
-    return self.experiment
-
-  def __exit__(self, exc_type, exc_value, tb):
-    pass
 
 
 class Proxy:
@@ -110,9 +97,11 @@ class IntegrationTestConnection:
       },
     ]
 
+  @property
+  def experiments(self) -> ExperimentsWrapper:
+    return ExperimentsWrapper(self.connection.experiments)
+
   def __getattr__(self, name):
-    if name == "experiments":
-      return ExperimentsWrapper(getattr(self.connection, name))
     return getattr(self.connection, name)
 
   def raw_request(self, method, url, params=None, json=None, headers=None):
@@ -123,9 +112,9 @@ class IntegrationTestConnection:
     return IntegrationTestConnection(self.api_url, client_token=self.client_token, user_token=None)
 
   def create_experiment(self, data):
-    return WithExperiment(self, self._create_experiment(data, client_id=None))
+    return self._create_experiment(data, client_id=None)
 
-  def create_any_experiment(self, **kwargs):
+  def create_any_experiment(self, **kwargs) -> Experiment:
     client_id = kwargs.pop("client_id", None)
     params: CoreExperimentMetaType = {
       "parameters": self.experiment_parameters,
@@ -138,7 +127,7 @@ class IntegrationTestConnection:
 
     params.update(kwargs)  # type: ignore
 
-    return WithExperiment(self, self._create_experiment(params, client_id=client_id))
+    return self._create_experiment(params, client_id=client_id)
 
   def _create_experiment(self, data: CoreExperimentMetaType, client_id, static_value=None):
     value = str(time.time()) if static_value is None else hex(hash((static_value, "experiment")))[2:]
@@ -160,4 +149,4 @@ class IntegrationTestConnection:
         {"name": "a", "type": "double", "bounds": {"min": 1, "max": 10}},
       ],
     }
-    return WithExperiment(self, self.clients(client_id).experiments().create(**data))
+    return self.clients(client_id).experiments().create(**data)

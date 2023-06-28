@@ -313,6 +313,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     self._check_unsupported_updates(json_dict)
 
     client = self.services.client_service.find_by_id(self.experiment.client_id, current_client=self.auth.current_client)
+    assert client
 
     update_meta_fields: dict[Column, Any] = {}
     update_experiment_fields: dict[Column, Any] = {}

@@ -1,12 +1,12 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from dataclasses import dataclass
 from enum import Enum
 
 from google.protobuf.descriptor import FieldDescriptor
 
 from zigopt.common.sigopt_datetime import naive_datetime_to_aware_datetime
-from zigopt.common.struct import ImmutableStruct
 from zigopt.protobuf.gen.api.paging_pb2 import PagingSymbol
 
 
@@ -35,16 +35,14 @@ PROTOBUF_FIELD_TYPE_TO_FIELD_API_TYPE = {
   FieldDescriptor.TYPE_STRING: FieldApiType.string,
 }
 
-DefinedField = ImmutableStruct(
-  "DefinedField",
-  [
-    "api_type",
-    "field_count",
-    "key",
-    "name",
-    "sortable",
-  ],
-)
+
+@dataclass
+class DefinedField:
+  api_type: FieldApiType
+  field_count: int
+  key: str
+  name: str
+  sortable: bool
 
 
 def get_value_of_paging_symbol(symbol):

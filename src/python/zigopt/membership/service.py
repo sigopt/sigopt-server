@@ -1,6 +1,9 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections.abc import Sequence
+
+from sqlalchemy.orm import Query
 from sqlalchemy.sql.expression import or_, tuple_
 
 from zigopt.common import *
@@ -10,27 +13,29 @@ from zigopt.services.base import Service
 
 
 class MembershipService(Service):
-  def _owners_only_clause(self, query):
+  def _owners_only_clause(self, query: Query) -> Query:
     return query.filter(Membership.membership_type == MembershipType.owner)
 
-  def find_by_organization_id(self, organization_id):
+  def find_by_organization_id(self, organization_id: int) -> Sequence[Membership]:
     return self.services.database_service.all(
       self.services.database_service.query(Membership).filter_by(organization_id=organization_id),
     )
 
-  def find_by_user_id(self, user_id):
+  def find_by_user_id(self, user_id: int) -> Sequence[Membership]:
     return self.services.database_service.all(
       self.services.database_service.query(Membership).filter_by(user_id=user_id),
     )
 
-  def find_by_user_and_organization(self, user_id, organization_id):
+  def find_by_user_and_organization(self, user_id: int, organization_id: int) -> Membership | None:
     return self.services.database_service.one_or_none(
       self.services.database_service.query(Membership)
       .filter_by(user_id=user_id)
       .filter_by(organization_id=organization_id),
     )
 
-  def find_by_users_and_organizations(self, user_ids, organization_ids):
+  def find_by_users_and_organizations(
+    self, user_ids: Sequence[int], organization_ids: Sequence[int]
+  ) -> Sequence[Membership]:
     if not user_ids or not organization_ids:
       return []
     return self.services.database_service.all(
@@ -39,19 +44,19 @@ class MembershipService(Service):
       .filter(Membership.organization_id.in_(distinct(organization_ids))),
     )
 
-  def find_owners_by_user_id(self, user_id):
+  def find_owners_by_user_id(self, user_id: int) -> Sequence[Membership]:
     return self.services.database_service.all(
       self._owners_only_clause(self.services.database_service.query(Membership).filter_by(user_id=user_id))
     )
 
-  def find_owners_by_organization_id(self, organization_id):
+  def find_owners_by_organization_id(self, organization_id: int) -> Sequence[Membership]:
     return self.services.database_service.all(
       self._owners_only_clause(
         self.services.database_service.query(Membership).filter_by(organization_id=organization_id)
       )
     )
 
-  def organizations_with_other_owners(self, organization_ids, user_id):
+  def organizations_with_other_owners(self, organization_ids: Sequence[int], user_id: int) -> Sequence[Membership]:
     return self.services.database_service.all(
       self._owners_only_clause(
         self.services.database_service.query(Membership)
@@ -60,7 +65,7 @@ class MembershipService(Service):
       )
     )
 
-  def organizations_with_other_non_owners(self, organization_ids, user_id):
+  def organizations_with_other_non_owners(self, organization_ids: Sequence[int], user_id: int) -> Sequence[Membership]:
     return self.services.database_service.all(
       self.services.database_service.query(Membership)
       .filter(Membership.organization_id.in_(organization_ids))
@@ -68,7 +73,7 @@ class MembershipService(Service):
       .filter(Membership.membership_type != MembershipType.owner)
     )
 
-  def count_by_organization_id(self, organization_id):
+  def count_by_organization_id(self, organization_id: int) -> int:
     return self.services.database_service.count(
       self.services.database_service.query(Membership).filter_by(organization_id=organization_id),
     )
@@ -76,7 +81,7 @@ class MembershipService(Service):
   # NOTE: This function determines if user1 is visible to user2 based on their memberships.
   # Users are mutually visible if they are members of the same organization
   # and at least one of them is an owner of that organization.
-  def users_are_mutually_visible(self, user1_id, user2_id):
+  def users_are_mutually_visible(self, user1_id: int, user2_id: int) -> bool:
     def membership_subquery(user_id):
       return (self.services.database_service.query(Membership).filter_by(user_id=user_id)).subquery()
 
@@ -95,7 +100,7 @@ class MembershipService(Service):
       )
     )
 
-  def user_is_owner_for_organization(self, user_id, organization_id):
+  def user_is_owner_for_organization(self, user_id: int, organization_id: int) -> bool:
     return self.services.database_service.exists(
       self._owners_only_clause(
         self.services.database_service.query(Membership)
@@ -104,13 +109,13 @@ class MembershipService(Service):
       )
     )
 
-  def delete(self, membership):
+  def delete(self, membership: Membership) -> int:
     return self.delete_by_organization_and_user(
       organization_id=membership.organization_id,
       user_id=membership.user_id,
     )
 
-  def delete_by_organization_id(self, organization_id):
+  def delete_by_organization_id(self, organization_id: int) -> int:
     if not organization_id:
       raise ValueError(f"Cannot delete a membership with organization_id: `{organization_id}`!")
     return self.services.database_service.delete(
@@ -118,7 +123,7 @@ class MembershipService(Service):
     )
 
   # We define a stray membership as one that is not an owner membership, and has no permissions
-  def delete_stray_memberships_by_organization(self, organization_id):
+  def delete_stray_memberships_by_organization(self, organization_id: int) -> int:
     stray_memberships = (
       self.services.database_service.query(Membership.user_id, Membership.organization_id)
       .filter(Membership.organization_id == organization_id)
@@ -132,7 +137,7 @@ class MembershipService(Service):
       ),
     )
 
-  def delete_by_organization_and_user(self, organization_id, user_id):
+  def delete_by_organization_and_user(self, organization_id: int, user_id: int) -> int:
     if not (user_id and organization_id):
       raise ValueError(
         "Cannot delete a membership without both a user_id and an organization_id. "
@@ -145,7 +150,7 @@ class MembershipService(Service):
     )
     return result
 
-  def delete_by_user_id(self, user_id):
+  def delete_by_user_id(self, user_id: int) -> int:
     if not user_id:
       raise ValueError(f"Cannot delete a membership with user_id: `{user_id}`!")
     result = self.services.database_service.delete(
@@ -153,7 +158,7 @@ class MembershipService(Service):
     )
     return result
 
-  def insert(self, user_id, organization_id, **kwargs):
+  def insert(self, user_id: int, organization_id: int, **kwargs) -> Membership:
     if not (user_id and organization_id):
       raise ValueError(
         "Cannot create a membership without both a user_id and an organization_id. "
@@ -163,13 +168,15 @@ class MembershipService(Service):
     self.services.database_service.insert(membership)
     return membership
 
-  def create_if_not_exists(self, user_id, organization_id, membership_type=None, **kwargs):
+  def create_if_not_exists(
+    self, user_id: int, organization_id: int, membership_type: MembershipType | None = None, **kwargs
+  ) -> Membership:
     existing = self.find_by_user_and_organization(user_id, organization_id)
     if existing:
       return existing
     return self.insert(user_id=user_id, organization_id=organization_id, membership_type=membership_type, **kwargs)
 
-  def elevate_to_owner(self, membership):
+  def elevate_to_owner(self, membership: Membership) -> int:
     membership.membership_type = MembershipType.owner
     return self.services.database_service.update_one(
       self.services.database_service.query(Membership)

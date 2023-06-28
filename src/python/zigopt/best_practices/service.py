@@ -1,15 +1,18 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+from collections.abc import Generator
+
 from zigopt.common import *
 from zigopt.best_practices.constants import *
+from zigopt.experiment.model import Experiment
 from zigopt.experiment.progress import ExperimentObservationProgress
 from zigopt.services.base import Service
 
 
 class BestPracticesService(Service):
   @generator_to_safe_iterator
-  def check_experiment(self, experiment):
+  def check_experiment(self, experiment: Experiment) -> Generator[str, None, None]:
     num_observations = self.services.observation_service.count_by_experiment(experiment)
     num_open_suggestions = self.services.suggestion_service.count_open_by_experiment(experiment)
     progress = self.services.experiment_progress_service.progress_for_experiments([experiment]).get(experiment.id)
@@ -26,7 +29,7 @@ class BestPracticesService(Service):
     yield from self.check_max_dimension(experiment)
 
   @generator_to_safe_iterator
-  def check_max_observations(self, experiment, num_observations):
+  def check_max_observations(self, experiment: Experiment, num_observations: int) -> Generator[str, None, None]:
     if experiment.constraints and not num_observations <= MAX_OBSERVATIONS_WITH_CONSTRAINTS:
       yield f"{CONSTRAINTS_REASON} has more than {MAX_OBSERVATIONS_WITH_CONSTRAINTS} observations"
 
@@ -34,7 +37,9 @@ class BestPracticesService(Service):
       yield f"{CONDITIONALS_REASON} has more than {MAX_OBSERVATIONS_WITH_CONDITIONALS} observations"
 
   @generator_to_safe_iterator
-  def check_observation_budget_consumed(self, experiment, observation_budget_consumed):
+  def check_observation_budget_consumed(
+    self, experiment: Experiment, observation_budget_consumed: int
+  ) -> Generator[str, None, None]:
     if experiment.observation_budget and observation_budget_consumed > experiment.observation_budget:
       rounded_budget_consumed = (
         int(observation_budget_consumed)
@@ -47,7 +52,7 @@ class BestPracticesService(Service):
       )
 
   @generator_to_safe_iterator
-  def check_max_open_suggestions(self, experiment, num_open_suggestions):
+  def check_max_open_suggestions(self, experiment: Experiment, num_open_suggestions: int) -> Generator[str, None, None]:
     if experiment.parallel_bandwidth:
       if not num_open_suggestions <= experiment.parallel_bandwidth:
         yield (
@@ -69,7 +74,7 @@ class BestPracticesService(Service):
         )
 
   @generator_to_safe_iterator
-  def check_parallel_bandwidth(self, experiment):
+  def check_parallel_bandwidth(self, experiment: Experiment) -> Generator[str, None, None]:
     if experiment.parallel_bandwidth:
       if not experiment.parallel_bandwidth <= experiment.dimension:
         if experiment.constraints:
@@ -85,17 +90,17 @@ class BestPracticesService(Service):
           )
 
   @generator_to_safe_iterator
-  def check_max_constraints(self, experiment):
+  def check_max_constraints(self, experiment: Experiment) -> Generator[str, None, None]:
     if experiment.constraints and not len(experiment.constraints) <= MAX_LINEAR_CONSTRAINTS:
       yield f"{CONSTRAINTS_REASON} has more than {MAX_LINEAR_CONSTRAINTS} constraints"
 
   @generator_to_safe_iterator
-  def check_conditionals_breadth(self, experiment):
+  def check_conditionals_breadth(self, experiment: Experiment) -> Generator[str, None, None]:
     if experiment.conditionals and not experiment.conditionals_breadth <= MAX_CONDITIONALS_BREADTH:
       yield f"{CONDITIONALS_REASON} has more than {MAX_CONDITIONALS_BREADTH} conditionals"
 
   @generator_to_safe_iterator
-  def check_observation_budget(self, experiment):
+  def check_observation_budget(self, experiment: Experiment) -> Generator[str, None, None]:
     if experiment.observation_budget:
       if experiment.constraints and not experiment.observation_budget <= MAX_OBSERVATIONS_WITH_CONSTRAINTS:
         yield f"{CONSTRAINTS_REASON} has observation_budget greater than {MAX_OBSERVATIONS_WITH_CONSTRAINTS}"
@@ -103,14 +108,14 @@ class BestPracticesService(Service):
         yield f"{CONDITIONALS_REASON} has observation_budget greater than {MAX_OBSERVATIONS_WITH_CONDITIONALS}"
 
   @generator_to_safe_iterator
-  def check_max_dimension(self, experiment):
+  def check_max_dimension(self, experiment: Experiment) -> Generator[str, None, None]:
     if experiment.constraints and not experiment.dimension <= MAX_DIMENSION_WITH_CONSTRAINTS:
       yield f"{CONSTRAINTS_REASON} has more than {MAX_DIMENSION_WITH_CONSTRAINTS} parameters"
 
     if experiment.conditionals and not experiment.dimension <= MAX_DIMENSION_WITH_CONDITIONALS:
       yield f"{CONDITIONALS_REASON} has more than {MAX_DIMENSION_WITH_CONDITIONALS} parameters"
 
-  def notify_admins(self, auth, error_message, experiment, **kwargs):
+  def notify_admins(self, auth, error_message: str, experiment: Experiment, **kwargs) -> None:
     # Note: error_message can be a message or an array
     if self.services.config_broker.get("features.bestPractices", False):
       if "organization_id" not in kwargs:

@@ -233,6 +233,6 @@ class ClientsTokensListDetailHandler(ClientHandler):
     )
     my_tokens = self.ensure_includes_role_token(my_tokens)
     my_tokens = self.ensure_includes_development_role_token(my_tokens)
-    tokens = created_guest_tokens + my_tokens
+    tokens = [*created_guest_tokens, *my_tokens]
     assert all(self.auth.can_act_on_token(self.services, READ, t) for t in tokens)
     return PaginationJsonBuilder([TokenJsonBuilder(t, self.client) for t in tokens])
