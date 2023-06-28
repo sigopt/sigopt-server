@@ -32,6 +32,13 @@
       "provider": "redis-optimize"
     }
   ],
+  "user_uploads": {
+    "s3": {
+      "bucket": "sigopt-user-uploads",
+      "external_url": "https://sigopt.ninja:4443/sigopt-user-uploads",
+      "region": "us-east-1"
+    }
+  },
   "web": {
     "cookiejar_force_path_style": true,
     "cookiejar_region": "us-east-1",
