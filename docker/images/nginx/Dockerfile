@@ -4,12 +4,11 @@
 ARG NGINX_VERSION
 
 
-FROM nginx:${NGINX_VERSION}
+FROM nginx:${NGINX_VERSION}-alpine-slim
 
 RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get upgrade -yqq >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
+  ; apk update \
+  ; apk upgrade --available \
   ; :
 
 COPY nginx/ /etc/nginx/
