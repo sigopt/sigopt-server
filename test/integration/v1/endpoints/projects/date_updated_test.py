@@ -97,16 +97,6 @@ class TestProjectDateUpdated(V1Base):
     project = self.refresh_project(services, project)
     assert project.date_updated >= update_time
 
-  @pytest.mark.skip(reason="suggestions dont actually update experiments")
-  def test_create_suggestion_updates_project(self, services, connection, client_id, project):
-    assert project.date_updated == create_time
-    e = connection.create_any_experiment(project=project.reference_id)
-    assert e.project == project.reference_id
-    self.reset_date_updated(services, project, e)
-    suggestion = connection.experiments(e.id).suggestions().create()
-    project = self.refresh_project(services, project)
-    assert datetime_to_seconds(project.date_updated) == suggestion.created
-
   def test_create_observation_updates_project(self, services, connection, client_id, project):
     assert project.date_updated == create_time
     e = connection.create_any_experiment(project=project.reference_id)

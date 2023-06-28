@@ -197,8 +197,6 @@ class WebConnection:
     if raise_for_status:
       response.raise_for_status()
     web_response = WebResponse(response)
-    if web_response.page_title() == "Leaving Hosted Site - SigOpt":
-      pytest.skip()
     self.csrf_token = web_response.get_csrf_token() or self.csrf_token
     return web_response
 
