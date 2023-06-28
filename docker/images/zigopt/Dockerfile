@@ -59,6 +59,13 @@ RUN set -ex \
   ; pipenv --clear \
   ; :
 
+RUN set -ex \
+  ; apt-get purge -yqq \
+      gcc \
+      git \
+  ; apt-get autoremove -yqq \
+  ; :
+
 ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 COPY src/python/zigopt/ /sigopt-server/src/python/zigopt/
