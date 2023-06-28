@@ -38,6 +38,7 @@ FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-slim-bookworm
 RUN set -ex \
   ; apt-get update -yqq >dev/null \
   ; apt-get upgrade -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests git=1:2.* \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
