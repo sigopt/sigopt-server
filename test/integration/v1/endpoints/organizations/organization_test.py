@@ -8,7 +8,7 @@ from http import HTTPStatus
 import pytest
 
 from zigopt.common import *
-from zigopt.common.sigopt_datetime import current_datetime, get_month_interval
+from zigopt.common.sigopt_datetime import current_datetime
 from zigopt.invite.constant import NO_ROLE, USER_ROLE
 
 from integration.base import RaisesApiException
@@ -212,60 +212,6 @@ class TestOrganizationSuggestions(V1Base):
       connection.organization_id, start_time - dt.timedelta(seconds=1000), stop_time + dt.timedelta(seconds=1000)
     )
     assert test == 5
-
-  @pytest.mark.skip(reason="optimized runs by plan bounds no longer relevant")
-  def test_create_suggestion_cache(self, connection, services):
-    # Set optimized run limit to be high so it won't bother us
-    # Create new suggestion, check Redis for existence of cache
-    # Compare what's in cache to what's in SQL, ensure they are the same
-    # Create two more regular suggestions and a user generated suggestion
-    # ensure the SQL and cache values are the same
-    # N.B. Because of the way the redis keys work, this has to have correct billing info and
-    # use the entire period, not as flexible as the SQL results
-    experiment = connection.create_experiment_as(client_id=connection.client_id)
-    start_interval, end_interval = get_month_interval()
-
-    connection.experiments(experiment.id).suggestions().create()
-    # pylint: disable=protected-access
-    test_redis = services.organization_service._get_optimized_runs_in_billing_cycle_cache(
-      connection.organization_id,
-      start_interval,
-      end_interval,
-    )
-    test_sql = services.organization_service._get_optimized_runs_in_billing_cycle(
-      connection.organization_id,
-      start_interval,
-      end_interval,
-    )
-    assert int(test_redis) == test_sql
-    assert test_sql is not None and test_sql > 0
-    connection.experiments(experiment.id).suggestions().create()
-    connection.experiments(experiment.id).suggestions().create()
-    connection.experiments(experiment.id).suggestions().create(
-      assignments={
-        "a": 1.5,
-      }
-    )
-    connection.experiments(experiment.id).queued_suggestions().create(
-      assignments={
-        "a": 1.5,
-      }
-    )
-    connection.experiments(experiment.id).suggestions().create()
-    test_redis_2 = services.organization_service._get_optimized_runs_in_billing_cycle_cache(
-      connection.organization_id,
-      start_interval,
-      end_interval,
-    )
-    test_sql_2 = services.organization_service._get_optimized_runs_in_billing_cycle(
-      connection.organization_id,
-      start_interval,
-      end_interval,
-    )
-    # pylint: enable=protected-access
-    assert int(test_redis_2) == test_sql_2
-    assert test_sql_2 is not None and test_sql_2 > 0
-    assert test_sql_2 > test_sql
 
 
 class TestOrganizationPermissions(InviteTestBase):

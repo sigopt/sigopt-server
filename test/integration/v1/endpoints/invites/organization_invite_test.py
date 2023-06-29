@@ -151,24 +151,6 @@ class TestInvite(OrganizationInviteTestBase):
         )
       assert f"from the following domains: {domain}" in str(e)
 
-  @pytest.mark.skip(reason="plans dont support this, convert to configuration setting")
-  def test_invite_arbitrary_email_domains(
-    self,
-    owner_connection,
-    owner_organization_id,
-    config_broker,
-    inbox,
-  ):
-    email = "someone-else@notnotsigopt.ninja"
-    invite = self.invite_email(
-      owner_connection,
-      owner_organization_id,
-      OWNER,
-      client_invites=[],
-      email=email,
-    )
-    inbox.wait_for_email(email, search_term=invite.invite_code)
-
   def test_invite_member_to_single_client(
     self,
     owner_connection,
