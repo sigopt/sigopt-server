@@ -33,11 +33,14 @@ RUN set -ex \
   ; :
 
 
-FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster
+FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-slim-bookworm
 
 RUN set -ex \
   ; apt-get update -yqq >dev/null \
   ; apt-get upgrade -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      gcc=4:12.* \
+      git=1:2.* \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
@@ -54,6 +57,15 @@ RUN set -ex \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
   ; pipenv install --quiet --ignore-pipfile \
   ; pipenv --clear \
+  ; :
+
+RUN set -ex \
+  ; apt-get purge -yqq --allow-remove-essential \
+      gcc \
+      git \
+      linux-libc-dev \
+      perl* \
+  ; apt-get autoremove -yqq \
   ; :
 
 ENV PATH "/sigopt-server/.venv/bin:$PATH"

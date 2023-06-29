@@ -16,31 +16,81 @@ jobs:
           scan-type: fs
           scan-ref: .
           trivy-config: trivy.yaml
-  trivy-scan-images:
+  trivy-scan-nginx:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: make submodules
-      - run: ./ci/trivy_build_images.sh --ignore-unfixed --debug
-      - name: Trivy scan nginx
+      - run: |
+          source .env
+          docker build . --tag=sigopt/nginx:scan --file=docker/images/nginx/Dockerfile \
+            --build-arg=NGINX_VERSION="$NGINX_VERSION"
+      - name: Trivy scan nginx HIGH, CRITICAL
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/nginx:scan
+          ignore-unfixed: false
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+      - name: Trivy scan nginx fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/nginx:scan
           ignore-unfixed: true
-          trivy-config: trivy.yaml
-      - name: Trivy scan web
+          severity: LOW,MEDIUM,UNKNOWN
+          exit-code: "1"
+  trivy-scan-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: make submodules
+      - run: |
+          source .env
+          docker build . --tag=sigopt/web:scan --file=docker/images/web/Dockerfile \
+            --build-arg=NODE_MAJOR="$NODE_MAJOR"
+      - name: Trivy scan web HIGH, CRITICAL
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/web:scan
+          ignore-unfixed: false
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+      - name: Trivy scan web fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/web:scan
           ignore-unfixed: true
-          trivy-config: trivy.yaml
-      - name: Trivy scan zigopt
+          severity: LOW,MEDIUM,UNKNOWN
+          exit-code: "1"
+  trivy-scan-zigopt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: |
+          source .env
+          docker build . --tag=sigopt/zigopt:scan --file=docker/images/zigopt/Dockerfile \
+            --build-arg=PROTOBUF_VERSION="$PROTOBUF_VERSION" \
+            --build-arg=PYTHON_MAJOR="$PYTHON_MAJOR" \
+            --build-arg=PYTHON_MINOR="$PYTHON_MINOR"
+      - name: Trivy scan zigopt HIGH, CRITICAL
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sigopt/zigopt:scan
+          ignore-unfixed: false
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+      - name: Trivy scan zigopt fixable
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: sigopt/zigopt:scan
           ignore-unfixed: true
-          trivy-config: trivy.yaml
+          severity: LOW,MEDIUM,UNKNOWN
+          exit-code: "1"
