@@ -1,7 +1,6 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
-import pytest
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -172,7 +171,5 @@ def wait_for_title_text(driver, title_text, *args, **kwargs):
   except TimeoutErrorInTest as e:
     raise ErrorInTest(f"Failed to read page title after {e.time} seconds") from e
   title = driver.title
-  if title == "Leaving Hosted Site - SigOpt":
-    pytest.skip()
-  elif title_text not in title:
+  if title_text not in title:
     raise ErrorInTest(f"Waited for page title `{title_text}`, instead has page title `{title}`")
