@@ -103,9 +103,9 @@ RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       build-essential=12.* \
-      libxml2-dev=2.9.* \
+      libxml2-dev=2.10.* \
       >/dev/null \
-  ; apt-mark auto build-essential libxml2-dev libxmlsec1-dev \
+  ; apt-mark auto build-essential libxml2-dev \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
   ; pipenv install --quiet --dev --ignore-pipfile \
   ; pipenv --clear \
