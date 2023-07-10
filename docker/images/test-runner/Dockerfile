@@ -99,13 +99,16 @@ WORKDIR /sigopt-server
 
 COPY Pipfile.lock /sigopt-server/Pipfile.lock
 ENV PIPENV_VENV_IN_PROJECT "1"
+ENV PIP_NO_BINARY lxml
+
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       build-essential=12.* \
       libxml2-dev=2.9.* \
+      libxslt1-dev=1.1.* \
       >/dev/null \
-  ; apt-mark auto build-essential libxml2-dev libxmlsec1-dev \
+  ; apt-mark auto build-essential libxml2-dev libxslt1-dev \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
   ; pipenv install --quiet --dev --ignore-pipfile \
   ; pipenv --clear \
