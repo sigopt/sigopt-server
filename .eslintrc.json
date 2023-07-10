@@ -35,7 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "react/hook-use-state": 0,
     "react/no-unstable-nested-components": 0,
     "react/no-unused-state": 0,
     "react/no-unused-prop-types": 0,
@@ -211,6 +210,7 @@
       }
     ],
     "react/function-component-definition": 0,
+    "react/hook-use-state": 2,
     "react/jsx-boolean-value": [
       2,
       "always"
