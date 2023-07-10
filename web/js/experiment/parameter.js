@@ -249,7 +249,6 @@ const ParameterInputName = function (props) {
   }
 };
 ParameterInputName.propTypes = {
-  create: PropTypes.bool,
   editing: PropTypes.bool.isRequired,
   inputText: PropTypes.string,
   isNewParameter: PropTypes.bool,
