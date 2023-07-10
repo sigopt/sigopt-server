@@ -40,8 +40,8 @@ RUN set -ex \
       git=1:2.20.* \
       libc6-dev=2.* \
       libssl-dev=1.1.* \
-      libxml2-dev=2.10.* \
-      libxml2=2.10.* \
+      libxml2-dev=2.9.* \
+      libxml2=2.9.* \
       make=4.2.* \
       pkg-config=0.29-* \
       sqlite3=3.27.* \
