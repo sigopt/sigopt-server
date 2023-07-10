@@ -55,6 +55,7 @@ RUN : \
       ca-certificates=* \
       curl=7.* \
       git=* \
+      libxslt1.1=1.1.* \
       lxde=* \
       pkg-config=* \
       python-is-python3=* \
