@@ -35,7 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "no-nested-ternary": 0,
     "react/no-invalid-html-attribute": 0,
 
     "array-bracket-newline": 0,
