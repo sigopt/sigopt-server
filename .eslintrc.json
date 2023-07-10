@@ -35,8 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "react/no-invalid-html-attribute": 0,
-
     "array-bracket-newline": 0,
     "array-element-newline": 0,
     "arrow-body-style": 0,

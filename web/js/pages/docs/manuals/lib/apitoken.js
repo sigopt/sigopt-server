@@ -14,7 +14,7 @@ export default (props) =>
   ) : (
     <p>
       Find your SigOpt API token on the{" "}
-      <a href="/tokens/info" target="_blank" rel="noopener noferrer">
+      <a href="/tokens/info" target="_blank" rel="noopener noreferrer">
         API tokens page
       </a>
       {""}.
