@@ -116,7 +116,7 @@ RUN set -ex \
 ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
-  ; python -c 'import lxml' \
+  ; python -c 'import lxml, html5_parser' \
   ; :
 
 COPY src/protobuf/zigopt /sigopt-server/src/protobuf/zigopt

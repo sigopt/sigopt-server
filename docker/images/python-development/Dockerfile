@@ -61,7 +61,7 @@ RUN set -ex \
 ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
-  ; python -c 'import inotify, lxml, numpy' \
+  ; python -c 'import inotify, lxml, numpy, html5_parser' \
   ; :
 
 COPY docker/images/python-development/bin /usr/local/bin
