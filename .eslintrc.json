@@ -35,7 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "default-param-last": 0,
     "react/hook-use-state": 0,
     "react/no-unstable-nested-components": 0,
     "react/no-unused-state": 0,
