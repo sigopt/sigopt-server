@@ -129,8 +129,7 @@ export default class ExperimentCopyEndpoint extends ExperimentEndpoint {
       ].concat(hasValues ? ["value", "value_stddev"] : ["values"]);
       const paramsList = _.map(observations, (o) => {
         const cleaned = _.omit(o, ...uncopiedObservationKeys);
-        cleaned.values =
-          cleaned.values && _.map(cleaned.values, (v) => _.omit(v, "object"));
+        cleaned.values &&= _.map(cleaned.values, (v) => _.omit(v, "object"));
         return cleaned;
       }).reverse();
       const observationsJson = {

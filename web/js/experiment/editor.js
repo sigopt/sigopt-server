@@ -159,7 +159,7 @@ const ExperimentEditor = makeEditableComponent(
       const objectToSet = _.foldl(
         parts,
         function (o, f) {
-          o[f] = o[f] || {};
+          o[f] ||= {};
           return o[f];
         },
         object,
@@ -363,7 +363,7 @@ const ExperimentEditor = makeEditableComponent(
       _.each(experimentInput.parameters, (p) => {
         if (p.type === ParameterTypes.CATEGORICAL) {
           p.bounds = null;
-          p.categorical_values = p.categorical_values || [];
+          p.categorical_values ||= [];
         } else {
           p.categorical_values = null;
         }

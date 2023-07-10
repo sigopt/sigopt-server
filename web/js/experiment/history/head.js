@@ -34,7 +34,7 @@ const HistoryTableHead = function (props) {
 
   const firstMetric = _.clone(_.first(props.experiment.metrics) || {});
   const firstName = firstMetric.name;
-  firstMetric.name = firstMetric.name || "Value";
+  firstMetric.name ||= "Value";
   const metricHeaders =
     props.showMetrics &&
     _.filter(

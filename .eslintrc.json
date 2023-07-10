@@ -35,7 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "logical-assignment-operators": 0,
     "default-param-last": 0,
     "react/hook-use-state": 0,
     "react/no-unstable-nested-components": 0,

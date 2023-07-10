@@ -53,7 +53,7 @@ export default ({
 }) => {
   const styleLoaders = [
     {
-      test: /\.(css|less)$/u,
+      test: /\.(?:css|less)$/u,
       use: ["null-loader", "css-loader"],
     },
     {

@@ -149,7 +149,7 @@ export default class LoginEndpoint extends AppEndpoint {
       __htmlMessage: ReactDOMServer.renderToStaticMarkup(element),
     });
     this.services.alertBroker.handle(error);
-    params.error = params.error || error;
+    params.error ||= error;
     return params;
   }
 

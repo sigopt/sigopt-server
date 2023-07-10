@@ -15,7 +15,7 @@ export default (template, props) => {
   } else {
     args.apiToken = "SIGOPT_API_TOKEN";
   }
-  args.projectId = args.projectId || "sigopt-examples";
+  args.projectId ||= "sigopt-examples";
   args.projectId = `"${args.projectId}"`;
   if (!args.appUrl) {
     args.appUrl = APP_URL;
