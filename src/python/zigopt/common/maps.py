@@ -70,7 +70,6 @@ def extend_dict(base: MutableMapping[GHashable, T], *dicts: Mapping[GHashable, T
 @deal.ensure(lambda base, result: all(result[v] is k for k, v in base.items()))
 @deal.raises(ValueError)
 @deal.reason(ValueError, lambda base: len(set(base.values())) != len(base))
-@deal.has()
 def invert_dict(base: Mapping[GHashable, THashable]) -> dict[THashable, GHashable]:
   """
     Returns a new dict which has the keys and values of the input reversed

@@ -13,13 +13,11 @@ from zigopt.net.errors import BadParamError, ForbiddenError, RequestError, Unaut
 from zigopt.user.model import User, do_password_hash_work_factor_update, password_matches
 
 
-@deal.has()
 @deal.raises(ValueError)
 def right_password(user: User, password: str) -> bool:
   return bool(password_matches(password, user.hashed_password or ""))
 
 
-@deal.has()
 @deal.raises(ValueError)
 def right_code(user: User, code: str) -> bool:
   VERIFICATION_THRESHOLD = timedelta(weeks=1).total_seconds()
@@ -43,7 +41,6 @@ def authenticate_password(services, user: User | None, password: str) -> Authent
   raise BadParamError("Invalid email/password")
 
 
-@deal.has()
 @deal.raises(BadParamError)
 def authenticate_email_code(user: User | None, code: str | None) -> AuthenticationResult:
   if user and code and right_code(user, code):
