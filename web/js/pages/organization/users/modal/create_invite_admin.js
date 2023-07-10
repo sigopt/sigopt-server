@@ -91,7 +91,7 @@ export class CreateInviteAdminModal extends React.Component {
     );
   };
 
-  render = () => {
+  render() {
     if (this.state.editing) {
       return (
         <ModalForm
@@ -148,5 +148,5 @@ export class CreateInviteAdminModal extends React.Component {
         </ModalForm>
       );
     }
-  };
+  }
 }

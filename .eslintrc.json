@@ -2,7 +2,6 @@
   "env": {
     "browser": true,
     "es6": true,
-    "jasmine": true,
     "jest": true,
     "node": true
   },
@@ -10,7 +9,6 @@
     "eslint:all",
     "plugin:import/errors",
     "plugin:import/warnings",
-    "plugin:jasmine/recommended",
     "plugin:jest/recommended",
     "plugin:react/all"
   ],
@@ -19,24 +17,29 @@
     "require": true,
     "window": true
   },
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "codeFrame": false,
     "ecmaFeatures": {
       "jsx": true
     },
     "ecmaVersion": 6,
+    "requireConfigFile": false,
     "sourceType": "module"
   },
   "plugins": [
     "babel",
     "import",
     "react",
-    "jasmine",
     "sonarjs",
     "unused-imports"
   ],
   "rules": {
+    "function-call-argument-newline": 0,
+    "no-promise-executor-return": 0,
+    "prefer-named-capture-group": 0,
+    "logical-assignment-operators": 0,
+    "default-param-last": 0,
     "array-bracket-newline": 0,
     "array-element-newline": 0,
     "arrow-body-style": 0,
@@ -94,8 +97,6 @@
     "indent": 0,
     "indent-legacy": 0,
     "init-declarations": 0,
-    "jasmine/new-line-before-expect": 0,
-    "jasmine/prefer-toHaveBeenCalledWith": 0,
     "jest/expect-expect": 0,
     "jest/no-conditional-expect": 0,
     "jest/no-done-callback": 0,
