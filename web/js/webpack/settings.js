@@ -74,7 +74,7 @@ export default (env = {}) =>
       test: /\.(sql|txt)$/u,
       use: "raw-loader",
     };
-    return success({
+    success({
       assetLoader,
       assetRegex,
       babelLoader,
@@ -94,4 +94,5 @@ export default (env = {}) =>
       webArtifactsDir,
       webDir,
     });
+    return;
   });

@@ -35,7 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "no-promise-executor-return": 0,
     "prefer-named-capture-group": 0,
     "logical-assignment-operators": 0,
     "default-param-last": 0,

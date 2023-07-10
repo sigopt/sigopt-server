@@ -47,7 +47,9 @@ export default class TrainingRunPage extends Component {
       .create({color: tagData.color, name: tagData.name})
       .then(
         (newTag) =>
-          new Promise((cb) => this.extendTagsState(newTag, () => cb(newTag))),
+          new Promise((cb) => {
+            this.extendTagsState(newTag, () => cb(newTag));
+          }),
       );
 
   onApplyTag = (tag) =>

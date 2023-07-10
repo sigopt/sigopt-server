@@ -13,7 +13,7 @@ export default class AjaxClient extends Service {
   post = (url, params) => this.request("POST", url, params);
 
   request = (method, url, params) =>
-    new Promise((success, error) =>
+    new Promise((success, error) => {
       this.services.netRequestor.request(
         {
           data: _.extend(params || {}, {csrf_token: this.options.csrfToken}),
@@ -22,8 +22,8 @@ export default class AjaxClient extends Service {
         },
         success,
         error,
-      ),
-    );
+      );
+    });
 
   serializeAs = () => this.options;
 }

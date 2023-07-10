@@ -72,7 +72,7 @@ class ApiCaller {
   // The Python client's is a lazy iterator, whereas this eagerly consumes all the content and matches the
   // `exhaustivelyPage` function from net/paging.js
   exhaustivelyPage = (params) =>
-    new Promise((s, e) =>
+    new Promise((s, e) => {
       exhaustivelyPage(
         (paging, s2, e2) =>
           this._apiRequestor.request(
@@ -89,11 +89,11 @@ class ApiCaller {
           error: e,
           params: params,
         },
-      ),
-    );
+      );
+    });
 
   _call = (method, params) =>
-    new Promise((s, e) =>
+    new Promise((s, e) => {
       this._apiRequestor.request(
         method,
         this._path,
@@ -102,8 +102,8 @@ class ApiCaller {
         e,
         false,
         this._pathPrefix,
-      ),
-    );
+      );
+    });
 }
 
 /**
