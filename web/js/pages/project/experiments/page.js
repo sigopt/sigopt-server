@@ -27,9 +27,6 @@ export default makeExperimentListController(
   class ProjectAiExperiments extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {
-        projectName: this.props.project.name,
-      };
       this.userDataSources = new SourcePool((key) =>
         key === this.props.currentUser.id
           ? new AvailableUserDataSource(key, this.props)

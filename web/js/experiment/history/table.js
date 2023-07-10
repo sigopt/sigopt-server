@@ -51,7 +51,6 @@ const HistoryTable = makePageable(
       super(...args);
       this.state = {
         sortKey: "id",
-        submitting: false,
       };
       this._observationModal = React.createRef();
     }

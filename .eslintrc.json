@@ -35,7 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "react/no-unused-state": 0,
     "react/no-unused-prop-types": 0,
     "react/no-unknown-property": 0,
     "no-nested-ternary": 0,
