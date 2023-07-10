@@ -96,18 +96,18 @@ class CombinedReportSection extends Component {
 
     return (
       <div className={className}>
-        {observation.suggestion && (
+        {observation.suggestion ? (
           <Loading loading={!suggestion}>
-            {suggestion && (
+            {suggestion ? (
               <SuggestionReport
                 suggestion={suggestion}
                 suggestionOnly={false}
               />
-            )}
+            ) : null}
           </Loading>
-        )}
+        ) : null}
         <Loading loading={!observation}>
-          {observation && <ObservationReport observation={observation} />}
+          {observation ? <ObservationReport observation={observation} /> : null}
         </Loading>
       </div>
     );
@@ -228,7 +228,7 @@ export class ModelEvaluationComponent extends Component {
 
     return (
       <div className="model-evaluation-component">
-        {run && (
+        {run ? (
           <div className="run-info-section">
             <FieldValueDisplay
               field="Run"
@@ -236,36 +236,34 @@ export class ModelEvaluationComponent extends Component {
             />
             <RunsCheckpoints key={run.id} run={run} />
           </div>
-        )}
+        ) : null}
         {showMeasurement &&
-          !editing &&
-          observation &&
-          observation.suggestion && (
-            <FieldValueDisplay
-              field={
-                <Tooltip tooltip={elapsedTooltip}>Evaluation Time</Tooltip>
-              }
-              value={
-                <Loading loading={!suggestion}>
-                  {suggestion && (
-                    <Duration
-                      endTime={observation.created}
-                      startTime={suggestion.created}
-                    />
-                  )}
-                </Loading>
-              }
-            />
-          )}
-        {!editing && experiment.tasks && task && (
+        !editing &&
+        observation &&
+        observation.suggestion ? (
+          <FieldValueDisplay
+            field={<Tooltip tooltip={elapsedTooltip}>Evaluation Time</Tooltip>}
+            value={
+              <Loading loading={!suggestion}>
+                {suggestion ? (
+                  <Duration
+                    endTime={observation.created}
+                    startTime={suggestion.created}
+                  />
+                ) : null}
+              </Loading>
+            }
+          />
+        ) : null}
+        {!editing && experiment.tasks && task ? (
           <div className="task-section">
             <FieldValueDisplay
               field="Task"
               value={`${task.name} - ${task.cost}`}
             />
           </div>
-        )}
-        {showMeasurement && (
+        ) : null}
+        {showMeasurement ? (
           <div className="metric-section">
             <MeasurementsView
               editing={editing}
@@ -276,21 +274,21 @@ export class ModelEvaluationComponent extends Component {
               submitting={submitting}
             />
           </div>
-        )}
-        {!observation && suggestion && (
+        ) : null}
+        {!observation && suggestion ? (
           <SuggestionReport suggestion={suggestion} suggestionOnly={true} />
-        )}
+        ) : null}
         <div className="assignments-section">
           <div className="display-row">
             <AssignmentsTable
               assignments={assignments}
-              editing={onAssignmentsChange && editing}
+              editing={onAssignmentsChange ? editing : null}
               experiment={experiment}
               onChange={onAssignmentsChange}
               submitting={submitting}
             />
           </div>
-          {metadata && (
+          {metadata ? (
             <div className="display-row">
               <TableCard copyObject={metadata}>
                 <TableHeader className="main-header" nameHeader="Metadata" />
@@ -298,16 +296,16 @@ export class ModelEvaluationComponent extends Component {
                 <MetadataTableBody metadata={metadata} />
               </TableCard>
             </div>
-          )}
+          ) : null}
         </div>
-        {!editing && observation && (
+        {!editing && observation ? (
           <CombinedReportSection
             experiment={experiment}
             observation={observation}
             submitting={submitting}
             suggestion={suggestion}
           />
-        )}
+        ) : null}
       </div>
     );
   }

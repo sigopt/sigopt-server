@@ -34,7 +34,7 @@ class Form extends React.Component {
         encType={this.props.encType}
         method={method}
         onSubmit={
-          this.props.onSubmit && withPreventDefault(this.props.onSubmit)
+          this.props.onSubmit ? withPreventDefault(this.props.onSubmit) : null
         }
         ref={this.props.forwardedRef}
         style={this.props.style}

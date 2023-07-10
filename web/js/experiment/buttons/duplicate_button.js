@@ -42,12 +42,12 @@ export default class DuplicateButton extends React.Component {
       csrfToken={this.props.loginState.csrfToken}
       method="post"
     >
-      {this.props.experiment.development && (
+      {this.props.experiment.development ? (
         <div>
           Experiments copied to production will be fully-featured and will count
           against your billing quota. Suggestions will not be copied.
         </div>
-      )}
+      ) : null}
       {!this.props.experiment.development && (
         <p>Create a copy of this experiment.</p>
       )}

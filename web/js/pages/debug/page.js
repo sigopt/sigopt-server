@@ -137,7 +137,9 @@ export default class extends React.Component {
         <Section title="Network">
           <AjaxStatusCheck {...this.props} />
           <ApiStatusCheck {...this.props} />
-          {this.props.loginState.userId && <AuthStatusCheck {...this.props} />}
+          {this.props.loginState.userId ? (
+            <AuthStatusCheck {...this.props} />
+          ) : null}
         </Section>
         <Section title="Additional Information">
           <SectionItem

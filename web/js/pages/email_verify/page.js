@@ -17,11 +17,11 @@ export default class extends Component {
 
   errorBlock = () => (
     <div>
-      {this.state.error && (
+      {this.state.error ? (
         <div>
           <p>Oops, looks like we couldn&rsquo;t verify your email.</p>
         </div>
-      )}
+      ) : null}
       <ResendVerificationEmailButton
         email={this.props.email}
         loginState={this.props.loginState}

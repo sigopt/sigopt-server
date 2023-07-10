@@ -348,7 +348,7 @@ class ParameterEditRow extends React.Component {
             }
           />
         </td>
-        {this.props.showDefaultValue && (
+        {this.props.showDefaultValue ? (
           <td>
             <DefaultValue
               editing={this.props.editing}
@@ -359,7 +359,7 @@ class ParameterEditRow extends React.Component {
               }
             />
           </td>
-        )}
+        ) : null}
         <td className="categorical-value-adder">
           <ParameterRange
             editing={this.props.editing}
@@ -372,9 +372,8 @@ class ParameterEditRow extends React.Component {
         isDefinedAndNotNull(this.props.parameterInput.grid) ? (
           <td>&#123;{this.props.parameterInput.grid.join(", ")}&#125;</td>
         ) : null}
-        {!this.props.create &&
-          this.props.showConditions &&
-          (_.isEmpty(this.props.parameterInput.conditions) ? (
+        {!this.props.create && this.props.showConditions ? (
+          _.isEmpty(this.props.parameterInput.conditions) ? (
             <td>No conditions</td>
           ) : (
             <td>
@@ -382,8 +381,9 @@ class ParameterEditRow extends React.Component {
                 parameterInput={this.props.parameterInput}
               />
             </td>
-          ))}
-        {this.props.showTransformations && (
+          )
+        ) : null}
+        {this.props.showTransformations ? (
           <td>
             {ui.isParameterTransformationNontrivial(
               this.props.parameterInput.transformation,
@@ -391,12 +391,12 @@ class ParameterEditRow extends React.Component {
               ? this.props.parameterInput.transformation
               : ""}
           </td>
-        )}
-        {this.props.editing && (
+        ) : null}
+        {this.props.editing ? (
           <td className="remove-row-column">
             <RemoveRowButton removeRow={this.removeParameter} />
           </td>
-        )}
+        ) : null}
       </tr>
     );
   }
@@ -456,7 +456,7 @@ class ParametersTable extends React.Component {
                 Type
               </Tooltip>
             </th>
-            {showDefaultValue && <th>Default Value</th>}
+            {showDefaultValue ? <th>Default Value</th> : null}
             <th>
               <span className="range-label">
                 <Tooltip
@@ -469,10 +469,10 @@ class ParametersTable extends React.Component {
                 </Tooltip>
               </span>
             </th>
-            {showGrid && <th>Grid</th>}
-            {showConditions && <th>Conditions</th>}
-            {showTransformations && <th>Transformations</th>}
-            {this.props.editing && <th className="remove-row-column" />}
+            {showGrid ? <th>Grid</th> : null}
+            {showConditions ? <th>Conditions</th> : null}
+            {showTransformations ? <th>Transformations</th> : null}
+            {this.props.editing ? <th className="remove-row-column" /> : null}
           </tr>
         </thead>
         <tbody>
@@ -481,7 +481,9 @@ class ParametersTable extends React.Component {
             (p) => (
               <ParameterEditRow
                 create={this.props.create}
-                editing={this.props.editing && this.props.canEditParameters()}
+                editing={
+                  this.props.editing ? this.props.canEditParameters() : null
+                }
                 experimentInput={this.props.experimentInput}
                 key={this.props.parameterKey(p)}
                 needsDefaultValue={this.needsDefaultValue(p)}
@@ -498,7 +500,7 @@ class ParametersTable extends React.Component {
           )}
           <ParameterAddInputRow
             addInput={this.props.addParameter()}
-            editing={this.props.editing && this.props.canEditParameters()}
+            editing={this.props.editing ? this.props.canEditParameters() : null}
             numColumns={5}
           />
         </tbody>

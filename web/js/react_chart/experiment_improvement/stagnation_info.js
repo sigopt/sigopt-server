@@ -24,7 +24,7 @@ class StagnationInfo extends React.Component {
 
     return (
       <div className="chart-detail-section">
-        {possibleStagnationEncountered && (
+        {possibleStagnationEncountered ? (
           <CustomTooltip
             tooltip={[
               "We have detected possible stagnation in your experiment",
@@ -43,7 +43,7 @@ class StagnationInfo extends React.Component {
               <CircleQuestionGlyph />
             </span>
           </CustomTooltip>
-        )}
+        ) : null}
       </div>
     );
   }

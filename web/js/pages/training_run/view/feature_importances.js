@@ -78,11 +78,11 @@ const Content = ({trainingRun}) => {
   const feature_num = _.size(featureImportances.scores);
   return (
     <>
-      {reference && (
+      {reference ? (
         <p style={{"text-align": "right"}}>
           <a href={reference}>Learn more about feature importances</a>
         </p>
-      )}
+      ) : null}
 
       {feature_num > TOP_K && (
         <div className="alert alert-success">

@@ -94,12 +94,12 @@ export const FilterButtonHolder = function (props) {
   };
   return (
     <div className="view-button-holder">
-      {props.showClientExperiments && !props.isProjectPage && (
+      {props.showClientExperiments && !props.isProjectPage ? (
         <ViewToggle
           includeClient={props.includeClient}
           onToggle={() => onClick({includeClient: !props.includeClient})}
         />
-      )}
+      ) : null}
       <FilterCheckbox
         checked={props.archived}
         label="Show Archived"

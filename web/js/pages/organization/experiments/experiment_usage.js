@@ -68,7 +68,7 @@ class ExperimentUsage extends React.Component {
     return (
       <div>
         <h3>{NUM_PERIODS_TO_DISPLAY}-Month Usage History</h3>
-        {loading && <Spinner />}
+        {loading ? <Spinner /> : null}
         {!loading && (
           <ReactChart
             args={{

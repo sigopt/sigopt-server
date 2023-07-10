@@ -252,16 +252,16 @@ class MultiScatterPlot extends Component {
           id={this.state.graphDivID}
           className="flex-grow full-width"
         />
-        {showFixedGradientLegend && (
+        {showFixedGradientLegend ? (
           <div style={{height: 30}}>
-            {this.state.legendData && (
+            {this.state.legendData ? (
               <ColorLegend
                 legendData={this.state.legendData}
                 flexDirection="row"
               />
-            )}
+            ) : null}
           </div>
-        )}
+        ) : null}
       </div>
     );
   }

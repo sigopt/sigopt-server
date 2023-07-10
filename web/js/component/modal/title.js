@@ -14,7 +14,7 @@ const ModalTitle = (props) => {
   if (props.title) {
     return (
       <div className="modal-header">
-        {props.showClose && (
+        {props.showClose ? (
           <button
             type="button"
             tabIndex="-1"
@@ -24,7 +24,7 @@ const ModalTitle = (props) => {
           >
             <span aria-hidden="true">&times;</span>
           </button>
-        )}
+        ) : null}
         <h4 className="modal-title">{props.title}</h4>
       </div>
     );

@@ -18,9 +18,9 @@ import {promiseFinally} from "../../../../utils";
 
 const EditTeamsContent = (props) => (
   <span>
-    {props.isCurrentUser && (
+    {props.isCurrentUser ? (
       <p>You are not allowed to edit your own membership.</p>
-    )}
+    ) : null}
     <PermissionsEditor
       addingPermission={props.addingPermission}
       alertBroker={props.alertBroker}

@@ -120,7 +120,7 @@ const HistoryTable = makePageable(
                   resource={observation}
                   showValues={true}
                   values={observation.values}
-                  taskCost={observation.task && observation.task.cost}
+                  taskCost={observation.task ? observation.task.cost : null}
                 />
               ))}
             </PagingTableContents>

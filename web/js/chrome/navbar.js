@@ -46,7 +46,7 @@ class SelectionList extends React.Component {
   render() {
     return (
       <div className="nav-section" data-type={this.props.org ? "org" : "team"}>
-        {this.props.label && <label>{this.props.label}</label>}
+        {this.props.label ? <label>{this.props.label}</label> : null}
         <p className="nav-link active">{this.props.currentEntity.name}</p>
         {this.props.entities.length > 0 ? (
           <div>
@@ -237,13 +237,13 @@ class NavbarContent extends React.Component {
                 <Navlink {...this.props} className="nav-link" href="/user/info">
                   My Profile
                 </Navlink>
-                {this.props.loginState.clientId && (
+                {this.props.loginState.clientId ? (
                   <Navlink {...this.props} href="/tokens/info" key="profile">
                     API Tokens
                   </Navlink>
-                )}
+                ) : null}
               </div>
-              {this.props.currentOrganization && (
+              {this.props.currentOrganization ? (
                 <>
                   <hr />
                   <SelectionList
@@ -255,8 +255,8 @@ class NavbarContent extends React.Component {
                     selectClient={this.selectClient}
                   />
                 </>
-              )}
-              {this.props.currentClient && (
+              ) : null}
+              {this.props.currentClient ? (
                 <>
                   <hr />
                   <SelectionList
@@ -268,7 +268,7 @@ class NavbarContent extends React.Component {
                     selectClient={this.selectClient}
                   />
                 </>
-              )}
+              ) : null}
               <hr />
               <div className="nav-section">
                 <LogoutLink
@@ -349,7 +349,7 @@ class NavbarContent extends React.Component {
         >
           {this.props.loginState.userId ? loggedInLinks : loggedOutLinks}
         </nav>
-        {this.props.footerLinks && (
+        {this.props.footerLinks ? (
           <>
             <hr />
             <nav
@@ -382,7 +382,7 @@ class NavbarContent extends React.Component {
               </a>
             </nav>
           </>
-        )}
+        ) : null}
       </>
     );
   }

@@ -38,11 +38,11 @@ export default function Tag({data, removeProps, innerProps, innerRef}) {
       }}
     >
       {data.name}
-      {removeProps && (
+      {removeProps ? (
         <span {...removeProps} className="remove-tag">
           <XmarkGlyph />
         </span>
-      )}
+      ) : null}
     </div>
   );
 }

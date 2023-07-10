@@ -121,7 +121,7 @@ export default class TrainingRunPage extends Component {
                   endTime={run.completed || new Date().getTime() / 1000}
                 />
               </dd>
-              {this.props.tags && (
+              {this.props.tags ? (
                 <>
                   <dt>Tags</dt>
                   <dd>
@@ -135,7 +135,7 @@ export default class TrainingRunPage extends Component {
                     />
                   </dd>
                 </>
-              )}
+              ) : null}
             </>
           }
           breadcrumbs={breadcrumbs}

@@ -114,7 +114,7 @@ export class PermissionsEditor extends React.Component {
               )
             );
           })}
-          {this.props.addingPermission && (
+          {this.props.addingPermission ? (
             <NewPermissionRow
               clientMap={this.props.clientMap}
               disableInput={this.props.disableInput}
@@ -123,7 +123,7 @@ export class PermissionsEditor extends React.Component {
               permissions={this.props.permissions}
               showConfirm={this.props.showConfirm}
             />
-          )}
+          ) : null}
           {!this.props.addingPermission &&
             !this.props.disableInput &&
             _.size(this.props.permissions) < _.size(this.props.clientMap) && (

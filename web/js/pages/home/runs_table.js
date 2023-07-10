@@ -53,7 +53,7 @@ class RunRow extends Component {
           {_.map(this.props.columns, ({Cell}, i) => (
             <Cell key={i} run={this.props.run} />
           ))}
-          {this.props.enableCollapse && (
+          {this.props.enableCollapse ? (
             <td>
               <button
                 className="btn collapsed"
@@ -69,9 +69,9 @@ class RunRow extends Component {
                 />
               </button>
             </td>
-          )}
+          ) : null}
         </tr>
-        {this.props.enableCollapse && (
+        {this.props.enableCollapse ? (
           <tr
             className="collapse run-details"
             key={`run-${this.props.run.id}-details`}
@@ -113,7 +113,7 @@ class RunRow extends Component {
               </table>
             </td>
           </tr>
-        )}
+        ) : null}
       </>
     );
   }
@@ -195,11 +195,11 @@ export const runExperimentColumn = {
   Header: () => <th>Experiment</th>,
   Cell: (props) => (
     <td>
-      {props.run.experiment && (
+      {props.run.experiment ? (
         <a href={`/aiexperiment/${props.run.experiment}`}>
           {props.run.experiment}
         </a>
-      )}
+      ) : null}
     </td>
   ),
 };

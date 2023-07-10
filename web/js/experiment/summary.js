@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache License 2.0
  */
 
+/* eslint-disable react/jsx-no-bind */
+
 import _ from "underscore";
 import CSSTransition from "react-transition-group/CSSTransition";
 import React from "react";
@@ -49,7 +51,7 @@ export default function ExperimentSummary({
               <CircleArrowRightGlyph />
             </div>
             <div className="experiment-summary scroll">
-              {isSingleBest && (
+              {isSingleBest ? (
                 <div className="value-section">
                   <div className="best-value">
                     <div className="improvement-label">Best Value</div>
@@ -59,12 +61,12 @@ export default function ExperimentSummary({
                       observations={observations}
                     >
                       <div className="improvement-number">
-                        {hasBestValue && renderNumber(bestValue, true)}
+                        {hasBestValue ? renderNumber(bestValue, true) : null}
                       </div>
                     </SatisfiesThresholdsLoading>
                   </div>
                 </div>
-              )}
+              ) : null}
               {!hasBestValue && isDefinedAndNotNull(experiment.tasks) && (
                 <div className="no-best">
                   <div className="no-best-message">
@@ -75,17 +77,18 @@ export default function ExperimentSummary({
                   </div>
                 </div>
               )}
-              {isSingleBest && firstBest && (
+              {isSingleBest && firstBest ? (
                 <AssignmentsTable
                   assignments={firstBest.assignments}
                   experiment={experiment}
                   onClick={
-                    onSelectBestAssignment &&
-                    (() => onSelectBestAssignment(firstBest))
+                    onSelectBestAssignment
+                      ? () => onSelectBestAssignment(firstBest)
+                      : null
                   }
                   scrollable={true}
                 />
-              )}
+              ) : null}
               {!isSingleBest && (
                 <div>
                   <div className="best-parameters-label">
@@ -111,8 +114,9 @@ export default function ExperimentSummary({
                             bestObservation={bestObservation}
                             experiment={experiment}
                             onClick={
-                              onSelectBestAssignment &&
-                              (() => onSelectBestAssignment(bestObservation))
+                              onSelectBestAssignment
+                                ? () => onSelectBestAssignment(bestObservation)
+                                : null
                             }
                           />
                         </CSSTransition>

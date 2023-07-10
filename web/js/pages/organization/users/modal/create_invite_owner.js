@@ -100,7 +100,7 @@ export class CreateInviteOwnerModal extends React.Component {
             __htmlMessage: ReactDOMServer.renderToStaticMarkup(
               <>
                 Created invitation for {email}.{" "}
-                {url && (
+                {url ? (
                   <>
                     {/*
                   HACK: Use <br/> tags here to avoid nesting <p> tags. Could refactor
@@ -112,7 +112,7 @@ export class CreateInviteOwnerModal extends React.Component {
                     <a href={url.toString()}>{url.toString()}</a> to accept
                     their invite.
                   </>
-                )}
+                ) : null}
               </>,
             ),
           }),

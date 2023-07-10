@@ -24,9 +24,9 @@ export default function ExperimentTitle(props) {
           failedRuns={props.failedRuns}
         />
       </div>
-      {props.children && (
+      {props.children ? (
         <div className="experiment-navbar">{props.children}</div>
-      )}
+      ) : null}
     </PageTitle>
   );
 }

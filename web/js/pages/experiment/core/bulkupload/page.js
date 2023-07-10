@@ -314,12 +314,12 @@ export default function ExperimentReportPage(props) {
             <code>value_stddev</code>. You can leave values in this column blank
             to indicate that there is no standard deviation.
           </li>
-          {props.experiment.tasks && (
+          {props.experiment.tasks ? (
             <li>
               The <code>Task</code> name for each row should be in a column
               titled <code>task_name</code>.
             </li>
-          )}
+          ) : null}
           <li>
             To report failed observations, include the (optional) column{" "}
             <code>failed</code>. For failed observations, the value in the{" "}

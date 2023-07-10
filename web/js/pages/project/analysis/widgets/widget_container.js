@@ -99,7 +99,7 @@ export class WidgetContainer extends React.Component {
 
     const Controls = (
       <div style={controlsStyle}>
-        {showEditorPen && (
+        {showEditorPen ? (
           <ControlsIcon
             glyph={PencilGlyph}
             className="cursor-pointer"
@@ -109,7 +109,7 @@ export class WidgetContainer extends React.Component {
               this.props.id,
             )}
           />
-        )}
+        ) : null}
         <ControlsIcon
           onClick={this.openBigWidgetModal}
           glyph={UpRightAndDownLeftFromCenterGlyph}
@@ -119,7 +119,7 @@ export class WidgetContainer extends React.Component {
           glyph={ArrowsUpDownLeftRightGlyph}
           className="dashboard-drag-handle cursor-grab"
         />
-        {showDeleteWidget && (
+        {showDeleteWidget ? (
           <>
             <ControlsIcon
               glyph={null}
@@ -131,7 +131,7 @@ export class WidgetContainer extends React.Component {
               className="cursor-pointer"
             />
           </>
-        )}
+        ) : null}
       </div>
     );
 
@@ -139,7 +139,7 @@ export class WidgetContainer extends React.Component {
       <div style={wrapperStyle}>
         <div style={topRowStyle}>
           <div style={titleStyle}> {title} </div>
-          {warning && <WidgetWarning warning={warning} />}
+          {warning ? <WidgetWarning warning={warning} /> : null}
           {Controls}
         </div>
         {this.props.children}

@@ -34,9 +34,9 @@ export class LogoutForm extends React.Component {
         onSubmit={this.onSubmit}
         ref={this._ref}
       >
-        {this.props.continue && (
+        {this.props.continue ? (
           <input type="hidden" name="continue" value={this.props.continue} />
-        )}
+        ) : null}
         {this.props.children}
       </Form>
     );

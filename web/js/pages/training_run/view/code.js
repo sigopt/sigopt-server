@@ -14,14 +14,14 @@ const Content = ({trainingRun}) => {
   const sourceCode = trainingRun.source_code;
   return (
     <>
-      {sourceCode.hash && (
+      {sourceCode.hash ? (
         <dl>
           <dt>Git Hash</dt>
           <dd>
             <code>{sourceCode.hash}</code>
           </dd>
         </dl>
-      )}
+      ) : null}
       {sourceCode.content ? (
         <CodeBlock language="python">{sourceCode.content}</CodeBlock>
       ) : (

@@ -30,9 +30,9 @@ class ViewListItem extends React.Component {
           {view.display_name}
         </span>
 
-        {showDelete && (
+        {showDelete ? (
           <XmarkGlyph onClick={this.deleteView} className="close-glyph" />
-        )}
+        ) : null}
       </div>
     );
   }
@@ -55,22 +55,23 @@ const ViewsList = ({views, deleteView, activateView}) => {
           showDelete={true}
         />
       ))}
-      {showProjectViews && (
+      {showProjectViews ? (
         <div className="title-row">
           {" "}
           <h3 className="title"> Team Views </h3>{" "}
         </div>
-      )}
-      {showProjectViews &&
-        _.map(views.restViews, (view) => (
-          <ViewListItem
-            key={view.id}
-            view={view}
-            deleteView={deleteView}
-            activateView={activateView}
-            showDelete={false}
-          />
-        ))}
+      ) : null}
+      {showProjectViews
+        ? _.map(views.restViews, (view) => (
+            <ViewListItem
+              key={view.id}
+              view={view}
+              deleteView={deleteView}
+              activateView={activateView}
+              showDelete={false}
+            />
+          ))
+        : null}
     </div>
   );
 };
@@ -119,13 +120,13 @@ export class ViewsDropdown extends React.Component {
   render() {
     return (
       <div className="views-dropdown noGridDrag">
-        {this.props.views && (
+        {this.props.views ? (
           <ViewsList
             activateView={this.props.activateView}
             views={this.props.views}
             deleteView={this.props.deleteView}
           />
-        )}
+        ) : null}
         <hr />
         <div className="new-view-row">
           <CreateNewViewTextInput

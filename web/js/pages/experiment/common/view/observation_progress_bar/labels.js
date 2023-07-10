@@ -14,7 +14,7 @@ export const LongLabel = function (props) {
     <div className="title-label">
       {`${props.budgetConsumed}/${props.budget}${label}`}
       <div className="observation-count-progress">
-        {props.experiment.tasks && `After ${observationStr}`}
+        {props.experiment.tasks ? `After ${observationStr}` : null}
       </div>
     </div>
   );

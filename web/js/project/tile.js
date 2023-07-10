@@ -41,9 +41,9 @@ export default class ProjectTile extends React.Component {
             archived: this.props.project.deleted,
           })}
         >
-          {this.props.project.deleted && (
+          {this.props.project.deleted ? (
             <span className="archived-text">Archived</span>
-          )}
+          ) : null}
           <h4 className="truncated">{this.props.project.name}</h4>
           <p>{`${this.props.project.experiment_count} ${pluralizedExpLabel}`}</p>
           <p>
@@ -57,7 +57,7 @@ export default class ProjectTile extends React.Component {
         <div className="project-metadata">
           <span>Updated </span>
           <RelativeTime time={this.props.project.updated} />
-          {this.props.includeClient && this.props.project.user && (
+          {this.props.includeClient && this.props.project.user ? (
             <div>
               <span>Created by: </span>
               <AsynchronousUserName
@@ -67,7 +67,7 @@ export default class ProjectTile extends React.Component {
                 )}
               />
             </div>
-          )}
+          ) : null}
         </div>
       </a>
     );

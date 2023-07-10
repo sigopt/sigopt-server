@@ -38,13 +38,13 @@ export default class ClientsDropdown extends React.Component {
             : this.props.blankLabel
         }
       >
-        {this.props.allowBlank && (
+        {this.props.allowBlank ? (
           <DropdownItem active={!this.props.selectedClient} key="blank-label">
             <a onClick={() => this.props.onClientSelect(null)}>
               {this.props.blankLabel}
             </a>
           </DropdownItem>
-        )}
+        ) : null}
         {_.map(this.props.clients, (client) => (
           <DropdownItem
             active={

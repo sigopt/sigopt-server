@@ -29,8 +29,8 @@ const MixinImpl = createReactClass({
     return (
       <div>
         <button className="submit" onClick={this.doSubmit} type="submit" />
-        {this.state.submitting && <div className="submitting" />}
-        {this.state.submitted && <div className="submitted" />}
+        {this.state.submitting ? <div className="submitting" /> : null}
+        {this.state.submitted ? <div className="submitted" /> : null}
       </div>
     );
   },
@@ -50,8 +50,8 @@ const HOCImpl = makeSubmittableComponent(
       return (
         <div>
           <button className="submit" onClick={this.doSubmit} type="submit" />
-          {this.props.submitting && <div className="submitting" />}
-          {this.props.submitted && <div className="submitted" />}
+          {this.props.submitting ? <div className="submitting" /> : null}
+          {this.props.submitted ? <div className="submitted" /> : null}
         </div>
       );
     }

@@ -171,11 +171,11 @@ export default class extends React.Component {
           <BlockContent label="Email">
             <p>{this.props.user.email}</p>
           </BlockContent>
-          {this.props.shouldVerifyEmail && (
+          {this.props.shouldVerifyEmail ? (
             <BlockContent label=" ">
               <ResendVerificationEmailButton {...this.props} size="xs" />
             </BlockContent>
-          )}
+          ) : null}
           <BlockContent label="Password">
             <a href="/change_password">Change</a>
           </BlockContent>

@@ -37,9 +37,11 @@ const UserDetail = ({user}) => (
 const ClientsTable = ({userPermissions}) => {
   const makeRow = (permission) => (
     <tr key={permission.client.id}>
-      <td className="small-col">{permission.client && permission.client.id}</td>
+      <td className="small-col">
+        {permission.client ? permission.client.id : null}
+      </td>
       <td className="medium-col">
-        {permission.client && permission.client.name}
+        {permission.client ? permission.client.name : null}
       </td>
       <td className="small-col">{permission.can_admin ? "True" : "False"} </td>
       <td className="small-col">{permission.can_read ? "True" : "False"}</td>

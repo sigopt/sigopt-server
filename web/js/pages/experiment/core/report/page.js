@@ -106,7 +106,7 @@ export default class ExperimentReportPage extends Component {
               submitting={this.state.submitting}
             />
           </div>
-          {this.props.experiment.tasks && (
+          {this.props.experiment.tasks ? (
             <div className="task-section">
               <TaskView
                 creating={true}
@@ -116,7 +116,7 @@ export default class ExperimentReportPage extends Component {
                 taskList={this.props.experiment.tasks}
               />
             </div>
-          )}
+          ) : null}
           <div className="form-group centered-button-holder">
             <button
               className="btn btn-lg btn-primary submit-button"

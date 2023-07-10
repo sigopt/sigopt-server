@@ -77,7 +77,7 @@ const ModalForm = makeSubmittableComponent(
           {..._.omit(this.props, "onSubmit")}
           action={this.props.action}
           csrfToken={this.props.csrfToken}
-          onSubmit={this.props.onSubmit && this.submit}
+          onSubmit={this.props.onSubmit ? this.submit : null}
           ref={(c) => {
             this._modal = c;
           }}

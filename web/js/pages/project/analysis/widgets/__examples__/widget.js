@@ -22,9 +22,9 @@ const DimInfo = ({dims, dimKey}) => {
       <div>Dimension Name: {dim.displayName}</div>
       <div>Dimension # times defined: {dim.count} </div>
       <div>Dimension Value Type: {dim.valueType} </div>
-      {dim.categoricalValues && (
+      {dim.categoricalValues ? (
         <div>Categorical Values: [{dim.categoricalValues.join(" ")}] </div>
-      )}
+      ) : null}
     </div>
   );
 };
@@ -55,9 +55,9 @@ class UnconnectedExampleWidget extends React.Component {
           selectedDim={widgetState.selectedDimKey}
           setSelectedDim={this.updateDimension}
         />
-        {widgetState.selectedDimKey && (
+        {widgetState.selectedDimKey ? (
           <DimInfo dims={this.props.dims} dimKey={widgetState.selectedDimKey} />
-        )}
+        ) : null}
         <br />
         {""}Want see what state is avaliable to use?
         <a href="https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en">

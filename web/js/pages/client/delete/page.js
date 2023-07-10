@@ -25,7 +25,7 @@ export default class extends React.Component {
                 ` Are you absolutely sure you want to delete ${this.props.client.name}?`
               : "You do not have permission to delete this team"}
           </p>
-          {canDelete && (
+          {canDelete ? (
             <Form csrfToken={this.props.loginState.csrfToken}>
               <input
                 type="submit"
@@ -33,7 +33,7 @@ export default class extends React.Component {
                 value={`Delete ${this.props.client.name}`}
               />
             </Form>
-          )}
+          ) : null}
         </div>
       </Page>
     );

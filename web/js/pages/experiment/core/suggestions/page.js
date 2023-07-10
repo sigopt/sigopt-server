@@ -251,7 +251,7 @@ const SubmittableSuggestionPage = makeSubmittableComponent(
         return (
           <div>
             {modals}
-            {showParallelBandwidthAlert && parallelBandwidthAlert}
+            {showParallelBandwidthAlert ? parallelBandwidthAlert : null}
             <div className="suggestion-section">
               <div>
                 <h2>Suggestions</h2>

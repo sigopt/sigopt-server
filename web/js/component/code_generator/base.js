@@ -128,7 +128,14 @@ export class EnclosedBlock extends React.Component {
 
 export class ArrayCodeGen extends React.Component {
   static propTypes = {
-    codeItem: PropTypes.arrayOf(PropTypes.any).isRequired,
+    codeItem: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+        PropTypes.object,
+        PropTypes.array,
+      ]),
+    ).isRequired,
     codeItemMapper: CODE_ITEM_MAPPER_SHAPE.isRequired,
     generateInnerCode: PropTypes.func.isRequired,
     indent: PropTypes.string.isRequired,
@@ -285,20 +292,20 @@ export class ApiCallCodeGen extends JsonObjectCodeGen {
     };
     return (
       <span>
-        {this.props.showHeader && this.props.header && (
+        {this.props.showHeader && this.props.header ? (
           <Highlight
             language={this.props.language}
             code={`${this.props.header(templateArgs)}\n`}
           />
-        )}
+        ) : null}
         {super.render()}
         {"\n"}
-        {this.props.showFooter && this.props.footer && (
+        {this.props.showFooter && this.props.footer ? (
           <Highlight
             language={this.props.language}
             code={this.props.footer(templateArgs)}
           />
-        )}
+        ) : null}
       </span>
     );
   }

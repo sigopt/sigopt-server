@@ -37,12 +37,12 @@ export default function PageTitle(props) {
         <span className="page-title-secondary">{props.secondaryButtons}</span>
       </div>
       <div className="title">{props.title}</div>
-      {props.info && <div className="info">{props.info}</div>}
-      {props.children && (
+      {props.info ? <div className="info">{props.info}</div> : null}
+      {props.children ? (
         <div className={classNames("page-nav", navBarStyle)}>
           {props.children}
         </div>
-      )}
+      ) : null}
     </section>
   );
 }

@@ -175,34 +175,34 @@ export default class TrainingRunViewPage extends Component {
     const run = this.props.trainingRun;
     return (
       <TrainingRunPage {...this.props}>
-        {run.deleted && (
+        {run.deleted ? (
           <div className="alert alert-danger archived">
             <p className="alert-description">This run has been archived.</p>
-            {this.props.canEdit && (
+            {this.props.canEdit ? (
               <UndeleteButton handleClick={this.unArchiveRun} />
-            )}
+            ) : null}
           </div>
-        )}
+        ) : null}
         <div className="run-page-wrapper">
           <CheckpointSection
             checkpoints={this.state.checkpoints}
             trainingRun={this.props.trainingRun}
           />
-          {this.props.showHistogram && this.props.project && (
+          {this.props.showHistogram && this.props.project ? (
             <HistogramsSection
               project={this.props.project}
               trainingRun={this.props.trainingRun}
             />
-          )}
+          ) : null}
           <MetricSection trainingRun={run} />
           <InfoSection trainingRun={run} user={this.props.user} />
           <OptimizationSection trainingRun={run} />
           <ParameterSection trainingRun={run} />
           <MetadataSection trainingRun={run} />
           <DatasetSection trainingRun={run} />
-          {run.sys_metadata && run.sys_metadata.feature_importances && (
+          {run.sys_metadata && run.sys_metadata.feature_importances ? (
             <FeatureImportancesSection trainingRun={run} />
-          )}
+          ) : null}
           <FilesSection files={this.props.files} trainingRun={run} />
           <CodeSection trainingRun={run} />
           <LogSection trainingRun={run} />
@@ -211,14 +211,14 @@ export default class TrainingRunViewPage extends Component {
               {stringify(run, {space: 2, terseEmptyLiterals: true})}
             </CodeBlock>
           </Section>
-          {!run.deleted && this.props.canEdit && (
+          {!run.deleted && this.props.canEdit ? (
             <Section fullWidth={true} title="Actions">
               <ArchiveButton
                 label="Archive Run"
                 handleClick={this.archiveRun}
               />
             </Section>
-          )}
+          ) : null}
         </div>
       </TrainingRunPage>
     );

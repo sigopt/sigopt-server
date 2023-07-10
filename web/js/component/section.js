@@ -37,7 +37,7 @@ export default class Section extends React.Component {
             })}
           >
             <div className="section-title">
-              {collapsable && (
+              {collapsable ? (
                 <button
                   className="toggler"
                   type="button"
@@ -50,7 +50,7 @@ export default class Section extends React.Component {
                 >
                   <AngleDownGlyph className={classNames({collapsed})} />
                 </button>
-              )}
+              ) : null}
               <h2 className="text">{title}</h2>
               <div className="hline" />
             </div>

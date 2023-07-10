@@ -226,7 +226,7 @@ class FilesSectionContent extends React.Component {
             </table>
           </div>
           <div className="preview">
-            {this.state.selectedFile && (
+            {this.state.selectedFile ? (
               <>
                 <div className="preview-content-wrapper">
                   <UserImage
@@ -245,7 +245,7 @@ class FilesSectionContent extends React.Component {
                     this.state.selectedFile.filename}
                 </h3>
               </>
-            )}
+            ) : null}
           </div>
         </div>
       </>

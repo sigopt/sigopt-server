@@ -26,8 +26,8 @@ export default makePageable(
   pageFetcher,
   class PaginatedTable extends React.Component {
     static propTypes = {
-      allData: PropTypes.arrayOf(PropTypes.any),
-      data: PropTypes.arrayOf(PropTypes.any),
+      allData: PropTypes.arrayOf(PropTypes.object),
+      data: PropTypes.arrayOf(PropTypes.object),
       head: PropTypes.node,
       makeRow: PropTypes.func.isRequired,
       reloadPages: PropTypes.func.isRequired,

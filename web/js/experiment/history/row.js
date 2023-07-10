@@ -90,7 +90,7 @@ class HistoryTableRow extends Component {
         );
         const stddevChild = (
           <ValueDiv
-            child={value.value_stddev && renderNumber(value.value_stddev)}
+            child={value.value_stddev ? renderNumber(value.value_stddev) : null}
           />
         );
 
@@ -131,15 +131,15 @@ class HistoryTableRow extends Component {
         <FixedCell className="created">
           <RelativeTime time={created} />
         </FixedCell>
-        {showValues && this.values()}
+        {showValues ? this.values() : null}
         {_.map(conditionals, (c) => (
           <FixedCell key={c.name}>
             <span className="number-value">{assignments[c.name]}</span>
           </FixedCell>
         ))}
-        {taskCost && (
+        {taskCost ? (
           <FixedCell className="task">{ui.renderTaskCost(taskCost)}</FixedCell>
-        )}
+        ) : null}
         {_.map(parameters, (p) => {
           const renderedAssignment = renderedAssignments[p.name];
           return (

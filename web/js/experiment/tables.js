@@ -28,8 +28,12 @@ export const TableHeader = (props) => (
       <th className="name" colSpan={props.valueHeader ? null : 2}>
         {props.nameHeader}
       </th>
-      {props.valueHeader && <th className="value">{props.valueHeader}</th>}
-      {props.stddevHeader && <th className="stddev">{props.stddevHeader}</th>}
+      {props.valueHeader ? (
+        <th className="value">{props.valueHeader}</th>
+      ) : null}
+      {props.stddevHeader ? (
+        <th className="stddev">{props.stddevHeader}</th>
+      ) : null}
     </tr>
   </thead>
 );
@@ -264,7 +268,9 @@ export const TableCard = ({
     <div className="hover-glyph">
       <CircleArrowRightGlyph />
     </div>
-    {copyObject && <CopyButton text={stringify(copyObject, {space: 2})} />}
+    {copyObject ? (
+      <CopyButton text={stringify(copyObject, {space: 2})} />
+    ) : null}
     <table className={classNames("table", {scrollable})} onClick={onClick}>
       {children}
     </table>

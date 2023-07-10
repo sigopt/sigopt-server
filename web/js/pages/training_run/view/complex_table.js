@@ -26,13 +26,13 @@ const TableGroup = ({title, items, headers, isOpen}) => {
           <AngleDownGlyph className={glyphClassName} />
         </div>
       </div>
-      {showTable && (
+      {showTable ? (
         <Table
           headers={headers}
           content={sortObject(items)}
           copyObject={items}
         />
-      )}
+      ) : null}
     </div>
   );
 };

@@ -25,16 +25,16 @@ export const BigWidgetModal = (props) => {
     <Modal
       ref={props.modalRef}
       {...props}
-      title={props.widget && props.widget.title}
+      title={props.widget ? props.widget.title : null}
       className="big-modal"
     >
       <div style={modalStyle}>
-        {props.render && props.widget && (
+        {props.render && props.widget ? (
           <WidgetComponent
             widget={props.widget}
             updateWidget={props.updateWidget.bind(null, props.widgetId)}
           />
-        )}
+        ) : null}
       </div>
     </Modal>
   );

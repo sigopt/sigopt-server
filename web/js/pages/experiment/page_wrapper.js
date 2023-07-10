@@ -144,7 +144,7 @@ class ExperimentPage extends Component {
             Suggestions
           </TabLink>
         )}
-        {!deleted && this.props.isAiExperiment && (
+        {!deleted && this.props.isAiExperiment ? (
           <TabLink
             glyph={<InboxGlyph />}
             href={`${experimentPath}/inform`}
@@ -152,7 +152,7 @@ class ExperimentPage extends Component {
           >
             Inform the Optimizer
           </TabLink>
-        )}
+        ) : null}
         <TabLink
           glyph={<ClockGlyph />}
           href={`${experimentPath}/history`}
@@ -161,17 +161,17 @@ class ExperimentPage extends Component {
           History
         </TabLink>
         {!deleted &&
-          !isGuest &&
-          this.props.canEdit &&
-          !this.props.isAiExperiment && (
-            <TabLink
-              glyph={<HardDriveGlyph />}
-              href={`${experimentPath}/report`}
-              path={this.props.path}
-            >
-              Add Data
-            </TabLink>
-          )}
+        !isGuest &&
+        this.props.canEdit &&
+        !this.props.isAiExperiment ? (
+          <TabLink
+            glyph={<HardDriveGlyph />}
+            href={`${experimentPath}/report`}
+            path={this.props.path}
+          >
+            Add Data
+          </TabLink>
+        ) : null}
         <TabLink
           glyph={<PencilGlyph />}
           href={`${experimentPath}/properties`}
@@ -214,7 +214,7 @@ class ExperimentPage extends Component {
 
     return (
       <div className={classNames("experiment-page", this.props.className)}>
-        {isGettingStarted && (
+        {isGettingStarted ? (
           <section className="getting-started-intro">
             <h2>Welcome!</h2>
             <p>
@@ -226,7 +226,7 @@ class ExperimentPage extends Component {
               trial.
             </p>
           </section>
-        )}
+        ) : null}
         <ExperimentTitle
           gradientStyle="experiment"
           info={
@@ -239,7 +239,7 @@ class ExperimentPage extends Component {
           breadcrumbs={breadcrumbs}
           experiment={experiment}
           secondaryButtons={
-            !this.props.isGuest && this.props.canShare && shareButton
+            !this.props.isGuest && this.props.canShare ? shareButton : null
           }
           promiseApiClient={this.props.promiseApiClient}
           failedRuns={this.state.failedRuns}
@@ -251,7 +251,7 @@ class ExperimentPage extends Component {
           <div className="container-fluid">
             <div className="row">
               <div className="experiment-info">
-                {experiment.development && (
+                {experiment.development ? (
                   <div className="development-alert">
                     <div className="row">
                       <div className="alert-description">
@@ -265,7 +265,7 @@ class ExperimentPage extends Component {
                       </div>
                     </div>
                   </div>
-                )}
+                ) : null}
                 {_.contains(
                   [ExperimentTypes.GRID, ExperimentTypes.RANDOM],
                   experiment.type,
@@ -282,7 +282,7 @@ class ExperimentPage extends Component {
                     </div>
                   </div>
                 )}
-                {deleted && (
+                {deleted ? (
                   <div className="deleted-alert">
                     <div className="row">
                       <div className="alert-description">
@@ -296,7 +296,7 @@ class ExperimentPage extends Component {
                       </div>
                     </div>
                   </div>
-                )}
+                ) : null}
                 <div className="experiment-info-content">
                   {this.props.children}
                 </div>

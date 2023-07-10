@@ -34,7 +34,7 @@ class SuggestionTableRow extends React.Component {
         parameters={this.props.parameters}
         resource={this.props.suggestion}
         showValues={false}
-        taskCost={task && task.cost}
+        taskCost={task ? task.cost : null}
       />
     );
   }

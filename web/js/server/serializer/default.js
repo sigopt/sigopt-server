@@ -96,7 +96,7 @@ export default class DefaultResponseSerializer extends Serializer {
           includeJs={!endpoint.omitJs}
           pageName={endpoint.pageName(req)}
           pageNamePrefix={
-            endpoint.pageNamePrefix && endpoint.pageNamePrefix(req)
+            endpoint.pageNamePrefix ? endpoint.pageNamePrefix(req) : null
           }
         />
         <Body

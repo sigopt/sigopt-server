@@ -83,9 +83,9 @@ const HistoryTableHead = function (props) {
         {_.map(props.conditionals, (c) => (
           <th key={c.name}>{c.name}</th>
         ))}
-        {props.experiment.tasks && (
+        {props.experiment.tasks ? (
           <SortableHeader className="task" sortKey="task" name="Task Cost" />
-        )}
+        ) : null}
         {_.map(props.parameters, (p) =>
           _.isEmpty(props.experiment.conditionals) ? (
             <SortableHeader

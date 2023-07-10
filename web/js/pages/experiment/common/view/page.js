@@ -360,7 +360,7 @@ class ExperimentViewPage extends Component {
           <a href={ui.getExperimentUrl(this.props.experiment, "/history")}>
             history page
           </a>{" "}
-          to view{this.props.canEdit && " and edit"} all observations.
+          to view{this.props.canEdit ? " and edit" : null} all observations.
         </span>
       </div>
     );
@@ -397,13 +397,13 @@ class ExperimentViewPage extends Component {
           {visitHistory}
         </ObservationModal>
         {renderedStatusHeader}
-        {this.props.isAiExperiment && (
+        {this.props.isAiExperiment ? (
           <div className="row">
             <Loading loading={!finishedLoadingRuns}>
               <DurationChart runs={this.state.allRuns} />
             </Loading>
           </div>
-        )}
+        ) : null}
         {!allFailures && (
           <div className="row">
             <div className="top-row">
@@ -435,7 +435,7 @@ class ExperimentViewPage extends Component {
                   )}
                 </>
               )}
-              {isParetoOptimizedExperiment && (
+              {isParetoOptimizedExperiment ? (
                 <>
                   <ExperimentSummary
                     bestAssignments={this.state.bestAssignments}
@@ -470,7 +470,7 @@ class ExperimentViewPage extends Component {
                           loading={!uniChartArgs}
                           empty={_.isEmpty(observations)}
                         >
-                          {uniChartArgs && (
+                          {uniChartArgs ? (
                             <UnifiedChart
                               args={uniChartArgs}
                               axisOptions={[AxisTypes.OPTIMIZED_METRIC]}
@@ -484,14 +484,14 @@ class ExperimentViewPage extends Component {
                               showMetricThresholds={true}
                               onClickHandler={this.showObservationOnChartClick}
                             />
-                          )}
+                          ) : null}
                         </Loading>
                       </div>
                       <MoreGraphs experiment={experiment} />
                     </div>
                   </div>
                 </>
-              )}
+              ) : null}
             </div>
           </div>
         )}
@@ -509,7 +509,9 @@ class ExperimentViewPage extends Component {
                   columns={getRunColumns(this.props.experiment)}
                   enableCollapse={false}
                   promiseApiClient={this.services.promiseApiClient}
-                  runs={this.state.activeRuns && this.state.activeRuns.data}
+                  runs={
+                    this.state.activeRuns ? this.state.activeRuns.data : null
+                  }
                 />
                 {!this.props.isAiExperiment &&
                   !_.isEmpty(this.state.recentObservations) && (

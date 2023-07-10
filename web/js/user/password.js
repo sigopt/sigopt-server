@@ -155,11 +155,11 @@ export default class NewPasswordInput extends React.Component {
                 type={this.state.passwordVisibility ? "text" : "password"}
                 value={this.props.password}
               />
-              {showInvalidPasswordWarning && (
+              {showInvalidPasswordWarning ? (
                 <div className="password-warning-message">
                   Password does not meet requirements.
                 </div>
-              )}
+              ) : null}
               <StatusChecks
                 setPasswordValidity={this.setPasswordValidity}
                 validPassword={this.state.validPassword}
@@ -186,7 +186,7 @@ export default class NewPasswordInput extends React.Component {
             </div>
           </div>
         </div>
-        {this.props.verify && (
+        {this.props.verify ? (
           <div className="form-group password-input verify">
             <label htmlFor="verify-password-input" className="control-label">
               Confirm Password
@@ -218,7 +218,7 @@ export default class NewPasswordInput extends React.Component {
               </StatusChecks>
             </div>
           </div>
-        )}
+        ) : null}
       </>
     );
   }

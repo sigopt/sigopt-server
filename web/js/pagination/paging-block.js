@@ -161,11 +161,11 @@ const PagingBlock = function (props) {
     <div className="paging-block">
       <ul className="pagination">
         {prevButton}
-        {showFirstLastButton && firstButton}
-        {showFirstEllipsis && firstEllipsisButton}
+        {showFirstLastButton ? firstButton : null}
+        {showFirstEllipsis ? firstEllipsisButton : null}
         {interiorButtons}
-        {showSecondEllipsis && secondEllipsisButton}
-        {showFirstLastButton && lastButton}
+        {showSecondEllipsis ? secondEllipsisButton : null}
+        {showFirstLastButton ? lastButton : null}
         {nextButton}
       </ul>
     </div>

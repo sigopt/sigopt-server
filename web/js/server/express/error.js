@@ -37,7 +37,7 @@ const stackTraceResponse = (req, err) =>
         {/* This h1 disambiguates our custom error page from the express native error page */}
         <h1>{err.message || "Something has gone wrong!"}</h1>
         <body>
-          <pre>{err && err.stack}</pre>
+          <pre>{err ? err.stack : null}</pre>
         </body>
       </html>,
     ),
