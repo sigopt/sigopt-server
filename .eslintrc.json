@@ -35,7 +35,6 @@
     "unused-imports"
   ],
   "rules": {
-    "prefer-named-capture-group": 0,
     "logical-assignment-operators": 0,
     "default-param-last": 0,
     "react/hook-use-state": 0,
