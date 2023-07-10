@@ -100,7 +100,7 @@ const HistoryTable = makePageable(
                   onSort={this.onSort}
                   parameters={parameters}
                   sortAscending={this.props.sortAscending}
-                  sortKey={this.state.sortKey}
+                  activeSortKey={this.state.sortKey}
                 />
               }
               {...this.props}
