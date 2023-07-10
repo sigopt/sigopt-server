@@ -329,7 +329,7 @@ class ParameterEditRow extends React.Component {
 
   render() {
     let conditionsInfo = null;
-    if (this.props.create && this.props.showConditions) {
+    if (this.props.create || this.props.showConditions) {
       if (_.isEmpty(this.props.parameterInput.conditions)) {
         conditionsInfo = <td>No conditions</td>;
       } else {
