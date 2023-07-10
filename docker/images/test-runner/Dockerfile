@@ -32,7 +32,7 @@ COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.j
 RUN ./scripts/compile/generate_routes.sh config/
 
 
-FROM ubuntu:jammy-20230308 AS test-runner-base
+FROM ubuntu:jammy-20230624 AS test-runner-base
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
