@@ -6,10 +6,8 @@
 
 import "../../../styles/less/change_password.less";
 
-import _ from "underscore";
 import PropTypes from "prop-types";
 import React from "react";
-import createReactClass from "create-react-class";
 
 import Form from "../../component/form";
 import NetError from "../../alert/error";
@@ -19,9 +17,8 @@ import Spinner from "../../component/spinner";
 import SubmittableMixin from "../../mixins/submittable";
 import schemas from "../../react/schemas";
 
-export default createReactClass({
-  displayName: "ChangePasswordPage",
-  propTypes: {
+export default class ChangePasswordPage extends React.Component {
+  static propTypes = {
     alertBroker: schemas.AlertBroker.isRequired,
     code: PropTypes.string,
     continueHref: PropTypes.string,
@@ -32,19 +29,17 @@ export default createReactClass({
     required: PropTypes.bool.isRequired,
     sessionUpdater: schemas.SessionUpdater.isRequired,
     user: schemas.User,
-  },
+  };
 
-  mixins: [SubmittableMixin],
+  mixins = [SubmittableMixin];
 
-  getInitialState: function () {
-    return {
-      oldPassword: "",
-      newPassword: "",
-      verifyPassword: "",
-    };
-  },
+  state = {
+    oldPassword: "",
+    newPassword: "",
+    verifyPassword: "",
+  };
 
-  changePassword: function () {
+  changePassword = () => {
     if (this.state.newPassword === this.state.verifyPassword) {
       return this.props.promiseApiClient.sessions().update({
         email: this.getEmail(),
@@ -60,9 +55,9 @@ export default createReactClass({
         }),
       );
     }
-  },
+  };
 
-  onSubmit: function () {
+  onSubmit = () => {
     this.submit(
       (s, e) =>
         this.changePassword()
@@ -77,15 +72,15 @@ export default createReactClass({
       },
       this.props.alertBroker.errorHandlerThatExpectsStatus(400, 401, 403),
     );
-  },
+  };
 
-  getEmail: function () {
+  getEmail = () => {
     const providedEmail = this.props.email;
     const userEmail = this.props.user && this.props.user.email;
     return providedEmail || userEmail;
-  },
+  };
 
-  pageBody: function () {
+  render() {
     const providedEmail = this.props.email;
     const userEmail = this.props.user && this.props.user.email;
     if (providedEmail && userEmail && providedEmail !== userEmail) {
@@ -99,7 +94,7 @@ export default createReactClass({
 
     const email = this.getEmail();
     /* eslint-disable react/jsx-no-bind */
-    return (
+    const pageBody = (
       <div>
         <div>
           {this.props.required ? (
@@ -109,7 +104,7 @@ export default createReactClass({
             className="change-password-form"
             csrfToken={this.props.loginState.csrfToken}
             error={this.props.alertBroker.errorHandlerThatExpectsStatus(400)}
-            onSubmit={_.bind(this.onSubmit, this)}
+            onSubmit={this.onSubmit}
           >
             {email ? <input type="hidden" value={email} /> : null}
             {!this.props.code && (
@@ -158,13 +153,10 @@ export default createReactClass({
       </div>
     );
     /* eslint-enable react/jsx-no-bind */
-  },
-
-  render: function () {
     return (
       <Page title="Change Password" className="change-password-page">
-        {this.pageBody()}
+        {pageBody}
       </Page>
     );
-  },
-});
+  }
+}

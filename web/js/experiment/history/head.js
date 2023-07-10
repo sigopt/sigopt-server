@@ -11,26 +11,25 @@ import Header from "../../table/header";
 import ui from "../ui";
 import {isDefinedAndNotNull} from "../../utils";
 
+const SortableHeader = function (props) {
+  return (
+    <Header
+      active={props.active}
+      className={props.className}
+      onClick={props.onSort}
+      sortAscending={!props.active || props.sortAscending}
+      sortKey={props.sortKey}
+      sortable={props.canSort}
+      title={props.name}
+    >
+      {props.name}
+    </Header>
+  );
+};
+
 const HistoryTableHead = function (props) {
   const canSort = Boolean(props.onSort);
   const hideStdDev = props.hideStdDev || {};
-
-  const SortableHeader = function (hprops) {
-    const active = hprops.sortKey === props.sortKey;
-    return (
-      <Header
-        active={active}
-        className={hprops.className}
-        onClick={props.onSort}
-        sortAscending={!active || props.sortAscending}
-        sortKey={hprops.sortKey}
-        sortable={canSort}
-        title={hprops.name}
-      >
-        {hprops.name}
-      </Header>
-    );
-  };
 
   const firstMetric = _.clone(_.first(props.experiment.metrics) || {});
   const firstName = firstMetric.name;
@@ -42,15 +41,24 @@ const HistoryTableHead = function (props) {
         ? _.chain(ui.sortMetrics(props.experiment.metrics))
             .map((m) => [
               <SortableHeader
+                {...props}
+                canSort={canSort}
                 key={`value-${m.name}`}
                 name={m.name}
-                sortKey={m.name ? `value-${m.name}` : "value"}
+                active={
+                  (m.name ? `value-${m.name}` : "value") === props.sortKey
+                }
               />,
               !hideStdDev[m.name] && (
                 <SortableHeader
+                  {...props}
+                  canSort={canSort}
                   key={`value_stddev-${m.name}`}
                   name={`${m.name} Std. Deviation`}
-                  sortKey={m.name ? `value_stddev-${m.name}` : "value_stddev"}
+                  active={
+                    (m.name ? `value_stddev-${m.name}` : "value_stddev") ===
+                    props.sortKey
+                  }
                 />
               ),
             ])
@@ -58,14 +66,18 @@ const HistoryTableHead = function (props) {
             .value()
         : [
             <SortableHeader
+              {...props}
+              canSort={canSort}
               key="value"
-              sortKey="value"
+              active={props.sortKey === "value"}
               name={firstMetric.name}
             />,
             !hideStdDev[firstName] && (
               <SortableHeader
+                {...props}
+                canSort={canSort}
                 key="value_stddev"
-                sortKey="value_stddev"
+                active={props.sortKey === "value_stddev"}
                 name="Standard Deviation"
               >
                 Std. Deviation
