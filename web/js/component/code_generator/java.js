@@ -222,12 +222,12 @@ export class JavaApiCallCodeGen extends ApiCallCodeGen {
   render() {
     return (
       <span>
-        {this.props.showHeader && (
+        {this.props.showHeader ? (
           <Highlight
             language={this.props.language}
             code={`${this.props.header(this.props)}\n`}
           />
-        )}
+        ) : null}
         <EnclosedBlock
           {...this.props}
           closer={this.closer()}
@@ -242,9 +242,9 @@ export class JavaApiCallCodeGen extends ApiCallCodeGen {
             />
           )}
         </EnclosedBlock>
-        {this.props.showHeader && (
+        {this.props.showHeader ? (
           <Highlight language={this.props.language} code={this.footer()} />
-        )}
+        ) : null}
       </span>
     );
   }

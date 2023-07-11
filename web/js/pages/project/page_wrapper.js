@@ -114,7 +114,7 @@ export default class ProjectPage extends Component {
             <>
               <dt>Project ID</dt>
               <dd data-field-name="project-id">{this.props.project.id}</dd>
-              {this.props.project.user && (
+              {this.props.project.user ? (
                 <>
                   <dt>Created By</dt>
                   <dd>
@@ -125,7 +125,7 @@ export default class ProjectPage extends Component {
                     />
                   </dd>
                 </>
-              )}
+              ) : null}
             </>
           }
           breadcrumbs={[{href: "/projects", label: "AI Projects"}]}
@@ -164,12 +164,12 @@ export default class ProjectPage extends Component {
           {navLinks}
         </PageTitle>
         <PageBody>
-          {this.state.deleted && (
+          {this.state.deleted ? (
             <div className="alert alert-danger">
               This project has been archived and will no longer be shown in your
               recent projects.
             </div>
-          )}
+          ) : null}
           {this.props.children}
         </PageBody>
       </div>

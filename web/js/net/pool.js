@@ -35,8 +35,7 @@ export default class SourcePool {
 
   get(...keys) {
     const objectSafeKeys = JSON.stringify(keys, this.unsafeSeralizationChecker);
-    this.sources[objectSafeKeys] =
-      this.sources[objectSafeKeys] || this.factory(...keys);
+    this.sources[objectSafeKeys] ||= this.factory(...keys);
     return this.sources[objectSafeKeys];
   }
 }

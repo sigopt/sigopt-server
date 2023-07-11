@@ -83,7 +83,7 @@ class OrganizationTeamManagementPage extends Component {
     return (
       <div className="teams-page">
         <div className="section-button">
-          {this.props.canCreateTeam && (
+          {this.props.canCreateTeam ? (
             <CreateTeamButton
               onCreate={(client) => {
                 this.services.alertBroker.info(
@@ -95,7 +95,7 @@ class OrganizationTeamManagementPage extends Component {
               }}
               organization={this.props.organization}
             />
-          )}
+          ) : null}
         </div>
         <div className="section-title">
           <h3>Teams</h3>

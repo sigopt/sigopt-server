@@ -64,7 +64,9 @@ class RunInfoTagEditor extends Component {
   };
 
   onCreateTag = (tag) =>
-    new Promise((success, error) => this.props.createTag(tag, success, error));
+    new Promise((success, error) => {
+      this.props.createTag(tag, success, error);
+    });
 
   render() {
     return (
@@ -84,9 +86,9 @@ class RunInfoTagEditor extends Component {
 
 class RunInfoWidget extends React.Component {
   createTag = (tagData) =>
-    new Promise((success, error) =>
-      this.props.createTag(tagData, success, error),
-    );
+    new Promise((success, error) => {
+      this.props.createTag(tagData, success, error);
+    });
 
   render() {
     const run = this.props.runs[this.props.hoverId];

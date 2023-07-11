@@ -271,7 +271,7 @@ class OrganizationRunsManagementPage extends React.Component {
         />
         <div>
           <h3>Users</h3>
-          {moreThanOneClient && (
+          {moreThanOneClient ? (
             <div className="form-group client-filter">
               <label className="control-label">Filter by team:</label>
               <ClientsDropdown
@@ -282,7 +282,7 @@ class OrganizationRunsManagementPage extends React.Component {
                 selectedClient={this.state.client}
               />
             </div>
-          )}
+          ) : null}
         </div>
         <h3>All Runs</h3>
         {isUndefinedOrNull(this.state.usersTableRowsAllRuns) ? (
@@ -307,7 +307,7 @@ class OrganizationRunsManagementPage extends React.Component {
             id="users-optimized-only-table"
           />
         )}
-        {moreThanOneClient && (
+        {moreThanOneClient ? (
           <div>
             <h3>Teams Optimized Runs</h3>
             {isUndefinedOrNull(this.state.teamsTableRows) ? (
@@ -321,7 +321,7 @@ class OrganizationRunsManagementPage extends React.Component {
               />
             )}
           </div>
-        )}
+        ) : null}
       </>
     );
   }

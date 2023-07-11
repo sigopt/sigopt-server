@@ -94,12 +94,12 @@ const ExperimentReadOnlyProperties = function (props) {
             <th>Created</th>
             <td>{<AbsoluteTime time={props.experimentInput.created} />}</td>
           </tr>
-          {props.creator && (
+          {props.creator ? (
             <tr>
               <th>Created By</th>
               <td>{props.creator.name}</td>
             </tr>
-          )}
+          ) : null}
           {(isDefinedAndNotNull(props.experimentInput.observation_budget) ||
             isDefinedAndNotNull(props.experimentInput.budget)) && (
             <tr>

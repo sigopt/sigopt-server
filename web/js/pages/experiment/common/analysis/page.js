@@ -137,7 +137,7 @@ class AnalysisPage extends Component {
           experiment={this.props.experiment}
           ref={this._observationModal}
         />
-        {isParetoOptimizedExperiment && (
+        {isParetoOptimizedExperiment ? (
           <>
             <div className="row">
               <div className="table-row">
@@ -165,7 +165,7 @@ class AnalysisPage extends Component {
                     loading={!uniChartArgs}
                     empty={_.isEmpty(this.state.observations)}
                   >
-                    {uniChartArgs && (
+                    {uniChartArgs ? (
                       <div style={{textAlign: "center"}}>
                         <UnifiedChart
                           args={uniChartArgs}
@@ -182,17 +182,17 @@ class AnalysisPage extends Component {
                         />
                         <span>Click to explore the best points.</span>
                       </div>
-                    )}
+                    ) : null}
                   </Loading>
                 </div>
-                {showBestParameters && (
+                {showBestParameters ? (
                   <div className="pareto-frontier-parameter-chart">
                     <div className="title-label">Best Parameters</div>
                     <Loading
                       loading={!uniChartArgs}
                       empty={_.isEmpty(this.state.observations)}
                     >
-                      {uniChartArgs && (
+                      {uniChartArgs ? (
                         <UnifiedChart
                           args={uniChartArgs}
                           axisOptions={[
@@ -210,10 +210,10 @@ class AnalysisPage extends Component {
                           hideFullCostObservations={true}
                           onClickHandler={this.showObservationModalOnChartClick}
                         />
-                      )}
+                      ) : null}
                     </Loading>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
             <div className="row">
@@ -225,7 +225,7 @@ class AnalysisPage extends Component {
                       loading={!uniChartArgs}
                       empty={_.isEmpty(this.state.observations)}
                     >
-                      {uniChartArgs && (
+                      {uniChartArgs ? (
                         <UnifiedChart
                           args={uniChartArgs}
                           axisOptions={[
@@ -258,14 +258,14 @@ class AnalysisPage extends Component {
                             type: AxisTypes.OPTIMIZED_METRIC,
                           }}
                         />
-                      )}
+                      ) : null}
                     </Loading>
                   </div>
                 ))}
               </div>
             </div>
           </>
-        )}
+        ) : null}
         {!isParetoOptimizedExperiment && (
           <div className="row">
             <div className="table-row">
@@ -282,7 +282,7 @@ class AnalysisPage extends Component {
                   loading={!uniChartArgs}
                   empty={_.isEmpty(this.state.observations)}
                 >
-                  {uniChartArgs && (
+                  {uniChartArgs ? (
                     <UnifiedChart
                       args={uniChartArgs}
                       axisOptions={[
@@ -311,7 +311,7 @@ class AnalysisPage extends Component {
                       }}
                       yAxisOptions={AxisOrder.METRICS_FIRST}
                     />
-                  )}
+                  ) : null}
                 </Loading>
               </div>
             </div>
@@ -362,7 +362,7 @@ class AnalysisPage extends Component {
                 loading={!uniChartArgs}
                 empty={_.isEmpty(this.state.observations)}
               >
-                {uniChartArgs && (
+                {uniChartArgs ? (
                   <UnifiedChart
                     args={uniChartArgs}
                     chartType={ChartTypes.Scatter3DWithHighlight}
@@ -382,12 +382,12 @@ class AnalysisPage extends Component {
                     onClickHandler={this.showObservationModalOnChartClick}
                     zAxisOptions={AxisOrder.METRICS_FIRST}
                   />
-                )}
+                ) : null}
               </Loading>
             </div>
           </div>
         </div>
-        {isMultitask && (
+        {isMultitask ? (
           <div className="row">
             <div className="table-row">
               <div className="task-distribution">
@@ -404,7 +404,7 @@ class AnalysisPage extends Component {
               </div>
             </div>
           </div>
-        )}
+        ) : null}
         <div className="row">
           <div className="table-row">
             <div className="parcoords-chart">
@@ -423,12 +423,12 @@ class AnalysisPage extends Component {
                 loading={!uniChartArgs}
                 empty={_.isEmpty(this.state.observations)}
               >
-                {uniChartArgs && (
+                {uniChartArgs ? (
                   <ParallelCoordinatesWrapper
                     args={uniChartArgs}
                     metricImportances={this.props.metricImportances}
                   />
-                )}
+                ) : null}
                 {!_.isEmpty(this.props.experiment.conditionals) && (
                   <div className="parcoord-chart controls">
                     <span>

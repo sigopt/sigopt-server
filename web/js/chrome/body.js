@@ -43,7 +43,7 @@ export default class extends React.Component {
         </div>
 
         {/* These are scripts needed on just about every page */}
-        {this.props.includeJs && (
+        {this.props.includeJs ? (
           <div>
             {_.map(this.props.jsFiles, (jsFile) => {
               const url = new Url(jsFile.src);
@@ -60,7 +60,7 @@ export default class extends React.Component {
               );
             })}
           </div>
-        )}
+        ) : null}
 
         <div id={MODAL_ROOT_ID} />
       </body>

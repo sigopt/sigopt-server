@@ -17,11 +17,15 @@ export default class HistoryTableWrapper extends React.Component {
     const {children, pagingBlock} = this.props;
     return (
       <div className="history-table">
-        {pagingBlock && <div className="paging-holder">{pagingBlock}</div>}
+        {pagingBlock ? (
+          <div className="paging-holder">{pagingBlock}</div>
+        ) : null}
         <div className="table-responsive">
           <table className="table table-hover">{children}</table>
         </div>
-        {pagingBlock && <div className="paging-holder">{pagingBlock}</div>}
+        {pagingBlock ? (
+          <div className="paging-holder">{pagingBlock}</div>
+        ) : null}
       </div>
     );
   }

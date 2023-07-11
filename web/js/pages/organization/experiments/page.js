@@ -62,9 +62,9 @@ class ExperimentTableRow extends React.Component {
         </td>
         <td>{isDefinedAndNotNull(e.parameters) ? e.parameters.length : 0}</td>
         <td>{(e.progress && e.progress.observation_count) || 0}</td>
-        {this.props.showClient && (
+        {this.props.showClient ? (
           <td>{this.props.clientMap[e.client].name}</td>
-        )}
+        ) : null}
         <td>{membership ? membership.user.name : "Unknown"}</td>
         <td>{<RelativeTime time={e.updated} />}</td>
       </tr>
@@ -133,7 +133,7 @@ const RecentExperimentsTable = makePageable(
         <div>
           <h3>
             Experiments this month
-            {this.props.client && ` for team: ${this.props.client.name}`}
+            {this.props.client ? ` for team: ${this.props.client.name}` : null}
           </h3>
           <div className="table-responsive recent-experiments-table">
             <PagingTable
@@ -374,7 +374,7 @@ class OrganizationExperimentManagementPage extends React.Component {
 
         <div>
           <h3>Users</h3>
-          {moreThanOneClient && (
+          {moreThanOneClient ? (
             <div className="form-group client-filter">
               <label className="control-label">Filter by team:</label>
               <ClientsDropdown
@@ -385,7 +385,7 @@ class OrganizationExperimentManagementPage extends React.Component {
                 selectedClient={this.state.client}
               />
             </div>
-          )}
+          ) : null}
         </div>
         {isUndefinedOrNull(this.state.usersTableRows) ? (
           <Spinner />

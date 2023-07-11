@@ -29,7 +29,7 @@ export default function Page(props) {
 
   return (
     <div id={props.id} className={className}>
-      {props.title && <PageTitle title={props.title} />}
+      {props.title ? <PageTitle title={props.title} /> : null}
       <PageBody>{props.children}</PageBody>
     </div>
   );

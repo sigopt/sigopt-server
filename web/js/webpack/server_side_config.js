@@ -111,7 +111,7 @@ export default ({
           mustacheLoader,
           rawLoader,
           {
-            test: /\.(css|less)$/u,
+            test: /\.(?:css|less)$/u,
             loader: "null-loader",
           },
           assetLoader("../static"),

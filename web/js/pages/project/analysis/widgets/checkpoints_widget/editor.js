@@ -91,7 +91,7 @@ export const UnconnectedCheckpointsWidgetEditor = ({
   const {state} = initialWidgetData;
   const [title, setTitle] = React.useState(initialWidgetData.title);
   const [plotAllRuns, setPlotAllRuns] = React.useState(state.plotAllRuns);
-  const [runIds, setSelectedRunIds] = React.useState(state.runIds);
+  const [runIds, setRunIds] = React.useState(state.runIds);
 
   React.useEffect(() => {
     const {isValid, errors} = validateOptions(runIds, plotAllRuns);
@@ -126,7 +126,7 @@ export const UnconnectedCheckpointsWidgetEditor = ({
         <div style={{height: 400, marginTop: 10}}>
           <RunsSelect
             selectedRunIds={runIds}
-            setSelectedRunIds={setSelectedRunIds}
+            setSelectedRunIds={setRunIds}
             runs={runs}
             definedFields={definedFields}
           />

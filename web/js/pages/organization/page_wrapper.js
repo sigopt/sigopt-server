@@ -52,14 +52,14 @@ export default class OrganizationDashboardPage extends Component {
           }
         >
           <nav>
-            {this.props.canSeeExperimentsPage && (
+            {this.props.canSeeExperimentsPage ? (
               <TabLink
                 href={`/organization/${this.props.organization.id}/experiments`}
                 path={this.props.path}
               >
                 Experiments
               </TabLink>
-            )}
+            ) : null}
             <TabLink
               href={`/organization/${this.props.organization.id}/runs`}
               path={this.props.path}

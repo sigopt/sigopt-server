@@ -134,14 +134,14 @@ export class MetricCell extends Component {
         <p className="best-value metric-value">
           {renderNumber(bestValue, true)}
         </p>{" "}
-        {mostImportantMetricName && (
+        {mostImportantMetricName ? (
           <p
             className="best-value-label truncated"
             title={mostImportantMetricName}
           >
             {mostImportantMetricName}
           </p>
-        )}
+        ) : null}
       </>
     );
   }
@@ -231,11 +231,11 @@ const ArchiveLabelCell = function (props) {
 const DevLabelCell = function (props) {
   return (
     <ClickableCell {...props}>
-      {props.experiment.development && (
+      {props.experiment.development ? (
         <div className="pill-holder dev-pill">
           <div className="pill-label">Dev</div>
         </div>
-      )}
+      ) : null}
     </ClickableCell>
   );
 };
@@ -263,13 +263,13 @@ const ProjectCell = function (props) {
 const UserNameCell = function (props) {
   return (
     <ClickableCell {...props}>
-      {props.showCreatedBy && props.experiment.user && (
+      {props.showCreatedBy && props.experiment.user ? (
         <div className="user-name-span truncated">
           <AsynchronousUserName
             dataSource={props.userDataSources.get(props.experiment.user)}
           />
         </div>
-      )}
+      ) : null}
     </ClickableCell>
   );
 };
@@ -303,7 +303,7 @@ class ActionCell extends Component {
   render() {
     return (
       <td className="action-cell" ref={this._node}>
-        {(this.props.canEdit || this.props.canShare) && (
+        {this.props.canEdit || this.props.canShare ? (
           <Dropdown
             buttonClassName="action-button"
             caret={false}
@@ -314,7 +314,7 @@ class ActionCell extends Component {
               this._dropdown = c;
             }}
           >
-            {this.props.canEdit && (
+            {this.props.canEdit ? (
               <DropdownItem>
                 {this.props.experiment.state ===
                 EXPERIMENT_STATE_ENUM.deleted ? (
@@ -333,8 +333,8 @@ class ActionCell extends Component {
                   </span>
                 )}
               </DropdownItem>
-            )}
-            {this.props.canShare && (
+            ) : null}
+            {this.props.canShare ? (
               <DropdownItem>
                 <span
                   className="share"
@@ -343,9 +343,9 @@ class ActionCell extends Component {
                   Share
                 </span>
               </DropdownItem>
-            )}
+            ) : null}
           </Dropdown>
-        )}
+        ) : null}
       </td>
     );
   }
@@ -425,13 +425,13 @@ export default class ExperimentRow extends Component {
             {...this.props}
           />
         </tr>
-        {this.props.canShare && (
+        {this.props.canShare ? (
           <ShareExperimentModal
             alertBroker={this.services.alertBroker}
             experiment={e}
             ref={(c) => (this._shareModal = c)}
           />
-        )}
+        ) : null}
       </>
     );
   }

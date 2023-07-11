@@ -38,11 +38,11 @@ const EditButtons = function (props) {
   if (props.canEdit && !props.create) {
     return (
       <div className="edit-buttons">
-        {props.editing && (
+        {props.editing ? (
           <a className="btn btn-warning" onClick={props.cancelEditing}>
             Cancel
           </a>
-        )}
+        ) : null}
         <a
           className="btn create-button submit-button"
           onClick={props.toggleEditing}
@@ -61,6 +61,7 @@ EditButtons.propTypes = {
   cancelEditing: PropTypes.func.isRequired,
   create: PropTypes.bool.isRequired,
   editing: PropTypes.bool.isRequired,
+  toggleEditing: PropTypes.func.isRequired,
 };
 
 export const MetricObjectives = ["minimize", "maximize"];
@@ -158,7 +159,7 @@ const ExperimentEditor = makeEditableComponent(
       const objectToSet = _.foldl(
         parts,
         function (o, f) {
-          o[f] = o[f] || {};
+          o[f] ||= {};
           return o[f];
         },
         object,
@@ -362,7 +363,7 @@ const ExperimentEditor = makeEditableComponent(
       _.each(experimentInput.parameters, (p) => {
         if (p.type === ParameterTypes.CATEGORICAL) {
           p.bounds = null;
-          p.categorical_values = p.categorical_values || [];
+          p.categorical_values ||= [];
         } else {
           p.categorical_values = null;
         }
@@ -711,15 +712,15 @@ const ExperimentEditor = makeEditableComponent(
               onRemove={this.onRemoveMetadata}
             />
           </div>
-          {this.state.error && (
+          {this.state.error ? (
             <AlertPanel
               error={this.state.error}
               onDismiss={() => this.setState({error: null})}
             />
-          )}
-          {this.props.create && (
+          ) : null}
+          {this.props.create ? (
             <div className="submit-button-holder">{this.submitButton()}</div>
-          )}
+          ) : null}
         </div>
       );
     }

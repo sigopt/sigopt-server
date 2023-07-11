@@ -119,7 +119,7 @@ class SearchBoxMenuItem extends React.Component {
           {this.highlight(this.props.experiment.name)}
         </span>
         <span className="experiment-author">
-          {this.props.experiment.user && (
+          {this.props.experiment.user ? (
             <AsynchronousUserNameHighlight
               dataSource={this.props.userDataSources.get(
                 this.props.experiment.user,
@@ -127,7 +127,7 @@ class SearchBoxMenuItem extends React.Component {
               highlight={this.highlight}
               userId={this.props.experiment.user}
             />
-          )}
+          ) : null}
         </span>
       </div>
     );
@@ -235,8 +235,8 @@ class SearchBox extends React.Component {
         <div className="information-label">
           <i>
             Search for experiments{" "}
-            {this.props.isProjectPage && "in the project "}by experiment name or
-            user name.
+            {this.props.isProjectPage ? "in the project " : null}by experiment
+            name or user name.
           </i>
         </div>
       ),

@@ -13,6 +13,7 @@ import SigoptError from "../../../../error/base";
 // that makes it impossible to render the widget
 // EX if a run is updated/deleted/moved and we lose a dimension and that key was saved
 export class StaleStateError extends SigoptError {
+  // eslint-disable-next-line default-param-last
   constructor(recoverable = false, cause, ...params) {
     super(...params);
     this.recoverable = recoverable;

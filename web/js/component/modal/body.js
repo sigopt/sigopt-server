@@ -21,9 +21,9 @@ const ModalBody = (props) => {
   if (props.children || props.error) {
     return (
       <div className="modal-body">
-        {props.error && (
+        {props.error ? (
           <AlertPanel error={props.error} onDismiss={props.onAlertDismiss} />
-        )}
+        ) : null}
         {props.children}
       </div>
     );

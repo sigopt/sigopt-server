@@ -469,7 +469,7 @@ export default class DurationChart extends Component {
           style={{height: CHART_HEIGHT_PX + MINIMAP_HEIGHT_PX}}
           ref={this.outerChartRef}
         >
-          {minimapParams && (
+          {minimapParams ? (
             <div
               className="minimap"
               onPointerDown={this.onPointerDownMinimap}
@@ -515,7 +515,7 @@ export default class DurationChart extends Component {
                 onPointerDown={this.onPointerDownMinimap}
               />
             </div>
-          )}
+          ) : null}
           <div
             className="chart"
             style={{
@@ -526,7 +526,7 @@ export default class DurationChart extends Component {
             onScroll={this.onScroll}
             ref={this.innerChartRef}
           >
-            {chartDimensions && (
+            {chartDimensions ? (
               <InnerChart
                 barWidth={chartDimensions.barWidth}
                 chartWidth={chartDimensions.fullChartWidth}
@@ -536,9 +536,9 @@ export default class DurationChart extends Component {
                 setHoverState={this.setHoverState}
                 resetHoverState={this.resetHoverState}
               />
-            )}
+            ) : null}
           </div>
-          {this.state.hoverState && chartDimensions && (
+          {this.state.hoverState && chartDimensions ? (
             <div
               className="hover-info-window"
               style={{
@@ -565,7 +565,7 @@ export default class DurationChart extends Component {
                 visibleChartHeight={innerChartHeight}
               />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     );

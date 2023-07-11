@@ -85,7 +85,7 @@ export default createReactClass({
     return providedEmail || userEmail;
   },
 
-  pageBody: function () {
+  render: function () {
     const providedEmail = this.props.email;
     const userEmail = this.props.user && this.props.user.email;
     if (providedEmail && userEmail && providedEmail !== userEmail) {
@@ -99,19 +99,19 @@ export default createReactClass({
 
     const email = this.getEmail();
     /* eslint-disable react/jsx-no-bind */
-    return (
+    const pageBody = (
       <div>
         <div>
-          {this.props.required && (
+          {this.props.required ? (
             <p>You must update your password before proceeding.</p>
-          )}
+          ) : null}
           <Form
             className="change-password-form"
             csrfToken={this.props.loginState.csrfToken}
             error={this.props.alertBroker.errorHandlerThatExpectsStatus(400)}
             onSubmit={_.bind(this.onSubmit, this)}
           >
-            {email && <input type="hidden" value={email} />}
+            {email ? <input type="hidden" value={email} /> : null}
             {!this.props.code && (
               <div className="form-group">
                 <label className="control-label">Current Password</label>
@@ -134,8 +134,10 @@ export default createReactClass({
               verify={true}
               verifyPassword={this.state.verifyPassword || ""}
             />
-            {this.props.code && <input type="hidden" value={this.props.code} />}
-            {this.state.submitting && <Spinner />}
+            {this.props.code ? (
+              <input type="hidden" value={this.props.code} />
+            ) : null}
+            {this.state.submitting ? <Spinner /> : null}
             {!this.state.submitting && (
               <div className="form-group">
                 <input
@@ -156,12 +158,10 @@ export default createReactClass({
       </div>
     );
     /* eslint-enable react/jsx-no-bind */
-  },
 
-  render: function () {
     return (
       <Page title="Change Password" className="change-password-page">
-        {this.pageBody()}
+        {pageBody}
       </Page>
     );
   },

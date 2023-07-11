@@ -25,14 +25,14 @@ class ResendVerificationEmailButton extends React.Component {
     const showInput = !userId && !this.props.email;
     return (
       <div>
-        {showInput && (
+        {showInput ? (
           <input
             className="form-control"
             onChange={(e) => this.setState({email: e.target.value})}
             type="email"
             value={this.state.email}
           />
-        )}
+        ) : null}
         <ActionButton
           disabled={!userId && !this.state.email}
           ref={this.actionRef}

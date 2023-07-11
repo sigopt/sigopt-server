@@ -22,7 +22,7 @@ const pushParentState = (
   if (preserveAsParentState && currentStateIsLoggedIn && !currentStateIsGuest) {
     loginState.parentState = new LoginState(loginState);
   } else {
-    loginState.parentState = loginState.parentState || null;
+    loginState.parentState ||= null;
   }
 };
 

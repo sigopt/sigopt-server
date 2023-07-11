@@ -14,21 +14,21 @@ export default (props) => {
     return (
       <p className="no-experiments">
         There are no development experiments
-        {props.isProjectPage && " in this project"}.
+        {props.isProjectPage ? " in this project" : null}.
       </p>
     );
   } else if (props.includeClient && props.archived) {
     return (
       <p className="no-experiments">
         Your team does not have any archived experiments
-        {props.isProjectPage && " in this project"}.
+        {props.isProjectPage ? " in this project" : null}.
       </p>
     );
   } else if (!props.includeClient && props.archived) {
     return (
       <p className="no-experiments">
         You have not yet archived any experiments
-        {props.isProjectPage && " in this project"}.
+        {props.isProjectPage ? " in this project" : null}.
       </p>
     );
   } else if (props.includeClient) {
@@ -43,14 +43,14 @@ export default (props) => {
     return (
       <p className="no-experiments">
         Your team does not have any active experiments
-        {props.isProjectPage && " in this project"}. {message}
+        {props.isProjectPage ? " in this project" : null}. {message}
       </p>
     );
   } else if (props.pageQuery.length !== 0) {
     return (
       <p className="no-experiments">
         Your search matches no experiments
-        {props.isProjectPage && " in this project"}.
+        {props.isProjectPage ? " in this project" : null}.
       </p>
     );
   } else if (props.canEdit) {

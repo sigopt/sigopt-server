@@ -130,13 +130,13 @@ const WidgetEditorModal = ({
 
       <hr />
 
-      {showWidgetMenuList && (
+      {showWidgetMenuList ? (
         <WidgetMenuList
           fullReduxState={fullReduxState}
           setEditorState={setEditorState}
           addNewWidgetAndClose={addNewWidgetAndClose}
         />
-      )}
+      ) : null}
       {!showWidgetMenuList && (
         <CommonWidgetEditor
           key={JSON.stringify(editorState.widgetData)}

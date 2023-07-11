@@ -202,12 +202,12 @@ const ProjectsPage = makePageable(
           <PageBody>
             <div className="projects-page-controls">
               <div className="projects-view-button-holder">
-                {canSeeExperimentsByOthers && (
+                {canSeeExperimentsByOthers ? (
                   <ViewToggle
                     includeClient={this.state.includeClient}
                     onToggle={this.onToggleIncludeClient}
                   />
-                )}
+                ) : null}
               </div>
               <div className="projects-show-archived-holder">
                 <FilterCheckbox
@@ -216,7 +216,7 @@ const ProjectsPage = makePageable(
                   onClick={this.toggleArchived}
                 />
               </div>
-              {this.props.data && <PagingBlock {...this.props} />}
+              {this.props.data ? <PagingBlock {...this.props} /> : null}
             </div>
             <Loading
               loading={!this.props.data}

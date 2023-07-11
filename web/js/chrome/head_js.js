@@ -22,6 +22,6 @@ const headCode = (getConstants) => {
 
 export const {INIT_CSP_ERROR_LOCATION} = headCode(true);
 
-const funcString = headCode.toString().replace(/(\r\n|\n|\r)/gmu, "");
+const funcString = headCode.toString().replace(/(?:\r\n|\n|\r)/gmu, "");
 const funcName = "_SIGOPT_INIT_CODE";
 export const headCodeString = `var ${funcName} = ${funcString};${funcName}();`;

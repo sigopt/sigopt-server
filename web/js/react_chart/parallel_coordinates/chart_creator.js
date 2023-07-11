@@ -124,7 +124,7 @@ const adjustLogScaleDimension = function (
   for (let i = 1; i < n; i += 1) {
     const v = min + i * diff;
     dimension.tickvals.push(v);
-    dimension.ticktext.push(Math.pow(10, v));
+    dimension.ticktext.push(10 ** v);
   }
   dimension.ticktext = _.map(dimension.ticktext, (x) =>
     x.toExponential(fractionDigits),

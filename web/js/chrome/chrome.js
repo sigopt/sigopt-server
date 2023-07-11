@@ -127,7 +127,7 @@ export default class Chrome extends Component {
         <div className="content" data-show-sidebar={this.props.showSidebarNav}>
           <div className="nav-background">{nav}</div>
           <div id="page-container">
-            {this.props.canPopSession && (
+            {this.props.canPopSession ? (
               <SessionPopper
                 csrfToken={this.props.csrfToken}
                 currentClient={this.props.currentClient}
@@ -135,7 +135,7 @@ export default class Chrome extends Component {
                 experiment={this.props.experiment}
                 guestClientToken={this.props.guestClientToken}
               />
-            )}
+            ) : null}
             {isHome ? <NewClientBanner /> : null}
             <div id="flash-box" />
             {contentHolder}

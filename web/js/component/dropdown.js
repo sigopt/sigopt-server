@@ -96,14 +96,14 @@ export class Dropdown extends React.Component {
         in Firefox the `float: right` element needs to come first, otherwise the
         alignment is all broken
         */}
-        {this.props.caret && (
+        {this.props.caret ? (
           <div style={{float: "right", marginLeft: "4px"}}>
             <span className="caret" />
           </div>
-        )}
-        {this.props.label && (
+        ) : null}
+        {this.props.label ? (
           <span className="dropdown-btn-label">{this.props.label}</span>
-        )}
+        ) : null}
         <span className="sr-only">Toggle Dropdown</span>
       </button>
     );

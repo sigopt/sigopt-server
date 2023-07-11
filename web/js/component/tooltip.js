@@ -31,7 +31,7 @@ class Tooltip extends React.Component {
         <span className="tooltip-trigger">
           <CircleQuestionGlyph />
         </span>
-        {this.props.iconFirst && this.props.children}
+        {this.props.iconFirst ? this.props.children : null}
       </CustomTooltip>
     );
   }

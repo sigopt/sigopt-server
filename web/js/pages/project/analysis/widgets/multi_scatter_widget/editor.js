@@ -37,8 +37,8 @@ const UnconnectedMultiScatterWidgetEditor = ({
 }) => {
   const {state} = initialWidgetData;
   const [title, setTitle] = React.useState(initialWidgetData.title);
-  const [xDimKeys, setxDimKeys] = React.useState(state.xDimKeys);
-  const [yDimKeys, setyDimKeys] = React.useState(state.yDimKeys);
+  const [xDimKeys, setXDimKeys] = React.useState(state.xDimKeys);
+  const [yDimKeys, setYDimKeys] = React.useState(state.yDimKeys);
   const [colorState, setColorState] = React.useState(state.colorState);
 
   React.useEffect(() => {
@@ -64,7 +64,7 @@ const UnconnectedMultiScatterWidgetEditor = ({
         <MultiDimensionSelect
           dims={dims}
           selectedDims={yDimKeys}
-          setSelectedDims={setyDimKeys}
+          setSelectedDims={setYDimKeys}
         />
       </div>
       <div>
@@ -72,7 +72,7 @@ const UnconnectedMultiScatterWidgetEditor = ({
         <MultiDimensionSelect
           dims={dims}
           selectedDims={xDimKeys}
-          setSelectedDims={setxDimKeys}
+          setSelectedDims={setXDimKeys}
         />
       </div>
       <div>

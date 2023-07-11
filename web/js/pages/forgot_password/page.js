@@ -109,7 +109,7 @@ class ForgotPasswordPage extends React.Component {
   render() {
     return (
       <Page title="Forgot Password">
-        {this.props.canReset && <ResetPasswordForm {...this.props} />}
+        {this.props.canReset ? <ResetPasswordForm {...this.props} /> : null}
         {!this.props.canReset && (
           <p>
             Your administrator has not enabled password reset. Please contact

@@ -139,7 +139,7 @@ export class MembershipTableRow extends React.Component {
         )}
         data-id={this.props.userRelation.email}
       >
-        {this.props.renderName && (
+        {this.props.renderName ? (
           <td>
             {link ? (
               <a className="user-detail-link" href={link}>
@@ -149,7 +149,7 @@ export class MembershipTableRow extends React.Component {
               this.getName()
             )}
           </td>
-        )}
+        ) : null}
         <td>{this.props.userRelation.email}</td>
         <td>{this.props.userRelation.owner ? "Owner" : "Member"}</td>
         <td>{renderTeams()}</td>

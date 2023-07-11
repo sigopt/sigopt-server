@@ -38,7 +38,7 @@ const InputGroup = (props) => (
 
 const Control = (props) => (
   <div className="permission-control">
-    {props.label && <label>{props.label}</label>}
+    {props.label ? <label>{props.label}</label> : null}
     {props.children}
   </div>
 );
@@ -231,7 +231,7 @@ class SignupPermissionsEditor extends React.Component {
           onChange={() => this._updateField({allowSignupLink: true})}
           {...this.state}
         />
-        {this.state.allowSignupLink && (
+        {this.state.allowSignupLink ? (
           <InputGroup title="Sign Up Link">
             <p>
               Generate a secret link that will allow users to sign up for{" "}
@@ -245,7 +245,7 @@ class SignupPermissionsEditor extends React.Component {
               onClientSelect={this.onClientSelect}
               signupClient={this.state.signupClient}
             />
-            {this.state.allowSignupLink && (
+            {this.state.allowSignupLink ? (
               <ReadOnlyControl
                 label="Secret Sign Up Link"
                 value={
@@ -262,12 +262,12 @@ class SignupPermissionsEditor extends React.Component {
                   token={this.props.signupToken}
                 />
               </ReadOnlyControl>
-            )}
+            ) : null}
           </InputGroup>
-        )}
-        {this.state.error && (
+        ) : null}
+        {this.state.error ? (
           <div className="alert alert-danger">{this.state.error.message}</div>
-        )}
+        ) : null}
         <ActionButton
           className="save-button"
           disabled={!this.state.needsSave}
@@ -458,8 +458,9 @@ class OrganizationUserManagementPage extends React.Component {
           <button
             className="btn btn-primary toggle-button"
             onClick={
-              this._createInviteModal.current &&
-              this._createInviteModal.current.show
+              this._createInviteModal.current
+                ? this._createInviteModal.current.show
+                : null
             }
             type="button"
           >
@@ -529,7 +530,7 @@ class OrganizationUserManagementPage extends React.Component {
             userRelationMap={memberships}
           />
         </div>
-        {this.props.canInviteOwners && (
+        {this.props.canInviteOwners ? (
           <div className="permissions-section">
             <h3>Permissions</h3>
             <SignupPermissionsEditor
@@ -544,7 +545,7 @@ class OrganizationUserManagementPage extends React.Component {
               signupToken={this.props.signupToken}
             />
           </div>
-        )}
+        ) : null}
       </div>
     );
   }

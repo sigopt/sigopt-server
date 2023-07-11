@@ -190,8 +190,8 @@ export const RunsUsageTable = makePageable(
             >
               Name
             </Header>
-            {isUsersTable && userSpecificHeaders.numTeamsHeader}
-            {isTeamsTable && teamSpecificHeaders.numUsersHeader}
+            {isUsersTable ? userSpecificHeaders.numTeamsHeader : null}
+            {isTeamsTable ? teamSpecificHeaders.numUsersHeader : null}
             {_.map(this.props.timePeriods, (timePeriod, i) => {
               const sortKey = `timePeriods.${timePeriod.label}.count`;
               let borderClass = "";
@@ -216,7 +216,7 @@ export const RunsUsageTable = makePageable(
                 </Header>
               );
             })}
-            {isUsersTable && userSpecificHeaders.lastRunHeader}
+            {isUsersTable ? userSpecificHeaders.lastRunHeader : null}
           </tr>
         </thead>
       );
@@ -227,8 +227,8 @@ export const RunsUsageTable = makePageable(
             {this.props.data && this.props.data.length === 0
               ? "There aren't any!"
               : null}
-            {isUsersTable && _.map(this.props.data, this.renderUserRow)}
-            {isTeamsTable && _.map(this.props.data, this.renderTeamRow)}
+            {isUsersTable ? _.map(this.props.data, this.renderUserRow) : null}
+            {isTeamsTable ? _.map(this.props.data, this.renderTeamRow) : null}
           </PagingTable>
           <PagingBlock {...this.props} />
         </div>

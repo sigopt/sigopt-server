@@ -56,42 +56,37 @@ export default class TokenInfoPage extends React.Component {
     return (
       <Page loggedIn={true} title="API Tokens" className="token-info-page">
         <DataBlock>
-          {this.props.client && canSwitchTeams && (
+          {this.props.client && canSwitchTeams ? (
             <BlockContent label="Team">
               <ReadOnlyInput name="team-name" value={this.props.client.name} />
             </BlockContent>
-          )}
-          {this.props.client && (
-            /*
-              Using Client instead of Team here since the API docs
-              (https://docs.sigopt.com/core-module-api-references/api-objects) says Client, so from the user perspective the id
-              is more a Client ID than a Team ID
-            */
+          ) : null}
+          {this.props.client ? (
             <BlockContent label="Client ID">
               <ReadOnlyInput name="client-id" value={this.props.client.id} />
             </BlockContent>
-          )}
-          {this.props.user && (
+          ) : null}
+          {this.props.user ? (
             <BlockContent label="User ID">
               <ReadOnlyInput value={this.props.user.id} />
             </BlockContent>
-          )}
-          {this.props.clientToken && (
+          ) : null}
+          {this.props.clientToken ? (
             <BlockContent label="API Token">
               <ReadOnlyInput
                 name="api-token"
                 value={this.props.clientToken.token}
               />
             </BlockContent>
-          )}
-          {this.props.developmentToken && (
+          ) : null}
+          {this.props.developmentToken ? (
             <BlockContent label="Development Token">
               <ReadOnlyInput
                 name="dev-token"
                 value={this.props.developmentToken}
               />
             </BlockContent>
-          )}
+          ) : null}
           <div className="api-token-links">
             <div className="btn-holder">
               <a className="btn btn-white-border" href="/tokens/manage">

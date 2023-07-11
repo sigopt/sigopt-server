@@ -155,7 +155,7 @@ export class LocalRunsTable extends Component {
           </button>
         </div>
         <div className="run-table noGridDrag">
-          {this.state.columnDefs && (
+          {this.state.columnDefs ? (
             <LocalAgTable
               context={{
                 tags: tags,
@@ -172,7 +172,7 @@ export class LocalRunsTable extends Component {
               ref={this.state.tableRef}
               onGridReady={this.onGridReady}
             />
-          )}
+          ) : null}
         </div>
       </div>
     );

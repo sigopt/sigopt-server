@@ -60,7 +60,7 @@ export default ({
     : {};
   const clientSideStyleLoaders = [
     {
-      test: /\.(css|less)$/u,
+      test: /\.(?:css|less)$/u,
       use: ["null-loader", MiniCssExtractPlugin.loader, "css-loader"],
     },
     {

@@ -22,10 +22,10 @@ export default (props) => {
       )}
     >
       <div className="text-holder">
-        {props.guestClientToken && (
+        {props.guestClientToken ? (
           <>
             <p>You are currently browsing with a guest session.</p>
-            {props.guestClientToken.training_run && (
+            {props.guestClientToken.training_run ? (
               <p>
                 You have read access to{" "}
                 <a href={`/run/${props.guestClientToken.training_run}`}>
@@ -33,8 +33,8 @@ export default (props) => {
                 </a>
                 {""}.
               </p>
-            )}
-            {props.guestClientToken.experiment && (
+            ) : null}
+            {props.guestClientToken.experiment ? (
               <p>
                 You have read access to{" "}
                 <a href={`/experiment/${props.guestClientToken.experiment}`}>
@@ -42,9 +42,9 @@ export default (props) => {
                 </a>
                 {""}.
               </p>
-            )}
+            ) : null}
           </>
-        )}
+        ) : null}
         {!props.guestClientToken && (
           <p>You are currently logged in as {identity}</p>
         )}

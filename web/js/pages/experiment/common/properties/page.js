@@ -134,22 +134,22 @@ export default class extends React.Component {
             </Tooltip>
           </a>
           {!this.props.isAiExperiment &&
-            !this.props.isGuest &&
-            this.props.canEdit && (
-              <span>
-                <DuplicateButton
-                  alertBroker={this.props.alertBroker}
-                  className="btn btn-secondary btn-md"
-                  experiment={this.state.experiment}
-                  loginState={this.props.loginState}
-                />
-              </span>
-            )}
-          {this.props.canEdit && (
+          !this.props.isGuest &&
+          this.props.canEdit ? (
+            <span>
+              <DuplicateButton
+                alertBroker={this.props.alertBroker}
+                className="btn btn-secondary btn-md"
+                experiment={this.state.experiment}
+                loginState={this.props.loginState}
+              />
+            </span>
+          ) : null}
+          {this.props.canEdit ? (
             <a className="btn btn-danger" onClick={this.archiveExperiment}>
               Archive Experiment
             </a>
-          )}
+          ) : null}
         </div>
       </ExperimentPage>
     );

@@ -59,86 +59,98 @@ class AxisSelector extends React.Component {
 
     return (
       <Dropdown buttonClassName="btn btn-default" label={this.props.selected}>
-        {showParameters && <DropdownHeader>Parameters</DropdownHeader>}
-        {showParameters &&
-          _.map(experiment.parameters, (p) => (
-            <DropdownItem key={p.name}>
-              <a
-                onClick={() => this.props.onSelect(p.name, AxisTypes.PARAMETER)}
-              >
-                {p.name}
-              </a>
-            </DropdownItem>
-          ))}
-        {showOptimizedMetrics && (
+        {showParameters ? <DropdownHeader>Parameters</DropdownHeader> : null}
+        {showParameters
+          ? _.map(experiment.parameters, (p) => (
+              <DropdownItem key={p.name}>
+                <a
+                  onClick={() =>
+                    this.props.onSelect(p.name, AxisTypes.PARAMETER)
+                  }
+                >
+                  {p.name}
+                </a>
+              </DropdownItem>
+            ))
+          : null}
+        {showOptimizedMetrics ? (
           <DropdownHeader>Optimized Metrics</DropdownHeader>
-        )}
-        {showOptimizedMetrics &&
-          _.map(optimizedMetricKeys, (metricKey) => (
-            <DropdownItem key={metricKey || ""}>
-              <a
-                onClick={() =>
-                  this.props.onSelect(metricKey, AxisTypes.OPTIMIZED_METRIC)
-                }
-              >
-                {metricKey}
-              </a>
-            </DropdownItem>
-          ))}
-        {showConstrainedMetrics && (
+        ) : null}
+        {showOptimizedMetrics
+          ? _.map(optimizedMetricKeys, (metricKey) => (
+              <DropdownItem key={metricKey || ""}>
+                <a
+                  onClick={() =>
+                    this.props.onSelect(metricKey, AxisTypes.OPTIMIZED_METRIC)
+                  }
+                >
+                  {metricKey}
+                </a>
+              </DropdownItem>
+            ))
+          : null}
+        {showConstrainedMetrics ? (
           <DropdownHeader>Constrained Metrics</DropdownHeader>
-        )}
-        {showConstrainedMetrics &&
-          _.map(constrainedMetricKeys, (metricKey) => (
-            <DropdownItem key={metricKey || ""}>
-              <a
-                onClick={() =>
-                  this.props.onSelect(metricKey, AxisTypes.CONSTRAINED_METRIC)
-                }
-              >
-                {metricKey}
-              </a>
-            </DropdownItem>
-          ))}
-        {showStoredMetrics && <DropdownHeader>Stored Metrics</DropdownHeader>}
-        {showStoredMetrics &&
-          _.map(storedMetricKeys, (metricKey) => (
-            <DropdownItem key={metricKey || ""}>
-              <a
-                onClick={() =>
-                  this.props.onSelect(metricKey, AxisTypes.STORED_METRIC)
-                }
-              >
-                {metricKey}
-              </a>
-            </DropdownItem>
-          ))}
-        {showConditionals && <DropdownHeader>Conditionals</DropdownHeader>}
-        {showConditionals &&
-          _.map(experiment.conditionals, (c) => (
-            <DropdownItem key={c.name}>
-              <a
-                onClick={() =>
-                  this.props.onSelect(c.name, AxisTypes.CONDITIONAL)
-                }
-              >
-                {c.name}
-              </a>
-            </DropdownItem>
-          ))}
-        {showMetadata && <DropdownHeader>Metadata</DropdownHeader>}
-        {showMetadata &&
-          _.map(metadataKeys, (metadataKey) => (
-            <DropdownItem key={metadataKey || ""}>
-              <a
-                onClick={() =>
-                  this.props.onSelect(metadataKey, AxisTypes.METADATA)
-                }
-              >
-                {metadataKey}
-              </a>
-            </DropdownItem>
-          ))}
+        ) : null}
+        {showConstrainedMetrics
+          ? _.map(constrainedMetricKeys, (metricKey) => (
+              <DropdownItem key={metricKey || ""}>
+                <a
+                  onClick={() =>
+                    this.props.onSelect(metricKey, AxisTypes.CONSTRAINED_METRIC)
+                  }
+                >
+                  {metricKey}
+                </a>
+              </DropdownItem>
+            ))
+          : null}
+        {showStoredMetrics ? (
+          <DropdownHeader>Stored Metrics</DropdownHeader>
+        ) : null}
+        {showStoredMetrics
+          ? _.map(storedMetricKeys, (metricKey) => (
+              <DropdownItem key={metricKey || ""}>
+                <a
+                  onClick={() =>
+                    this.props.onSelect(metricKey, AxisTypes.STORED_METRIC)
+                  }
+                >
+                  {metricKey}
+                </a>
+              </DropdownItem>
+            ))
+          : null}
+        {showConditionals ? (
+          <DropdownHeader>Conditionals</DropdownHeader>
+        ) : null}
+        {showConditionals
+          ? _.map(experiment.conditionals, (c) => (
+              <DropdownItem key={c.name}>
+                <a
+                  onClick={() =>
+                    this.props.onSelect(c.name, AxisTypes.CONDITIONAL)
+                  }
+                >
+                  {c.name}
+                </a>
+              </DropdownItem>
+            ))
+          : null}
+        {showMetadata ? <DropdownHeader>Metadata</DropdownHeader> : null}
+        {showMetadata
+          ? _.map(metadataKeys, (metadataKey) => (
+              <DropdownItem key={metadataKey || ""}>
+                <a
+                  onClick={() =>
+                    this.props.onSelect(metadataKey, AxisTypes.METADATA)
+                  }
+                >
+                  {metadataKey}
+                </a>
+              </DropdownItem>
+            ))
+          : null}
       </Dropdown>
     );
   }

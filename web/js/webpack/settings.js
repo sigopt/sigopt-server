@@ -37,7 +37,7 @@ export default (env = {}) =>
     if (!publicPath.endsWith("/")) {
       publicPath += "/";
     }
-    const assetRegex = /\.(eot|gif|jpe?g|ico|pdf|png|svg|ttf|woff2?)$/u;
+    const assetRegex = /\.(?:eot|gif|jpe?g|ico|pdf|png|svg|ttf|woff2?)$/u;
     const assetLoader = (outputPath) => ({
       test: assetRegex,
       use: [
@@ -71,10 +71,10 @@ export default (env = {}) =>
     });
     const rawLoader = {
       include: webDir,
-      test: /\.(sql|txt)$/u,
+      test: /\.(?:sql|txt)$/u,
       use: "raw-loader",
     };
-    return success({
+    success({
       assetLoader,
       assetRegex,
       babelLoader,
@@ -94,4 +94,5 @@ export default (env = {}) =>
       webArtifactsDir,
       webDir,
     });
+    return;
   });

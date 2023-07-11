@@ -52,6 +52,7 @@ export default forwardRef((props, ref) => {
     return [dataList, initCheckList];
   };
   const dataAndCheckList = setDataAndCheckList();
+  // eslint-disable-next-line react/hook-use-state
   const [allData] = useState(dataAndCheckList[0]);
   const [checkList, setCheckList] = useState(dataAndCheckList[1]);
 

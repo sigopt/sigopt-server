@@ -63,12 +63,12 @@ const ui = {
     isDefinedAndNotNull(value) ? value.toString() : "",
 
   validNumberInput: (value) =>
-    value.match(/^-?[0-9]*\.?[0-9]*([eE]-?[0-9]*)?$/u),
+    value.match(/^-?[0-9]*\.?[0-9]*(?:[eE]-?[0-9]*)?$/u),
 
   validPositiveNumberInput: (value) =>
-    value.match(/^[0-9]*\.?[0-9]*([eE]-?[0-9]*)?$/u),
+    value.match(/^[0-9]*\.?[0-9]*(?:[eE]-?[0-9]*)?$/u),
 
-  validIntegerInput: (value) => value.match(/^-?[0-9]*([eE][0-9]*)?$/u),
+  validIntegerInput: (value) => value.match(/^-?[0-9]*(?:[eE][0-9]*)?$/u),
 
   renderParamValue: function (parameter, paramValue, round) {
     if (typeof paramValue === "string") {

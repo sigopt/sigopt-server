@@ -206,12 +206,12 @@ export default class HomePage extends Component {
     const pageTitle = "Home";
     return (
       <Page loggedIn={true} title={pageTitle} className="home experiment-list">
-        {this.props.currentUser && this.state.showWelcome && (
+        {this.props.currentUser && this.state.showWelcome ? (
           <Welcome
             hide={this.hideWelcome}
             showRunsContent={this.props.showRunsContent}
           />
-        )}
+        ) : null}
         <h2>Recent Activity</h2>
         {_.isEmpty(this.props.recentActivity) ? (
           <div className="recent-activity">

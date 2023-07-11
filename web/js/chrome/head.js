@@ -55,9 +55,9 @@ export default class extends React.Component {
           name="google-site-verification"
           content="D4PdqGWKVAygfwH93bQd8aAKNzEwHQPo815_FyZfppM"
         />
-        {this.props.forbidSearchEngineIndex && (
+        {this.props.forbidSearchEngineIndex ? (
           <meta name="robots" content="noindex" />
-        )}
+        ) : null}
 
         <script
           id="init-code"

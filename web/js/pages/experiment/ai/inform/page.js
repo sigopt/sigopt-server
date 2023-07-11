@@ -180,7 +180,7 @@ class InformOptimizerPage extends Component {
               />
             </Loading>
           </div>
-          {this.props.canEdit && (
+          {this.props.canEdit ? (
             <button
               className="btn btn-sm btn-primary queued-suggestion-button"
               onClick={this.newQueuedParamsModal}
@@ -188,7 +188,7 @@ class InformOptimizerPage extends Component {
             >
               Queue Parameters
             </button>
-          )}
+          ) : null}
         </div>
         <div className="add-runs-section">
           <h2>Add Completed Runs</h2>

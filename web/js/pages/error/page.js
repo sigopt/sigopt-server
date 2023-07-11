@@ -29,16 +29,16 @@ class ErrorPage extends React.Component {
         400: (
           <span>
             <h1>There was something wrong with your request.</h1>
-            {this.props.errorMsg && <p>{this.props.errorMsg}</p>}
+            {this.props.errorMsg ? <p>{this.props.errorMsg}</p> : null}
           </span>
         ),
         404: (
           <span>
             <h1>We couldn&rsquo;t find the page you were looking for.</h1>
-            {this.props.errorMsg && <p>{this.props.errorMsg}</p>}
-            {this.props.loggedIn && (
+            {this.props.errorMsg ? <p>{this.props.errorMsg}</p> : null}
+            {this.props.loggedIn ? (
               <p>These links below might help you get back on your way.</p>
-            )}
+            ) : null}
             {!this.props.loggedIn && (
               <p>
                 You may need to <a href="/login">log in</a> to view certain
@@ -58,7 +58,7 @@ class ErrorPage extends React.Component {
         <div className="container error-container">
           <div className="headline">
             {this.header(this.props.status)}
-            {this.props.showTestError && (
+            {this.props.showTestError ? (
               <div>
                 <a
                   onClick={() =>
@@ -70,7 +70,7 @@ class ErrorPage extends React.Component {
                   Trigger test error
                 </a>
               </div>
-            )}
+            ) : null}
             <img className="squirrel" src={imageSrc} alt="Error Squirrel" />
           </div>
           <div className="row actions-row">

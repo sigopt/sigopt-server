@@ -65,13 +65,13 @@ const ActionView = ({action, userDataSources}) => (
         )}
         <AbsoluteTime time={action.time} /> &bull;{" "}
         <a href={getLinkForAction(action)}>{action.object.name}</a>
-        {action.by && (
+        {action.by ? (
           <>
             {" "}
             &bull;{" "}
             <AsynchronousUserName dataSource={userDataSources.get(action.by)} />
           </>
-        )}
+        ) : null}
       </div>
     </div>
   </div>

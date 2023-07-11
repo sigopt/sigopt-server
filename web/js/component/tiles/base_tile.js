@@ -31,9 +31,9 @@ class BaseTile extends React.Component {
           <div className="info-tile-content">
             <div className="header">
               <Spinner size={6} loading={this.props.loading} />
-              {this.props.error && (
+              {this.props.error ? (
                 <TriangleExclamationGlyph className="alert-glyph" />
-              )}
+              ) : null}
               {this.props.tooltip ? (
                 <Tooltip tooltip={this.props.tooltip}>
                   {this.props.header}

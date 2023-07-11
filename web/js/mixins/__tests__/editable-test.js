@@ -30,9 +30,9 @@ const MixinImpl = createReactClass({
   render: function () {
     return (
       <div>
-        {this.state.editing && <div className="editing" />}
-        {this.state.submitting && <div className="submitting" />}
-        {this.state.submitted && <div className="submitted" />}
+        {this.state.editing ? <div className="editing" /> : null}
+        {this.state.submitting ? <div className="submitting" /> : null}
+        {this.state.submitted ? <div className="submitted" /> : null}
       </div>
     );
   },
@@ -54,9 +54,9 @@ const HOCImpl = makeEditableComponent(
     render() {
       return (
         <div>
-          {this.props.editing && <div className="editing" />}
-          {this.props.submitting && <div className="submitting" />}
-          {this.props.submitted && <div className="submitted" />}
+          {this.props.editing ? <div className="editing" /> : null}
+          {this.props.submitting ? <div className="submitting" /> : null}
+          {this.props.submitted ? <div className="submitted" /> : null}
         </div>
       );
     }

@@ -338,12 +338,12 @@ class RunsDashboard extends Component {
                   openBigWidgetModal={this.openBigWidgetModal}
                   openEditor={this.editWidget}
                 >
-                  {shouldRender && (
+                  {shouldRender ? (
                     <WidgetComponent
                       widget={widget}
                       updateWidget={this.updateWidgetState.bind(null, id)}
                     />
-                  )}
+                  ) : null}
                 </ConnectedWidgetContainer>
               </div>
             );

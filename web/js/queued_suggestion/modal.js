@@ -176,7 +176,7 @@ export default class QueuedSuggestionModal extends Component {
             <div className="model-evaluation-section">
               {this.state.creating ? (
                 <div className="model-evaluation-component">
-                  {this.props.experiment.tasks && (
+                  {this.props.experiment.tasks ? (
                     <div className="task-section">
                       <div className="display-row">
                         <TaskView
@@ -188,7 +188,7 @@ export default class QueuedSuggestionModal extends Component {
                         />
                       </div>
                     </div>
-                  )}
+                  ) : null}
                   <div className="assignments-section">
                     <div className="display-row">
                       <AssignmentsTable

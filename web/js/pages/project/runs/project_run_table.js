@@ -62,7 +62,7 @@ class ProjectRunsTable extends Component {
     const expId = this.props.experiment ? this.props.experiment.id : null;
     return (
       <div className="run-table">
-        {this.state.store && (
+        {this.state.store ? (
           <Provider store={this.state.store}>
             <ConnectedFetcher experimentId={expId} />
             <ConnectedRunsTable
@@ -71,7 +71,7 @@ class ProjectRunsTable extends Component {
               organizationId={this.props.organizationId}
             />
           </Provider>
-        )}
+        ) : null}
       </div>
     );
   }

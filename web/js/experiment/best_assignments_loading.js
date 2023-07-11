@@ -29,7 +29,7 @@ export default function SatisfiesThresholdsLoading({
         <span className="no-best-values-info">
           <i>
             No observation(s) satisfy the thresholds yet.{" "}
-            {canEdit && (
+            {canEdit ? (
               <>
                 You can edit metric thresholds on the{" "}
                 <a href={ui.getExperimentUrl(experiment, "/properties")}>
@@ -37,7 +37,7 @@ export default function SatisfiesThresholdsLoading({
                 </a>
                 {""}.
               </>
-            )}
+            ) : null}
           </i>
         </span>
       }

@@ -104,7 +104,7 @@ class TokenDashboardPage extends React.Component {
             with this token will not receive intelligent suggestions, therefore
             it is unsuitable for use in production.
           </p>
-          {this.props.canShare && (
+          {this.props.canShare ? (
             <p>
               <b>Guest Tokens</b> are used to share experiment results with
               people who aren&rsquo;t on your team. When someone shares an
@@ -112,8 +112,8 @@ class TokenDashboardPage extends React.Component {
               experiment but they can&rsquo;t modify it or add any data. These
               tokens expire after 30 days.
             </p>
-          )}
-          {this.props.canShare && (
+          ) : null}
+          {this.props.canShare ? (
             <div className="generate-share-btn-holder">
               <TriggerModalButton
                 className="paging-button btn btn-primary btn-sm generate-share-btn"
@@ -126,7 +126,7 @@ class TokenDashboardPage extends React.Component {
                 />
               </TriggerModalButton>
             </div>
-          )}
+          ) : null}
         </div>
         <Loading loading={_.isEmpty(tokens)} empty={_.isEmpty(tokens)}>
           <table className="table table-hover">

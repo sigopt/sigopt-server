@@ -51,7 +51,6 @@ const HistoryTable = makePageable(
       super(...args);
       this.state = {
         sortKey: "id",
-        submitting: false,
       };
       this._observationModal = React.createRef();
     }
@@ -101,7 +100,7 @@ const HistoryTable = makePageable(
                   onSort={this.onSort}
                   parameters={parameters}
                   sortAscending={this.props.sortAscending}
-                  sortKey={this.state.sortKey}
+                  activeSortKey={this.state.sortKey}
                 />
               }
               {...this.props}
@@ -120,7 +119,7 @@ const HistoryTable = makePageable(
                   resource={observation}
                   showValues={true}
                   values={observation.values}
-                  taskCost={observation.task && observation.task.cost}
+                  taskCost={observation.task ? observation.task.cost : null}
                 />
               ))}
             </PagingTableContents>
