@@ -145,14 +145,9 @@
   "private": true,
   "repository": "https://github.com/sigopt/sigopt-server.git",
   "resolutions": {
-    "lodash.isequal": "^4.0.0",
-    "minimist": "^1.2.5",
-    "static-module": "^3.0.0"
+    "semver": "^7.5.4"
   },
   "scripts": {
     "test": "NODE_ENV=unit-testing TZ=UTC jest web/js/**"
-  },
-  "resolutions": {
-    "semver": "^7.5.4"
   }
 }
