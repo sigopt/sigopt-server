@@ -32,7 +32,7 @@ COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.j
 RUN ./scripts/compile/generate_routes.sh config/
 
 
-FROM ubuntu:jammy-20230308 AS test-runner-base
+FROM ubuntu:jammy-20230624 AS test-runner-base
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
@@ -55,6 +55,7 @@ RUN : \
       ca-certificates=* \
       curl=7.* \
       git=* \
+      libxslt1.1=1.1.* \
       lxde=* \
       pkg-config=* \
       python-is-python3=* \
@@ -99,13 +100,16 @@ WORKDIR /sigopt-server
 
 COPY Pipfile.lock /sigopt-server/Pipfile.lock
 ENV PIPENV_VENV_IN_PROJECT "1"
+ENV PIP_NO_BINARY lxml
+
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       build-essential=12.* \
       libxml2-dev=2.9.* \
+      libxslt1-dev=1.1.* \
       >/dev/null \
-  ; apt-mark auto build-essential libxml2-dev libxmlsec1-dev \
+  ; apt-mark auto build-essential libxml2-dev libxslt1-dev \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
   ; pipenv install --quiet --dev --ignore-pipfile \
   ; pipenv --clear \
@@ -116,7 +120,7 @@ RUN set -ex \
 ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
-  ; python -c 'import lxml' \
+  ; python -c 'import lxml, html5_parser' \
   ; :
 
 COPY src/protobuf/zigopt /sigopt-server/src/protobuf/zigopt
