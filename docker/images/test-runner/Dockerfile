@@ -80,7 +80,7 @@ RUN : \
   ; echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      google-chrome-stable=114.* \
+      google-chrome-stable=115.* \
       unzip=6.* \
   ; rm -rf /var/lib/apt/lists/* \
   ; curl -fSsL -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
