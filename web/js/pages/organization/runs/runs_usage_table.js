@@ -80,7 +80,7 @@ export const RunsUsageTable = makePageable(
             <a href={userURL}>{user.name}</a>
           </td>
           <td className="fixed-md-column right-align">
-            <Tooltip tooltip={`${teamNames.join(", ")}`}>
+            <Tooltip tooltip={teamNames.join(", ")}>
               {" "}
               {user.clients.length}{" "}
             </Tooltip>
