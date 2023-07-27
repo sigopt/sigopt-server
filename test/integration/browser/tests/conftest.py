@@ -130,7 +130,7 @@ def _driver(request, _session_driver):
 
 
 # TODO(SN-970): firefox and webkit button clicks are flaky, why?
-@pytest.fixture(name="playwright_browser", scope="session", params=["chrome"])
+@pytest.fixture(name="playwright_browser", scope="session", params=["chromium"])
 def fixture_playwright_browser(headless, config_broker, request):
   kwargs = {"headless": headless}
   if request.param == "chrome":
