@@ -1,6 +1,7 @@
 # Copyright © 2022 Intel Corporation
 #
 # SPDX-License-Identifier: Apache License 2.0
+import pytest
 import os
 from http import HTTPStatus
 
@@ -20,6 +21,7 @@ class TestRequestParsing(V1Base):
   def requires_api(self, api):
     pass
 
+  @pytest.mark.slow()
   def test_json_integer_dos_not_found(self, api_url):
     for _ in range(1000):
       response = request("POST", f"{api_url}/", data="9" * 2000000)
