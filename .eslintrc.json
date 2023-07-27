@@ -27,13 +27,7 @@
     "requireConfigFile": false,
     "sourceType": "module"
   },
-  "plugins": [
-    "babel",
-    "import",
-    "react",
-    "sonarjs",
-    "unused-imports"
-  ],
+  "plugins": ["babel", "import", "react", "sonarjs", "unused-imports"],
   "rules": {
     "array-bracket-newline": 0,
     "array-element-newline": 0,
@@ -51,22 +45,10 @@
     "babel/no-unused-expressions": 2,
     "babel/object-curly-spacing": 0,
     "babel/quotes": 0,
-    "babel/semi": [
-      2,
-      "always"
-    ],
+    "babel/semi": [2, "always"],
     "block-spacing": 0,
     "brace-style": 0,
-    "callback-return": [
-      2,
-      [
-        "callback",
-        "cb",
-        "next",
-        "success",
-        "error"
-      ]
-    ],
+    "callback-return": [2, ["callback", "cb", "next", "success", "error"]],
     "camelcase": 0,
     "capitalized-comments": 0,
     "class-methods-use-this": 0,
@@ -119,9 +101,7 @@
     "no-bitwise": [
       2,
       {
-        "allow": [
-          "^"
-        ]
+        "allow": ["^"]
       }
     ],
     "no-confusing-arrow": 0,
@@ -150,9 +130,7 @@
     "no-underscore-dangle": [
       2,
       {
-        "allow": [
-          "__html"
-        ],
+        "allow": ["__html"],
         "allowAfterThis": true
       }
     ],
@@ -165,10 +143,7 @@
         "varsIgnorePattern": "^unused$"
       }
     ],
-    "no-use-before-define": [
-      "error",
-      "nofunc"
-    ],
+    "no-use-before-define": ["error", "nofunc"],
     "no-useless-return": 0,
     "no-warning-comments": 0,
     "no-whitespace-before-property": 0,
@@ -196,18 +171,12 @@
     "react/forbid-prop-types": [
       2,
       {
-        "forbid": [
-          "any",
-          "array"
-        ]
+        "forbid": ["any", "array"]
       }
     ],
     "react/function-component-definition": 0,
     "react/hook-use-state": 2,
-    "react/jsx-boolean-value": [
-      2,
-      "always"
-    ],
+    "react/jsx-boolean-value": [2, "always"],
     "react/jsx-closing-bracket-location": 0,
     "react/jsx-closing-tag-location": 0,
     "react/jsx-curly-brace-presence": [
@@ -219,10 +188,7 @@
     ],
     "react/jsx-curly-newline": 0,
     "react/jsx-filename-extension": 0,
-    "react/jsx-fragments": [
-      2,
-      "syntax"
-    ],
+    "react/jsx-fragments": [2, "syntax"],
     "react/jsx-handler-names": 0,
     "react/jsx-indent": 0,
     "react/jsx-indent-props": 0,
@@ -309,10 +275,7 @@
     "space-before-function-paren": 0,
     "space-in-parens": 0,
     "space-infix-ops": 0,
-    "strict": [
-      2,
-      "never"
-    ],
+    "strict": [2, "never"],
     "unused-imports/no-unused-imports": 2,
     "valid-jsdoc": 0,
     "wrap-regex": 0,
