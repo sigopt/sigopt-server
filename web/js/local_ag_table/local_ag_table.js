@@ -7,22 +7,13 @@
 import _ from "underscore";
 import React from "react";
 import {AgGridReact} from "@ag-grid-community/react";
-/* eslint-disable import/named,no-unused-vars,unused-imports/no-unused-imports */
-import {
-  AllCommunityModules,
-  ColumnApi,
-  GridApi,
-  GridOptions,
-} from "@ag-grid-community/all-modules";
 
+import {allModules} from "../ag_grid";
 import {areSetsEqual} from "../utils";
 import {CellRenderers as frameworkComponents} from "./cell_renderers";
 
-/* eslint-enable import/named,no-unused-vars,unused-imports/no-unused-imports */
-
 const ROW_HEIGHT = 44;
 // Reference: https://www.ag-grid.com/javascript-grid-properties/
-/** @type {GridOptions} */
 const defaultGridOptions = {
   autoSizePadding: 25,
   floatingFiltersHeight: ROW_HEIGHT,
@@ -68,9 +59,7 @@ export class LocalAgTable extends React.Component {
     this.debouncedNotifyStateChanged = _.debounce(this.notifyStateChanged, 500);
 
     this.state = {
-      /** @type {ColumnApi} */
       columnApi: null,
-      /** @type {GridApi} */
       gridApi: null,
       gridOptions,
     };
@@ -182,7 +171,7 @@ export class LocalAgTable extends React.Component {
           <AgGridReact
             context={this.props.context}
             columnDefs={this.props.columnDefs}
-            modules={AllCommunityModules}
+            modules={allModules}
             onGridReady={this.onGridReady}
             quickFilter={this.props.quickFilter}
             getRowNodeId={this.getRowNodeId}

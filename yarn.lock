@@ -7,17 +7,7 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@ag-grid-community/all-modules@^22.1.1":
-  version "22.1.1"
-  resolved "https://registry.yarnpkg.com/@ag-grid-community/all-modules/-/all-modules-22.1.1.tgz#433411967f904eeb75cb04c5e6cb4452a58776a3"
-  integrity sha512-VBUbl3HRZoFKoQf/79Qq6vEUaAutF5voWq6vv6tPnDsojbCpGRrlPxAmL+Ypb39JE3oEYvW+Y/5ksKEGlab1kg==
-  dependencies:
-    "@ag-grid-community/client-side-row-model" "~22.1.1"
-    "@ag-grid-community/core" "~22.1.1"
-    "@ag-grid-community/csv-export" "~22.1.1"
-    "@ag-grid-community/infinite-row-model" "~22.1.1"
-
-"@ag-grid-community/client-side-row-model@~22.1.1":
+"@ag-grid-community/client-side-row-model@^22.1.1":
   version "22.1.1"
   resolved "https://registry.yarnpkg.com/@ag-grid-community/client-side-row-model/-/client-side-row-model-22.1.1.tgz#9ac111319559b19dfaf20ea158020cddc6848365"
   integrity sha512-lLqYuYHngb8pC5wSnBRYzszBDeTxRkz6TmxpVP8CHYM3QSqe2xUTp8KFkzO+RrlySB7uCCx1ym0bOR4vRkkaAw==
@@ -29,14 +19,14 @@
   resolved "https://registry.yarnpkg.com/@ag-grid-community/core/-/core-22.1.1.tgz#5b30fe9de4e309c92540dfb218ddb97db319d88a"
   integrity sha512-x9dLUnsIsa+3bsweYKM8UWN42b7i5FDMvGpabAlOS0jAcJRs6krZUBK8XyZwzCc2vELuoBQ6VrKG5RWCN2phjg==
 
-"@ag-grid-community/csv-export@~22.1.1":
+"@ag-grid-community/csv-export@^22.1.1":
   version "22.1.1"
   resolved "https://registry.yarnpkg.com/@ag-grid-community/csv-export/-/csv-export-22.1.1.tgz#fd8948302f5be0ee658ef7c256b5594c401be157"
   integrity sha512-x7BcFRVVwP8LWOpFqGv+Z7DP4RqDVnf+MwMeHAT2VeMDU9oHYS0Dr3tr5Z8XMEV0pQFWj79iwwC8wrvwXkG8Lg==
   dependencies:
     "@ag-grid-community/core" "~22.1.1"
 
-"@ag-grid-community/infinite-row-model@~22.1.1":
+"@ag-grid-community/infinite-row-model@^22.1.1":
   version "22.1.1"
   resolved "https://registry.yarnpkg.com/@ag-grid-community/infinite-row-model/-/infinite-row-model-22.1.1.tgz#db7fcc45014fd59edd167f1b869b4ee9fd4c598d"
   integrity sha512-GWSxNvqkrDsEsvMuB7Lq0Ucp9oWPejttAgAFOXLtWzDJGZ8M1ndv5OHAA4ubTm0z0VLU9q3Ysoc4pr19E600Og==
