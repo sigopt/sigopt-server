@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache License 2.0
 ARG NODE_MAJOR
+ARG PYTHON_MAJOR
+ARG PYTHON_MINOR
 
 
 FROM node:${NODE_MAJOR} AS test-routes
@@ -32,62 +34,18 @@ COPY webpack.config.script.babel.js /sigopt-server/webpack.config.script.babel.j
 RUN ./scripts/compile/generate_routes.sh config/
 
 
-FROM ubuntu:jammy-20230624 AS test-runner-base
-
-SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
-
-ENV DEBIAN_FRONTEND noninteractive
+# hadolint ignore=DL3006
+FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster AS test-runner-base
 
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
-  ; apt-get upgrade -yqq >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
-ENV LANG C
-
-ARG PYTHON_MAJOR
-ARG PYTHON_MINOR
-RUN : \
-  ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      build-essential=* \
       ca-certificates=* \
-      curl=7.* \
-      git=* \
-      libxslt1.1=1.1.* \
-      lxde=* \
-      pkg-config=* \
-      python-is-python3=* \
-      python3-dev="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
-      python3-minimal="${PYTHON_MAJOR}.${PYTHON_MINOR}.*" \
-      python3-pip=* \
+      curl=7.64.* \
+      procps=2:3.3.* \
       unzip=6.* \
-      x11vnc=* \
-      xvfb=* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
-  ; :
-
-ENV CHROMEDRIVER_VERSION "114.0.5735.90"
-
-RUN : \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests gnupg=2.2.* >/dev/null \
-  ; curl -fSs https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add \
-  ; apt-get purge -yqq --autoremove gnupg2 >/dev/null \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      google-chrome-stable=115.* \
-      unzip=6.* \
-  ; rm -rf /var/lib/apt/lists/* \
-  ; curl -fSsL -o /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
-  ; mkdir -p /tmp/chromedriver \
-  ; unzip /tmp/chromedriver.zip -d /tmp/chromedriver \
-  ; install /tmp/chromedriver/chromedriver /usr/local/bin/chromedriver \
-  ; rm -r /tmp/chromedriver \
   ; :
 
 ARG PROTOBUF_VERSION
@@ -98,29 +56,53 @@ RUN set -ex \
 
 WORKDIR /sigopt-server
 
+RUN set -ex \
+  ; apt-get update -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      gcc=4:8.3.* \
+      git=1:2.20.* \
+      libc6-dev=2.* \
+      libssl-dev=1.1.* \
+      libxml2-dev=2.9.* \
+      libxml2=2.9.* \
+      make=4.2.* \
+      pkg-config=0.29-* \
+      sqlite3=3.27.* \
+      >/dev/null \
+  ; rm -rf /var/lib/apt/lists/* \
+  ; :
+
 COPY Pipfile.lock /sigopt-server/Pipfile.lock
 ENV PIPENV_VENV_IN_PROJECT "1"
 ENV PIP_NO_BINARY lxml
 
 RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      build-essential=12.* \
-      libxml2-dev=2.9.* \
-      libxslt1-dev=1.1.* \
-      >/dev/null \
-  ; apt-mark auto build-essential libxml2-dev libxslt1-dev \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
   ; pipenv install --quiet --dev --ignore-pipfile \
   ; pipenv --clear \
-  ; apt-get autoremove -yqq \
-  ; rm -rf /var/lib/apt/lists/* \
   ; :
 
 ENV PATH "/sigopt-server/.venv/bin:$PATH"
 
 RUN set -ex \
-  ; python -c 'import lxml, html5_parser' \
+  ; python -c 'import inotify, lxml, numpy, html5_parser' \
+  ; :
+
+RUN set -ex \
+  ; playwright install chromium \
+  ; :
+
+RUN : \
+  ; apt-get update -yqq >/dev/null \
+  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+      chromium-driver=* \
+      chromium=* \
+      lxde=* \
+      x11vnc=* \
+      xauth=* \
+      xvfb=* \
+      >/dev/null \
+  ; rm -rf /var/lib/apt/lists/* \
   ; :
 
 COPY src/protobuf/zigopt /sigopt-server/src/protobuf/zigopt
