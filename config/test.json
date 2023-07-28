@@ -11,11 +11,7 @@
       }
     },
     "enabled": true,
-    "siblings": [
-      "Engineering",
-      "Platform",
-      "Research"
-    ]
+    "siblings": ["Engineering", "Platform", "Research"]
   },
   "db": {
     "password": "produser_password_for_development"

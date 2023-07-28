@@ -1,6 +1,8 @@
 {
   "dependencies": {
-    "@ag-grid-community/all-modules": "^22.1.1",
+    "@ag-grid-community/client-side-row-model": "^22.1.1",
+    "@ag-grid-community/csv-export": "^22.1.1",
+    "@ag-grid-community/infinite-row-model": "^22.1.1",
     "@ag-grid-community/react": "^22.1.1",
     "@apidevtools/swagger-parser": "^10.1.0",
     "@aws-sdk/client-s3": "^3.348.0",
