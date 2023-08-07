@@ -103,6 +103,7 @@ RUN : \
       xvfb=* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
+  ; ln -s /usr/bin/chromium /usr/bin/google-chrome \
   ; :
 
 COPY src/protobuf/zigopt /sigopt-server/src/protobuf/zigopt
