@@ -7537,9 +7537,9 @@ please-upgrade-node@^3.2.0:
     semver-compare "^1.0.0"
 
 plotly.js-strict-dist@^2.11.1:
-  version "2.25.1"
-  resolved "https://registry.yarnpkg.com/plotly.js-strict-dist/-/plotly.js-strict-dist-2.25.1.tgz#b80093d683b923d45b61ce01782d68a109a22aaf"
-  integrity sha512-XvqXrdW6xZYIwZySHf1n9Ir7g90JguADqOB2yokl9r9nAi/82OUC95vf1fm43n7RvFz90I4xV6+EYJKPhKnD/Q==
+  version "2.25.2"
+  resolved "https://registry.yarnpkg.com/plotly.js-strict-dist/-/plotly.js-strict-dist-2.25.2.tgz#4bf77c3c5d4ffc4739062e6ec3d418b2f48ee723"
+  integrity sha512-LvQTswko5OwR7MKcCtCsQI2XnYsrXm66gQwV3/6zY8rWcTj/OVdB6lHpWIWKI/C9zU39ZQZb/IgNqRcw9bQmjA==
 
 pluralize@^7.0.0:
   version "7.0.0"
