@@ -69,7 +69,7 @@ repos:
       - id: isort
         entry: ./pp isort
   - repo: https://github.com/pre-commit/mirrors-prettier.git
-    rev: "v3.0.1"
+    rev: "v3.0.2"
     hooks:
       - id: prettier
         additional_dependencies:
@@ -86,7 +86,7 @@ repos:
       - id: shellcheck
         args: ["--exclude", "SC1090,SC1091,SC2029", "-f", "gcc"]
   - repo: https://github.com/jendrikseipp/vulture.git
-    rev: "v2.8"
+    rev: "v2.9.1"
     hooks:
       - id: vulture
         entry: tools/dead-code/run_vulture.py
