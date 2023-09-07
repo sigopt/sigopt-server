@@ -26,7 +26,7 @@ def validate_user_email(email: Optional[str]) -> str:
 
 
 def validate_user_password(plaintext_password: str) -> str:
-  # TODO(SN-1105): This is not quite right. Really we should be comparing len(plaintext_password.encode('utf-8'))
+  # TODO: This is not quite right. Really we should be comparing len(plaintext_password.encode('utf-8'))
   # instead of len(plaintext_password), so that we are counting utf-8 encoded bytes, not characters.
   # However it's not a huge deal, it just means that if the byte length is > 72 then only the first 72 bytes are
   # used to check if the password is correct.

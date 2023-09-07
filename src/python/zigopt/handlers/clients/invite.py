@@ -63,7 +63,7 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
     if not organization:
       raise NotFoundError()
 
-    # TODO(SN-1085): More granular error messages here
+    # TODO: More granular error messages here
     if not self.services.invite_service.inviter_can_invite_to_client(
       inviter=self.auth.current_user,
       client=client,

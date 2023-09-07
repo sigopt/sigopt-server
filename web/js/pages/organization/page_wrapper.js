@@ -80,7 +80,7 @@ export default class OrganizationDashboardPage extends Component {
             </TabLink>
           </nav>
         </PageTitle>
-        {/* TODO(SN-1167): Make this a PageBody, will require some css tweaks */}
+        {/* TODO: Make this a PageBody, will require some css tweaks */}
         <section className="page-body">
           <div className="container-fluid">
             <div className="row">

@@ -368,7 +368,7 @@ class TestCreateExperiments(ExperimentsTestBase):
     assert meta["parameters"][1]["type"] == "double"
     meta["parameters"][1]["prior"] = prior
     experiment = connection.clients(client_id).experiments().create(**meta)
-    # @TODO(SN-1005): can update to dot-notation when prior exists in sigopt-python
+    # @TODO: can update to dot-notation when prior exists in sigopt-python
     parameter_json = experiment.parameters[1].to_json()
     assert "prior" in parameter_json
     created_prior = parameter_json["prior"]

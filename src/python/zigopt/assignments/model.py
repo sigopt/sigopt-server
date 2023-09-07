@@ -15,7 +15,7 @@ class MissingValueException(Exception):
 
 
 def make_experiment_assignment_value_array(has_assignments, parameters, vals=None, log_scale=False):
-  # TODO(SN-1069): This copy_protobuf was added for performance in the presence of
+  # TODO: This copy_protobuf was added for performance in the presence of
   # immutable protobufs. Is it still necessary?
   has_assignments = copy_protobuf(has_assignments)
   values_dict = has_assignments.assignments_map
@@ -73,7 +73,7 @@ class HasAssignmentsMap(Proxy):
       if parameter_conditions_satisfied(p, values_as_map)
     )
     if experiment.conditionals:
-      # TODO(SN-1070): This calls make_experiment_assignment_value_array again redundantly, which
+      # TODO: This calls make_experiment_assignment_value_array again redundantly, which
       # could be more efficient.
       assignments.update(self.get_conditional_assignments(experiment))
     return remove_nones_mapping(assignments)

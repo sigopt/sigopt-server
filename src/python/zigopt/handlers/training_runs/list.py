@@ -90,7 +90,7 @@ class Field:
       ("client",): (TrainingRun.client_id, Cast.ID),
       ("experiment",): (TrainingRun.experiment_id, Cast.ID),
       ("observation",): (TrainingRun.observation_id, Cast.ID),
-      # TODO(SN-1093): If we actually wanted to filter/sort by project correctly, we would need to turn
+      # TODO: If we actually wanted to filter/sort by project correctly, we would need to turn
       # the provided string reference ID into an int project ID
       # However, this endpoint is scoped to the project so this is kind of pointless
       # ("project",): TrainingRun.project_id,
@@ -101,7 +101,7 @@ class Field:
       ("finished",): (func.floor(func.extract("epoch", TrainingRun.completed)), Cast.INT),
       ("completed",): (func.floor(func.extract("epoch", TrainingRun.completed)), Cast.INT),
       ("deleted",): (TrainingRun.deleted, Cast.BOOL),
-      # TODO(SN-1094): Get the protobuf accessors working for these nested keys
+      # TODO: Get the protobuf accessors working for these nested keys
       ("assignments", key): (TrainingRun.training_run_data["a"][key], Cast.JSONB),
       ("favorite",): (TrainingRun.training_run_data["f"], Cast.BOOL),
       ("optimized_suggestion",): (
@@ -161,12 +161,12 @@ class Field:
       if operator_string == OPERATOR_EQ_STRING:
         return sqlalchemy_operator_contains
       raise InvalidValueError(f"Only the `{OPERATOR_EQ_STRING}` operator is supported for the `state` field")
-    # TODO(SN-1095): Allow comparing to None to find "unset" values?
-    # TODO(SN-1096): Do we need to support .has_key?
+    # TODO: Allow comparing to None to find "unset" values?
+    # TODO: Do we need to support .has_key?
     return STRING_TO_OPERATOR_DICT.get(operator_string)
 
 
-# TODO(SN-1097): Combine with ExperimentTrainingRunsDetailMultiHandler
+# TODO: Combine with ExperimentTrainingRunsDetailMultiHandler
 class BaseTrainingRunsDetailMultiHandler(Handler):
   Params = ImmutableStruct(
     "Params", ["filters", "paging", "base_sort_clause", "full_sort_clause", "sort_ascending", "search"]

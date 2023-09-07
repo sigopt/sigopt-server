@@ -289,7 +289,7 @@ def initialize_blueprint(app):
 
   #
   # Queued Suggestions
-  # TODO(SN-1068): other routes
+  # TODO: other routes
   #
   get_route(
     "/experiments/<int:experiment_id>/queued_suggestions/<int:queued_suggestion_id>",

@@ -180,7 +180,7 @@ class TestOptimizer(UnitTestBase):
     acceptable_solutions = optimizer.exclude_duplicate_suggestions(optimization_args, [], experiment)
     assert len(acceptable_solutions) == 0
 
-  # TODO(RTL-129): Make this test more extensive
+  # TODO: Make this test more extensive
   @flaky(max_runs=2)
   def test_exclude_duplicate_suggestions(self, services, experiment):
     optimizer = OptimizerService(services=Mock())

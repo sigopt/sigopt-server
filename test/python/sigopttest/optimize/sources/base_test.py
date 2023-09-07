@@ -184,7 +184,7 @@ class TestSourceFunctionality(UnitTestBase):
     best_new_suggestion = max(scored_new_suggestions, key=lambda x: x.score)
     assert all(os.score <= best_new_suggestion.score for os in scored_old_suggestions)
 
-  # TODO(RTL-130): implement a reranking strategy for search very soon
+  # TODO: implement a reranking strategy for search very soon
   def test_search_does_not_rerank_random_padding(self, services, experiment):
     source = SearchOptimizationSource(services, experiment)
     suggestions = self.sample_suggestions(services, experiment, 10)

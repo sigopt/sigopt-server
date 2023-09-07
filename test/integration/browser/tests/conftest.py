@@ -129,7 +129,7 @@ def _driver(request, _session_driver):
   cleanup_test(request.node, _session_driver.get_logs, SELENIUM_CRITICAL_LEVELS, _session_driver.save_screenshot)
 
 
-# TODO(SN-970): firefox and webkit button clicks are flaky, why?
+# TODO: firefox and webkit button clicks are flaky, why?
 @pytest.fixture(name="playwright_browser", scope="session", params=["chromium"])
 def fixture_playwright_browser(headless, config_broker, request):
   kwargs = {"headless": headless}

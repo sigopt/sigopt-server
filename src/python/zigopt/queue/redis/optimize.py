@@ -102,7 +102,7 @@ class RedisOptimizeQueueProvider(BaseRedisQueueProvider):
       if self._is_persisted_message_type(queue_message.message_type):
         redis_key = self._get_redis_key(queue_message.message_type, group_key)
         serialized_body = self._encode_serialized_body(queue_message.serialized_body)
-        # TODO(SN-1121): Could use mset here, but need `set` if we want to set an expiry_time
+        # TODO: Could use mset here, but need `set` if we want to set an expiry_time
         self.services.redis_service.set(
           redis_key,
           serialized_body,

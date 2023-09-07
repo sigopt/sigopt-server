@@ -24,7 +24,7 @@ class BaseInviteJsonBuilder(JsonBuilder):
   # (because it would allow them to skip email verification),
   # but if we expect the end user to manually provide the invite link to the invitee
   # we must include it.
-  # TODO(SN-1111): This should use email_verification_service
+  # TODO: This should use email_verification_service
   def _should_hide_invite_code(self) -> bool:
     require_email_verification = bool(self._config_broker.get("email.verify", default=True))
     email_enabled = bool(self._config_broker.get("email.enabled", default=True))

@@ -27,7 +27,7 @@ export class ScaleSelector extends React.Component {
   };
 
   render() {
-    // @TODO(SN-1008): can i pass in axis-type, aka parameter / metric / metadata
+    // @TODO: can i pass in axis-type, aka parameter / metric / metadata
     // to more accurately decide when to show?
     const showScaleToggle = _.chain(this.props.experiment.parameters)
       .filter((p) => p.transformation === ParameterTransformations.LOG)

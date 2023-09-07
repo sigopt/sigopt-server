@@ -169,7 +169,7 @@ const SubmittableSuggestionPage = makeSubmittableComponent(
       );
     };
 
-    // TODO(SN-1163): think about marking as "closed" instead of removing
+    // TODO: think about marking as "closed" instead of removing
     onCreateObservation = (observation) => {
       this._removeSuggestion({id: observation.suggestion});
       this.props.alertBroker.show(

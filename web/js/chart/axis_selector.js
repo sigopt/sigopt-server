@@ -14,7 +14,7 @@ import {AxisTypes} from "./constants";
 import {Dropdown, DropdownHeader, DropdownItem} from "../component/dropdown";
 import {NULL_METRIC_NAME} from "../constants";
 
-// TODO(SN-1149): what if there's only one parameter to select from?
+// TODO: what if there's only one parameter to select from?
 class AxisSelector extends React.Component {
   static propTypes = {
     experiment: schemas.Experiment.isRequired,

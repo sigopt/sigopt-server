@@ -116,7 +116,7 @@ class SourceCodeJsonBuilder(JsonBuilder):
     return None
 
 
-# TODO(SN-1112): Only used in MPM endpoints for now, can port over to
+# TODO: Only used in MPM endpoints for now, can port over to
 # existing training run endpoints after content is backfilled
 class TrainingRunJsonBuilder(JsonBuilder):
   # pylint: disable=too-many-public-methods

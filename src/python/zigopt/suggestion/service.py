@@ -60,7 +60,7 @@ class SuggestionService(Service):
 
     return self.get_suggestions_set_observations(objects)
 
-  # TODO(SN-1125): Rewrite this to be a join. Currently modified to throw a soft exception, so that
+  # TODO: Rewrite this to be a join. Currently modified to throw a soft exception, so that
   # we can diagnose if this was ever doing the wrong thing
   @generator_to_list
   def find_open_by_experiment(

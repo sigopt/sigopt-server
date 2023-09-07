@@ -29,7 +29,7 @@ class TestCreate(ExperimentBrowserTest):
     for select, objective_type in zip(objective_type_selects, ["minimize", "maximize"]):
       driver.set_select_option(select, objective_type)
 
-    # TODO(SN-1130): Test with multiple metrics
+    # TODO: Test with multiple metrics
     metric_name_inputs = driver.find_elements_by_css_selector("[placeholder='Metric Name']")
     for i, metric_input in enumerate(metric_name_inputs):
       metric_input.send_keys("Metric" + str(i))
@@ -87,7 +87,7 @@ class TestCreate(ExperimentBrowserTest):
 
     self.submit_experiment_create(driver)
 
-  @pytest.mark.skipif(True, reason="TODO(SN-1131): works in Firefox not Chrome")
+  @pytest.mark.skipif(True, reason="TODO: works in Firefox not Chrome")
   def test_create_with_conditionals(self, logged_in_driver, api_connection):
     # pylint: disable=too-many-locals
     driver = logged_in_driver
@@ -124,7 +124,7 @@ class TestCreate(ExperimentBrowserTest):
     assert match
     experiment_id = match.group(1)
 
-    # TODO(SN-1132): some of these conditions are empty, we will remove that feature
+    # TODO: some of these conditions are empty, we will remove that feature
     experiment = api_connection.experiments(experiment_id).fetch()
     (c0, c1) = sorted(experiment.conditionals, key=lambda c: c.name)
     assert c0.name == "c0"

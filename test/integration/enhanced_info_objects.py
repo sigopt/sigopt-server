@@ -46,8 +46,8 @@ class EnhancedInfoToken(Token):
 
 
 class EnhancedInfoTrainingRun(TrainingRun):
-  # TODO(SN-1133): Give datasets, logs and values better types, would require an ObjectOf
-  # TODO(SN-1001): some of these redefine types but it's unclear why
+  # TODO: Give datasets, logs and values better types, would require an ObjectOf
+  # TODO: some of these redefine types but it's unclear why
   datasets = Field(Assignments)
   favorite = Field(bool)
   logs = Field(Assignments)
@@ -55,7 +55,7 @@ class EnhancedInfoTrainingRun(TrainingRun):
   values = Field(Assignments)
 
 
-# TODO(SN-1002): already covered in `Progress` public object, but in process of forking
+# TODO: already covered in `Progress` public object, but in process of forking
 class EnhancedInfoRunsProgress(ApiObject):
   active_run_count = Field(int)
   finished_run_count = Field(int)
@@ -63,7 +63,7 @@ class EnhancedInfoRunsProgress(ApiObject):
   remaining_budget = Field(float)
 
 
-# TODO(SN-1003): after sigopt-python adds `AiExperiment` object, can inherit more cleanly
+# TODO: after sigopt-python adds `AiExperiment` object, can inherit more cleanly
 class EnhancedInfoAiExperiment(ApiObject):
   budget = Field(float)
   client = Field(str)

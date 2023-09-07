@@ -287,12 +287,12 @@ export default (listType, WrappedComponent) =>
         ? this.props.promiseApiClient.aiexperiments(experimentId)
         : this.props.promiseApiClient.experiments(experimentId);
 
-    // TODO(SN-1009): should this be batched?
+    // TODO: should this be batched?
     archiveSelectedExperiments = this._bulkAction((experimentId) =>
       this.getExperimentEndpoint(experimentId).delete(),
     );
 
-    // TODO(SN-1010): should this be batched?
+    // TODO: should this be batched?
     unarchiveSelectedExperiments = this._bulkAction((experimentId) =>
       this.getExperimentEndpoint(experimentId).update({state: "active"}),
     );

@@ -83,7 +83,7 @@ class ShareExperimentModal extends Component {
       return <Spinner position="absolute" />;
     }
 
-    // TODO(SN-1184): Is this the right host to use? If the user is behind a proxy
+    // TODO: Is this the right host to use? If the user is behind a proxy
     // this will not be the host they see
     const host = this.services.clientsideConfigBroker.get("address.app_url");
 

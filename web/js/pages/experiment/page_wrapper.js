@@ -246,7 +246,7 @@ class ExperimentPage extends Component {
         >
           {navLinks}
         </ExperimentTitle>
-        {/* TODO(SN-1164): Make this a PageBody, will require some css tweaks */}
+        {/* TODO: Make this a PageBody, will require some css tweaks */}
         <section className="page-body">
           <div className="container-fluid">
             <div className="row">

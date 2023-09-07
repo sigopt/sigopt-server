@@ -35,7 +35,7 @@ def recursive_copy_protobuf(v):
   return v
 
 
-# TODO(SN-1076): This may need to be turned into an actual FunctionElement,
+# TODO: This may need to be turned into an actual FunctionElement,
 # need to figure out string escaping though
 def JsonPath(*args):
   return "{" + ",".join(json.dumps(a) for a in args) + "}"
@@ -267,7 +267,7 @@ class _ProtobufColumnType(TypeDecorator):
             f"It is unsafe to compare fields with {operator_name} - descriptor is not terminal: {self._descriptor}"
           )
         if operator not in OPERATORS_FORBIDDING_DEFAULTS:
-          # TODO(SN-1078): These lists can certainly be expanded with new operators, but it is dangerous to apply or not
+          # TODO: These lists can certainly be expanded with new operators, but it is dangerous to apply or not
           # apply defaults without knowing what the operator is. So throw a NotImplementedError unless we know about the
           # operator. If you are adding a new operator here, think about whether it makes sense for the protobuf default
           # value to be used instead of NULL when the value is missing. If it is appropriate to make that replacement,

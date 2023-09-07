@@ -62,7 +62,7 @@ class Token(Base):
     if token_type == TokenType.GUEST:
       return GUEST_TOKEN_EXPIRY_SECONDS
     if token_type == TokenType.USER:
-      # TODO(SN-999): why is default for USER tokens to never expire? Seems wrong but
+      # TODO: why is default for USER tokens to never expire? Seems wrong but
       # probably doesn't matter since all USER tokens are now temporary which explicitly set ttl_seconds
       # so we never need to check the default
       return USER_TOKEN_EXPIRY_SECONDS if can_renew else None

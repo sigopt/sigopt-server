@@ -77,7 +77,7 @@ class BaseUsersCreateHandler(Handler):
       pending_client_id=None,
     )
 
-    # TODO(SN-1098): I believe all of these checks are no longer needed, since they are
+    # TODO: I believe all of these checks are no longer needed, since they are
     # checked in invite_service.invite_is_still_valid
     if verified_invite.membership_type == MembershipType.owner:
       is_owner = self.services.membership_service.user_is_owner_for_organization(
@@ -122,7 +122,7 @@ class BaseUsersCreateHandler(Handler):
     user_attributes,
     was_invited,
   ):
-    # TODO(SN-1099): Currently we're setting client and permission as one of the multiple that were created,
+    # TODO: Currently we're setting client and permission as one of the multiple that were created,
     # but we could do something more precise.
     membership: Membership | None = list_get(self.services.membership_service.find_by_user_id(user_id=user.id), 0)
     permission: Permission | None = napply(
@@ -173,7 +173,7 @@ class BaseUsersCreateHandler(Handler):
       for invite in unvalidated_invites
       if invite.invite_code == invite_code or (not self.services.email_verification_service.enabled)
     ]
-    # TODO(SN-1100): This doesn't handle multiple invite codes. We probably don't need to
+    # TODO: This doesn't handle multiple invite codes. We probably don't need to
     claimable_invite = list_get(claimable_invites, 0)
     if claimable_invite:
       if self.services.invite_service.invite_is_valid(claimable_invite):

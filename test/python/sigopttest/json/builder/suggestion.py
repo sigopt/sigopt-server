@@ -8,7 +8,7 @@ from zigopt.json.client_provided_data import client_provided_data_json
 from sigopttest.json.builder.test_base import VISIBLE_SUGGESTION_FIELDS, BuilderTestBase
 
 
-# TODO(SN-1006): should test CONDITIONAL_SUGGESTION_FIELDS
+# TODO: should test CONDITIONAL_SUGGESTION_FIELDS
 class TestsuggestionJsonBuilder(BuilderTestBase):
   @classmethod
   def check_visible_fields(cls, experiment, suggestion, suggestion_json):

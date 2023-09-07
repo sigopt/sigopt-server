@@ -5,7 +5,7 @@ from zigopt.common import *
 from zigopt.web_data.model import web_data_types_by_resource
 
 
-# TODO(SN-1042): Move to common * list and add tests
+# TODO: Move to common * list and add tests
 def assert_keys_match(dict1, dict2, max_depth):
   def _compare_keys(d1, d2, max_depth, current_depth):
     if current_depth >= max_depth:

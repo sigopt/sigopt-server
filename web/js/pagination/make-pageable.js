@@ -256,7 +256,7 @@ export default function makePageable(pageFetcher, WrappedComponent) {
       ) === 0;
 
     _calculateFarthestPage = (pageIndex, numPages, increment) => {
-      // TODO(SN-1175): Why are we calculating the ellipsis in two pages?
+      // TODO: Why are we calculating the ellipsis in two pages?
       const [showFirstEllipsis, showSecondEllipsis] = calculateEllipsisFlags(
         numPages,
         pageIndex,

@@ -132,7 +132,7 @@ class ExperimentParameterJsonBuilder(JsonBuilder):
         Prior.NORMAL: lambda p: NormalPriorJsonBuilder(p.normal_prior),
         Prior.BETA: lambda p: BetaPriorJsonBuilder(p.beta_prior),
       }
-      # TODO(SN-988): we probably want to know if we can't find a builder
+      # TODO: we probably want to know if we can't find a builder
       # should this raise a soft exception?
       builder = None
       if self._param.prior.HasField("prior_type"):

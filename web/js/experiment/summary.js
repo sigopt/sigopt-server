@@ -105,7 +105,7 @@ export default function ExperimentSummary({
                           classNames="improvement-animate"
                           key={
                             // NOTE: bestObservation.id is missing for multisolution experiments,
-                            // TODO(SN-1159): Get to the bottom of this, but this fixes the page
+                            // TODO: Get to the bottom of this, but this fixes the page
                             coalesce(bestObservation.id, bestObservation.value)
                           }
                           timeout={800}

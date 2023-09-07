@@ -205,7 +205,7 @@ class TestMultitaskExperimentSuggestions(MultitaskExperimentsTestBase):
     assert connection.experiments(e.id).suggestions().fetch().count == 0
 
   def test_suggestions_can_be_created_and_queued(self, connection, client_id):
-    # TODO(RTL-128): Figure out queued_suggestion object wrt the client????
+    # TODO: Figure out queued_suggestion object wrt the client????
     e = connection.clients(client_id).experiments().create(**self.experiment_meta)
 
     s = connection.experiments(e.id).suggestions().create()

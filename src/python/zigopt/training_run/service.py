@@ -159,7 +159,7 @@ class TrainingRunService(Service):
     )
 
   def _sanitize_defined_fields(self, fields: Sequence[DefinedField]) -> None:
-    # TODO(SN-1129): Make this more generic
+    # TODO: Make this more generic
     for field in fields:
       name_parts = field.key.split(".")
       if list_get(name_parts, 0) == "values" and list_get(name_parts, 2) == "value_var":

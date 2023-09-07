@@ -199,7 +199,7 @@ class Handler:
     try:
       objects = self.find_objects()
       self._validate_found_objects(objects)
-      # TODO(SN-1084): Should this be behind `if requested_permission != NONE`?
+      # TODO: Should this be behind `if requested_permission != NONE`?
       authorization_status = self.can_act_on_objects(requested_permission, objects)
       if not authorization_status:
         raise ForbiddenError()

@@ -31,7 +31,7 @@ const getUserInfoEvenIfSessionExpired = (req) =>
 
 export default function setCurrentUser() {
   return (req, res, next) => {
-    // TODO(SN-1178): What's a better way to restrict paths from checking
+    // TODO: What's a better way to restrict paths from checking
     // if the user is logged in?
     if (req.loginState.userId && !req.path.startsWith("/static/")) {
       getUserInfoEvenIfSessionExpired(req)

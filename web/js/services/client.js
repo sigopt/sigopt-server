@@ -8,7 +8,7 @@ import AjaxClient from "../net/ajax";
 import AlertBroker from "../alert/broker";
 import ApiRequestor from "../api/api-requestor";
 import ClientLoggingService from "../log/client_logging_service";
-// TODO(SN-1181): Is it possible for this to only `require` the services
+// TODO: Is it possible for this to only `require` the services
 // we need to render the page? Not a big deal right now since these are
 // pretty small, and needed on just about every page
 import ClientsideConfigBroker from "../config/service";
@@ -26,7 +26,7 @@ export default class ClientServiceBag {
     // to be executed clientside.
     // If code that references globalServices makes it to the client, that's probably
     // an error.
-    // TODO(SN-1182): We should figure out a way to enforce this more robustly
+    // TODO: We should figure out a way to enforce this more robustly
     this.globalServices = null;
 
     this.ajaxClient = new AjaxClient(this, serviceArgs.ajaxClient);

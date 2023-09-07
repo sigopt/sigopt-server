@@ -260,7 +260,7 @@ class Chart {
   }
 
   updateChart(data, providedLayout) {
-    // TODO(SN-1150): This can be more efficient by detecting changes and only calling
+    // TODO: This can be more efficient by detecting changes and only calling
     // relayout or deleteTraces/addTraces. Probably not worth worrying about right now
     const chartDiv = this.chartDiv;
     const chartLayout = chartDiv.layout || {};

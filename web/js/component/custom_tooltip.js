@@ -27,7 +27,7 @@ const overrideLeaveMethod = function ($node) {
 
     originalLeave.call(this, obj);
     if (obj.currentTarget) {
-      // TODO(SN-1155): This should be scoped to the node, right now it affects all the popovers
+      // TODO: This should be scoped to the node, right now it affects all the popovers
       // on the page.
       const popover = $(".popover");
       const timeout = self.timeout;

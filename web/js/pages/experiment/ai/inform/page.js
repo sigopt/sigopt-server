@@ -128,7 +128,7 @@ class InformOptimizerPage extends Component {
   _queuedSuggestionModal = React.createRef();
 
   componentDidMount() {
-    // TODO(SN-1038): Old Route
+    // TODO: Old Route
     this.services.promiseApiClient
       .experiments(this.props.experiment.id)
       .queuedSuggestions()

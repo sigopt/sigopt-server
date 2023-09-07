@@ -25,7 +25,7 @@ export const sendToWinston = (globalServices, level, loggerName, logJson) => {
   globalServices.winstonLogger.log(
     _.extend(
       {
-        environment, // TODO(SN-1160): Can this be added automatically?
+        environment, // TODO: Can this be added automatically?
         level: syslogLevel,
         loggerName,
       },

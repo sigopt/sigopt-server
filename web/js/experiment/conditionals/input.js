@@ -174,7 +174,7 @@ export class ConditionalsCreate extends React.Component {
   };
 
   onChangeValueName = (conditional, value, name) => {
-    // TODO(SN-1157): they'll never not have an edit key...
+    // TODO: they'll never not have an edit key...
     const key = value.editKey || value.name;
     this.props.onChangeConditional(conditional, (c) => {
       const newValues = _.map(c.values, (v) =>

@@ -43,7 +43,7 @@ export default class ServerServiceBag extends SerializeableForClientBundle {
     this.netRequestor = new NodeRequestor(this);
     this.promiseApiClient = new PromiseApiClient(this);
 
-    // TODO(SN-1183): Some services are not applicable serverside, but we still need to
+    // TODO: Some services are not applicable serverside, but we still need to
     // thread through their configs. Is there a better way to do this?
     this.ajaxClient = new AjaxClient(this, {csrfToken: loginState.csrfToken});
     this.clientsideConfigBroker = new ClientsideConfigBroker(this, {

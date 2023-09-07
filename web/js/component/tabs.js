@@ -28,7 +28,7 @@ export class Tab extends React.Component {
 export class Tabs extends React.Component {
   static propTypes = {
     active: PropTypes.string,
-    // TODO(SN-1156): Validate that all children are Tabs
+    // TODO: Validate that all children are Tabs
     children: PropTypes.node,
     className: PropTypes.string,
     onTabClick: PropTypes.func,

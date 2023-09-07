@@ -47,7 +47,7 @@ class BaseSessionHandler(Handler):
     pending_client_name = user.user_meta.pending_client_name
     self.services.email_verification_service.declare_email_verified(user)
 
-    # TODO(SN-1101): This could be done as a batch insert, but in practice this
+    # TODO: This could be done as a batch insert, but in practice this
     # probably won't be a problem
     valid_invites = self.services.invite_service.find_by_email(user.email, valid_only=True)
 
@@ -55,7 +55,7 @@ class BaseSessionHandler(Handler):
 
     # NOTE: If the user has a pending_client_id or outstanding invites, attempt to
     # add them to the client.
-    # TODO(SN-1102): More of this could be shared with POST /users/X/permissions if we wanted.
+    # TODO: More of this could be shared with POST /users/X/permissions if we wanted.
     # Specifically, that endpoint couLd also be used to create permissions from outstanding
     # invites as well, so there is only one flow for attempting to join a Client.
     if valid_invites:
