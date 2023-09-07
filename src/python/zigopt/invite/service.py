@@ -150,7 +150,7 @@ class InviteService(Service):
     # NOTE: An non-owner invite with 0 pending permissions is not valid, because we must confirm that
     # the inviter has permission to administer all the clients on the invite. If there are 0 pending
     # permissions then we will skip important checks
-    # TODO(SN-1106): At this time there is no distinction between the authorization required to
+    # TODO: At this time there is no distinction between the authorization required to
     # invite a user to a client and that required to invite them to an org.
     # Organization owners may want to prevent their admins from creating new memberships
     if pending_permissions:
@@ -178,7 +178,7 @@ class InviteService(Service):
       assert inviter_membership.user_id == inviter.id
 
       # If a user is an admin of a team, they are permitted to invite new users into the organization.
-      # TODO(SN-1107): Reconsider this, it may make more sense to only let owners create new memberships,
+      # TODO: Reconsider this, it may make more sense to only let owners create new memberships,
       # but we have existing admins using this functionality
       if inviter_permission:
         assert inviter_permission.user_id == inviter.id
@@ -229,7 +229,7 @@ class InviteService(Service):
 
   # NOTE: The invite and all pending permissions are valid if the inviter has permission to invite
   # to all the clients that are pending permissions
-  # TODO(SN-1108): We require that all pending permissions can be created for this invite to be valid.
+  # TODO: We require that all pending permissions can be created for this invite to be valid.
   # We could conceivably return "partial" invites where only some of the invites are still valid.
   # This is probably not worth it since it would require that downstream callers take greater care
   # with the invites returned from this method, and is likely a niche use case
@@ -292,7 +292,7 @@ class InviteService(Service):
     client_ids = [pp.client_id for pp in all_pending_permissions]
     clients = to_map_by_key(self.services.client_service.find_by_ids(client_ids), lambda c: c.id)
 
-    # TODO(SN-1109): This filter is extraneous assuming we are passed in valid invites.
+    # TODO: This filter is extraneous assuming we are passed in valid invites.
     # This filter is moderately expensive so it would be good to remove, though would need
     # to make sure that we have a good way to prevent this from being called on invalid invites
     assert invites == self._filter_to_valid_invites(invites)
@@ -333,7 +333,7 @@ class InviteService(Service):
     return organization.organization_meta.email_domains
 
   def eligible_domains_for_invite(self, organization: Organization, inviter: User | None) -> Sequence[str]:
-    # TODO(SN-1110): Backfill email_domains on organizations and stop falling back to the domain of inviter
+    # TODO: Backfill email_domains on organizations and stop falling back to the domain of inviter
     email_domains = organization.organization_meta.email_domains
     if not email_domains and inviter:
       inviter_email = inviter.email

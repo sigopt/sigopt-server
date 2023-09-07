@@ -6,7 +6,7 @@
 
 import {camelCase} from "lodash";
 
-// TODO(SN-1154): More robust name stemming
+// TODO: More robust name stemming
 export const stem = (name) => {
   if (name === "best_assignments") {
     return name;

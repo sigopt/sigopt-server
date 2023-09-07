@@ -32,7 +32,7 @@ export default function PagingTableContents(props) {
   );
 
   // When loading new pages, leave the old content in the footer hidden, so that the table doesn't flicker too much.
-  // TODO(SN-1176): How do we get the last seen page?!?! Does props.children work?
+  // TODO: How do we get the last seen page?!?! Does props.children work?
   const footer = <tfoot style={{visibility: "hidden"}}>{props.children}</tfoot>;
 
   const loadedState = (showEmptyState && customEmptyState) || (

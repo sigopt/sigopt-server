@@ -18,7 +18,7 @@ LOOKBACK_FACTOR = 5
 NUM_TOP_RESULTS_TO_CHECK = 5
 
 
-# TODO(RTL-104): Be more intelligent regarding how multisolution is handled when it exists
+# TODO: Be more intelligent regarding how multisolution is handled when it exists
 class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
   authenticator = api_token_authentication
   required_permissions = READ
@@ -52,7 +52,7 @@ class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
 
     possible_stagnation = False
     if reported_values.shape[0] > lookback_depth + NUM_TOP_RESULTS_TO_CHECK - 1:
-      # TODO(RTL-105): Make the multiple optimized metric computation more efficient
+      # TODO: Make the multiple optimized metric computation more efficient
       if self.experiment.requires_pareto_frontier_optimization or self.experiment.num_solutions > 1:
         if observation_budget_reached:
           old_values = reported_values[:-lookback_depth]
@@ -64,7 +64,7 @@ class ExperimentsStoppingCriteriaHandler(ExperimentHandler):
           current_frontier = {tuple(reported_values[index]) for index in current_indices}
           possible_stagnation = old_frontier == current_frontier
       elif self.experiment.is_search:
-        # TODO(RTL-106): consider a proper stopping criteria for search. It's not trivial to compute one
+        # TODO: consider a proper stopping criteria for search. It's not trivial to compute one
         # without calling into libsigopt.compute.
         possible_stagnation = False
       else:

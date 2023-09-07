@@ -40,7 +40,7 @@ export default class OrganizationAdminEndpoint extends LoggedInReactEndpoint {
           isMember && _.any(currentPermissions, (c) => c.can_admin);
 
         const canSeePage = isOwner || (isAdmin && !this.ownerOnly);
-        // TODO(SN-1169): Only used to toggle hiding in the sidebar, would be cooler if we could
+        // TODO: Only used to toggle hiding in the sidebar, would be cooler if we could
         // just dynamically hide endpoints from the sidebar that are `ownerOnly = true`
         const canSeeExperimentsPage = isOwner;
 

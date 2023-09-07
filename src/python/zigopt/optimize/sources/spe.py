@@ -50,7 +50,7 @@ class SPEOptimizationSource(OptimizationSource):
       source_number=UnprocessedSuggestion.Source.SPE_SEARCH,
     )
 
-  # TODO(RTL-121): Will need to further propagate the no-enqueue to allow this to raise an error.
+  # TODO: Will need to further propagate the no-enqueue to allow this to raise an error.
   def get_hyperparameters(self, optimization_args):
     return NullHyperparameters()
 

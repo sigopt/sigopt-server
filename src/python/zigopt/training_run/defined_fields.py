@@ -87,7 +87,7 @@ class TrainingRunDefinedFieldsExtractor:
 
   @generator_to_list
   def _count_user_defined_fields(self) -> Generator[tuple[tuple[str, str, str], int], None, None]:
-    # TODO(SN-1127): Unwind this for loop, should be possible to UNION these queries together
+    # TODO: Unwind this for loop, should be possible to UNION these queries together
     for field in self.fields_details:
       if field.type in (FieldType.protobuf_map_of_object, FieldType.protobuf_struct):
         yield from self._get_user_defined_field_counts(

@@ -59,7 +59,7 @@ class ExperimentService(Service):
     self, organization_id: int, time_interval: TimeInterval | None, lenient: bool
   ) -> Query:
     # NOTE: Intentionally includes deleted experiments and deleted observations
-    # TODO(SN-1080): Doesn't handle deleted parameters... but that means if the users have deleted
+    # TODO: Doesn't handle deleted parameters... but that means if the users have deleted
     # parameters they get a little bit of a bonus so they are unlikely to complain
     observation_count = func.count(Observation.id).label("observation_count")
     query = (

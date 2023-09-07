@@ -48,7 +48,7 @@ def validate_metadata(
   assert metadata is not None
   assert is_protobuf_struct(metadata)
 
-  # TODO(SN-1104): Some of this validation could be perhaps done in ValidationType.metadata, but
+  # TODO: Some of this validation could be perhaps done in ValidationType.metadata, but
   # wanted to have it in the same place as validate_client_provided_data to ensure consistency
   as_dict = protobuf_struct_to_dict(metadata)
   _schema_validate(as_dict, length=length, key_length=key_length, max_keys=max_keys)

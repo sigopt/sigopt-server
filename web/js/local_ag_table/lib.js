@@ -13,7 +13,7 @@ import TagFilter from "./custom_filters/tag_filter";
 const lodashValueGetter = (params) =>
   lodashGet(params.data, params.colDef.field);
 
-// TODO(SN-1047): make "type columns" (see column properities in docs)
+// TODO: make "type columns" (see column properities in docs)
 // Reference: https://www.ag-grid.com/javascript-grid-column-properties/
 export const defaultColumnSettings = {
   menuTabs: ["filterMenuTab", "generalMenuTab"],

@@ -27,7 +27,7 @@ message SysMetadata {
     optional FeatureImportances feature_importances = 1 [json_name='fi'];
 }
 
-// TODO(SN-1065): Should this just be ObservationValue? Since we are already storing
+// TODO: Should this just be ObservationValue? Since we are already storing
 // in a different format below, may be an appropriate opportunity to use a more
 // terse struct with slimmer JSON keys and no `name` field
 message TrainingRunValue {
@@ -60,7 +60,7 @@ message TrainingRunData {
   // Unfortunately, we can't reuse assignments / values here from observations,
   // because we don't have the list of categorical values we would need to
   // rebuild the categorical value from the double value
-  // TODO(SN-1066): Think about the best data model here
+  // TODO: Think about the best data model here
   optional google.protobuf.Struct assignments_struct = 5 [json_name='a'];
 
   // NOTE: This also deviates from how we store values on other

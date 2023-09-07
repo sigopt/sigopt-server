@@ -159,7 +159,7 @@ class JavaEndpointParameters extends JsonObjectCodeGen {
   }
 }
 
-// TODO(SN-1152): Support batch endpoints
+// TODO: Support batch endpoints
 export const JavaApiCodeGenSupportedEndpoint = function (endpoint) {
   return endpoint.path[endpoint.path.length - 1] !== "batch";
 };

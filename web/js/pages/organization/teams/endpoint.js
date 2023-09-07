@@ -18,7 +18,7 @@ export default class OrganizationTeamsEndpoint extends OrganizationAdminEndpoint
 
   parseParams(req) {
     return (
-      // TODO(SN-1170): We are fetching the org & memberships twice, once in the parent and here
+      // TODO: We are fetching the org & memberships twice, once in the parent and here
       Promise.all([
         this._fetchOrganization(req).then((organization) =>
           this._fetchUserAdminClients(organization, req.currentUser).then(

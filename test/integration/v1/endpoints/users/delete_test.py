@@ -24,7 +24,7 @@ class TestUserDelete(V1Base):
     with RaisesApiException(HTTPStatus.BAD_REQUEST):
       owner_connection.users(owner_connection.user_id).delete(password="zzzzzzz")
 
-  # TODO(SN-971): need to make sure organization owners cant delete themselves
+  # TODO: need to make sure organization owners cant delete themselves
   @pytest.mark.xfail
   def test_owner_needs_client_delete(self, owner_connection, config_broker):
     with RaisesApiException(HTTPStatus.FORBIDDEN):

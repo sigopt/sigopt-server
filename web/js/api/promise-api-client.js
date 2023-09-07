@@ -16,8 +16,8 @@ class ApiCaller {
     this._pathPrefix = pathPrefix;
   }
 
-  // TODO(SN-1147): Add other resource types as needed
-  // TODO(SN-1148): This does not currently verify that the endpoint you are calling is a real endpoint
+  // TODO: Add other resource types as needed
+  // TODO: This does not currently verify that the endpoint you are calling is a real endpoint
   aiexperiments = (...ids) => this._subresource("aiexperiments", ids);
   bestAssignments = (...ids) => this._subresource("best_assignments", ids);
   bestPractices = (...ids) => this._subresource("best_practices", ids);

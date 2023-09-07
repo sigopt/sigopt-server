@@ -120,7 +120,7 @@ export default class ExperimentHistoryDownloadEndpoint extends Endpoint {
     }
   }
 
-  // TODO(SN-1161): We could improve this by allowing us to stream the response as it is fetched instead
+  // TODO: We could improve this by allowing us to stream the response as it is fetched instead
   // of composing the whole body first
   render(params) {
     return new Response(200, params.body, {

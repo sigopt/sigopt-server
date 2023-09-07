@@ -39,7 +39,7 @@ export default class TrainingRunEndpoint extends LoggedInReactEndpoint {
   }
 
   getUser(req) {
-    // TODO(SN-1174): Can short-circuit in the common case where the training run was created by the current user
+    // TODO: Can short-circuit in the common case where the training run was created by the current user
     return this.services.promiseApiClient
       .users(req.matchedTrainingRun.user)
       .fetch()

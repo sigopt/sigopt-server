@@ -10,7 +10,7 @@ from zigopt.suggestion.sampler.base import SuggestionSampler
 from zigopt.suggestion.unprocessed.model import SuggestionDataProxy, UnprocessedSuggestion
 
 
-# TODO(RTL-124): Think on if we want some more interesting task management in the LHC phase
+# TODO: Think on if we want some more interesting task management in the LHC phase
 # NOTE - Creating self.observations may require a DB call which is executed when this sampler is created
 class LatinHypercubeSampler(SuggestionSampler):
   source = UnprocessedSuggestion.Source.LATIN_HYPERCUBE

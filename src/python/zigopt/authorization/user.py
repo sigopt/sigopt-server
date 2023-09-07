@@ -29,7 +29,7 @@ class UserAuthorization(EmptyAuthorization):
       if self.current_user.id == user.id:
         return True
       if requested_permission == READ:
-        # TODO(SN-1074): Should we be using scoped membership here? It is safe if we don't, but might speed things up
+        # TODO: Should we be using scoped membership here? It is safe if we don't, but might speed things up
         if services.membership_service.users_are_mutually_visible(
           user1_id=self.current_user.id,
           user2_id=user.id,

@@ -154,7 +154,7 @@ class BaseExperimentsListHandler(Handler):
       )
     )
 
-    # TODO(SN-1088): Consider optimization of search ordering
+    # TODO: Consider optimization of search ordering
     if matching_user_ids:
       search_filter = or_(Experiment.created_by.in_(matching_user_ids), Experiment.name.ilike(f"%{keyword}%"))
     else:

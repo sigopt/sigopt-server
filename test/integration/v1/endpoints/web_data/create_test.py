@@ -74,7 +74,7 @@ class TestCreateWebData(WebDataBase):
     connection.web_data().create(**simple_run_view_args)
     connection.web_data().create(**simple_run_view_args)
 
-  # TODO(SN-1043): This is fragile/slow - move web data limits to config broker(?)
+  # TODO: This is fragile/slow - move web data limits to config broker(?)
   # this is hardcoded in src/python/zigopt/handlers/web_data/base.py atm.
   def test_create_limits(self, services, connection, project, simple_run_view_args):
     for i in range(100):

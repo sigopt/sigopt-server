@@ -194,7 +194,7 @@ class SCAdapter(Service):
       return PARALLEL_QEI
     return PARALLEL_CONSTANT_LIAR
 
-  # TODO(RTL-108): Eventually move MC iterations info in here
+  # TODO: Eventually move MC iterations info in here
   def form_gp_model_info(
     self,
     experiment,
@@ -501,7 +501,7 @@ class SCAdapter(Service):
 
     return self._make_suggestion_datas(experiment, suggested_points, task_costs)
 
-  # TODO(RTL-109): Think on if this function would be better placed inside OptimizationSource
+  # TODO: Think on if this function would be better placed inside OptimizationSource
   @staticmethod
   @generator_to_list
   def _make_suggestion_datas(experiment, suggested_points, task_costs=None):
@@ -651,7 +651,7 @@ class SCAdapter(Service):
       task_costs=task_costs if experiment.is_multitask else None,
     )
 
-  # TODO(RTL-110): Is there a reason/benefit to passing these as proxies?  Or casting them as proxies inside?
+  # TODO: Is there a reason/benefit to passing these as proxies?  Or casting them as proxies inside?
   @staticmethod
   def _make_points_being_sampled(experiment, open_suggestion_datas=None):
     open_suggestion_datas = open_suggestion_datas or []

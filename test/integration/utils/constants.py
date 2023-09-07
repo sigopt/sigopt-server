@@ -4,7 +4,7 @@
 from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 
-# TODO(RTL-126): Come up with a way to test this without hardcoding desired suggestion source
+# TODO: Come up with a way to test this without hardcoding desired suggestion source
 EXPECTED_GP_OPTIMIZATION_SOURCE = UnprocessedSuggestion.Source.GP_CATEGORICAL
 CREATE_USER_EMAIL_SEARCH_TERM = "Please create an account"
 NEW_USER_EMAIL_SEARCH_TERM = "Thanks for choosing SigOpt!"

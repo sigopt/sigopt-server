@@ -108,7 +108,7 @@ export class EnclosedBlock extends React.Component {
         !this.props.continueLine && this.props.indent,
         opener,
         opener && "\n",
-        // TODO(SN-1151): Should probably be a React.cloneElement here to increase indent on the children...
+        // TODO: Should probably be a React.cloneElement here to increase indent on the children...
         this.props.children,
         closer && "\n",
         this.props.indent + this.props.indentSize,

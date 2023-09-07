@@ -120,7 +120,7 @@ class OrganizationsUpdateHandler(OrganizationHandler):
     self.services.iam_logging_service.log_iam(
       requestor=self.auth.current_user,
       event_name=IamEvent.ORGANIZATION_UPDATE,
-      # TODO(SN-987): refactor some of this code to stop repeating all these attributes everywhere
+      # TODO: refactor some of this code to stop repeating all these attributes everywhere
       request_parameters=compact_mapping(
         {
           "organization_id": self.organization.id,

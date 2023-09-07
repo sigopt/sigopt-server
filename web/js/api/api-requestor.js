@@ -142,7 +142,7 @@ export default class ApiRequestor extends Service {
   serializeAs() {
     // NOTE: Don't send the traceId to the client - otherwise, all clientside API requests
     // will appear to have been part of the lifecycle of the initial web request.
-    // TODO(SN-1146): Should we tie clientside requests to the initial web request that made them somehow?
+    // TODO: Should we tie clientside requests to the initial web request that made them somehow?
     return _.extend({}, _.omit(this.options, "traceId"), {
       apiToken: this._token,
     });

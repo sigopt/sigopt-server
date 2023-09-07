@@ -63,7 +63,7 @@ class RJsonObjectCodeGen extends JsonObjectCodeGen {
   }
 }
 
-// TODO(SN-1153): Support other api calls
+// TODO: Support other api calls
 class RApiCallCodeGen extends ApiCallCodeGen {
   opener() {
     return "experiment <- create_experiment(list(";

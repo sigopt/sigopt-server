@@ -12,7 +12,7 @@ from zigopt.net.headers import RESPONSE_HEADERS
 
 
 def get_response_headers(req):
-  # TODO(SN-997): what about cors_app_response_headers? Need app_url here...
+  # TODO: what about cors_app_response_headers? Need app_url here...
   return RESPONSE_HEADERS.copy()
 
 

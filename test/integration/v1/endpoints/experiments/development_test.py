@@ -7,7 +7,7 @@ from integration.v1.experiments_test_base import ExperimentsTestBase
 class TestDevelopmentExperiments(ExperimentsTestBase):
   def test_create_development_experiment(self, development_connection):
     e = development_connection.create_any_experiment()
-    # TODO(SN-1138): update public clients
+    # TODO: update public clients
     assert e.development is True
     e = development_connection.experiments(e.id).fetch()
     assert e.development is True

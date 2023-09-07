@@ -235,7 +235,7 @@ const sigColumnToAgColumn = (runs, column) => {
   );
 };
 
-// TODO(SN-1050): Think about grouping datasets
+// TODO: Think about grouping datasets
 const groupAgColumns = (columns) => {
   const groups = {
     metrics: {

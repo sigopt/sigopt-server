@@ -102,7 +102,7 @@ def set_bounds_from_json(parameter, parameter_json, experiment_type):
   if not (bounds_json or grid_values):
     raise InvalidKeyError("bounds", msg=f"Parameter {parameter.name} must have `bounds`")
 
-  # TODO(SN-1118): better error messages
+  # TODO: better error messages
   if grid_values:
     parameter.bounds.minimum = min(grid_values)
     parameter.bounds.maximum = max(grid_values)
@@ -229,7 +229,7 @@ def set_grid_values_from_json(parameter, parameter_json):
     raise GridError(parameter, "Cannot be an empty list.")
 
   if parameter.param_type == PARAMETER_CATEGORICAL:
-    # TODO(SN-1119): can this be handled a better way?
+    # TODO: can this be handled a better way?
     parameter_proxy = ExperimentParameterProxy(parameter)
     grid = [c.enum_index for c in parameter_proxy.all_categorical_values]
   elif parameter.param_type == PARAMETER_DOUBLE:

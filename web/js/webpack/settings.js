@@ -25,7 +25,7 @@ export default (env = {}) =>
     const webDir = path.resolve("web");
     const PROD = "production";
     const DEV = "development";
-    // TODO(SN-1028): we never set NODE_ENV=staging; but we should (and security)
+    // TODO: we never set NODE_ENV=staging; but we should (and security)
     const nodeEnv = env.NODE_ENV || PROD;
     const production = nodeEnv === PROD;
     const development = nodeEnv === DEV;

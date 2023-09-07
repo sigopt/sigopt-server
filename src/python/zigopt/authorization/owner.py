@@ -56,7 +56,7 @@ class OrganizationOwnerAuthorization(_BaseClientUserAuthorization):
     return (
       self.can_act_on_client(services, requested_permission, client)
       and
-      # TODO(SN-1072): This double fetches the client object, but hard to unwind without being positive we are making
+      # TODO: This double fetches the client object, but hard to unwind without being positive we are making
       # all the necessary user authorization checks
       # pylint: disable=protected-access
       self._user_authorization._can_act_on_client_artifacts(
@@ -69,7 +69,7 @@ class OrganizationOwnerAuthorization(_BaseClientUserAuthorization):
     )
 
   def filter_can_act_on_experiments(self, services, requested_permission, experiments):
-    # TODO(SN-1073): Ideally we would be calling into _can_act_on_client_artifacts here, but it would trigger a bunch
+    # TODO: Ideally we would be calling into _can_act_on_client_artifacts here, but it would trigger a bunch
     # of client fetches that we do not need to do
     if not experiments:
       return []

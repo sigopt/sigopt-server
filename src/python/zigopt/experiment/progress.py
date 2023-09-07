@@ -123,7 +123,7 @@ class ExperimentProgressService(Service):
           # Tricky query using window functions to compute max value
           # https://www.postgresql.org/docs/9.5/static/tutorial-window.html
           # http://docs.sqlalchemy.org/en/latest/core/tutorial.html#window-functions
-          # TODO(SN-1079): This query can be pretty expensive when lots of experiments
+          # TODO: This query can be pretty expensive when lots of experiments
           # have lots of observations (~100ms). I don't see any immediate optimizations so
           # it may be worth considering denormalizing the best observation somewhere, or
           # reconsidering our need for this query in prod

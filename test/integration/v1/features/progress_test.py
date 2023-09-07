@@ -13,7 +13,7 @@ class TestExperimentProgress(ExperimentsTestBase):
   def assert_progress_is_not_none(self, experiment):
     assert experiment.progress is not None
     assert experiment.progress.observation_count == 0
-    # TODO(SN-1197): remove the to_json() call once observation_budget_consumed is added to public API client
+    # TODO: remove the to_json() call once observation_budget_consumed is added to public API client
     assert experiment.progress.to_json()["observation_budget_consumed"] == 0
     assert experiment.progress.last_observation is None
     assert experiment.progress.first_observation is None

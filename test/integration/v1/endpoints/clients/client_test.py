@@ -71,7 +71,7 @@ class TestClientCreate(V1Base):
     )
     assert client.name == client_name
     assert client.created is not None
-    # TODO(SN-1136): Change when the python API client gets changed
+    # TODO: Change when the python API client gets changed
     assert client.to_json()["client_security"]["allow_users_to_see_experiments_by_others"] is False
 
   def test_admin_in_private_client(self, connection, config_broker, auth_provider, inbox):

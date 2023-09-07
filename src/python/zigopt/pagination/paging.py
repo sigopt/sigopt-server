@@ -179,7 +179,7 @@ class Pager:
 
     if self.item_list is None:
       assert self.fetch_page is not None
-      # TODO(SN-1117): Most callers of this function are not equipped to handle _NO_MARKER, so we adapt it
+      # TODO: Most callers of this function are not equipped to handle _NO_MARKER, so we adapt it
       # back into None. But this means that None values will not be sorted properly. Fortunately,
       # for most of those use-cases they are just sorting by ID.
       qbefore = None if before is self._NO_MARKER else before

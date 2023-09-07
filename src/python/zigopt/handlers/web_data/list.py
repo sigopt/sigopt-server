@@ -27,7 +27,7 @@ class WebDataListHandler(WebDataBaseHandler):
     web_data = self.services.web_data_service.all(parent_resource_type, web_data_type, parent_resource_id)
     count = len(web_data)
 
-    # TODO(SN-1040): In future should properly paginate but for now not envisioning having 1000s of individual items
+    # TODO: In future should properly paginate but for now not envisioning having 1000s of individual items
     return PaginationJsonBuilder(
       count=count,
       data=[WebDataJsonBuilder(web_data_singular) for web_data_singular in web_data],

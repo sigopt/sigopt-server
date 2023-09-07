@@ -15,7 +15,7 @@ export default class OrganizationExperimentsEndpoint extends OrganizationAdminEn
   ownerOnly = true;
 
   parseParams(req) {
-    // TODO(SN-1166): We are fetching the org twice here, once in the parent and here
+    // TODO: We are fetching the org twice here, once in the parent and here
     return this._fetchOrganization(req)
       .then((organization) =>
         Promise.all([

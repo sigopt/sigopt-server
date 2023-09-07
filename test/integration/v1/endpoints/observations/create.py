@@ -172,7 +172,7 @@ class TestCreateObservations(V1Base):
         **values_params,
       )
 
-  # TODO(RTL-127): Maybe a better error structure in the legacy (no metrics defined) case
+  # TODO: Maybe a better error structure in the legacy (no metrics defined) case
   def test_create_observation_with_legacy_experiment(self, connection):
     pytest.skip()
     e_meta = deepcopy(DEFAULT_EXPERIMENT_META_NO_METRIC)

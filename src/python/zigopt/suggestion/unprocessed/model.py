@@ -152,7 +152,7 @@ class UnprocessedSuggestion(Base):
     return self.suggestion_meta.get_conditional_assignments(experiment)
 
   def is_valid(self, experiment):
-    # TODO(SN-1126): what does validity mean for conditionals?
+    # TODO: what does validity mean for conditionals?
     for name, assignment in self.get_assignments(experiment).items():
       parameter = experiment.all_parameters_map.get(name)
       if not parameter:
@@ -162,7 +162,7 @@ class UnprocessedSuggestion(Base):
         return False
     return True
 
-  # TODO(RTL-125): Should this be a function that requires passing the experiment ??  Is None a good default ??
+  # TODO: Should this be a function that requires passing the experiment ??  Is None a good default ??
   @property
   def task(self):
     if self.suggestion_meta.suggestion_data.HasField("task"):

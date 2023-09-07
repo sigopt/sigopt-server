@@ -93,7 +93,7 @@ def parse_constraints_to_halfspaces(constraints, parameters):
       if p.name in nonzero_coef_map:
         halfspaces[ic, ip] = -sign * nonzero_coef_map[p.name]
 
-  # TODO(RTL-152): Bounds as halfspaces. Check if those are correct
+  # TODO: Bounds as halfspaces. Check if those are correct
   for index, p in enumerate(constrained_parameters):
     imin = num_explicit_constraints + 2 * index
     imax = num_explicit_constraints + 2 * index + 1

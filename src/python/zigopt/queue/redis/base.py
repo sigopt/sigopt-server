@@ -45,7 +45,7 @@ class BaseRedisQueueProvider(QueueProvider):
     pass
 
   def reject(self, received_message):
-    # TODO(SN-1120): can we support reject by re-enqueueing?
+    # TODO: can we support reject by re-enqueueing?
     # would need to make sure we don't get stuck in a loop forever
     pass
 

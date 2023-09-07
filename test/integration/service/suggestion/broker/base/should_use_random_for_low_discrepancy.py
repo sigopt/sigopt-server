@@ -9,7 +9,7 @@ from zigopt.protobuf.gen.experiment.experimentmeta_pb2 import *
 from integration.service.suggestion.broker.test_base import SuggestionBrokerTestBase
 
 
-# TODO(SN-1134): this can be a unit test
+# TODO: this can be a unit test
 class TestShouldUseRandomForLowDiscrepancy(SuggestionBrokerTestBase):
   @pytest.mark.parametrize("parameters", [[ExperimentParameter() for _ in range(i)] for i in [1, 19, 20, 100]])
   @pytest.mark.parametrize(

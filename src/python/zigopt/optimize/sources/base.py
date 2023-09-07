@@ -15,7 +15,7 @@ class OptimizationSource:
     OptimizationSources and then collects their results and picks the best
     results among them.
 
-    TODO(RTL-112): See if we can change this to also take in optimization_args ... probably could be done
+    TODO: See if we can change this to also take in optimization_args ... probably could be done
     """
 
   def __init__(self, services, experiment):
@@ -59,7 +59,7 @@ class OptimizationSource:
   def get_scored_suggestions(self, suggestions, optimization_args, random_padding_suggestions):
     raise NotImplementedError()
 
-  # TODO(RTL-113): Figure out the need for the proxies ... something to do with the conditionals ??
+  # TODO: Figure out the need for the proxies ... something to do with the conditionals ??
   def create_unprocessed_suggestions(self, suggestion_data_proxies, source_number):
     unprocessed_suggestion_list = []
     for proxy in suggestion_data_proxies:
@@ -76,7 +76,7 @@ class OptimizationSource:
 
     return unprocessed_suggestion_list
 
-  # TODO(RTL-114): I do not even think this could be None anymore ... check it
+  # TODO: I do not even think this could be None anymore ... check it
   @staticmethod
   def extract_open_suggestion_datas(optimization_args):
     open_suggestion_datas = []
@@ -144,10 +144,10 @@ class OptimizationSource:
   # NOTE: We take num_observations here (not num_successful) because this is meant to lag calls based on
   #       a consistent frequency independently of whether the actual data is substantial.
   #
-  # TODO(RTL-115): Maybe more naturally should be housed in ranker.py?
+  # TODO: Maybe more naturally should be housed in ranker.py?
   #              Or, maybe some of what is in ranker.py more naturally belongs here?
-  # TODO(RTL-116): Extend this concept to consider the importance computations
-  # TODO(RTL-117): Should there be some consideration of parallel bandwidth here?
+  # TODO: Extend this concept to consider the importance computations
+  # TODO: Should there be some consideration of parallel bandwidth here?
   def execute_gp_hyper_opt_call_based_on_lag(self, num_successful_observations):
     # pylint: disable=too-many-statements
     hyper_opt_dimension = self.hyper_opt_dimension

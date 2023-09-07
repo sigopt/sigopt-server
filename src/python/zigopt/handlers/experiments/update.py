@@ -345,7 +345,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
       client,
     )
 
-    # TODO(SN-1089): Make these into one query
+    # TODO: Make these into one query
     if update_meta_fields:
       update_count = self.services.experiment_service.update_meta(self.experiment.id, update_meta_fields)
       if update_count == 0:

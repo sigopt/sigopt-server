@@ -241,7 +241,7 @@ class TestListExperiments(ExperimentsTestBase):
     assert len(paging.data) == 1
     assert [d.id for d in paging.data] == [e.id]
 
-  # TODO(SN-1139): Speed up this test, can we avoid sleeps?
+  # TODO: Speed up this test, can we avoid sleeps?
   @pytest.mark.slow
   def test_experiment_list_sort(self, connection, client_id):
     # NOTE: sorting by time so must have some delay

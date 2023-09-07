@@ -117,7 +117,7 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 // Number of frames to wait until starting to render widgets on load/dashboard change
 const WIDGET_FRAME_RENDER_BUFFER = 2;
 
-// TODO(SN-1048): Should be split into 2 components, 1 wrapper for managing data and 1 renderer
+// TODO: Should be split into 2 components, 1 wrapper for managing data and 1 renderer
 class RunsDashboard extends Component {
   constructor(props) {
     super(props);
@@ -211,7 +211,7 @@ class RunsDashboard extends Component {
       if (this.state.bigWidgetModalRef.current) {
         this.state.bigWidgetModalRef.current.show();
       }
-      // TODO: Should be a way to expose a callback from show() ?
+      // TODO ?
       setTimeout(() => {
         this.setState({renderBigModal: true});
       }, 500);

@@ -565,7 +565,7 @@ const ExperimentEditor = makeEditableComponent(
     };
 
     onRemoveConditional = (conditional) => {
-      // TODO(SN-1158): since we're removing conditions do we want a modal to warn people?
+      // TODO: since we're removing conditions do we want a modal to warn people?
       // Note: we rely on editKey a lot for conditionals, not technically a problem since we never edit them
       this.setState((prevState) => {
         const prevConditionals = prevState.experimentInput.conditionals;

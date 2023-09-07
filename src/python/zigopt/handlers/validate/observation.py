@@ -59,9 +59,9 @@ def validate_observation_json_dict_for_create(json_dict: dict[str, Any], experim
 
   if json_dict.get("failed") is not True:
     if json_dict.get("value") is None and not json_dict.get("values"):
-      # TODO(SN-1195): when switching to mutli-values change this to error message to
+      # TODO: when switching to mutli-values change this to error message to
       # ask for 'values' instead
-      # TODO(RTL-107): Are we ever going to fully forbid value?  If not we might want to check the experiment
+      # TODO: Are we ever going to fully forbid value?  If not we might want to check the experiment
       # to return the correct error message
       raise MissingJsonKeyError("value", json_dict)
 

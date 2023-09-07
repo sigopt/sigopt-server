@@ -18,7 +18,7 @@ export default function PageBody(props) {
   return (
     <PageSection
       className={classNames("page-body", props.className)}
-      fluid={true} // TODO(SN-1046): remove fluid after merge with new-page-navie
+      fluid={true} // TODO: remove fluid after merge with new-page-navie
     >
       <div className="row">
         <div className="page-body-content">{props.children}</div>
