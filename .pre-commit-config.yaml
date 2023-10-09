@@ -9,7 +9,7 @@ ci:
     - shellcheck
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-added-large-files
         args: [--maxkb=1024]
@@ -86,7 +86,7 @@ repos:
       - id: shellcheck
         args: ["--exclude", "SC1090,SC1091,SC2029", "-f", "gcc"]
   - repo: https://github.com/jendrikseipp/vulture.git
-    rev: "v2.9.1"
+    rev: "v2.10"
     hooks:
       - id: vulture
         entry: tools/dead-code/run_vulture.py
