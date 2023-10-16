@@ -12,8 +12,8 @@ RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       ca-certificates=* \
-      curl=7.* \
-      unzip=6.* \
+      curl=* \
+      unzip=* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
@@ -39,8 +39,8 @@ RUN set -ex \
   ; apt-get update -yqq >dev/null \
   ; apt-get upgrade -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      gcc=4:* \
-      git=1:* \
+      gcc=* \
+      git=* \
       libstdc++-12-dev=12.* \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
