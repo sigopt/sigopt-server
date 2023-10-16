@@ -39,8 +39,8 @@ RUN set -ex \
   ; apt-get update -yqq >dev/null \
   ; apt-get upgrade -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      gcc=4:12.* \
-      git=1:2.* \
+      gcc=4:* \
+      git=1:* \
       libstdc++-12-dev=12.* \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
