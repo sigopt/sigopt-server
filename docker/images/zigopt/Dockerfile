@@ -41,7 +41,7 @@ RUN set -ex \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       gcc=* \
       git=* \
-      libstdc++-12-dev=12.* \
+      libstdc++-12-dev=* \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
