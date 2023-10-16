@@ -25,11 +25,11 @@ RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends \
       ca-certificates=* \
-      curl=7.64.* \
-      g++=4:8.3.* \
-      git=1:2.20.* \
+      curl=7.* \
+      g++=4:* \
+      git=1:* \
       libpython3-stdlib=3.7.* \
-      make=4.2.* \
+      make=4.* \
       python3-minimal=3.7.* \
       xz-utils=5.* \
       > /dev/null \

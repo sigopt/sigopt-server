@@ -18,8 +18,8 @@ RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       ca-certificates=* \
-      curl=7.64.* \
-      procps=2:3.3.* \
+      curl=7.* \
+      procps=2:* \
       unzip=6.* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
@@ -36,15 +36,15 @@ WORKDIR /sigopt-server
 RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
-      gcc=4:8.3.* \
-      git=1:2.20.* \
+      gcc=4:* \
+      git=1:* \
       libc6-dev=2.* \
-      libssl-dev=1.1.* \
-      libxml2-dev=2.9.* \
-      libxml2=2.9.* \
-      make=4.2.* \
-      pkg-config=0.29-* \
-      sqlite3=3.27.* \
+      libssl-dev=1.* \
+      libxml2-dev=2.* \
+      libxml2=2.* \
+      make=4.* \
+      pkg-config=0.* \
+      sqlite3=3.* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
