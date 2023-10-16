@@ -12,7 +12,7 @@ RUN set -ex \
   ; apt-get update -yqq >/dev/null \
   ; apt-get install -yqq --no-install-recommends --no-install-suggests \
       ca-certificates=* \
-      curl=7.64.* \
+      curl=7.* \
       unzip=6.* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
