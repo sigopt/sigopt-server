@@ -52,7 +52,7 @@ repos:
       - id: black
         args: [--preview]
   - repo: https://github.com/PyCQA/flake8.git
-    rev: "6.1.0"
+    rev: "7.0.0"
     hooks:
       - id: flake8
         additional_dependencies:
@@ -69,7 +69,7 @@ repos:
       - id: isort
         entry: ./pp isort
   - repo: https://github.com/pre-commit/mirrors-prettier.git
-    rev: "v4.0.0-alpha.7"
+    rev: "v4.0.0-alpha.8"
     hooks:
       - id: prettier
         additional_dependencies:
