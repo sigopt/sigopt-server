@@ -77,6 +77,8 @@ services:
       - ./config:/sigopt-server/config:ro
       - ./scratch:/sigopt-server/scratch:ro
       - ./src/python:/sigopt-server/src/python:ro
+    tmpfs:
+      - /tmp
     working_dir: /sigopt-server
     depends_on:
       - postgres
@@ -130,6 +132,8 @@ services:
       - ./config:/sigopt-server/config:ro
       - ./scratch:/sigopt-server/scratch:rw
       - ./src/python:/sigopt-server/src/python:ro
+    tmpfs:
+      - /tmp
     working_dir: /sigopt-server
     depends_on: &zigopt_depends_on
       - postgres
@@ -172,6 +176,8 @@ services:
     stdin_open: true
     tty: true
     volumes: *zigopt_volumes
+    tmpfs:
+      - /tmp
     working_dir: /sigopt-server
     depends_on: *zigopt_depends_on
     deploy:
