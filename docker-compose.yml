@@ -99,6 +99,8 @@ services:
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
+    tmpfs:
+      - /tmp
   nginx:
     build:
       dockerfile: docker/images/nginx/Dockerfile
