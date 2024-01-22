@@ -83,10 +83,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
-          memory: 1G
+          cpus: "1"
+          memory: 512M
     security_opt:
       - "no-new-privileges:true"
+    tmpfs:
+      /tmp
   init-web:
     image: busybox
     logging:
