@@ -260,6 +260,8 @@ services:
       - *sigopt-config-volume
       - *pg-sock-volume
       - *redis-run-volume
+    tmpfs:
+      - /tmp
     deploy:
       resources:
         limits:
