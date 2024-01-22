@@ -99,6 +99,8 @@ services:
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
+    tmpfs:
+      - /tmp
   nginx:
     build:
       dockerfile: docker/images/nginx/Dockerfile
@@ -221,6 +223,8 @@ services:
       - *sigopt-config-volume
       - *pg-sock-volume
       - *redis-run-volume
+    tmpfs:
+      - /tmp
     deploy:
       resources:
         limits:
@@ -256,6 +260,8 @@ services:
       - *sigopt-config-volume
       - *pg-sock-volume
       - *redis-run-volume
+    tmpfs:
+      - /tmp
     deploy:
       resources:
         limits:
