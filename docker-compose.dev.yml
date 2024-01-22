@@ -83,9 +83,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1"
+          cpus: "2"
           memory: 1G
-    read_only: true
     security_opt:
       - "no-new-privileges:true"
   init-web:
