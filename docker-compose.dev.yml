@@ -53,7 +53,7 @@ services:
       resources:
         limits:
           cpus: "2"
-          memory: 2G
+          memory: 4G
           pids: 256
     security_opt:
       - "no-new-privileges:true"
