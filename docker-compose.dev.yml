@@ -88,7 +88,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     tmpfs:
-      /tmp
+      - /tmp
   init-web:
     image: busybox
     logging:
