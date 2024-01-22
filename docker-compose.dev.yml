@@ -219,6 +219,8 @@ services:
       - "./config:/sigopt-server/config:ro"
       - "./scratch:/sigopt-server/scratch:ro"
       - "./src/python:/sigopt-server/src/python:ro"
+    tmpfs:
+      - /tmp
     working_dir: /sigopt-server
     depends_on:
       - postgres
