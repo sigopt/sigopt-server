@@ -1,3 +1,4 @@
 CVE-2023-45853 # zlib1g in docker vuln - waiting on fix
-CVE-2023-5981 # libgnutls30 - waiting on fix
+CVE-2024-0553 # gnutls - waiting on fix
+CVE-2024-0567 # gnutls - waiting on fix
 CVE-2023-7104 # libsqlite3 - waiting on fix
