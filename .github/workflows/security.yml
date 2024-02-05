@@ -1,4 +1,5 @@
 name: security checks
+permissions: read-all
 run-name: Security checks for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}

@@ -1,4 +1,5 @@
 name: python code tests
+permissions: read-all
 run-name: Python tests for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}

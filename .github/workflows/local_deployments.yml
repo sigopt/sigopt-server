@@ -1,4 +1,5 @@
 name: test local deployments
+permissions: read-all
 run-name: Test local deployments for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}

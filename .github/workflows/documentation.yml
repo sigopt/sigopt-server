@@ -1,4 +1,5 @@
 name: documentation validation
+permissions: read-all
 run-name: Validate the generated documentation for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}
