@@ -1,4 +1,5 @@
 name: pre-commit checks
+permissions: read-all
 run-name: Pre-commit checks for ${{ github.repository }}@${{ github.ref }}
 on:
   push: {}
