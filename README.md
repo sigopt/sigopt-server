@@ -4,6 +4,7 @@ Copyright © 2023 Intel Corporation
 SPDX-License-Identifier: Apache License 2.0
 -->
 
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/sigopt/sigopt-server/badge)](https://securityscorecards.dev/viewer/?uri=github.com/sigopt/sigopt-server)
 ![pre-commit.ci status](https://results.pre-commit.ci/badge/github/sigopt/sigopt-server/main.svg)
 ![pre-commit](https://github.com/sigopt/sigopt-server/actions/workflows/pre-commit.yml/badge.svg)
 ![documentation](https://github.com/sigopt/sigopt-server/actions/workflows/documentation.yml/badge.svg)
