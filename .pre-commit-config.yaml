@@ -41,7 +41,7 @@ repos:
           - --include=AvoidDatetimeNowRule,GeneratorExpressionRule,NoImportLibsigoptComputeRule,SafeIteratorRule,SafeYieldRule
       - id: sigoptlint-shell
   - repo: https://github.com/PyCQA/bandit.git
-    rev: "1.7.6"
+    rev: "1.7.7"
     hooks:
       - id: bandit
         args: [-c, pyproject.toml]
