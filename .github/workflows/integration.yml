@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: ./ci/run_integration_test.sh test/integration/service/
       - name: Docker logs
         if: always()
@@ -30,7 +30,7 @@ jobs:
           - requests
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: ./ci/create_development_tls_certs.sh
       - run: ./ci/run_integration_test.sh test/integration/v1/${{ matrix.suite }}/ qworker qworker-analytics api nginx
       - name: Docker logs
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: ./ci/create_development_tls_certs.sh
       - run: make submodules
       - run: ./ci/run_integration_test.sh test/integration/web/ qworker qworker-analytics api web-server nginx
@@ -79,7 +79,7 @@ jobs:
           - project
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: ./ci/create_development_tls_certs.sh
       - run: make submodules
       - run: ./ci/run_integration_test.sh test/integration/browser/tests/interaction/${{ matrix.suite }} qworker qworker-analytics api web-server nginx
@@ -100,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: ./ci/init_config.sh
       - run: ./ci/run_container_bg.sh postgres
       - run: ./ci/run_container_fg.sh createdb

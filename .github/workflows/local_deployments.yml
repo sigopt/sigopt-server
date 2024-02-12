@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: mkdir -p scratch
       - run: |
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: echo '127.0.0.1 sigopt.ninja' | sudo tee -a /etc/hosts
       - run: ./ci/create_development_tls_certs.sh
       - run: make submodules fix-db setup-cookiejar setup-filestorage
