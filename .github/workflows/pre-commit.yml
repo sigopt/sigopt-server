@@ -16,7 +16,7 @@ jobs:
           - shellcheck
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: pip install pipenv
       - run: pipenv install --quiet --deploy --dev
       - run: source .env && sudo ./tools/protobuf/install.sh "$PROTOBUF_VERSION"
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: pip install pipenv pre-commit
       - run: yarn install
       - run: pipenv run pre-commit run --all-files eslint
