@@ -69,6 +69,22 @@ const defaultSortColumns = (columns) => {
   });
 };
 
+const createCheckpointsColumn = (hasCheckpoints) => {
+  const width = hasCheckpoints ? 160 : 120;
+  return {
+    field: "checkpoint",
+    headerName: "",
+    maxWidth: width,
+    pinned: "left",
+    lockPinned: true,
+    lockPosition: true,
+    lockVisible: true,
+    valueGetter: (params) => params.data.id,
+    cellRenderer: CellRendererNames.CheckpointsCell,
+    hide: !hasCheckpoints,
+  };
+};
+
 const createCheckBoxAndExpandColumn = (hasCheckpoints) => {
   let cellRendererStuff = {cellRenderer: CellRendererNames.FavoriteCell};
   if (hasCheckpoints) {
@@ -325,6 +341,6 @@ export const createRunsTableColumnDefs = (
   const groupedAgColumns = groupAgColumns(agColumns);
 
   const checkBoxAndExpandColumn = createCheckBoxAndExpandColumn(hasCheckpoints);
-
-  return [checkBoxAndExpandColumn, ...groupedAgColumns];
+  const checkpointColumn = createCheckpointsColumn(hasCheckpoints);
+  return [checkpointColumn, checkBoxAndExpandColumn, ...groupedAgColumns];
 };
