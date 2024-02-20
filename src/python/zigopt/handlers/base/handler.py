@@ -176,7 +176,7 @@ class Handler:
 
   def _set_objects(self, objects):
     for key, obj in objects.items():
-      if key is not _DEFAULT_FOUND_OBJECT_KEY:
+      if key != _DEFAULT_FOUND_OBJECT_KEY:
         if getattr(self, key, object()) is not None:
           raise InvalidInitialValueError(self, key)
         setattr(self, key, obj)
