@@ -47,8 +47,7 @@ class DefinedField:
 
 def get_value_of_paging_symbol(symbol):
   assert isinstance(symbol, PagingSymbol)
-  which_oneof = symbol.WhichOneof("type")
-  if which_oneof is None:
+  if (which_oneof := symbol.WhichOneof("type")) is None:
     return None
   if which_oneof == "null_value":
     return None

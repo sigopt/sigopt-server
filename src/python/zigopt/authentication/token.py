@@ -15,8 +15,7 @@ from zigopt.token.model import Token
 
 @deal.raises(ForbiddenError, TypeError)
 def authenticate_token(services, token: str) -> AuthenticationResult:
-  token_obj = services.token_service.find_by_token(token, include_expired=True)
-  if token_obj is None:
+  if (token_obj := services.token_service.find_by_token(token, include_expired=True)) is None:
     return AuthenticationResult()
   if token_obj.expired:
     raise ForbiddenError("Your API token has expired.", token_status=TokenStatus.EXPIRED)

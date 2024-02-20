@@ -23,8 +23,7 @@ class SuggestionHandler(ExperimentHandler):
     )
 
   def _find_suggestion(self, suggestion_id):
-    suggestion = self.services.suggestion_service.find_by_id(suggestion_id)
-    if suggestion is not None:
+    if (suggestion := self.services.suggestion_service.find_by_id(suggestion_id)) is not None:
       if suggestion.experiment_id == self.experiment_id:
         return suggestion
     raise NotFoundError(f"No suggestion {suggestion_id} for experiment {self.experiment_id}")

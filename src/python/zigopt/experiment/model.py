@@ -374,14 +374,12 @@ class Experiment(Base):
     return max_option(self.tasks, key=lambda x: x.cost)
 
   def get_task_by_name(self, task_name):
-    matching_task = find(self.tasks, lambda t: t.name == task_name)
-    if matching_task is None:
+    if (matching_task := find(self.tasks, lambda t: t.name == task_name)) is None:
       raise ValueError(f"No task named {task_name} for experiment {self.id}.")
     return matching_task
 
   def get_task_by_cost(self, task_cost):
-    matching_task = find(self.tasks, lambda t: t.cost == task_cost)
-    if matching_task is None:
+    if (matching_task := find(self.tasks, lambda t: t.cost == task_cost)) is None:
       raise ValueError(f"No task with cost {task_cost} for experiment {self.id}.")
     return matching_task
 

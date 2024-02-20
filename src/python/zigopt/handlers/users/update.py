@@ -34,8 +34,7 @@ class UsersUpdateHandler(UserHandler):
 
   def parse_params(self, request):
     data = request.params()
-    name = get_opt_with_validation(data, "name", ValidationType.string)
-    if name is not None:
+    if (name := get_opt_with_validation(data, "name", ValidationType.string)) is not None:
       name = validate_user_name(name)
     educational_user = get_opt_with_validation(data, "educational_user", ValidationType.boolean)
     email = get_opt_with_validation(data, "email", ValidationType.string)
@@ -98,8 +97,7 @@ class UsersUpdateHandler(UserHandler):
       user.user_meta = user_meta
 
     old_email = user.email
-    new_email = uploaded_user.email
-    if new_email is not None:
+    if (new_email := uploaded_user.email) is not None:
       if not user.hashed_password:
         raise SigoptValidationError("You cannot change your email because your account is externally administered.")
       if uploaded_user.password is None:
@@ -110,14 +108,12 @@ class UsersUpdateHandler(UserHandler):
 
       email_verification_code = self.services.user_service.change_user_email_without_save(user, new_email)
 
-    show_welcome = uploaded_user.show_welcome
-    if show_welcome is not None:
+    if (show_welcome := uploaded_user.show_welcome) is not None:
       user_meta = copy_protobuf(user.user_meta)
       user_meta.show_welcome = show_welcome
       user.user_meta = user_meta
 
-    planned_usage = uploaded_user.planned_usage
-    if planned_usage is None:
+    if (planned_usage := uploaded_user.planned_usage) is None:
       user.user_meta.ClearField("planned_usage")
     elif planned_usage is self.NOT_PROVIDED:
       pass

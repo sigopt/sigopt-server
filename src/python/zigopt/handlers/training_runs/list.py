@@ -187,8 +187,7 @@ class BaseTrainingRunsDetailMultiHandler(Handler):
       if field.clause is None:
         raise InvalidKeyError("clause", f"Invalid field: {field.name}")
       input_operator = get_with_validation(f, "operator", ValidationType.string)
-      resolved_operator = field.interpret_operator(input_operator)
-      if resolved_operator is STRING_TO_OPERATOR_DICT["isnull"]:
+      if (resolved_operator := field.interpret_operator(input_operator)) is STRING_TO_OPERATOR_DICT["isnull"]:
         cast, value = None, None
       else:
         input_value = get_unvalidated(f, "value")

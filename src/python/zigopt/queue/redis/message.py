@@ -34,8 +34,7 @@ class RedisMessageQueueProvider(BaseRedisQueueProvider):
 
   def dequeue(self, wait_time_seconds=None):
     wait_time_seconds = coalesce(wait_time_seconds, self.wait_time_seconds)
-    redis_body = self._pop_from_queue(self.redis_key, wait_time_seconds)
-    if redis_body is None:
+    if (redis_body := self._pop_from_queue(self.redis_key, wait_time_seconds)) is None:
       return redis_body
     message_with_name = self._parse_redis_body(redis_body)
     queue_message = self.services.message_router.deserialize_message(

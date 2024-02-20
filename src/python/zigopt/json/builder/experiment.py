@@ -142,8 +142,7 @@ class ObservationProgressJsonBuilder(JsonBuilder):
     return coalesce(value, default)
 
   def _observation(self, attr: str) -> Optional[ObservationJsonBuilder]:
-    obs = self._pattr(attr)
-    if obs is not None:
+    if (obs := self._pattr(attr)) is not None:
       return ObservationJsonBuilder(self._experiment, obs)
     return None
 

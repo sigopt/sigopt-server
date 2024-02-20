@@ -66,22 +66,19 @@ class TrainingRunHandler(Handler):
     return None
 
   def _find_training_run(self, training_run_id):
-    training_run = self.services.training_run_service.find_by_id(training_run_id)
-    if training_run:
+    if training_run := self.services.training_run_service.find_by_id(training_run_id):
       return training_run
     raise NotFoundError(f"Training run {training_run_id} not found")
 
   def _find_client(self, client_id):
-    client = self.services.client_service.find_by_id(client_id)
-    if client:
+    if client := self.services.client_service.find_by_id(client_id):
       return client
     raise NotFoundError(f"Client {client_id} not found")
 
   def _find_project(self, project_id, client_id, training_run_id):
     if project_id is None:
       raise NotFoundError(f"Training run {training_run_id} not found")
-    project = self.services.project_service.find_by_client_and_id(client_id, project_id)
-    if project is None:
+    if (project := self.services.project_service.find_by_client_and_id(client_id, project_id)) is None:
       raise NotFoundError(f"Training run {training_run_id} not found")
     return project
 

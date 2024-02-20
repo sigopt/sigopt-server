@@ -68,8 +68,7 @@ validate_web_data_dict(parent_id_validator_by_resource, depth=1)
 
 
 def validate_resource_exists(parent_resource_type, web_data_type):
-  test = schema_by_resource.get(parent_resource_type, {}).get(web_data_type, None)
-  if test is None:
+  if (test := schema_by_resource.get(parent_resource_type, {}).get(web_data_type, None)) is None:
     raise SigoptValidationError(
       f"Could not find web data type: `{web_data_type}` for resource: `{parent_resource_type}`"
     )

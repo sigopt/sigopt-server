@@ -120,8 +120,7 @@ class PostgresAuxService(BaseAuxService):
     hyperparameters,
     current_aux_date_updated,
   ):
-    experiment = self.services.experiment_service.find_by_id(experiment.id)
-    if experiment:
+    if experiment := self.services.experiment_service.find_by_id(experiment.id):
       self.services.database_service.upsert(
         ExperimentOptimizationAux(
           experiment_id=experiment.id,

@@ -280,15 +280,13 @@ class BaseExperimentsCreateHandler(Handler):
     has_constraint_metrics = any(m.strategy == ExperimentMetric.CONSTRAINT for m in experiment_meta.metrics)
     has_optimization_metrics = len(optimized_metrics) > 0
 
-    num_solutions = cls.get_num_solutions_from_json(
+    if (num_solutions := cls.get_num_solutions_from_json(
       json_dict,
       experiment_meta.all_parameters_unsorted,
-    )
-    if num_solutions is not None:
+    )) is not None:
       experiment_meta.num_solutions = num_solutions
 
-    parallel_bandwidth = cls.get_parallel_bandwidth_from_json(json_dict)
-    if parallel_bandwidth is not None:
+    if (parallel_bandwidth := cls.get_parallel_bandwidth_from_json(json_dict)) is not None:
       experiment_meta.parallel_bandwidth = parallel_bandwidth
 
     # Set observation budget if present and check to see which features require a budget
@@ -305,8 +303,7 @@ class BaseExperimentsCreateHandler(Handler):
 
     cls._check_multisolution_viability(experiment_meta, num_solutions, optimized_metrics)
 
-    client_provided_data = cls.get_client_provided_data(json_dict)
-    if client_provided_data is not None:
+    if (client_provided_data := cls.get_client_provided_data(json_dict)) is not None:
       experiment_meta.client_provided_data = client_provided_data
 
     if not (has_optimization_metrics or has_constraint_metrics):
@@ -382,12 +379,11 @@ class BaseExperimentsCreateHandler(Handler):
 
   @classmethod
   def get_metric_list_from_json(cls, json_dict):
-    metrics = get_opt_with_validation(
+    if (metrics := get_opt_with_validation(
       json_dict,
       "metrics",
       ValidationType.arrayOf(ValidationType.oneOf([ValidationType.string, ValidationType.object])),
-    )
-    if metrics is None:
+    )) is None:
       assert MAX_METRICS_ANY_STRATEGY >= 1
       assert MAX_OPTIMIZED_METRICS >= 1
       return [ExperimentMetric()]
@@ -479,8 +475,7 @@ class BaseExperimentsCreateHandler(Handler):
     constrained_integer_variables,
     constraint_var_set,
   ):
-    coeff = get_opt_with_validation(term, "weight", ValidationType.number)
-    if coeff == 0:
+    if (coeff := get_opt_with_validation(term, "weight", ValidationType.number)) == 0:
       return
     name = get_opt_with_validation(term, "name", ValidationType.string)
     name = validate_variable_name(name)

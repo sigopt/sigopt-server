@@ -114,8 +114,7 @@ class Observation(Base):
     return self.data_proxy.value_for_maximization(experiment, name)
 
   def _within_metric_threshold(self, metric, experiment):
-    metric_value = self.metric_value(experiment, metric.name)
-    if metric_value is None:
+    if (metric_value := self.metric_value(experiment, metric.name)) is None:
       return False
     if metric.threshold is None:
       return True

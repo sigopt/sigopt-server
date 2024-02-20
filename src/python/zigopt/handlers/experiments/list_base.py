@@ -71,8 +71,7 @@ class BaseExperimentsListHandler(Handler):
 
   @classmethod
   def get_include_ai_param(cls, request):
-    include_ai = request.optional_bool_param("include_ai")
-    if include_ai is None:
+    if (include_ai := request.optional_bool_param("include_ai")) is None:
       include_ai = False
     return include_ai
 
@@ -132,7 +131,9 @@ class BaseExperimentsListHandler(Handler):
     if params.search is None:
       return
     keyword = params.search.lower().strip()
-    matching_user_ids = set(
+
+    # TODO: Consider optimization of search ordering
+    if matching_user_ids := set(
       u_id
       for (u_id,) in flatten(
         [
@@ -152,10 +153,7 @@ class BaseExperimentsListHandler(Handler):
           ),
         ]
       )
-    )
-
-    # TODO: Consider optimization of search ordering
-    if matching_user_ids:
+    ):
       search_filter = or_(Experiment.created_by.in_(matching_user_ids), Experiment.name.ilike(f"%{keyword}%"))
     else:
       search_filter = Experiment.name.ilike(f"%{keyword}%")

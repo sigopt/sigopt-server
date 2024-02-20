@@ -68,8 +68,7 @@ class TrainingRunService(Service):
     )
     if not tr:
       return
-    exp = self.services.experiment_service.find_by_id(tr.experiment_id, include_deleted=True)
-    if exp:
+    if exp := self.services.experiment_service.find_by_id(tr.experiment_id, include_deleted=True):
       if tr.suggestion_id:
         self.services.processed_suggestion_service.set_delete_by_ids(exp, [tr.suggestion_id], deleted=deleted)
       if tr.observation_id:
@@ -100,7 +99,7 @@ class TrainingRunService(Service):
     # pylint: disable=too-many-return-statements
     if "." not in field.name:
       return field.name
-    readable_name = (
+    if readable_name := (
       {
         "logs.stdout.content": "Output Logs",
         "logs.stderr.content": "Error Logs",
@@ -108,8 +107,7 @@ class TrainingRunService(Service):
         "source_code.content": "Source Code",
         "model.type": "Model Type",
       }
-    ).get(field.name)
-    if readable_name:
+    ).get(field.name):
       return readable_name
 
     name_parts = field.name.split(".")

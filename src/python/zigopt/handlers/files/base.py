@@ -28,8 +28,7 @@ class FileHandler(Handler):
 
   def find_objects(self):
     objects = super().find_objects()
-    file_obj = self.services.file_service.find_by_id(self.file_id)
-    if file_obj is None:
+    if (file_obj := self.services.file_service.find_by_id(self.file_id)) is None:
       raise self.get_file_not_found_error()
     objects["file"] = file_obj
     client = self.services.client_service.find_by_id(file_obj.client_id)

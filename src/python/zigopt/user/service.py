@@ -78,8 +78,7 @@ class UserService(Service):
     return code
 
   def change_user_email_without_save(self, user: User, new_email: str) -> str:
-    existing_user = self.services.user_service.find_by_email(new_email)
-    if existing_user is not None:
+    if (existing_user := self.services.user_service.find_by_email(new_email)) is not None:
       raise SigoptValidationError("Unable to change email.")
 
     email_verification_code = self.services.email_verification_service.set_email_verification_code_without_save(user)

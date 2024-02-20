@@ -23,8 +23,7 @@ class ObservationHandler(ExperimentHandler):
     )
 
   def _find_observation(self, observation_id):
-    observation = self.services.observation_service.find_by_id(observation_id)
-    if observation is not None:
+    if (observation := self.services.observation_service.find_by_id(observation_id)) is not None:
       if observation.experiment_id == self.experiment_id:
         return observation
     raise NotFoundError(f"No observation {observation_id} for experiment {self.experiment_id}")

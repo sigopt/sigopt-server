@@ -50,8 +50,7 @@ class OrganizationOwnerAuthorization(_BaseClientUserAuthorization):
     )
 
   def _can_act_on_client_artifacts(self, services, requested_permission, client_id, owner_id_for_artifacts):
-    client = services.client_service.find_by_id(client_id)
-    if client is None:
+    if (client := services.client_service.find_by_id(client_id)) is None:
       return False
     return (
       self.can_act_on_client(services, requested_permission, client)

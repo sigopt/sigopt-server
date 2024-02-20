@@ -88,14 +88,12 @@ def authenticate_login(services, email: str, password: str, code: str | None) ->
   delay_seconds_on_failure = min_delay_seconds + jitter_seconds * non_crypto_random.random()
   failure_time = start_time + delay_seconds_on_failure
   try:
-    user = services.user_service.find_by_email(email)
-    if user:
+    if user := services.user_service.find_by_email(email):
       # NOTE: If the user cannot auth with a password, we can't reveal the error they have made.
       # This would leak information about the account they are attempting to log in to, notably that
       # the account exists and someone has logged into it successfully.
       # The user must go through the "Forgot Password" flow
-      can_auth_with_password = bool(user.hashed_password)
-      if can_auth_with_password:
+      if can_auth_with_password := bool(user.hashed_password):
         if password is not None:
           return authenticate_password(services, user, password)
         if code is not None:

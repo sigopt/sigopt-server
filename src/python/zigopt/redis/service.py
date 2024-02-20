@@ -227,8 +227,7 @@ class RedisService(GlobalService):
   @classmethod
   def make_redis(cls, config: Mapping[str, Any], **kwargs) -> redis.Redis:
     config = extend_dict({}, config, kwargs)
-    mode = config.get("connection_mode", "socket")
-    if mode == "socket":
+    if (mode := config.get("connection_mode", "socket")) == "socket":
       ret = cls._make_redis_unix_socket(config)
     else:
       assert mode == "tcp"

@@ -163,21 +163,17 @@ class OptimizationSource:
     ]
     # 1      250       500      750     1000     1250     1500,  N bounds
 
-    dimension_index = self._get_dimension_index(hyper_opt_dimension)
-    if dimension_index is None:
+    if (dimension_index := self._get_dimension_index(hyper_opt_dimension)) is None:
       return False
 
-    num_observed_index = self._get_num_observed_index(num_successful_observations)
-    if num_observed_index is None:
+    if (num_observed_index := self._get_num_observed_index(num_successful_observations)) is None:
       return False
 
     lag = lag_matrix[dimension_index][num_observed_index]
 
-    should_stagger_hyperopt = self.experiment.constraints
-    if should_stagger_hyperopt:
+    if should_stagger_hyperopt := self.experiment.constraints:
       lag = self._get_lag(hyper_opt_dimension)
-      lag_scale = self._get_lag_scale(num_successful_observations)
-      if lag_scale is None:
+      if (lag_scale := self._get_lag_scale(num_successful_observations)) is None:
         return False
       lag = int(lag_scale * lag)
 

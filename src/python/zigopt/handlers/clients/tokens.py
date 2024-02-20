@@ -57,8 +57,7 @@ class ClientsTokensDeleteHandler(TokenHandler):
     assert self.token is not None
     if not self.token.expiration_timestamp and self.token.all_experiments:
       raise ForbiddenError("Cannot delete root token")
-    success = self.services.token_service.delete_token(self.token)
-    if success:
+    if success := self.services.token_service.delete_token(self.token):
       return {}
     raise NotFoundError("Token not found")
 
@@ -81,8 +80,7 @@ class ClientsTokensUpdateHandler(TokenHandler):
     assert self.auth is not None
     assert self.token is not None
 
-    new_token_value = params.token
-    if new_token_value is not None:
+    if (new_token_value := params.token) is not None:
       if new_token_value != "rotate":
         raise SigoptValidationError('Token must equal "rotate"')
       self.services.token_service.rotate_token(self.token)
@@ -90,8 +88,7 @@ class ClientsTokensUpdateHandler(TokenHandler):
       meta = copy_protobuf(self.token.meta)
       meta.lasts_forever = params.lasts_forever
       self.services.token_service.update_meta(self.token, meta)
-    new_expires_value = params.expires
-    if new_expires_value is not None:
+    if (new_expires_value := params.expires) is not None:
       if new_expires_value != "renew":
         raise SigoptValidationError('Expires must equal "renew"')
       if self.token.meta.can_renew:
@@ -190,11 +187,10 @@ class ClientsTokensListDetailHandler(ClientHandler):
     auth = self.auth
     assert self.client is not None
     client = self.client
-    role_token = find(
+    if (role_token := find(
       tokens,
       lambda t: t.user_id == auth.current_user.id and t.client_id == client.id and t.development is False,
-    )
-    if role_token is None:
+    )) is None:
       role_token = self.services.token_service.get_or_create_role_token(
         self.client.id,
         self.auth.current_user.id,
@@ -208,11 +204,10 @@ class ClientsTokensListDetailHandler(ClientHandler):
     assert current_user is not None
     assert self.client is not None
     client = self.client
-    development_token = find(
+    if (development_token := find(
       tokens,
       lambda t: t.user_id == current_user.id and t.client_id == client.id and t.development is True,
-    )
-    if development_token is None:
+    )) is None:
       development_token = self.services.token_service.get_or_create_development_role_token(
         self.client.id,
         self.auth.current_user.id,

@@ -70,10 +70,9 @@ class CreatesObservationsMixin:
     elif observation.timestamp:
       observation_data.timestamp = observation.timestamp
 
-    client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(
+    if (client_provided_data := BaseExperimentsCreateHandler.get_client_provided_data(
       json_dict, default=observation.client_provided_data
-    )
-    if client_provided_data is not None:
+    )) is not None:
       observation_data.client_provided_data = client_provided_data
     else:
       if observation_data.HasField("client_provided_data"):
@@ -171,8 +170,7 @@ class ObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler):
       no_optimize=self.get_no_optimize_for_observation_json(params),
     )
 
-    bad_keys = params.keys() - observation_json.keys()
-    if bad_keys:
+    if bad_keys := params.keys() - observation_json.keys():
       raise InvalidKeyError(f"Unknown keys were provided for observation create: {bad_keys}")
 
     observation_json = remove_nones_mapping(observation_json)

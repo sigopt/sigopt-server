@@ -85,8 +85,7 @@ class _ApiTokenRateLimit(_BaseRateLimit):
   NON_MUTATING_METHODS = {"GET", "HEAD", "OPTIONS"}
 
   def _get_identifier(self, services, identifying_object):
-    token = identifying_object.optional_client_token()
-    if token is not None:
+    if (token := identifying_object.optional_client_token()) is not None:
       return token, TOKEN_IDENTIFIER
     return _UNUSED, _UNUSED
 

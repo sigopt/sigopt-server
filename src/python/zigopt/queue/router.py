@@ -39,16 +39,14 @@ class MessageRouter(GlobalService):
 
   @classmethod
   def deserialize_message(cls, message_type, serialized_body):
-    WorkerClass = cls.get_worker_class_for_message(message_type)
-    if WorkerClass:
+    if WorkerClass := cls.get_worker_class_for_message(message_type):
       message_body = WorkerClass.MessageBody.deserialize(serialized_body)
       return QueueMessage(message_type, message_body)
     return None
 
   @classmethod
   def make_queue_message(cls, _message_type, *args, **kwargs):
-    WorkerClass = cls.get_worker_class_for_message(_message_type)
-    if WorkerClass is None:
+    if (WorkerClass := cls.get_worker_class_for_message(_message_type)) is None:
       raise Exception(
         f"Could not find a worker for {_message_type}"
         f" Please make sure a worker has this MESSAGE_TYPE and has been added to {__file__}:WORKER_CLASSES."

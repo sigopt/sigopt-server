@@ -62,8 +62,7 @@ class OptimizeQueueService(Service):
 
   @generator_to_list
   def _maybe_enqueue_importances(self, experiment, num_observations, force):
-    message = self._create_importances_message(experiment, num_observations, force)
-    if message is not None:
+    if (message := self._create_importances_message(experiment, num_observations, force)) is not None:
       if self.services.importances_service.should_update_importances(experiment, num_observations) or force:
         yield message
 

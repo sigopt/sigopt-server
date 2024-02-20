@@ -228,14 +228,13 @@ class ExperimentService(Service):
         Not a true DB delete, just sets the deleted flag.
         """
     timestamp = current_datetime()
-    update = self.services.database_service.update_one_or_none(
+    if update := self.services.database_service.update_one_or_none(
       self.services.database_service.query(Experiment).filter(Experiment.id == experiment.id),
       {
         Experiment.deleted: True,
         Experiment.date_updated: timestamp,
       },
-    )
-    if update:
+    ):
       experiment.date_updated = timestamp
       experiment.deleted = True
       self.services.project_service.mark_as_updated_by_experiment(experiment)
@@ -271,15 +270,14 @@ class ExperimentService(Service):
   def mark_as_updated(self, experiment: Experiment, timestamp: datetime.datetime | None = None) -> None:
     if timestamp is None:
       timestamp = current_datetime()
-    did_update = self.services.database_service.update_one_or_none(
+    if did_update := self.services.database_service.update_one_or_none(
       self.services.database_service.query(Experiment)
       .filter(Experiment.id == experiment.id)
       .filter(Experiment.date_updated < timestamp.replace(microsecond=0)),
       {
         Experiment.date_updated: timestamp,
       },
-    )
-    if did_update:
+    ):
       experiment.date_updated = timestamp
       self.services.project_service.mark_as_updated_by_experiment(experiment=experiment)
 

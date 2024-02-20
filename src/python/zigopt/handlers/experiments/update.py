@@ -287,8 +287,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
   def _maybe_set_parallel_bandwidth(self, json_dict, new_meta, update_meta_fields):
     if "parallel_bandwidth" not in json_dict:
       return
-    parallel_bandwidth = BaseExperimentsCreateHandler.get_parallel_bandwidth_from_json(json_dict)
-    if parallel_bandwidth is None:
+    if (parallel_bandwidth := BaseExperimentsCreateHandler.get_parallel_bandwidth_from_json(json_dict)) is None:
       new_meta.ClearField("parallel_bandwidth")
     else:
       new_meta.parallel_bandwidth = parallel_bandwidth
@@ -355,11 +354,10 @@ class ExperimentsUpdateHandler(ExperimentHandler):
 
     update_experiment_fields["date_updated"] = current_datetime()
     self.experiment.date_updated = update_experiment_fields["date_updated"]
-    update_count = self.services.database_service.update_one(
+    if (update_count := self.services.database_service.update_one(
       self.services.database_service.query(Experiment).filter(Experiment.id == self.experiment.id),
       update_experiment_fields,
-    )
-    if update_count == 0:
+    )) == 0:
       raise NotFoundError(f"No experiment {self.experiment.id}")
 
     if original_project_id is not None:
@@ -528,12 +526,11 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     set_grid_values_from_json(parameter, parameter_json)
 
   def _maybe_set_parameter_categorical_values(self, parameter, parameter_json):
-    categorical_values_json = get_opt_with_validation(
+    if (categorical_values_json := get_opt_with_validation(
       parameter_json,
       "categorical_values",
       ValidationType.arrayOf(ValidationType.oneOf([ValidationType.object, ValidationType.string])),
-    )
-    if categorical_values_json is None:
+    )) is None:
       return
 
     categorical_values_map = dict((c.name, c) for c in parameter.all_categorical_values)

@@ -36,8 +36,7 @@ class BaseTrainingRunsCreateHandler(Handler):
     return self.parse_request(request)
 
   def parse_request(self, request):
-    unaccepted_params = request.params().keys() - TrainingRunRequestParams.valid_fields
-    if unaccepted_params:
+    if unaccepted_params := request.params().keys() - TrainingRunRequestParams.valid_fields:
       raise SigoptValidationError(f"Unknown parameters: {unaccepted_params}")
 
     training_run_params = TrainingRunRequestParser().parse_params(request)
@@ -48,8 +47,7 @@ class BaseTrainingRunsCreateHandler(Handler):
     if training_run_params.project is not None or training_run_params.field_is_explicitly_null("project"):
       raise SigoptValidationError("`project` is not a valid JSON key for this endpoint.")
 
-    assignments_meta = training_run_params.training_run_data.assignments_meta
-    if assignments_meta is not None:
+    if (assignments_meta := training_run_params.training_run_data.assignments_meta) is not None:
       validate_assignments_meta(training_run_params.training_run_data.assignments_struct, assignments_meta, None)
 
     return self.Params(training_run_params=training_run_params)

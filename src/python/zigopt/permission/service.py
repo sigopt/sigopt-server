@@ -153,11 +153,10 @@ class PermissionService(Service):
     requestor: User,
     role_for_logging: str,
   ) -> Permission:
-    membership = self.services.membership_service.find_by_user_and_organization(
+    if (membership := self.services.membership_service.find_by_user_and_organization(
       user_id=user.id,
       organization_id=client.organization_id,
-    )
-    if membership is None:
+    )) is None:
       raise ValueError("Permission cannot be created without a membership.")
     if user and user.id and client and client.id:
       client_permissions = self.find_by_client_id(client.id)

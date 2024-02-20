@@ -13,8 +13,7 @@ from zigopt.protobuf.gen.api.paging_pb2 import PagingMarker
 
 def decode_base64_marker_without_padding(serialized_marker):
   # NOTE: "=" padding needs to be added to the marker in order for it to be correctly decoded
-  tail_len = len(serialized_marker) % 4
-  if tail_len:
+  if tail_len := len(serialized_marker) % 4:
     serialized_marker += "=" * (4 - tail_len)
   return base64.urlsafe_b64decode(serialized_marker)
 

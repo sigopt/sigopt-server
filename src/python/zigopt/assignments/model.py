@@ -45,8 +45,7 @@ class HasAssignmentsMap(Proxy):
     raise Exception("Do not access .assignments_map directly - prefer .get_assignments(experiment)")
 
   def _get_required_parameter(self, array, parameter, index):
-    ret = array[index]
-    if ret is None:
+    if (ret := array[index]) is None:
       raise ValueError(f"Parameter has no replacement value: {parameter.name}")
     return ret
 

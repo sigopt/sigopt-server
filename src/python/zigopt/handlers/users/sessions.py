@@ -24,8 +24,7 @@ class BaseSessionHandler(Handler):
       user,
       memberships,
     )
-    client = find(clients, lambda c: c.id == preferred_client_id)
-    if client is None:
+    if (client := find(clients, lambda c: c.id == preferred_client_id)) is None:
       client = min(clients, key=lambda c: (c.id if c else 0), default=None)
 
     if client:

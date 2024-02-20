@@ -526,15 +526,13 @@ def get_opt_with_validation(json_obj: dict[str, Any], key: str, value_type: IOVa
     :rtype: ``value_type`` or None
 
     """
-  value = json_obj.get(key)
-  if value is None:
+  if (value := json_obj.get(key)) is None:
     return None
   return validate_type(value, value_type.get_input_validator(), key=key)
 
 
 def get_unvalidated(json_obj: dict[str, Any], key: str) -> Any:
-  value = json_obj.get(key)
-  if value is None:
+  if (value := json_obj.get(key)) is None:
     raise MissingJsonKeyError(key, json_obj)
   return value
 

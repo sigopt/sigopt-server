@@ -14,11 +14,10 @@ class ClientsDeleteHandler(ClientHandler):
     assert self.auth is not None
     assert self.client is not None
 
-    user_can_delete = self.services.membership_service.user_is_owner_for_organization(
+    if user_can_delete := self.services.membership_service.user_is_owner_for_organization(
       user_id=self.auth.current_user.id,
       organization_id=self.client.organization_id,
-    )
-    if user_can_delete:
+    ):
       self.do_delete()
       return {}
     raise ForbiddenError("You cannot delete this client.")

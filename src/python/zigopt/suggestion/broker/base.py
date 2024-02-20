@@ -19,10 +19,9 @@ from zigopt.suggestion.unprocessed.model import UnprocessedSuggestion
 
 class BaseBroker(Service):
   def serve_suggestion(self, experiment, processed_suggestion_meta, auth, automatic=False):
-    queued_suggestion = self.retrieve_queued_suggestions_if_exists(
+    if (queued_suggestion := self.retrieve_queued_suggestions_if_exists(
       experiment, processed_suggestion_meta, automatic=automatic
-    )
-    if queued_suggestion is not None:
+    )) is not None:
       return queued_suggestion
 
     next_suggestion = self.next_suggestion(experiment, processed_suggestion_meta, automatic=automatic)

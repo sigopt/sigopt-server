@@ -28,12 +28,11 @@ class WebDataUpdateHandler(WebDataBaseHandler):
     payload = params["payload"]
     web_data_id = params["id"]
 
-    old_web_data = self.services.web_data_service.find_by_parent_resource_id_and_id(
-      parent_resource_type, web_data_type, parent_resource_id, web_data_id
-    )
 
     # Web Data cannot change parent resoruce
-    if old_web_data is None:
+    if (old_web_data := self.services.web_data_service.find_by_parent_resource_id_and_id(
+      parent_resource_type, web_data_type, parent_resource_id, web_data_id
+    )) is None:
       raise ForbiddenError(f"{web_data_type} cannot be moved between {parent_resource_type}.")
 
     update_dict = {

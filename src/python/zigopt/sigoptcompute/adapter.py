@@ -581,8 +581,7 @@ class SCAdapter(Service):
       return var_type, elements, name
 
     def parameter_to_prior_info(p):
-      prior_type = p.prior.prior_type if p.prior.HasField("prior_type") else None
-      if prior_type == Prior.NORMAL:
+      if (prior_type := p.prior.prior_type if p.prior.HasField("prior_type") else None) == Prior.NORMAL:
         assert p.is_double
         name = ParameterPriorNames.NORMAL
         params = {

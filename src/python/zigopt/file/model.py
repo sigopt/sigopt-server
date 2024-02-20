@@ -90,8 +90,7 @@ class File(Base):
       "text/plain": ".txt",
     }
     mime_type = self.data.content_type
-    extension = overrides.get(mime_type)
-    if extension is None:
+    if (extension := overrides.get(mime_type)) is None:
       extension = mimetypes.guess_extension(self.data.content_type)
     if extension is None:
       extension = ""

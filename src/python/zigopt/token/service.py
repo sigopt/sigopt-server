@@ -66,16 +66,14 @@ class TokenService(Service):
       napply(session_expiration, lambda s: max(s - now, 0)),
       self.services.config_broker.get("external_authorization.token_ttl_seconds"),
     ]
-    ttl_seconds = min_option(remove_nones_sequence(ttl_options))
-    if ttl_seconds is not None:
+    if (ttl_seconds := min_option(remove_nones_sequence(ttl_options))) is not None:
       meta.ttl_seconds = ttl_seconds
     return meta
 
   def _get_or_create_role_token(self, client_id: int, user_id: int, development: bool) -> Token:
     assert client_id is not None
     assert user_id is not None
-    existing = [token for token in self.find_by_client_and_user(client_id, user_id) if token.development == development]
-    if existing:
+    if existing := [token for token in self.find_by_client_and_user(client_id, user_id) if token.development == development]:
       return existing[0]
     token_type = TokenType.CLIENT_DEV if development else TokenType.CLIENT_API
     meta = self._make_meta(session_expiration=None, token_type=token_type, can_renew=False)
@@ -112,8 +110,7 @@ class TokenService(Service):
     assert client_id is not None
     assert creating_user_id is not None
     token_type = TokenType.GUEST
-    existing = self.get_client_signup_token(client_id, creating_user_id=creating_user_id)
-    if existing:
+    if existing := self.get_client_signup_token(client_id, creating_user_id=creating_user_id):
       return existing
     meta = self._make_meta(session_expiration=None, token_type=token_type, can_renew=False)
     meta.creating_user_id = creating_user_id
@@ -182,11 +179,10 @@ class TokenService(Service):
 
   def renew_token(self, token: Token) -> Token | None:
     now = unix_timestamp()
-    updated = self.services.database_service.update_one_or_none(
+    if updated := self.services.database_service.update_one_or_none(
       self.services.database_service.query(Token).filter(Token.token == token.token).filter(~~Token.meta.can_renew),
       {Token.meta: jsonb_set(Token.meta, JsonPath(*unwind_json_path(Token.meta.date_renewed)), now)},
-    )
-    if updated:
+    ):
       meta: TokenMeta = copy_protobuf(token.meta)
       meta.date_renewed = now
       token.meta = meta
@@ -196,11 +192,10 @@ class TokenService(Service):
   def rotate_token(self, token: Token) -> Token | None:
     token_string = random_string()
 
-    updated = self.services.database_service.update_one_or_none(
-      self.services.database_service.query(Token).filter(Token.token == token.token), {Token.token: token_string}
-    )
 
-    if updated:
+    if updated := self.services.database_service.update_one_or_none(
+      self.services.database_service.query(Token).filter(Token.token == token.token), {Token.token: token_string}
+    ):
       token.token = token_string
       return token
     return None

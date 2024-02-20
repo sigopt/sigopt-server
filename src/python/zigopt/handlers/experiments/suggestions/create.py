@@ -60,8 +60,7 @@ class SuggestionsCreateHandler(ExperimentHandler):
   def make_processed_suggestion_meta_from_json(json_dict):
     suggestion_meta = ProcessedSuggestionMeta()
 
-    client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(json_dict)
-    if client_provided_data is not None:
+    if (client_provided_data := BaseExperimentsCreateHandler.get_client_provided_data(json_dict)) is not None:
       suggestion_meta.client_provided_data = client_provided_data
 
     return suggestion_meta

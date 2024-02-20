@@ -30,8 +30,7 @@ class QueuedSuggestionHandler(ExperimentHandler):
     )
 
   def _find_queued_suggestion(self, queued_suggestion_id):
-    queued_suggestion = self.services.queued_suggestion_service.find_by_id(self.experiment_id, queued_suggestion_id)
-    if queued_suggestion is not None:
+    if (queued_suggestion := self.services.queued_suggestion_service.find_by_id(self.experiment_id, queued_suggestion_id)) is not None:
       if queued_suggestion.experiment_id == self.experiment_id:
         return queued_suggestion
     raise NotFoundError(f"No QueuedSuggestion {queued_suggestion_id} for experiment {self.experiment_id}")

@@ -221,8 +221,7 @@ class Request(RequestBase):
     raise SigoptValidationError("Malformed json in request body") from e
 
   def params(self):
-    ret = self._params
-    if ret is self._MISSING:
+    if (ret := self._params) is self._MISSING:
       if self.method in ("GET", "DELETE"):
         self._params = {validate_api_input(k): validate_api_input(v) for k, v in self.args.items()}
       elif self.method in ("PUT", "POST", "MERGE"):
@@ -259,8 +258,7 @@ class Request(RequestBase):
 
   def required_param(self, name):
     """Retrieve ``name`` from flask HTTP request and *fail* if ``name`` is not found."""
-    value = self.optional_param(name)
-    if value is not None:
+    if (value := self.optional_param(name)) is not None:
       return value
     raise MissingParamError(name)
 
@@ -283,8 +281,7 @@ class Request(RequestBase):
         """
     assert self.method in ("GET", "POST", "DELETE"), "Must use get_with_validation for non-query arguments"
     param_string = self.params().get(name)
-    param_value = param_string.split(",") if param_string else None
-    if param_value is None:
+    if (param_value := param_string.split(",") if param_string else None) is None:
       return None
     if not isinstance(param_value, list):
       raise SigoptValidationError("Invalid list value: " + param_value)
@@ -296,14 +293,12 @@ class Request(RequestBase):
     return SortRequest(field, ascending)
 
   def _parse_marker(self, name):
-    serialized_marker = self.optional_param(name)
-    if serialized_marker is None:
+    if (serialized_marker := self.optional_param(name)) is None:
       return None
     return deserialize_paging_marker(serialized_marker)
 
   def get_paging(self, max_limit=DEFAULT_PAGING_MAX_LIMIT):
-    limit = self.optional_int_param("limit")
-    if limit is None:
+    if (limit := self.optional_int_param("limit")) is None:
       limit = max_limit
     if limit < 0:
       raise InvalidValueError(f"Invalid limit: {limit}")

@@ -22,10 +22,9 @@ class SuggestionsUpdateHandler(SuggestionHandler):
     assert self.suggestion is not None
 
     suggestion_meta = ProcessedSuggestionMeta()
-    client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(
+    if (client_provided_data := BaseExperimentsCreateHandler.get_client_provided_data(
       json_dict, default=self.suggestion.client_provided_data
-    )
-    if client_provided_data is not None:
+    )) is not None:
       suggestion_meta.client_provided_data = client_provided_data
 
     processed = self.suggestion.processed

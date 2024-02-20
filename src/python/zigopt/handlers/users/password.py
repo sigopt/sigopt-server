@@ -88,8 +88,7 @@ class UsersResetPasswordHandler(Handler):
     return validate_email(request.required_param("email"))
 
   def handle(self, email):
-    user = self.services.user_service.find_by_email(email)
-    if user:
+    if user := self.services.user_service.find_by_email(email):
       if user.hashed_password:
         code = self.services.user_service.set_password_reset_code(user)
         self.services.email_router.send(

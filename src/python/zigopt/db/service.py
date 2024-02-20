@@ -408,8 +408,7 @@ class DatabaseService(Service):
   @sanitize_errors
   @retry_on_error
   def one_or_none(self, q: Query) -> Any | None:
-    ret = q.one_or_none()
-    if ret is not None:
+    if (ret := q.one_or_none()) is not None:
       self._expunge_one(ret)
     self._rollback()
     return ret

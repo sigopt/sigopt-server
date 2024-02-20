@@ -24,11 +24,10 @@ class ProjectHandler(ClientHandler):
     )
 
   def _find_project(self):
-    project = self.services.project_service.find_by_client_and_reference_id(
+    if (project := self.services.project_service.find_by_client_and_reference_id(
       client_id=self.client_id,
       reference_id=self.project_reference_id,
-    )
-    if project is None:
+    )) is None:
       raise NotFoundError(f"No project {self.project_reference_id} in client {self.client_id}")
     return project
 

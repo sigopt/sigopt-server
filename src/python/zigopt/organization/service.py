@@ -81,8 +81,7 @@ class OrganizationService(Service):
 
   def delete(self, organization: Organization) -> bool:
     date_deleted = current_datetime()
-    did_update = self.delete_by_id(organization.id, date_deleted=date_deleted)
-    if did_update:
+    if did_update := self.delete_by_id(organization.id, date_deleted=date_deleted):
       organization.date_deleted = date_deleted
     return did_update
 
@@ -206,8 +205,7 @@ class OrganizationService(Service):
         )
 
       for i in invites_to_organization:
-        existing_invite = self.services.invite_service.find_by_email_and_organization(i.email, dest_organization.id)
-        if existing_invite:
+        if existing_invite := self.services.invite_service.find_by_email_and_organization(i.email, dest_organization.id):
           self.services.invite_service.delete_by_id(i.id)
         else:
           self.services.database_service.update(

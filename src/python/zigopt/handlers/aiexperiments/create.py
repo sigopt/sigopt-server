@@ -340,8 +340,7 @@ class ClientsProjectsAiExperimentsCreateHandler(ProjectHandler, BaseExperimentsC
 
   @classmethod
   def get_metric_name(cls, metric, seen_names, num_metrics):
-    name = super().get_metric_name(metric, seen_names, num_metrics)
-    if name is None:
+    if (name := super().get_metric_name(metric, seen_names, num_metrics)) is None:
       raise MissingJsonKeyError("name", "All metrics require a name")
     return name
 

@@ -112,8 +112,7 @@ class CategoricalOptimizationSource(OptimizationSource):
 
   def extract_hyperparameter_dict(self, optimization_args):
     multimetric_hyperparameter_dicts = []
-    multimetric_hyperparameters = optimization_args.old_hyperparameters
-    if multimetric_hyperparameters is None:
+    if (multimetric_hyperparameters := optimization_args.old_hyperparameters) is None:
       return self.default_hyperparameter_dict(optimization_args)
     for hp in sorted(multimetric_hyperparameters.multimetric_hyperparameter_value, key=lambda val: val.metric_name):
       cat_hp_dict = self.extract_cat_hyperparameter_dict(optimization_args, hp.categorical_hyperparameters)

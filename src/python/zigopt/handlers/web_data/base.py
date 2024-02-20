@@ -23,8 +23,7 @@ class WebDataBaseHandler(Handler):
   def can_act_on_objects(self, requested_permission, objects):
     params = self._request.request.params()
 
-    parent_resource_id = params.get("parent_resource_id", None)
-    if parent_resource_id is None:
+    if (parent_resource_id := params.get("parent_resource_id", None)) is None:
       raise SigoptValidationError("No parent_resource_id set.")
 
     # For list/delete parent_resource_id is stringified to fit inside query params
