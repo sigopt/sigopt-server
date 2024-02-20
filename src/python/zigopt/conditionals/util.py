@@ -53,7 +53,7 @@ def convert_to_unconditioned_experiment(experiment):
 
 def check_all_conditional_values_satisfied(experiment_meta):
   num_conditional_values = numpy.product([len(c.values) for c in experiment_meta.conditionals])
-  satisfied_parameter_configurations = set([])
+  satisfied_parameter_configurations = set()
   for parameter in experiment_meta.all_parameters_unsorted:
     conditional_values = []
     for conditional in experiment_meta.conditionals:

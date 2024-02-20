@@ -10,7 +10,7 @@ from google.protobuf.struct_pb2 import Struct  # pylint: disable=no-name-in-modu
 
 
 def _validate_class(fields: Sequence[FieldDescriptor]) -> None:
-  seen_names = set([])
+  seen_names = set()
   for field in fields:
     serialize_name = field.json_name or field.name  # type: ignore
     if serialize_name in seen_names:
