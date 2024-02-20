@@ -53,10 +53,12 @@ class TrainingRunsAddTagHandler(BaseTrainingRunsTagHandler):
 
     tag_id = params[self.ID_PARAM]
 
-    if (tag := self.services.tag_service.find_by_client_and_id(
-      client_id=self.training_run.client_id,
-      tag_id=tag_id,
-    )) is None:
+    if (
+      tag := self.services.tag_service.find_by_client_and_id(
+        client_id=self.training_run.client_id,
+        tag_id=tag_id,
+      )
+    ) is None:
       raise UnprocessableEntityError(
         f"The tag with id {tag_id} cannot be added to this training run because it does not exist."
       )
@@ -88,10 +90,12 @@ class TrainingRunsRemoveTagHandler(BaseTrainingRunsTagHandler):
 
   def find_objects(self):
     objs = super().find_objects()
-    if (tag := self.services.tag_service.find_by_client_and_id(
-      client_id=objs["training_run"].client_id,
-      tag_id=self.tag_id,
-    )) is None:
+    if (
+      tag := self.services.tag_service.find_by_client_and_id(
+        client_id=objs["training_run"].client_id,
+        tag_id=self.tag_id,
+      )
+    ) is None:
       raise NotFoundError("Tag not found")
     objs["tag"] = tag
     return objs

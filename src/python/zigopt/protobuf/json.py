@@ -65,24 +65,26 @@ def next_descriptor_for_field_descriptor(descriptor):
   if descriptor.type == FieldDescriptor.TYPE_ENUM:
     return OurEnumDescriptor(descriptor)
 
-  if (python_type := (
-    {
-      FieldDescriptor.TYPE_BOOL: bool,
-      FieldDescriptor.TYPE_DOUBLE: float,
-      FieldDescriptor.TYPE_FIXED32: int,
-      FieldDescriptor.TYPE_FIXED64: int,
-      FieldDescriptor.TYPE_FLOAT: float,
-      FieldDescriptor.TYPE_INT32: int,
-      FieldDescriptor.TYPE_INT64: int,
-      FieldDescriptor.TYPE_SFIXED32: int,
-      FieldDescriptor.TYPE_SFIXED64: int,
-      FieldDescriptor.TYPE_SINT32: int,
-      FieldDescriptor.TYPE_SINT64: int,
-      FieldDescriptor.TYPE_STRING: str,
-      FieldDescriptor.TYPE_UINT32: int,
-      FieldDescriptor.TYPE_UINT64: int,
-    }
-  ).get(descriptor.type)) is None:
+  if (
+    python_type := (
+      {
+        FieldDescriptor.TYPE_BOOL: bool,
+        FieldDescriptor.TYPE_DOUBLE: float,
+        FieldDescriptor.TYPE_FIXED32: int,
+        FieldDescriptor.TYPE_FIXED64: int,
+        FieldDescriptor.TYPE_FLOAT: float,
+        FieldDescriptor.TYPE_INT32: int,
+        FieldDescriptor.TYPE_INT64: int,
+        FieldDescriptor.TYPE_SFIXED32: int,
+        FieldDescriptor.TYPE_SFIXED64: int,
+        FieldDescriptor.TYPE_SINT32: int,
+        FieldDescriptor.TYPE_SINT64: int,
+        FieldDescriptor.TYPE_STRING: str,
+        FieldDescriptor.TYPE_UINT32: int,
+        FieldDescriptor.TYPE_UINT64: int,
+      }
+    ).get(descriptor.type)
+  ) is None:
     raise NotImplementedError(f"Unknown message type: {descriptor.type}")
   return python_type
 

@@ -205,7 +205,9 @@ class OrganizationService(Service):
         )
 
       for i in invites_to_organization:
-        if existing_invite := self.services.invite_service.find_by_email_and_organization(i.email, dest_organization.id):
+        if existing_invite := self.services.invite_service.find_by_email_and_organization(
+          i.email, dest_organization.id
+        ):
           self.services.invite_service.delete_by_id(i.id)
         else:
           self.services.database_service.update(

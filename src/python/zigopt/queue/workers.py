@@ -72,7 +72,9 @@ class QueueWorkers(QueueMessageHandler):
     self._get_pull_queue_name()
 
   def _get_pull_queue_name(self):
-    if (queue_name := self.global_services.message_router.get_queue_name_from_message_group(self.message_group)) is None:
+    if (
+      queue_name := self.global_services.message_router.get_queue_name_from_message_group(self.message_group)
+    ) is None:
       raise Exception(f"Missing queue name for {self.message_group}")
     return queue_name
 
@@ -92,10 +94,12 @@ class QueueWorkers(QueueMessageHandler):
       self.logger.info("QueueWorkers killed by kill policy")
       raise WorkerKilledException()
 
-    if (max_messages_threshold := coalesce(
-      base_max_messages,
-      self.global_services.config_broker.get(f"queue.{self.message_group.value}.max_messages"),
-    )) is None:
+    if (
+      max_messages_threshold := coalesce(
+        base_max_messages,
+        self.global_services.config_broker.get(f"queue.{self.message_group.value}.max_messages"),
+      )
+    ) is None:
       should_process = True
     else:
       max_messages_threshold = max(max_messages_threshold, self.jitter * 2)

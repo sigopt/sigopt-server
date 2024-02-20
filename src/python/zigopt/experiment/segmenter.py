@@ -68,7 +68,7 @@ class ExperimentParameterSegmenter(Service):
     for has_assignments_map in with_assignments_maps:
       for name, assignment in has_assignments_map.get_assignments(experiment).items():
         remaining_intervals = intervals.get(name, [])
-# pylint: disable=cell-var-from-loop
+        # pylint: disable=cell-var-from-loop
         if to_remove := find(remaining_intervals, lambda i: assignment in i):
           remaining_intervals.remove(to_remove)
 

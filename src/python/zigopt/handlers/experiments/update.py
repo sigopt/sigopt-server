@@ -354,10 +354,12 @@ class ExperimentsUpdateHandler(ExperimentHandler):
 
     update_experiment_fields["date_updated"] = current_datetime()
     self.experiment.date_updated = update_experiment_fields["date_updated"]
-    if (update_count := self.services.database_service.update_one(
-      self.services.database_service.query(Experiment).filter(Experiment.id == self.experiment.id),
-      update_experiment_fields,
-    )) == 0:
+    if (
+      update_count := self.services.database_service.update_one(
+        self.services.database_service.query(Experiment).filter(Experiment.id == self.experiment.id),
+        update_experiment_fields,
+      )
+    ) == 0:
       raise NotFoundError(f"No experiment {self.experiment.id}")
 
     if original_project_id is not None:
@@ -526,11 +528,13 @@ class ExperimentsUpdateHandler(ExperimentHandler):
     set_grid_values_from_json(parameter, parameter_json)
 
   def _maybe_set_parameter_categorical_values(self, parameter, parameter_json):
-    if (categorical_values_json := get_opt_with_validation(
-      parameter_json,
-      "categorical_values",
-      ValidationType.arrayOf(ValidationType.oneOf([ValidationType.object, ValidationType.string])),
-    )) is None:
+    if (
+      categorical_values_json := get_opt_with_validation(
+        parameter_json,
+        "categorical_values",
+        ValidationType.arrayOf(ValidationType.oneOf([ValidationType.object, ValidationType.string])),
+      )
+    ) is None:
       return
 
     categorical_values_map = dict((c.name, c) for c in parameter.all_categorical_values)

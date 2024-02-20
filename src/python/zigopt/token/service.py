@@ -73,7 +73,9 @@ class TokenService(Service):
   def _get_or_create_role_token(self, client_id: int, user_id: int, development: bool) -> Token:
     assert client_id is not None
     assert user_id is not None
-    if existing := [token for token in self.find_by_client_and_user(client_id, user_id) if token.development == development]:
+    if existing := [
+      token for token in self.find_by_client_and_user(client_id, user_id) if token.development == development
+    ]:
       return existing[0]
     token_type = TokenType.CLIENT_DEV if development else TokenType.CLIENT_API
     meta = self._make_meta(session_expiration=None, token_type=token_type, can_renew=False)
@@ -191,7 +193,6 @@ class TokenService(Service):
 
   def rotate_token(self, token: Token) -> Token | None:
     token_string = random_string()
-
 
     if updated := self.services.database_service.update_one_or_none(
       self.services.database_service.query(Token).filter(Token.token == token.token), {Token.token: token_string}

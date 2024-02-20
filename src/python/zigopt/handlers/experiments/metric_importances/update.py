@@ -16,10 +16,12 @@ class MetricImportancesUpdateHandler(ExperimentHandler):
     assert self.experiment is not None
 
     num_observations = self.services.observation_service.count_by_experiment(self.experiment)
-    if (q_msg := self.services.optimize_queue_service.always_enqueue_importances(
-      experiment=self.experiment,
-      num_observations=num_observations,
-    )) is None:
+    if (
+      q_msg := self.services.optimize_queue_service.always_enqueue_importances(
+        experiment=self.experiment,
+        num_observations=num_observations,
+      )
+    ) is None:
       raise UnprocessableEntityError(
         "Parameter importances update failed. (This experiment may not support importances.)"
       )

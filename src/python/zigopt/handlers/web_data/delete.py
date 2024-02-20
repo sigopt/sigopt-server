@@ -26,9 +26,11 @@ class WebDataDeleteHandler(WebDataBaseHandler):
     web_data_id = params["id"]
 
     # Ensure the id is for the right resource
-    if (web_data := self.services.web_data_service.find_by_parent_resource_id_and_id(
-      parent_resource, web_data_type, parent_resource_id, web_data_id
-    )) is None:
+    if (
+      web_data := self.services.web_data_service.find_by_parent_resource_id_and_id(
+        parent_resource, web_data_type, parent_resource_id, web_data_id
+      )
+    ) is None:
       raise NotFoundError(
         f"Cannot find web data of type: {web_data_type}, with parent resource: {parent_resource} and id: {web_data_id}."
       )

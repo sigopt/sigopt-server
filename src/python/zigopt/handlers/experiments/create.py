@@ -280,10 +280,12 @@ class BaseExperimentsCreateHandler(Handler):
     has_constraint_metrics = any(m.strategy == ExperimentMetric.CONSTRAINT for m in experiment_meta.metrics)
     has_optimization_metrics = len(optimized_metrics) > 0
 
-    if (num_solutions := cls.get_num_solutions_from_json(
-      json_dict,
-      experiment_meta.all_parameters_unsorted,
-    )) is not None:
+    if (
+      num_solutions := cls.get_num_solutions_from_json(
+        json_dict,
+        experiment_meta.all_parameters_unsorted,
+      )
+    ) is not None:
       experiment_meta.num_solutions = num_solutions
 
     if (parallel_bandwidth := cls.get_parallel_bandwidth_from_json(json_dict)) is not None:
@@ -379,11 +381,13 @@ class BaseExperimentsCreateHandler(Handler):
 
   @classmethod
   def get_metric_list_from_json(cls, json_dict):
-    if (metrics := get_opt_with_validation(
-      json_dict,
-      "metrics",
-      ValidationType.arrayOf(ValidationType.oneOf([ValidationType.string, ValidationType.object])),
-    )) is None:
+    if (
+      metrics := get_opt_with_validation(
+        json_dict,
+        "metrics",
+        ValidationType.arrayOf(ValidationType.oneOf([ValidationType.string, ValidationType.object])),
+      )
+    ) is None:
       assert MAX_METRICS_ANY_STRATEGY >= 1
       assert MAX_OPTIMIZED_METRICS >= 1
       return [ExperimentMetric()]
