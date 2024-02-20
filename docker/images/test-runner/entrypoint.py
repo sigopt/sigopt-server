@@ -8,14 +8,14 @@ import os
 import signal
 import subprocess
 import sys
+from security import safe_command
 
 
 DISPLAY_NUM = os.environ["DISPLAY_NUM"]
 GEOMETRY = os.environ["GEOMETRY"]
 
 with open("/dev/null", "w", encoding="utf-8") as devnull:
-  with subprocess.Popen(
-    [
+  with safe_command.run(subprocess.Popen, [
       "xvfb-run",
       f"--server-num={DISPLAY_NUM}",
       "--listen-tcp",
@@ -26,8 +26,8 @@ with open("/dev/null", "w", encoding="utf-8") as devnull:
     stdout=devnull,
     preexec_fn=os.setpgrp,
   ) as xvfb:
-    with subprocess.Popen(["/start-x11vnc.sh"], stdout=devnull, stderr=devnull, preexec_fn=os.setpgrp) as x11vnc:
-      with subprocess.Popen(sys.argv[1:]) as main:
+    with safe_command.run(subprocess.Popen, ["/start-x11vnc.sh"], stdout=devnull, stderr=devnull, preexec_fn=os.setpgrp) as x11vnc:
+      with safe_command.run(subprocess.Popen, sys.argv[1:]) as main:
         signal.signal(signal.SIGINT, lambda *_: main.send_signal(signal.SIGINT))
         return_code = main.wait()
 

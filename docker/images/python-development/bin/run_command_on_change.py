@@ -13,6 +13,7 @@ from subprocess import Popen, TimeoutExpired
 
 # pylint: disable=import-error
 from inotify.adapters import InotifyTree
+from security import safe_command
 
 
 # pylint: enable=import-error
@@ -53,7 +54,7 @@ def get_watchers(file_changed_event, stop_event, directories):
 def event_loop(file_changed_event, command, initial_run):
   batch_wait_time = 0.1
   if initial_run:
-    process = Popen(command, start_new_session=True)  # pylint: disable=consider-using-with
+    process = safe_command.run(Popen, command, start_new_session=True)  # pylint: disable=consider-using-with
   else:
     process = None
   while True:
@@ -76,7 +77,7 @@ def event_loop(file_changed_event, command, initial_run):
             process.wait()
     time.sleep(batch_wait_time)
     file_changed_event.clear()
-    process = Popen(command, start_new_session=True)  # pylint: disable=consider-using-with
+    process = safe_command.run(Popen, command, start_new_session=True)  # pylint: disable=consider-using-with
 
 
 parser = argparse.ArgumentParser()
