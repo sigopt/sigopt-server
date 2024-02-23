@@ -13,7 +13,6 @@ SPDX-License-Identifier: Apache License 2.0
 ![python](https://github.com/sigopt/sigopt-server/actions/workflows/python.yml/badge.svg)
 ![security](https://github.com/sigopt/sigopt-server/actions/workflows/security.yml/badge.svg)
 ![web](https://github.com/sigopt/sigopt-server/actions/workflows/web.yml/badge.svg)
-![upgrades](https://github.com/sigopt/sigopt-server/actions/workflows/upgrades.yml/badge.svg)
 
 Sigopt-Server is an open-source tool for managing adaptive experiments, especially for hyperparameter optimization. It uses algorithms to determine the best spots in parameter space for metric optimization, and includes web visualizations so you can improve your models. For more information you can [read about our service offering](https://sigopt.com/). Our documentation is [here](https://docs.sigopt.com/)
 
