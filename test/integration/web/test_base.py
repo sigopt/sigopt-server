@@ -5,12 +5,14 @@ import html
 import itertools
 import json
 import os
+from http import HTTPStatus
 from urllib.parse import urlparse
 
 import pytest
 import requests
 from lxml import html as lhtml
 from requests.cookies import RequestsCookieJar
+from requests.exceptions import HTTPError
 
 from zigopt.common import *
 from zigopt.membership.model import MembershipType
@@ -134,13 +136,24 @@ class WebConnection:
     return self.login_as(self.email, self.password)
 
   def login_as(self, email, password):
-    return self.post(
-      "/login",
-      {
-        "email": email,
-        "password": password,
-      },
-    )
+    # try logging in multiple times because the browser tests sometimes fail here
+    def login_attempt():
+      return self.post(
+        "/login",
+        {
+          "email": email,
+          "password": password,
+        },
+      )
+
+    retries = 1
+    for _ in range(retries):
+      try:
+        return login_attempt()
+      except HTTPError as http_e:
+        if http_e.response.status_code != HTTPStatus.INTERNAL_SERVER_ERROR:
+          raise
+    return login_attempt()
 
   def get(self, url, params=None, raise_for_status=True, **kwargs):
     if not url.startswith("http"):
