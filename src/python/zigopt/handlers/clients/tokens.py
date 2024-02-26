@@ -187,10 +187,12 @@ class ClientsTokensListDetailHandler(ClientHandler):
     auth = self.auth
     assert self.client is not None
     client = self.client
-    if (role_token := find(
-      tokens,
-      lambda t: t.user_id == auth.current_user.id and t.client_id == client.id and t.development is False,
-    )) is None:
+    if (
+      role_token := find(
+        tokens,
+        lambda t: t.user_id == auth.current_user.id and t.client_id == client.id and t.development is False,
+      )
+    ) is None:
       role_token = self.services.token_service.get_or_create_role_token(
         self.client.id,
         self.auth.current_user.id,
@@ -204,10 +206,12 @@ class ClientsTokensListDetailHandler(ClientHandler):
     assert current_user is not None
     assert self.client is not None
     client = self.client
-    if (development_token := find(
-      tokens,
-      lambda t: t.user_id == current_user.id and t.client_id == client.id and t.development is True,
-    )) is None:
+    if (
+      development_token := find(
+        tokens,
+        lambda t: t.user_id == current_user.id and t.client_id == client.id and t.development is True,
+      )
+    ) is None:
       development_token = self.services.token_service.get_or_create_development_role_token(
         self.client.id,
         self.auth.current_user.id,
