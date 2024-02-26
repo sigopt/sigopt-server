@@ -53,8 +53,7 @@ def validate_assignments_meta(
   if OPTIMIZED_ASSIGNMENT_SOURCE in sources:
     raise SigoptValidationError(f" {OPTIMIZED_ASSIGNMENT_SOURCE} source is reserved and set automatically.")
 
-  metas_without_param = set(meta_keys) - set(params)
-  if metas_without_param:
+  if metas_without_param := set(meta_keys) - set(params):
     raise SigoptValidationError(
       f" Parameter meta exist for {metas_without_param} but there is no corresponding parameter."
     )

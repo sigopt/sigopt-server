@@ -44,8 +44,7 @@ class OrganizationsUpdateHandler(OrganizationHandler):
       "allow_signup_from_email_domains",
       ValidationType.boolean,
     )
-    email_domains = get_opt_with_validation(data, "email_domains", ValidationType.arrayOf(ValidationType.string))
-    if email_domains:
+    if email_domains := get_opt_with_validation(data, "email_domains", ValidationType.arrayOf(ValidationType.string)):
       email_domains = [validate_email_domain(domain) for domain in email_domains]
 
     did_enable_allow_signup = (

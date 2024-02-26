@@ -83,8 +83,7 @@ def partition(lis: Sequence[T], predicate: Callable[[T], bool]) -> tuple[list[T]
   true_list = []
   false_list = []
   for l in as_list:
-    pred_value = predicate(l)
-    if pred_value:
+    if predicate(l):
       true_list.append(l)
     else:
       false_list.append(l)

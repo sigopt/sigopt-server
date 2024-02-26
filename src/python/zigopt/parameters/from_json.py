@@ -84,8 +84,7 @@ def set_parameter_type_from_json(parameter, parameter_json):
 
 
 def set_bounds_from_json(parameter, parameter_json, experiment_type):
-  grid_values = get_opt_with_validation(parameter_json, "grid", ValidationType.arrayOf(ValidationType.number))
-  if grid_values:
+  if grid_values := get_opt_with_validation(parameter_json, "grid", ValidationType.arrayOf(ValidationType.number)):
     if parameter_json.get("bounds") is not None:
       raise InvalidKeyError(
         "Parameters with grid cannot have bounds on parameters. They are inferred from the supplied grid."
@@ -322,8 +321,7 @@ def set_transformation_from_json(parameter, parameter_json):
     if parameter_json.get("transformation") is not None:
       raise SigoptValidationError("Transformation is only valid for parameters of type `double`")
 
-  transformation_string = get_opt_with_validation(parameter_json, "transformation", ValidationType.string)
-  if transformation_string:
+  if transformation_string := get_opt_with_validation(parameter_json, "transformation", ValidationType.string):
     try:
       parameter.transformation = PARAMETER_TRANSFORMATION_NAME_TO_TYPE[transformation_string]
     except KeyError as e:

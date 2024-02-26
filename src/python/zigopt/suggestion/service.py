@@ -77,8 +77,7 @@ class SuggestionService(Service):
     unprocessed_suggestions_by_id = to_map_by_key(unprocessed_suggestions, lambda u: u.id)
 
     for p in processed_suggestions:
-      u = unprocessed_suggestions_by_id.get(p.suggestion_id)
-      if u:
+      if u := unprocessed_suggestions_by_id.get(p.suggestion_id):
         yield Suggestion(processed=p, unprocessed=u)
       else:
         self.services.exception_logger.soft_exception(

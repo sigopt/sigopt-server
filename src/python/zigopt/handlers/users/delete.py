@@ -24,8 +24,7 @@ class UsersDeleteHandler(UserHandler):
     self.ensure_no_orphaned_organizations()
     self.ensure_no_orphaned_clients()
 
-    validated_request = password and password_matches(password, self.user.hashed_password)
-    if validated_request:
+    if validated_request := password and password_matches(password, self.user.hashed_password):
       do_password_hash_work_factor_update(self.services, self.user, password)
     if validated_request:
       self.do_delete()
@@ -54,14 +53,12 @@ class UsersDeleteHandler(UserHandler):
     )
     still_owned_organization_ids = set(m.organization_id for m in other_owner_memberships)
 
-    unowned_organization_ids = organization_ids - still_owned_organization_ids
-    if unowned_organization_ids:
+    if unowned_organization_ids := organization_ids - still_owned_organization_ids:
       other_non_owner_memberships = self.services.membership_service.organizations_with_other_non_owners(
         list(unowned_organization_ids),
         self.user.id,
       )
-      orphaned_organization_ids = set(m.organization_id for m in other_non_owner_memberships)
-      if orphaned_organization_ids:
+      if orphaned_organization_ids := set(m.organization_id for m in other_non_owner_memberships):
         raise ForbiddenError(
           "This user cannot be deleted without assigning another owner or removing "
           f"all other users from the following organizations: {orphaned_organization_ids}"
@@ -80,18 +77,16 @@ class UsersDeleteHandler(UserHandler):
       self.user.id,
     )
     other_owned_organizations = set(m.organization_id for m in organizations_with_other_owners)
-    client_ids = [p.client_id for p in permissions if p.organization_id not in other_owned_organizations]
 
-    if client_ids:
+    if client_ids := [p.client_id for p in permissions if p.organization_id not in other_owned_organizations]:
       outstanding_permissions = self.services.database_service.all(
         self.services.database_service.query(Permission)
         .filter(Permission.client_id.in_(client_ids))
         .filter(Permission.user_id != self.user.id)
       )
       outstanding_client_ids = [p.client_id for p in outstanding_permissions]
-      orphaned_clients = list(set(client_ids) - set(outstanding_client_ids))
 
-      if orphaned_clients:
+      if orphaned_clients := list(set(client_ids) - set(outstanding_client_ids)):
         raise ForbiddenError(f"This user cannot be deleted without deleting the following clients: {orphaned_clients}")
 
   def do_delete(self):

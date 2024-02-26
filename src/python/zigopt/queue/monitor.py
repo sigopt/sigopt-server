@@ -97,8 +97,7 @@ class QueueMonitor(Service):
 
   def _update_status(self, queue_name, status):
     with self.services.exception_logger.tolerate_exceptions(RedisServiceError):
-      status = remove_nones_mapping(status)
-      if status:
+      if status := remove_nones_mapping(status):
         self.services.redis_service.set_hash_fields(self._queue_monitor_name(queue_name), status)
 
   def _can_send_alert(self, status, now):

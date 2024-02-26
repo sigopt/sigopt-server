@@ -174,8 +174,7 @@ class BaseUsersCreateHandler(Handler):
       if invite.invite_code == invite_code or (not self.services.email_verification_service.enabled)
     ]
     # TODO: This doesn't handle multiple invite codes. We probably don't need to
-    claimable_invite = list_get(claimable_invites, 0)
-    if claimable_invite:
+    if claimable_invite := list_get(claimable_invites, 0):
       if self.services.invite_service.invite_is_valid(claimable_invite):
         return claimable_invite
       raise ForbiddenError("This invite is no longer valid.")
@@ -247,8 +246,7 @@ class UsersCreateHandler(BaseUsersCreateHandler):
     )
 
   def handle(self, params):
-    verified_invite = self.get_verified_invite(params.user_attributes.email, params.invite_code)
-    if verified_invite:
+    if verified_invite := self.get_verified_invite(params.user_attributes.email, params.invite_code):
       has_verified_email = params.has_verified_email or verified_invite.invite_code == params.invite_code
       user = self.create_user_by_invite(params.user_attributes, verified_invite, has_verified_email)
       self.create_clients_and_permissions(user, verified_invite)

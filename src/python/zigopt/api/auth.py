@@ -124,12 +124,10 @@ def _password_reset_authentication(services, request):
     to the method as the first argument.
     """
   email = napply(request.optional_param("email"), validate_email)
-  optional_api_token = request.optional_api_token()
-  if optional_api_token:
+  if optional_api_token := request.optional_api_token():
     token = _validate_api_token(request.optional_user_token())
     token_authorization = _do_api_token_authentication(services, request, token, mandatory=True)
-    auth_email = token_authorization.current_user and token_authorization.current_user.email
-    if auth_email:
+    if auth_email := token_authorization.current_user and token_authorization.current_user.email:
       if email and auth_email != email:
         raise BadParamError("Invalid email parameter when authenticating with API token")
       email = auth_email

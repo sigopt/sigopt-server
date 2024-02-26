@@ -88,8 +88,7 @@ class AiExperimentTrainingRunsCreateHandler(
 
     assignments = self.get_assignments_relevant_to_experiment(training_run_params)
     values, failed = self.get_observation_values(training_run_params)
-    observation = self.maybe_create_observation_from_data(assignments, values, failed)
-    if observation:
+    if observation := self.maybe_create_observation_from_data(assignments, values, failed):
       observation_assignments = observation.get_assignments(self.experiment)
       return observation, assignments_json(self.experiment, observation_assignments)
     return None, {}
@@ -119,8 +118,7 @@ class AiExperimentTrainingRunsCreateHandler(
   def maybe_create_suggestion(self, training_run_params):
     assert self.experiment is not None
 
-    provided_experiment_assignments = self.get_assignments_relevant_to_experiment(training_run_params)
-    if provided_experiment_assignments:
+    if provided_experiment_assignments := self.get_assignments_relevant_to_experiment(training_run_params):
       suggestion = self.maybe_create_explicit_suggestion_from_assignments(provided_experiment_assignments)
     else:
       suggestion = self.serve_suggestion()

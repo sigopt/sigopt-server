@@ -81,8 +81,7 @@ class UnprocessedSuggestionService(Service):
     self.services.database_service.update_all(UnprocessedSuggestion, updated_suggestions)
 
   def delete_by_id(self, experiment: Experiment, suggestion_id: int) -> None:
-    suggestion = self.find_by_id(suggestion_id)
-    if suggestion:
+    if suggestion := self.find_by_id(suggestion_id):
       new_meta: SuggestionMeta = copy_protobuf(suggestion.suggestion_meta)
       new_meta.deleted = True
       self.services.database_service.update_one(
@@ -130,8 +129,7 @@ class UnprocessedSuggestionService(Service):
     )
 
   def insert_suggestions_to_be_processed(self, generated_suggestions: Sequence[UnprocessedSuggestion]) -> None:
-    generated_suggestions = list(generated_suggestions)
-    if generated_suggestions:
+    if generated_suggestions := list(generated_suggestions):
       generated_ids = self.services.database_service.reserve_ids(
         SUGGESTIONS_ID_SEQUENCE_NAME,
         len(generated_suggestions),
@@ -200,8 +198,7 @@ class UnprocessedSuggestionService(Service):
       source,
     )
     # suggestions are sorted by time created/added; this grabs the oldest ones
-    suggestions_to_drop = self.services.redis_service.get_sorted_set_range(suggestion_timestamp_key, 0, stop_index)
-    if suggestions_to_drop:
+    if suggestions_to_drop := self.services.redis_service.get_sorted_set_range(suggestion_timestamp_key, 0, stop_index):
       suggestion_protobuf_key = self.services.redis_key_service.create_suggestion_protobuf_key(experiment_id, source)
       self.services.redis_service.remove_from_hash(suggestion_protobuf_key, *suggestions_to_drop)
       self.services.redis_service.remove_from_sorted_set(suggestion_timestamp_key, *suggestions_to_drop)

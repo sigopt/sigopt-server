@@ -148,8 +148,7 @@ def get_json_key(descriptor, key, json=False):
 
 
 def _validate_array(value, descriptor, is_emit):
-  is_field_descriptor = isinstance(descriptor, FieldDescriptor)
-  if is_field_descriptor:
+  if isinstance(descriptor, FieldDescriptor):
     is_repeated_field = (descriptor.label == FieldDescriptor.LABEL_REPEATED) and not IsMapEntry(descriptor)
     is_array = is_sequence(value)
     if is_array ^ is_repeated_field:

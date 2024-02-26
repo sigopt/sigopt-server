@@ -86,11 +86,9 @@ class UserAuthorization(EmptyAuthorization):
     return False
 
   def _can_act_on_client_artifacts(self, services, requested_permission, client_id, owner_id_for_artifacts):
-    organization_id = self._infer_organization_id_from_client_id(services, client_id)
-    if organization_id:
+    if organization_id := self._infer_organization_id_from_client_id(services, client_id):
       organization = self._infer_organization_from_organization_id(services, organization_id)
-      membership = self._membership(services, organization=organization)
-      if membership:
+      if membership := self._membership(services, organization=organization):
         if membership.is_owner:
           return True
 
