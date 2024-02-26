@@ -10,8 +10,7 @@ from libsigopt.aux.errors import InvalidValueError, MissingParamError
 
 
 def validate_user_name(name: Optional[str]) -> str:
-  name = validate_name(name)
-  if name:
+  if name := validate_name(name):
     if len(name) >= User.NAME_MAX_LENGTH:
       raise InvalidValueError(f"Name must be fewer than {User.NAME_MAX_LENGTH} characters")
     return name

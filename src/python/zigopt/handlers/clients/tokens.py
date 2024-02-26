@@ -57,8 +57,7 @@ class ClientsTokensDeleteHandler(TokenHandler):
     assert self.token is not None
     if not self.token.expiration_timestamp and self.token.all_experiments:
       raise ForbiddenError("Cannot delete root token")
-    success = self.services.token_service.delete_token(self.token)
-    if success:
+    if self.services.token_service.delete_token(self.token):
       return {}
     raise NotFoundError("Token not found")
 

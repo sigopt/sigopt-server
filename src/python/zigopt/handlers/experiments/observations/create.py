@@ -171,8 +171,7 @@ class ObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler):
       no_optimize=self.get_no_optimize_for_observation_json(params),
     )
 
-    bad_keys = params.keys() - observation_json.keys()
-    if bad_keys:
+    if bad_keys := params.keys() - observation_json.keys():
       raise InvalidKeyError(f"Unknown keys were provided for observation create: {bad_keys}")
 
     observation_json = remove_nones_mapping(observation_json)

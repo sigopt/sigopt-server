@@ -39,8 +39,7 @@ class TrainingRunsAddTagHandler(BaseTrainingRunsTagHandler):
   def parse_params(self, request):
     provided_params = request.params()
     acceptable_params = [key for key, _ in self.INPUT_PARAMS]
-    unaccepted_params = provided_params.keys() - acceptable_params
-    if unaccepted_params:
+    if unaccepted_params := provided_params.keys() - acceptable_params:
       raise SigoptValidationError(
         f"Unknown parameters: {unaccepted_params}. Only the following parameters are accepted: {acceptable_params}"
       )

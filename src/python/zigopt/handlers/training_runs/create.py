@@ -36,8 +36,7 @@ class BaseTrainingRunsCreateHandler(Handler):
     return self.parse_request(request)
 
   def parse_request(self, request):
-    unaccepted_params = request.params().keys() - TrainingRunRequestParams.valid_fields
-    if unaccepted_params:
+    if unaccepted_params := request.params().keys() - TrainingRunRequestParams.valid_fields:
       raise SigoptValidationError(f"Unknown parameters: {unaccepted_params}")
 
     training_run_params = TrainingRunRequestParser().parse_params(request)
