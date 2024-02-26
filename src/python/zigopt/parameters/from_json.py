@@ -268,8 +268,7 @@ def set_grid_values_from_json(parameter, parameter_json):
 
 
 def set_default_value_from_json(parameter, parameter_json):
-  default_value = get_opt_with_validation(parameter_json, "default_value", ValidationType.assignment)
-  if default_value is not None:
+  if (default_value := get_opt_with_validation(parameter_json, "default_value", ValidationType.assignment)) is not None:
     value_to_set = get_assignment(parameter, default_value)
     parameter.replacement_value_if_missing = value_to_set
 
@@ -307,8 +306,8 @@ def set_parameter_conditions_from_json(parameter, parameter_json, conditionals_m
     values_json = values_json if is_sequence(values_json) else [values_json]
     values = []
     for value_json in values_json:
-      conditional_value = find(conditional.values, lambda c: c.name == value_json)  # pylint: disable=cell-var-from-loop
-      if conditional_value is None:
+# pylint: disable=cell-var-from-loop
+      if (conditional_value := find(conditional.values, lambda c: c.name == value_json)) is None:
         raise SigoptValidationError(
           f"Conditional {condition.name} on parameter {parameter.name} attempted to use non-existent value {value_json}"
         )

@@ -71,8 +71,7 @@ class BaseExperimentsListHandler(Handler):
 
   @classmethod
   def get_include_ai_param(cls, request):
-    include_ai = request.optional_bool_param("include_ai")
-    if include_ai is None:
+    if (include_ai := request.optional_bool_param("include_ai")) is None:
       include_ai = False
     return include_ai
 

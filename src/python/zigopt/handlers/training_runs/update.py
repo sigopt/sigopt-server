@@ -166,8 +166,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
     now = current_datetime()
 
     training_run_data = params.training_run_params.training_run_data
-    assignments_meta = training_run_data.assignments_meta
-    if assignments_meta is not None:
+    if (assignments_meta := training_run_data.assignments_meta) is not None:
       validate_assignments_meta(training_run_data.assignments_struct, assignments_meta, self.training_run)
 
     if params.training_run_params.deleted is not None:
@@ -194,9 +193,8 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
       update_clause[TrainingRun.completed] = sql_coalesce(TrainingRun.completed, now)
 
     previous_deleted = self.training_run.deleted
-    new_deleted = update_clause.pop(TrainingRun.deleted, previous_deleted)
 
-    if new_deleted != previous_deleted:
+    if (new_deleted := update_clause.pop(TrainingRun.deleted, previous_deleted)) != previous_deleted:
       self.services.training_run_service.set_deleted(self.training_run.id, deleted=new_deleted)
 
     if update_clause:

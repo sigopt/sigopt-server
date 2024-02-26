@@ -166,8 +166,7 @@ def configure_loggers(config_broker):
   if config_broker.get("logging.warnings", "ignore") == "error":
     warnings.simplefilter("error", append=True)
 
-  log_format = config_broker.get("logging.format", "verbose")
-  if log_format == "compact":
+  if (log_format := config_broker.get("logging.format", "verbose")) == "compact":
     set_default_formatter(COMPACT_FORMATTER)
   elif log_format == "json":
     set_default_formatter(

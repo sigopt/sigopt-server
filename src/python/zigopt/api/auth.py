@@ -256,8 +256,7 @@ def _login_authentication(services, request):
     rate_limit_identifier = login_rate_limit.increment_and_check_rate_limit(services, request)
     authentication = authenticate_login(services, email, password, code)
     login_rate_limit.reset_rate_limit(services, rate_limit_identifier)
-    user = authentication.user
-    if user is not None:
+    if (user := authentication.user) is not None:
       authenticated_from_email_link = authentication.authenticated_from_email_link
       user_token = services.token_service.create_temporary_user_token(user.id)
       return UserLoginAuthorization(

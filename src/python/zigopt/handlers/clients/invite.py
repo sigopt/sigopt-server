@@ -152,9 +152,7 @@ class ClientsUninviteHandler(BaseSetPermissionHandler):
         )
 
     self.services.pending_permission_service.delete_by_email_and_client(email, self.client)
-    invite = self.services.invite_service.find_by_email_and_organization(email, self.client.organization_id)
-    if invite:
-      num_pending_permissions = self.services.pending_permission_service.count_by_invite_id(invite.id)
-      if num_pending_permissions == 0:
+    if invite := self.services.invite_service.find_by_email_and_organization(email, self.client.organization_id):
+      if (num_pending_permissions := self.services.pending_permission_service.count_by_invite_id(invite.id)) == 0:
         self.services.invite_service.delete_by_email_and_organization(email, self.client.organization_id)
     return {}

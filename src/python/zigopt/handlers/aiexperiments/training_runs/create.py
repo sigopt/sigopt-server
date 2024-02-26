@@ -154,8 +154,7 @@ class AiExperimentTrainingRunsCreateHandler(
     params.training_run_params.training_run_data.assignments_struct.update(assignments)
 
     training_run_data = params.training_run_params.training_run_data
-    assignments_meta = training_run_data.assignments_meta
-    if assignments_meta is not None:
+    if (assignments_meta := training_run_data.assignments_meta) is not None:
       validate_assignments_meta(training_run_data.assignments_struct, assignments_meta, None)
     if suggestion:
       for assignment in assignments.keys():

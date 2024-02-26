@@ -70,10 +70,9 @@ class CreatesObservationsMixin:
     elif observation.timestamp:
       observation_data.timestamp = observation.timestamp
 
-    client_provided_data = BaseExperimentsCreateHandler.get_client_provided_data(
+    if (client_provided_data := BaseExperimentsCreateHandler.get_client_provided_data(
       json_dict, default=observation.client_provided_data
-    )
-    if client_provided_data is not None:
+    )) is not None:
       observation_data.client_provided_data = client_provided_data
     else:
       if observation_data.HasField("client_provided_data"):

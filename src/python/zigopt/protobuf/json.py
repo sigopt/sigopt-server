@@ -37,14 +37,12 @@ class OurEnumDescriptor(ZigoptDescriptor):
     if serialized_value is _NO_ARG:
       return self.descriptor.default_value
     assert is_string(serialized_value)
-    enum_value = self.descriptor.enum_type.values_by_name.get(serialized_value)
-    if enum_value is None:
+    if (enum_value := self.descriptor.enum_type.values_by_name.get(serialized_value)) is None:
       raise ValueError(f"Unknown name for enum {self.descriptor.enum_type.name}: {serialized_value}")
     return enum_value.number
 
   def serialize(self, value):
-    serialized_value = self.descriptor.enum_type.values_by_number.get(value)
-    if serialized_value is None:
+    if (serialized_value := self.descriptor.enum_type.values_by_number.get(value)) is None:
       raise ValueError(f"Unknown number for enum {self.descriptor.enum_type.name}: {value}")
     return serialized_value.name
 
@@ -67,7 +65,7 @@ def next_descriptor_for_field_descriptor(descriptor):
   if descriptor.type == FieldDescriptor.TYPE_ENUM:
     return OurEnumDescriptor(descriptor)
 
-  python_type = (
+  if (python_type := (
     {
       FieldDescriptor.TYPE_BOOL: bool,
       FieldDescriptor.TYPE_DOUBLE: float,
@@ -84,8 +82,7 @@ def next_descriptor_for_field_descriptor(descriptor):
       FieldDescriptor.TYPE_UINT32: int,
       FieldDescriptor.TYPE_UINT64: int,
     }
-  ).get(descriptor.type)
-  if python_type is None:
+  ).get(descriptor.type)) is None:
     raise NotImplementedError(f"Unknown message type: {descriptor.type}")
   return python_type
 
@@ -101,12 +98,10 @@ def field_descriptor_to_scalar_descriptor(field_descriptor):
 
 def get_json_key_from_field_descriptor(descriptor, key):
   assert isinstance(descriptor, FieldDescriptor)
-  is_array_access = is_integer(key)
-  if is_array_access:
+  if is_array_access := is_integer(key):
     if descriptor.label != FieldDescriptor.LABEL_REPEATED:
       raise InvalidPathError(f"{key} is not a repeated field for {descriptor.full_name}")
-    reached_end = descriptor.message_type is None
-    if reached_end:
+    if reached_end := descriptor.message_type is None:
       return field_descriptor_to_scalar_descriptor(descriptor)
     return descriptor.message_type
   if descriptor.label == FieldDescriptor.LABEL_REPEATED:
@@ -175,8 +170,7 @@ def is_valid_scalar_descriptor_for_value(value, descriptor):
 
 def emit_json_with_descriptor(value, descriptor):
   # pylint: disable=too-many-return-statements
-  is_array = _validate_array(value, descriptor, is_emit=True)
-  if is_array:
+  if is_array := _validate_array(value, descriptor, is_emit=True):
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
     return [emit_json_with_descriptor(v, next_descriptor) for v in value]
   if isinstance(descriptor, Descriptor):
@@ -205,8 +199,7 @@ def emit_json_with_descriptor(value, descriptor):
 
 def parse_json_with_descriptor(value, descriptor, ignore_unknown_fields):
   # pylint: disable=too-many-return-statements
-  is_array = _validate_array(value, descriptor, is_emit=False)
-  if is_array:
+  if is_array := _validate_array(value, descriptor, is_emit=False):
     next_descriptor = next_descriptor_for_field_descriptor(descriptor)
     return [parse_json_with_descriptor(v, next_descriptor, ignore_unknown_fields) for v in value]
   if isinstance(descriptor, Descriptor):
