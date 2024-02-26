@@ -22,8 +22,7 @@ def assignments_json(experiment: Experiment, assignments_dict: dict[str, float])
     },
   }
 
-  unknown_keys = set(assignments_dict.keys()) - set(json_dict.keys())
-  if unknown_keys:
+  if unknown_keys := set(assignments_dict.keys()) - set(json_dict.keys()):
     raise Exception(f"Attempting to render assignments, unknown keys: {', '.join(unknown_keys)}")
 
   return json_dict

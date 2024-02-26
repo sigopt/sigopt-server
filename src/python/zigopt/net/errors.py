@@ -112,8 +112,7 @@ class NotFoundError(RequestError):
 
 class EndpointNotFoundError(NotFoundError):
   def __init__(self, path, msg=None):
-    parts = [p for p in path.lstrip("/").split("/") if p]
-    if parts:
+    if parts := [p for p in path.lstrip("/").split("/") if p]:
       if parts[0] == "v1":
         msg = f"Endpoint not found: {path}"
       else:

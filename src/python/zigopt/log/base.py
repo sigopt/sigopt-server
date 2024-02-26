@@ -91,8 +91,7 @@ def sensitive_filter(record):
 
 def set_default_formatter(formatter):
   root_logger = logging.getLogger()
-  default_handler = list_get(root_logger.handlers, 0)
-  if default_handler:
+  if default_handler := list_get(root_logger.handlers, 0):
     default_handler.setFormatter(formatter)
 
 
@@ -131,8 +130,7 @@ def configure_warnings():
 def configure_loggers(config_broker):
   syslog_handler = syslog_logger_setup(config_broker)
 
-  force_level = config_broker.get("logging.force")
-  if force_level:
+  if force_level := config_broker.get("logging.force"):
     LOG_LEVELS = {"": force_level}
   else:
     LOG_LEVELS = {

@@ -68,8 +68,7 @@ def set_observation_data_assignments_map_from_json(observation_data, json_dict, 
 
 
 def set_observation_data_task_from_json(observation_data, json_dict, experiment):
-  task = extract_task_from_json(experiment, json_dict)
-  if task:
+  if task := extract_task_from_json(experiment, json_dict):
     observation_data.task.CopyFrom(task)
 
 

@@ -97,8 +97,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
   training_run: TrainingRun | None
 
   def parse_params(self, request):
-    unaccepted_params = request.params().keys() - TrainingRunRequestParams.valid_fields
-    if unaccepted_params:
+    if unaccepted_params := request.params().keys() - TrainingRunRequestParams.valid_fields:
       raise SigoptValidationError(f"Unknown parameters: {unaccepted_params}")
 
     method = request.method.lower()

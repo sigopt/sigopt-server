@@ -48,8 +48,7 @@ def render_param_value(parameter: ExperimentParameterProxy, assignment: float) -
 
 
 def render_conditional_value(conditional: ExperimentConditional, assignment: float) -> str:
-  value = find(conditional.values, lambda c: c.enum_index == assignment)
-  if value:
+  if value := find(conditional.values, lambda c: c.enum_index == assignment):
     return value.name
   raise ConditionalParamRenderException(
     f"Conditional {conditional.name} attempting to render unknown value {assignment}", conditional, assignment

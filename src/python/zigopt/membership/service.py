@@ -171,8 +171,7 @@ class MembershipService(Service):
   def create_if_not_exists(
     self, user_id: int, organization_id: int, membership_type: MembershipType | None = None, **kwargs
   ) -> Membership:
-    existing = self.find_by_user_and_organization(user_id, organization_id)
-    if existing:
+    if existing := self.find_by_user_and_organization(user_id, organization_id):
       return existing
     return self.insert(user_id=user_id, organization_id=organization_id, membership_type=membership_type, **kwargs)
 

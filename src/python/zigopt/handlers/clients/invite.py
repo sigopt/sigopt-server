@@ -73,9 +73,8 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
       raise ForbiddenError("You do not have permission to invite this email address.")
 
     client_invites = [dict(id=client.id, role=role, old_role=old_role)]
-    existing_invite = self.services.invite_service.find_by_email_and_organization(email, client.organization_id)
 
-    if existing_invite:
+    if existing_invite := self.services.invite_service.find_by_email_and_organization(email, client.organization_id):
       if existing_invite.membership_type == MembershipType.owner:
         raise InvalidValueError("This email was already invited as an owner")
 

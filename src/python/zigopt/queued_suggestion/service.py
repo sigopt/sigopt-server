@@ -39,8 +39,7 @@ class QueuedSuggestionService(Service):
     return self.services.database_service.one_or_none(q)
 
   def delete_by_id(self, experiment_id: int, queued_id: int) -> None:
-    suggestion = self.find_by_id(experiment_id, queued_id)
-    if suggestion:
+    if suggestion := self.find_by_id(experiment_id, queued_id):
       meta: SuggestionMeta = copy_protobuf(suggestion.meta)
       meta.deleted = True
       self.services.database_service.update_one(
