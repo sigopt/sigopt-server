@@ -27,6 +27,8 @@ services:
       - ./config:/sigopt-server/config
       - minio-config:/etc/minio
       - server-config:/etc/sigopt/server-config
+    cap_drop:
+      - "ALL"
   test-runner:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
@@ -50,6 +52,8 @@ services:
       - /dev/shm:/dev/shm
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - &redis-run-volume redis-run:/var/run/redis
+    cap_drop:
+      - "ALL"
   smtp:
     build:
       <<: *test-runner-build
@@ -79,6 +83,8 @@ services:
       start_period: "30s"
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
   createdb:
     build: &zigopt-build
       dockerfile: docker/images/zigopt/Dockerfile
@@ -101,6 +107,8 @@ services:
       - *pg-sock-volume
     tmpfs:
       - /tmp
+    cap_drop:
+      - "ALL"
   nginx:
     build:
       dockerfile: docker/images/nginx/Dockerfile
@@ -133,6 +141,8 @@ services:
       retries: 0
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
   api:
     build:
       <<: *zigopt-build
@@ -177,6 +187,8 @@ services:
       start_period: "15s"
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
   web-server:
     build:
       dockerfile: docker/images/web/Dockerfile
@@ -209,6 +221,8 @@ services:
       start_period: "2m"
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
   qworker:
     build:
       <<: *zigopt-build
@@ -246,6 +260,8 @@ services:
       start_period: "10s"
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
   qworker-analytics:
     build:
       <<: *zigopt-build
@@ -273,6 +289,8 @@ services:
       <<: *qworker-healthcheck
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
 
   postgres:
     restart: on-failure:5
@@ -299,6 +317,8 @@ services:
       start_period: "10s"
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
   redis:
     restart: on-failure:5
     image: "redis:${REDIS_VERSION}"
@@ -325,6 +345,8 @@ services:
       start_period: "10s"
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
   init-minio-cookiejar:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -332,6 +354,8 @@ services:
       - |
         mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-cookiejar
+    cap_drop:
+      - "ALL"
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -339,6 +363,8 @@ services:
       - |
         mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-user-uploads
+    cap_drop:
+      - "ALL"
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
@@ -373,6 +399,8 @@ services:
       start_period: "10s"
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - "ALL"
 
 volumes:
   minio-config: {}
