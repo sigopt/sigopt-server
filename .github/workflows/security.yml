@@ -7,6 +7,8 @@ on:
     - cron: "0 8,16 * * *"
 jobs:
   trivy-scan-fs:
+    permissions:
+      security-events: write
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
