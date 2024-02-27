@@ -65,6 +65,8 @@ RUN set -ex \
   ; adduser -S produser \
   ; :
 
+USER produser
+
 EXPOSE 4000
 
 ENV NODE_DOMAIN server
