@@ -15,6 +15,8 @@ COPY nginx/ /etc/nginx/
 
 RUN mkdir -p /var/run/nginx
 
+USER nginx
+
 ENTRYPOINT []
 
 CMD ["nginx", "-g", "daemon off;"]
