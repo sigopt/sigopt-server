@@ -43,9 +43,7 @@ class AlertPanel extends React.Component {
           {useHtml ? (
             <p
               className="alert-message"
-              dangerouslySetInnerHTML={
-                useHtml ? this.props.error.dangerousHtml() : null
-              }
+              dangerouslySetInnerHTML={this.props.error.dangerousHtml()}
             />
           ) : (
             <p className="alert-message">{this.props.error.message}</p>
