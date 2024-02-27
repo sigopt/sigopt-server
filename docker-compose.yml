@@ -30,7 +30,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   test-runner:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
@@ -57,7 +57,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   smtp:
     build:
       <<: *test-runner-build
@@ -88,7 +88,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   createdb:
     build: &zigopt-build
       dockerfile: docker/images/zigopt/Dockerfile
@@ -112,7 +112,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   nginx:
     build:
       dockerfile: docker/images/nginx/Dockerfile
@@ -146,7 +146,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   api:
     build:
       <<: *zigopt-build
@@ -192,7 +192,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   web-server:
     build:
       dockerfile: docker/images/web/Dockerfile
@@ -226,7 +226,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   qworker:
     build:
       <<: *zigopt-build
@@ -265,7 +265,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   qworker-analytics:
     build:
       <<: *zigopt-build
@@ -294,7 +294,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
 
   postgres:
     restart: on-failure:5
@@ -322,7 +322,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   redis:
     restart: on-failure:5
     image: "redis:${REDIS_VERSION}"
@@ -350,7 +350,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   init-minio-cookiejar:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -361,7 +361,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -372,7 +372,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
@@ -408,7 +408,7 @@ services:
     security_opt:
       - "no-new-privileges:true"
     cap_drop:
-      - "NET_RAW"
+      - "ALL"
 
 volumes:
   minio-config: {}
