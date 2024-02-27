@@ -26,7 +26,7 @@ def right_code(user: User, code: str) -> bool:
     user.email_verification_timestamp
     and (now - user.email_verification_timestamp) < VERIFICATION_THRESHOLD
     and user.hashed_email_verification_code
-    and password_matches(code, user.hashed_email_verification_code or "")
+    and password_matches(code, user.hashed_email_verification_code)
   )
 
 
