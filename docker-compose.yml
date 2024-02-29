@@ -317,6 +317,8 @@ services:
       start_period: "10s"
     security_opt:
       - "no-new-privileges:true"
+    cap_add:
+      - "CHOWN"
     cap_drop:
       - "ALL"
   redis:
