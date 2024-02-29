@@ -89,6 +89,8 @@ services:
       - "no-new-privileges:true"
     cap_drop:
       - "ALL"
+    tmpfs:
+      - /tmp
   createdb:
     build: &zigopt-build
       dockerfile: docker/images/zigopt/Dockerfile
