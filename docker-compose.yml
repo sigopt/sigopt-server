@@ -320,6 +320,7 @@ services:
     cap_add:
       - "CHOWN"
       - "FOWNER"
+      - "SETUID"
     cap_drop:
       - "ALL"
   redis:
