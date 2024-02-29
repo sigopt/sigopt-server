@@ -335,6 +335,8 @@ services:
         mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-cookiejar
     read_only: true
+    tmpfs:
+      - /root/.mc
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -343,6 +345,8 @@ services:
         mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-user-uploads
     read_only: true
+    tmpfs:
+      - /root/.mc
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
