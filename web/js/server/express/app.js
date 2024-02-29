@@ -64,6 +64,7 @@ export default function makeApp(globalServices) {
 
   // Initialize express app
   const app = express();
+  app.disable("x-powered-by");
   addAlways(app);
   app.use(tooBusy);
   app.use(normalizeMethod);
