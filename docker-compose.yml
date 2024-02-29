@@ -54,6 +54,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+      - /sigopt-server/.pytest_cache
   smtp:
     build:
       <<: *test-runner-build
