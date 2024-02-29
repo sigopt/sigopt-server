@@ -6,7 +6,7 @@ networks:
 
 services:
   init-config:
-    image: busybox
+    image: busybox:stable
     command:
       - sh
       - -e
@@ -27,6 +27,8 @@ services:
       - ./config:/sigopt-server/config
       - minio-config:/etc/minio
       - server-config:/etc/sigopt/server-config
+    security_opt:
+      - "no-new-privileges:true"
   test-runner:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
@@ -50,6 +52,8 @@ services:
       - /dev/shm:/dev/shm
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - &redis-run-volume redis-run:/var/run/redis
+    security_opt:
+      - "no-new-privileges:true"
   smtp:
     build:
       <<: *test-runner-build
@@ -94,13 +98,13 @@ services:
       - ENABLE_CONTRACTS
       - *server-config-env
     read_only: true
-    security_opt:
-      - "no-new-privileges:true"
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
     tmpfs:
       - /tmp
+    security_opt:
+      - "no-new-privileges:true"
   nginx:
     build:
       dockerfile: docker/images/nginx/Dockerfile
@@ -332,6 +336,8 @@ services:
       - |
         mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-cookiejar
+    security_opt:
+      - "no-new-privileges:true"
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -339,6 +345,8 @@ services:
       - |
         mc alias set sigopt http://minio.internal.sigopt.ninja:9000 ROOTUSER '$MINIO_ROOT_PASSWORD'
         mc mb --ignore-existing sigopt/sigopt-user-uploads
+    security_opt:
+      - "no-new-privileges:true"
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
