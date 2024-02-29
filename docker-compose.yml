@@ -58,10 +58,14 @@ services:
       - "ALL"
     security_opt:
       - "no-new-privileges:true"
+    tmpfs:
+      - /var/tmp
   smtp:
     build:
       <<: *test-runner-build
     restart: on-failure:5
+    entrypoint:
+      - /usr/bin/env
     command:
       - python
       - -m
