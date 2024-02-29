@@ -53,8 +53,9 @@ services:
       - &redis-run-volume redis-run:/var/run/redis
     read_only: true
     tmpfs:
-      - /tmp
-      - /sigopt-server/.pytest_cache
+      - /tmp/
+      - /sigopt-server/.pytest_cache/
+      - /root/
   smtp:
     build:
       <<: *test-runner-build
