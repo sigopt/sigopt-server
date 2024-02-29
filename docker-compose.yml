@@ -151,6 +151,11 @@ services:
       retries: 0
     security_opt:
       - "no-new-privileges:true"
+    cap_add:
+      - "CHOWN"
+      - "FOWNER"
+      - "SETGID"
+      - "SETUID"
     cap_drop:
       - "ALL"
   api:
