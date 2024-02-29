@@ -6,7 +6,7 @@ networks:
 
 services:
   init-config:
-    image: busybox
+    image: busybox:stable
     command:
       - sh
       - -e
