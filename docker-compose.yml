@@ -361,6 +361,8 @@ services:
         mc mb --ignore-existing sigopt/sigopt-cookiejar
     cap_drop:
       - "ALL"
+    tmpfs:
+      - /root/.mc
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -370,6 +372,8 @@ services:
         mc mb --ignore-existing sigopt/sigopt-user-uploads
     cap_drop:
       - "ALL"
+    tmpfs:
+      - /root/.mc
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
