@@ -141,6 +141,8 @@ services:
       retries: 0
     security_opt:
       - "no-new-privileges:true"
+    cap_add:
+      - "FOWNER"
     cap_drop:
       - "ALL"
   api:
