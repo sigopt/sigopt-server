@@ -319,6 +319,7 @@ services:
       - "no-new-privileges:true"
     cap_add:
       - "CHOWN"
+      - "FOWNER"
     cap_drop:
       - "ALL"
   redis:
