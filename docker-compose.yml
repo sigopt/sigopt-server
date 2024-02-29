@@ -56,6 +56,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp/
+      - /var/tmp/
       - /sigopt-server/.pytest_cache/
       - /root/
     security_opt:
