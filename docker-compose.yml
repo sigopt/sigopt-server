@@ -52,6 +52,8 @@ services:
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - &redis-run-volume redis-run:/var/run/redis
     read_only: true
+    tmpfs:
+      - /tmp
   smtp:
     build:
       <<: *test-runner-build
