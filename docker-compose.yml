@@ -6,7 +6,7 @@ networks:
 
 services:
   init-config:
-    image: busybox
+    image: busybox:stable
     command:
       - sh
       - -e
@@ -28,6 +28,8 @@ services:
       - minio-config:/etc/minio
       - server-config:/etc/sigopt/server-config
     read_only: true
+    security_opt:
+      - "no-new-privileges:true"
   test-runner:
     build: &test-runner-build
       dockerfile: docker/images/test-runner/Dockerfile
@@ -56,6 +58,8 @@ services:
       - /tmp/
       - /sigopt-server/.pytest_cache/
       - /root/
+    security_opt:
+      - "no-new-privileges:true"
   smtp:
     build:
       <<: *test-runner-build
@@ -100,13 +104,13 @@ services:
       - ENABLE_CONTRACTS
       - *server-config-env
     read_only: true
-    security_opt:
-      - "no-new-privileges:true"
     volumes:
       - *sigopt-config-volume
       - *pg-sock-volume
     tmpfs:
       - /tmp
+    security_opt:
+      - "no-new-privileges:true"
   nginx:
     build:
       dockerfile: docker/images/nginx/Dockerfile
@@ -341,6 +345,8 @@ services:
     read_only: true
     tmpfs:
       - /root/.mc
+    security_opt:
+      - "no-new-privileges:true"
   init-minio-filestorage:
     image: "quay.io/minio/mc"
     entrypoint: ["/bin/sh", "-e", "-c"]
@@ -351,6 +357,8 @@ services:
     read_only: true
     tmpfs:
       - /root/.mc
+    security_opt:
+      - "no-new-privileges:true"
   minio:
     restart: on-failure:5
     image: "quay.io/minio/minio"
