@@ -153,7 +153,7 @@ services:
       - "no-new-privileges:true"
     cap_add:
       - "CHOWN"
-      - "FOWNER"
+      - "DAC_OVERRIDE"
       - "SETGID"
       - "SETUID"
     cap_drop:
