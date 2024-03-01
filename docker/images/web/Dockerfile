@@ -65,11 +65,11 @@ RUN set -ex \
   ; adduser -S produser \
   ; :
 
+USER produser
+
 EXPOSE 4000
 
 ENV NODE_DOMAIN server
 ENV NODE_ENV production
-
-ENTRYPOINT ["/usr/bin/env", "runuser", "-u", "produser", "--"]
 
 CMD ["node", "artifacts/web/server/server.js", "/sigopt-server", "--workers", "1"]
