@@ -53,6 +53,7 @@ services:
       - /dev/shm:/dev/shm
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - &redis-run-volume redis-run:/var/run/redis
+    shm_size: 1g
     read_only: true
     tmpfs:
       - /tmp/
