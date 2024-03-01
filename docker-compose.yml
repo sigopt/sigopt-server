@@ -59,7 +59,6 @@ services:
       - /tmp/
       - /var/tmp/
       - /sigopt-server/.pytest_cache/
-      - /root/
     security_opt:
       - "no-new-privileges:true"
   smtp:
