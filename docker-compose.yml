@@ -55,15 +55,19 @@ services:
       - /dev/shm:/dev/shm
       - &pg-sock-volume pg-sock:/var/run/postgresql
       - &redis-run-volume redis-run:/var/run/redis
-    read_only: true
+    read_only: false
     cap_drop:
       - "ALL"
     security_opt:
       - "no-new-privileges:true"
+    tmpfs:
+      - /var/tmp
   smtp:
     build:
       <<: *test-runner-build
     restart: on-failure:5
+    entrypoint:
+      - /usr/bin/env
     command:
       - python
       - -m
@@ -91,6 +95,8 @@ services:
       - "no-new-privileges:true"
     cap_drop:
       - "ALL"
+    tmpfs:
+      - /tmp
   createdb:
     build: &zigopt-build
       dockerfile: docker/images/zigopt/Dockerfile
@@ -147,6 +153,11 @@ services:
       retries: 0
     security_opt:
       - "no-new-privileges:true"
+    cap_add:
+      - "CHOWN"
+      - "DAC_OVERRIDE"
+      - "SETGID"
+      - "SETUID"
     cap_drop:
       - "ALL"
   api:
@@ -323,6 +334,11 @@ services:
       start_period: "10s"
     security_opt:
       - "no-new-privileges:true"
+    cap_add:
+      - "CHOWN"
+      - "FOWNER"
+      - "SETGID"
+      - "SETUID"
     cap_drop:
       - "ALL"
   redis:
@@ -363,6 +379,8 @@ services:
     read_only: true
     cap_drop:
       - "ALL"
+    tmpfs:
+      - /root/.mc
     security_opt:
       - "no-new-privileges:true"
   init-minio-filestorage:
@@ -375,6 +393,8 @@ services:
     read_only: true
     cap_drop:
       - "ALL"
+    tmpfs:
+      - /root/.mc
     security_opt:
       - "no-new-privileges:true"
   minio:
