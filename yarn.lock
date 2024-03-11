@@ -3022,9 +3022,9 @@
     csstype "^3.0.2"
 
 "@types/react@^16.9.23":
-  version "16.14.56"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.56.tgz#4cf37850a87edcb9f3526648338eff35d283c9ab"
-  integrity sha512-MxuHB7dvVm5yOxRr7hJoonLG0JY8YvqZtaQ9Quirp3Oe4FLFjAgxkxsKE6IspdHPpRVZKo2ZoDEravWO81EeYA==
+  version "16.14.57"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.57.tgz#7ad1024b6188497255f94f47e735e8203d30b752"
+  integrity sha512-fuNq/GV1a6GgqSuVuC457vYeTbm4E1CUBQVZwSPxqYnRhIzSXCJ1gGqyv+PKhqLyfbKCga9dXHJDzv+4XE41fw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
