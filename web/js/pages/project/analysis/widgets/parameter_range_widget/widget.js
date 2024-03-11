@@ -42,7 +42,8 @@ const properties = {
 };
 
 class ParameterRow extends React.Component {
-  onClick = () => this.props.setSelected(this.props.info, !this.props.selected);
+  onChange = () =>
+    this.props.setSelected(this.props.info, !this.props.selected);
 
   render() {
     const {info, selected} = this.props;
@@ -50,7 +51,7 @@ class ParameterRow extends React.Component {
     return (
       <tr className={classNames({selected})}>
         <td>
-          <input checked={selected} onClick={this.onClick} type="checkbox" />
+          <input checked={selected} onChange={this.onChange} type="checkbox" />
         </td>
         <td>{info.name}</td>
         <td>{info.type}</td>
