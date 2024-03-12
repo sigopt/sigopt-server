@@ -41,7 +41,7 @@ repos:
           - --include=AvoidDatetimeNowRule,GeneratorExpressionRule,NoImportLibsigoptComputeRule,SafeIteratorRule,SafeYieldRule
       - id: sigoptlint-shell
   - repo: https://github.com/PyCQA/bandit.git
-    rev: "1.7.7"
+    rev: "1.7.8"
     hooks:
       - id: bandit
         args: [-c, pyproject.toml]
@@ -81,12 +81,12 @@ repos:
           - prettier-plugin-import-sort@0.0.7
         exclude: "^Pipfile.lock$"
   - repo: https://github.com/koalaman/shellcheck-precommit.git
-    rev: "v0.9.0"
+    rev: "v0.10.0"
     hooks:
       - id: shellcheck
         args: ["--exclude", "SC1090,SC1091,SC2029", "-f", "gcc"]
   - repo: https://github.com/jendrikseipp/vulture.git
-    rev: "v2.10"
+    rev: "v2.11"
     hooks:
       - id: vulture
         entry: tools/dead-code/run_vulture.py
