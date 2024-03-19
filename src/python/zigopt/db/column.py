@@ -190,7 +190,7 @@ class _ProtobufColumnType(TypeDecorator):
     def _is_terminal_descriptor(cls, descriptor):
       # Returns true if this descriptor is the last descriptor in a protobuf chain -
       # i.e. refers to a scalar field (and hence is just a callable like `str`, `float`, etc.)
-      return hasattr(descriptor, "__call__")
+      return callable(descriptor)
 
     def _maybe_with_default(self, clause):
       if not self._is_terminal_descriptor(self._descriptor):
