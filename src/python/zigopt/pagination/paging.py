@@ -77,7 +77,7 @@ class Pager:
     return marker
 
   def _get_field_values_from_result(self, Field, r):
-    if hasattr(Field, "__call__"):
+    if callable(Field):
       return as_tuple(Field(r))
     Fields = as_tuple(Field)
     ret = []
