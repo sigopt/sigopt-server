@@ -208,12 +208,12 @@
         },
         "deal": {
             "hashes": [
-                "sha256:5e845e5d8e785de44e4901ac80ec55a5fa62683f811d699e0e360ce303243c93",
-                "sha256:c9e7244114a265b5bd42e8af650336f410cfbc27803594f461fa0bdafbc48ead"
+                "sha256:0470af54234cebc760346f4be1a6fdaeefe0215fc58efd630cd4b2d193e4e82e",
+                "sha256:7fa4139296843fc16e5b8edd49b9a379d829113b1b4bdab0d8a7374cc826e031"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==4.24.3"
+            "version": "==4.24.4"
         },
         "flask": {
             "hashes": [
