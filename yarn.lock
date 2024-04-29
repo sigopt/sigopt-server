@@ -2285,15 +2285,13 @@
     fastq "^1.6.0"
 
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.1":
-  version "0.5.11"
-  resolved "https://registry.yarnpkg.com/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.5.11.tgz#7c2268cedaa0644d677e8c4f377bc8fb304f714a"
-  integrity sha512-7j/6vdTym0+qZ6u4XbSAxrWBGYSdCfTzySkj7WAFgDLmSyWlOrWvpyzxlFh5jtw9dn0oL/jtW+06XfFiisN3JQ==
+  version "0.5.13"
+  resolved "https://registry.yarnpkg.com/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.5.13.tgz#02338a92a92f541a5189b97e922caf3215221e49"
+  integrity sha512-odZVYXly+JwzYri9rKqqUAk0cY6zLpv4dxoKinhoJNShV36Gpxf+CyDIILJ4tYsJ1ZxIWs233Y39iVnynvDA/g==
   dependencies:
     ansi-html-community "^0.0.8"
-    common-path-prefix "^3.0.0"
     core-js-pure "^3.23.3"
     error-stack-parser "^2.0.6"
-    find-up "^5.0.0"
     html-entities "^2.1.0"
     loader-utils "^2.0.4"
     schema-utils "^3.0.0"
@@ -4332,11 +4330,6 @@ commander@^7.0.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
-
-common-path-prefix@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/common-path-prefix/-/common-path-prefix-3.0.0.tgz#7d007a7e07c58c4b4d5f433131a19141b29f11e0"
-  integrity sha512-QE33hToZseCH3jS0qN96O/bSh3kaw/h+Tq7ngyY9eWDUnTlTNUyqfqvCXioLe5Na5jFsL78ra/wuBU4iuEgd4w==
 
 commondir@^1.0.1:
   version "1.0.1"
