@@ -10,6 +10,7 @@ jobs:
       matrix:
         hook:
           - crosshair
+          - flake8
           - hadolint-docker
           - mypy
           - pylint
