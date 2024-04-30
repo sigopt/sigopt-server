@@ -5,7 +5,7 @@
 set -e
 set -o pipefail
 
-DEPCHECK_IGNORES="@babel/register,@fortawesome/fontawesome-free,buffer,lodash-es,minimist,process,webpack-cli"
+DEPCHECK_IGNORES="@aws-sdk/client-sso-oidc,@aws-sdk/client-sts,@babel/register,@fortawesome/fontawesome-free,buffer,lodash-es,minimist,process,webpack-cli"
 UNUSED_DEPS="$(mktemp)"
 
 yarn -s depcheck --version
