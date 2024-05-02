@@ -9,7 +9,6 @@ import React from "react";
 
 import Component from "../../../react/component";
 import ModalForm from "../../../component/modal/form";
-import frankeTemplateJava from "../../docs/templates/franke_java_p1.ms";
 import frankeTemplatePython from "../../docs/templates/franke_python_p1.ms";
 import frankeTemplateR from "../../docs/templates/franke_r_p1.ms";
 import renderedTemplate from "../../docs/manuals/lib/renderedtemplate";
@@ -39,11 +38,6 @@ export default class ProjectCodeModal extends Component {
       R: (
         <CodeBlock language="r">
           {renderedTemplate(frankeTemplateR, this.props)}
-        </CodeBlock>
-      ),
-      Java: (
-        <CodeBlock language="java">
-          {renderedTemplate(frankeTemplateJava, this.props)}
         </CodeBlock>
       ),
     };

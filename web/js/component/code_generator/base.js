@@ -15,7 +15,7 @@ import {isJsObject, isUndefinedOrNull} from "../../utils";
 export const INDENT = "  ";
 export const JSON_OBJECT_DENY_LIST = ["created", "id", "object", "updated"];
 
-const LANGUAGE_PROP_TYPE = PropTypes.oneOf(["python", "r", "java"]).isRequired;
+const LANGUAGE_PROP_TYPE = PropTypes.oneOf(["python", "r"]).isRequired;
 
 const CODE_ITEM_MAPPER_SHAPE = PropTypes.shape({
   arrayCode: PropTypes.func,

@@ -211,16 +211,6 @@ Note that the creation script for both certs will pause in your default editor, 
   conn.set_verify_ssl_certs(ca_certs_path)
   ```
 
-- To run the java-client against your local API:
-
-  ```bash
-  export JAVA_HOME="$($(dirname $(readlink $(which java)))/java_home)"
-  sudo $JAVA_HOME/bin/keytool -import -alias sigopt-root-ci -keystore $JAVA_HOME/jre/lib/security/cacerts -file ./artifacts/tls/root-ca.crt
-
-  ```
-
-  Keystore(not sudo) password is changeit by default
-
 - If you're running the web outside of the provided container environment:
   - set `NODE_EXTRA_CA_CERTS = $SIGOPT_SERVER_DIR/artifacts/tls/root-ca.crt` in the directory running the web
   </details>

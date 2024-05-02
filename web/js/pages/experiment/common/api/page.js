@@ -20,7 +20,6 @@ import {
   CreateExperimentCodeYaml,
 } from "../../../docs/codegen";
 import {EXPERIMENT_DENY_LIST} from "../../../../component/code_generator/base";
-import {JavaExperimentCodeGen} from "../../../../component/code_generator/java";
 import {PythonExperimentCodeGen} from "../../../../component/code_generator/python";
 import {RExperimentCodeGen} from "../../../../component/code_generator/r";
 import {recursivelyCondenseObject} from "../../../../utils";
@@ -52,11 +51,6 @@ const CORE_MODULE_CODE_MAP = {
       <RExperimentCodeGen {...props} />
     </CopyableText>
   ),
-  java: (props) => (
-    <CopyableText>
-      <JavaExperimentCodeGen {...props} />
-    </CopyableText>
-  ),
 };
 
 const AI_MODULE_CODE_MAP = {
@@ -65,7 +59,6 @@ const AI_MODULE_CODE_MAP = {
 };
 
 const languageTitles = {
-  java: "Java",
   python: "Python",
   r: "R",
   yaml: "YAML",
