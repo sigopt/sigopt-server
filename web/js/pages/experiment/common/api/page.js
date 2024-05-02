@@ -21,7 +21,6 @@ import {
 } from "../../../docs/codegen";
 import {EXPERIMENT_DENY_LIST} from "../../../../component/code_generator/base";
 import {PythonExperimentCodeGen} from "../../../../component/code_generator/python";
-import {RExperimentCodeGen} from "../../../../component/code_generator/r";
 import {recursivelyCondenseObject} from "../../../../utils";
 
 const sanitizeExperimentForCreate = (experiment) =>
@@ -46,11 +45,6 @@ const CORE_MODULE_CODE_MAP = {
       <PythonExperimentCodeGen {...props} />
     </CopyableText>
   ),
-  r: (props) => (
-    <CopyableText>
-      <RExperimentCodeGen {...props} />
-    </CopyableText>
-  ),
 };
 
 const AI_MODULE_CODE_MAP = {
@@ -60,7 +54,6 @@ const AI_MODULE_CODE_MAP = {
 
 const languageTitles = {
   python: "Python",
-  r: "R",
   yaml: "YAML",
 };
 
