@@ -27,7 +27,6 @@ const LANGUAGE_PROP_TYPE = PropTypes.oneOf([
   "bash",
   "json",
   "yaml",
-  "dockerfile",
   "plaintext",
 ]);
 

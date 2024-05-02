@@ -7,7 +7,6 @@
 import "highlight.js/styles/default.css";
 
 import bash from "highlight.js/lib/languages/bash";
-import dockerfile from "highlight.js/lib/languages/dockerfile";
 import hljs from "highlight.js/lib/core";
 import java from "highlight.js/lib/languages/java";
 import json from "highlight.js/lib/languages/json";
@@ -20,7 +19,6 @@ hljs.registerLanguage("java", java);
 hljs.registerLanguage("python", python);
 hljs.registerLanguage("json", json);
 hljs.registerLanguage("yaml", yaml);
-hljs.registerLanguage("dockerfile", dockerfile);
 hljs.registerLanguage("plaintext", plaintext);
 
 export default hljs;
