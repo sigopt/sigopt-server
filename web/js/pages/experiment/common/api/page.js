@@ -22,7 +22,6 @@ import {
 import {EXPERIMENT_DENY_LIST} from "../../../../component/code_generator/base";
 import {JavaExperimentCodeGen} from "../../../../component/code_generator/java";
 import {PythonExperimentCodeGen} from "../../../../component/code_generator/python";
-import {RExperimentCodeGen} from "../../../../component/code_generator/r";
 import {recursivelyCondenseObject} from "../../../../utils";
 
 const sanitizeExperimentForCreate = (experiment) =>
@@ -45,11 +44,6 @@ const CORE_MODULE_CODE_MAP = {
   python: (props) => (
     <CopyableText>
       <PythonExperimentCodeGen {...props} />
-    </CopyableText>
-  ),
-  r: (props) => (
-    <CopyableText>
-      <RExperimentCodeGen {...props} />
     </CopyableText>
   ),
   java: (props) => (

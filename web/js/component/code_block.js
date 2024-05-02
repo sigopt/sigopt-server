@@ -23,7 +23,6 @@ import {isDefinedAndNotNull, replaceAll} from "../utils";
 // since that file is a custom build that includes only the languages we use.
 const LANGUAGE_PROP_TYPE = PropTypes.oneOf([
   "java",
-  "r",
   "python",
   "bash",
   "json",
