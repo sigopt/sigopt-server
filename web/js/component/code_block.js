@@ -26,7 +26,6 @@ const LANGUAGE_PROP_TYPE = PropTypes.oneOf([
   "python",
   "bash",
   "json",
-  "matlab",
   "yaml",
   "dockerfile",
   "plaintext",
