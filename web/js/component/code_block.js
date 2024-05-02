@@ -22,7 +22,6 @@ import {isDefinedAndNotNull, replaceAll} from "../utils";
 // NOTE: If you extend this enum, it won't work unless you update highlight/index.js
 // since that file is a custom build that includes only the languages we use.
 const LANGUAGE_PROP_TYPE = PropTypes.oneOf([
-  "java",
   "python",
   "bash",
   "json",

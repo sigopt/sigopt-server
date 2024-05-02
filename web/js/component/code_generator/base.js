@@ -12,10 +12,10 @@ import {APP_URL} from "../../net/constant";
 import {Highlight} from "../code_block";
 import {isJsObject, isUndefinedOrNull} from "../../utils";
 
-export const INDENT = "  ";
+const INDENT = "  ";
 export const JSON_OBJECT_DENY_LIST = ["created", "id", "object", "updated"];
 
-const LANGUAGE_PROP_TYPE = PropTypes.oneOf(["python", "java"]).isRequired;
+const LANGUAGE_PROP_TYPE = PropTypes.oneOf(["python"]).isRequired;
 
 const CODE_ITEM_MAPPER_SHAPE = PropTypes.shape({
   arrayCode: PropTypes.func,
@@ -90,7 +90,7 @@ export class KeywordCodeGen extends React.Component {
   }
 }
 
-export class EnclosedBlock extends React.Component {
+class EnclosedBlock extends React.Component {
   static defaultProps = {
     indentSize: INDENT,
   };
