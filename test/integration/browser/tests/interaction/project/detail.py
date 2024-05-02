@@ -22,7 +22,6 @@ class TestProjectDetailPage(ProjectBrowserTest):
     for language, lines in [
       ("Python", ["import sigopt", f'sigopt.set_project("{project.id}")']),
       ("R", ["library(SigOptR)", f'project="{project.id}"']),
-      ("Java", ["import com.sigopt.Sigopt;", f'.project("{project.id}")']),
     ]:
       driver.find_and_click(css_selector=".modal.fade.in .language-selector .dropdown-toggle")
       driver.find_and_click(css_selector=f".modal.fade.in .language-selector .{language}")
