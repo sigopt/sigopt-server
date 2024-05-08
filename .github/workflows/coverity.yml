@@ -1,14 +1,18 @@
 name: Coverity Scan
 
 on:
-  push:
-    branches: [main]
-
+  push: {}
+  #  branches: [main]
 jobs:
   coverity:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: |
+          curl -fL https://scan.coverity.com/download/javascript/linux64 \
+            --no-progress-meter \
+            --output cov-analysis.tar.gz \
+            --data "token=${{ secrets.COVERITY_SCAN_TOKEN_JAVASCRIPT }}&project=sigopt%2Fsigopt-server"
       - name: Scan Javascript
         uses: vapier/coverity-scan-action@v1
         with:
