@@ -16,6 +16,7 @@ jobs:
       - name: Scan Javascript
         uses: vapier/coverity-scan-action@v1
         with:
+          project: sigopt/sigopt-server-javascript
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_JAVASCRIPT }}
           build_language: javascript
@@ -23,6 +24,7 @@ jobs:
       - name: Scan Python
         uses: vapier/coverity-scan-action@v1
         with:
+          project: sigopt/sigopt-server-python
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_PYTHON }}
           build_language: other
