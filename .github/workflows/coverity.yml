@@ -4,27 +4,15 @@ on:
   push:
     branches: [main]
 jobs:
-  coverity-javascript:
+  coverity:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Scan Javascript
-        uses: vapier/coverity-scan-action@v1
+      - run: git ls-files > git-ls-files.lst
+      - uses: vapier/coverity-scan-action@v1
         with:
-          project: sigopt-server-javascript
+          project: sigopt-server
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
-          token: ${{ secrets.COVERITY_SCAN_TOKEN_JAVASCRIPT }}
-          build_language: javascript
-          command: "--no-command --fs-capture-search ."
-  coverity-python:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Scan Python
-        uses: vapier/coverity-scan-action@v1
-        with:
-          project: sigopt-server-python
-          email: ${{ secrets.COVERITY_SCAN_EMAIL }}
-          token: ${{ secrets.COVERITY_SCAN_TOKEN_PYTHON }}
+          token: ${{ secrets.COVERITY_SCAN_TOKEN }}
           build_language: other
-          command: "--no-command --fs-capture-search ."
+          command: "--no-command --fs-capture-list git-ls-files.lst"
