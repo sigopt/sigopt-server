@@ -2,7 +2,8 @@ name: Coverity Scan
 
 on:
   push:
-    branches: [main]
+    {}
+    #  branches: [main]
 jobs:
   coverity-javascript:
     runs-on: ubuntu-latest
@@ -15,7 +16,7 @@ jobs:
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_JAVASCRIPT }}
           build_language: javascript
-          command: "--no-command"
+          command: "--no-command --fs-capture-search ."
   coverity-python:
     runs-on: ubuntu-latest
     steps:
@@ -27,4 +28,4 @@ jobs:
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_PYTHON }}
           build_language: other
-          command: "--no-command"
+          command: "--no-command --fs-capture-search ."
