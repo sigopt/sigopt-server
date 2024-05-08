@@ -14,8 +14,12 @@ jobs:
         with:
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_JAVASCRIPT }}
+          build_language: javascript
+          command: "--no-command"
       - name: Scan Python
         uses: vapier/coverity-scan-action@v1
         with:
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_PYTHON }}
+          build_language: other
+          command: "--no-command"
