@@ -2,8 +2,7 @@ name: Coverity Scan
 
 on:
   push:
-    {}
-    #  branches: [main]
+    branches: [main]
 jobs:
   coverity-javascript:
     runs-on: ubuntu-latest
