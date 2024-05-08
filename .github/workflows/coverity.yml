@@ -3,22 +3,27 @@ name: Coverity Scan
 on:
   push:
     branches: [main]
-
 jobs:
-  coverity:
+  coverity-javascript:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Scan Javascript
         uses: vapier/coverity-scan-action@v1
         with:
+          project: sigopt-server-javascript
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_JAVASCRIPT }}
           build_language: javascript
           command: "--no-command"
+  coverity-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Scan Python
         uses: vapier/coverity-scan-action@v1
         with:
+          project: sigopt-server-python
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           token: ${{ secrets.COVERITY_SCAN_TOKEN_PYTHON }}
           build_language: other
