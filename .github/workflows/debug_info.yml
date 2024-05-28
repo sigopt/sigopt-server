@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       parameter:
-        description: Filler
-  pull-request:
+        description: My Parameter
+  pull_request:
 jobs:
   debug:
     runs-on: ubuntu-latest
