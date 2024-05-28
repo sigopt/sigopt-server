@@ -1,0 +1,81 @@
+name: Coverity Scan
+permissions: read-all
+on: workflow_dispatch
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      # Need to encode the project name when using in URLs and HTTP forms.  Valid
+      # GitHub project names only have / that need encoding and
+      # Coverity projects with spaces in their names need encoding so do
+      # an ad-hoc conversion here.  Wait to see if anyone needs something else.
+      - name: URL encode project name
+        id: project
+        run: echo "project=sigopt-server" | sed -e 's:/:%2F:g' -e 's/ /%20/g' >> $GITHUB_OUTPUT
+        shell: bash
+
+      # The Coverity site says the tool is usually updated twice yearly, so the
+      # md5 of download can be used to determine whether there's been an update.
+      - name: Lookup Coverity Build Tool hash
+        id: coverity-cache-lookup
+        run: |
+          hash=$(curl https://scan.coverity.com/download/other/linux64 \
+                  --data "token=${TOKEN}&project=sigopt-server&md5=1"); \
+          echo "hash=${hash}" >> $GITHUB_OUTPUT
+        shell: bash
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+
+      # Try to cache the tool to avoid downloading 1GB+ archive on every run.
+      # Cache miss will add ~30s to create, but cache hit will save minutes.
+      - name: Cache Coverity Build Tool
+        id: cov-build-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/cov-analysis
+          key: cov-build-other-linux64-${{ steps.coverity-cache-lookup.outputs.hash }}
+
+      - name: Download Coverity Build Tool (other / linux64)
+        if: steps.cov-build-cache.outputs.cache-hit != 'true'
+        run: |
+          curl https://scan.coverity.com/download/other/linux64 \
+            --output cov-analysis.tar.gz \
+            --data "token=${TOKEN}&project=sigopt-server"
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+
+      - if: steps.cov-build-cache.outputs.cache-hit != 'true'
+        run: mkdir cov-analysis
+        shell: bash
+        working-directory: ${{ github.workspace }}
+      - if: steps.cov-build-cache.outputs.cache-hit != 'true'
+        run: tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
+        shell: bash
+        working-directory: ${{ github.workspace }}
+
+      - name: Build with cov-build
+        run: |
+          export PATH="${PWD}/cov-analysis/bin:${PATH}"
+          cov-build --dir cov-int no-command --fs-capture-list git-ls-files.lst
+        shell: bash
+        working-directory: ${{ github.workspace }}
+
+      - name: Archive results
+        run: tar -czvf cov-int.tgz cov-int
+        shell: bash
+        working-directory: ${{ github.workspace }}
+      - name: Submit results to Coverity Scan
+        run: |
+          curl \
+            --form token="${TOKEN}" \
+            --form email="${{ secrets.COVERITY_SCAN_EMAIL }}" \
+            --form file=@cov-int.tgz \
+            --form version="${{ github.sha }}" \
+            --form description="coverity-scan-action ${{ github.repository }} / ${{ github.ref }}" \
+            "https://scan.coverity.com/builds?project=sigopt-server"
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
