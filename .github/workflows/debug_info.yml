@@ -63,7 +63,7 @@ jobs:
       - name: Build with cov-build
         run: |
           export PATH="${PWD}/cov-analysis/bin:${PATH}"
-          cov-build --dir cov-int no-command --fs-capture-list git-ls-files.lst
+          cov-build --dir cov-int --no-command --fs-capture-list git-ls-files.lst
         shell: bash
         working-directory: ${{ github.workspace }}
 
