@@ -1,6 +1,11 @@
 name: Coverity Scan
 permissions: read-all
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      parameter:
+        description: Filler
+  pull-request:
 jobs:
   debug:
     runs-on: ubuntu-latest
