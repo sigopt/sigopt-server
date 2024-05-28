@@ -10,6 +10,8 @@ jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - run: git ls-files > git-ls-files.lst
       # Need to encode the project name when using in URLs and HTTP forms.  Valid
       # GitHub project names only have / that need encoding and
       # Coverity projects with spaces in their names need encoding so do
