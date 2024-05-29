@@ -9,6 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: git ls-files > git-ls-files.lst
+      - run: echo ${{ secrets.COVERITY_SCAN_TOKEN }} | sha256sum -
       - uses: vapier/coverity-scan-action@v1
         with:
           project: sigopt-server
