@@ -3,6 +3,7 @@ permissions: read-all
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 jobs:
   coverity:
     runs-on: ubuntu-latest
