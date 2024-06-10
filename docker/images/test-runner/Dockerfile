@@ -78,7 +78,7 @@ ENV PIP_NO_BINARY lxml
 
 RUN set -ex \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
-  ; pipenv install --quiet --dev --ignore-pipfile \
+  ; pipenv sync --dev \
   ; pipenv --clear \
   ; :
 
