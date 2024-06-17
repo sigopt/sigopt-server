@@ -34,7 +34,7 @@ deal = ">=4.24.1,<5"
 cryptography = ">=42.0.4"
 
 [dev-packages]
-aiosmtpd = "==1.4.5"
+aiosmtpd = "==1.4.6"
 build = "==0.10.0"
 debugpy = "==1.6.7"
 flaky = "==3.7.0"
