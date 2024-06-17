@@ -42,7 +42,7 @@ repos:
           - --include=AvoidDatetimeNowRule,GeneratorExpressionRule,NoImportLibsigoptComputeRule,SafeIteratorRule,SafeYieldRule
       - id: sigoptlint-shell
   - repo: https://github.com/PyCQA/bandit.git
-    rev: "1.7.8"
+    rev: "1.7.9"
     hooks:
       - id: bandit
         args: [-c, pyproject.toml]
@@ -53,7 +53,7 @@ repos:
       - id: black
         args: [--preview]
   - repo: https://github.com/PyCQA/flake8.git
-    rev: "7.0.0"
+    rev: "7.1.0"
     hooks:
       - id: flake8
         additional_dependencies:
