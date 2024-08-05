@@ -53,7 +53,7 @@ repos:
       - id: black
         args: [--preview]
   - repo: https://github.com/PyCQA/flake8.git
-    rev: "7.1.0"
+    rev: "7.1.1"
     hooks:
       - id: flake8
         additional_dependencies:
