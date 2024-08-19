@@ -781,11 +781,11 @@
         },
         "qmcpy": {
             "hashes": [
-                "sha256:d65e962786b19e07530d6253d0687f8dc1fbefbc47b24152f7e3f43974edb912"
+                "sha256:e8fbbbe8f81661416c0a2e940eaf11331fd316163ed236fd73c78b71686876a7"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.5'",
-            "version": "==1.2"
+            "version": "==1.5"
         },
         "redis": {
             "hashes": [
