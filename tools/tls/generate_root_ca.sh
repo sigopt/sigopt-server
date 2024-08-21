@@ -17,7 +17,7 @@ cat >"$CONFIG" <<EOF
 [ req ]
 default_bits = 4096
 prompt = no
-default_md = sha256
+default_md = SHA3-512
 distinguished_name = dn
 
 [ dn ]
@@ -42,7 +42,7 @@ openssl req \
   -new \
   -nodes \
   -key "${TLS_PATH}/${NAME}-ca.key" \
-  -sha256 \
+  -SHA3-512 \
   -days 4096 \
   -out "${TLS_PATH}/${NAME}-ca.crt" \
   -config "$CONFIG"
