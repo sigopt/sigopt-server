@@ -24,7 +24,7 @@ cat >"$CONFIG" <<EOF
 [ req ]
 default_bits = 2048
 prompt = no
-default_md = sha256
+default_md = SHA3-512
 req_extensions = req_ext
 distinguished_name = dn
 
@@ -72,4 +72,4 @@ openssl x509 \
   -days 397 \
   -extfile "$CONFIG" \
   -extensions req_ext \
-  -sha256
+  -SHA3-512
