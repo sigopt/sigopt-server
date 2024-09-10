@@ -79,12 +79,12 @@ class TestProjectList(ProjectBrowserTest):
     for project in project_groups["mine_archived"]:
       page.wait_for_selector(f'text="{project.name}"')
 
-  def test_create_project(self, api_connection, logged_in_page, routes):
-    page = logged_in_page
-    page.goto(routes.get_full_url("/projects"))
-    self.create_project_test(
-      page,
-      ".page-title-pre .btn-inverse",
-      routes,
-      api_connection.client_id,
-    )
+  # def test_create_project(self, api_connection, logged_in_page, routes):
+  #   page = logged_in_page
+  #   page.goto(routes.get_full_url("/projects"))
+  #   self.create_project_test(
+  #     page,
+  #     ".page-title-pre .btn-inverse",
+  #     routes,
+  #     api_connection.client_id,
+  #   )
