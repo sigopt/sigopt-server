@@ -146,7 +146,7 @@
     ],
     "testEnvironment": "jsdom",
     "transformIgnorePatterns": [
-      "node_modules/(?!cheerio|enzyme-adapter-react-16)"
+      "node_modules/(?!(cheerio|enzyme-adapter-react-16))"
     ]
   },
   "license": "UNLICENSED",
