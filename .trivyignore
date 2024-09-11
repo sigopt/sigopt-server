@@ -7,3 +7,6 @@ CVE-2023-50387 # 2024-02-29 :: trivy-scan-zigopt :: libsystemd0, libudev1 :: no-
 CVE-2023-50868 # 2024-02-29 :: trivy-scan-zigopt :: libsystemd0, libudev1 :: no-fix-yet
 CVE-2024-33599 # 2024-04-29 :: trivy-scan-zigopt :: libc-bin, libc6 :: no-fix-yet
 CVE-2024-6484  # 2024-08-19 :: trivy-scan-aux    :: bootstrap :: no-fix-yet on version
+CVE-2024-45490 # 2024-09-11 :: trivy-scan-zigopt :: libexpat1 :: no-fix-yet
+CVE-2024-45491 # 2024-09-11 :: trivy-scan-zigopt :: libexpat1 :: no-fix-yet
+CVE-2024-45492 # 2024-09-11 :: trivy-scan-zigopt :: libexpat1 :: no-fix-yet
