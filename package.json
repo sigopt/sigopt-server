@@ -144,7 +144,10 @@
     "setupFiles": [
       "raf/polyfill"
     ],
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "transformIgnorePatterns": [
+      "node_modules/(?!cheerio|?!enzyme-adapter-react-16)"
+    ]
   },
   "license": "UNLICENSED",
   "name": "sigopt",
