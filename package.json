@@ -73,7 +73,6 @@
     "react-select": "^5.7.2",
     "react-transition-group": "^2.4.0",
     "react-uid": "^2.3.0",
-    "semver": "^7.5.4",
     "sigopt-config": "git+https://github.com/sigopt/sigopt-config.git#v2.0.0",
     "smoothscroll": "^0.4.0",
     "source-map-support": "^0.5.19",
