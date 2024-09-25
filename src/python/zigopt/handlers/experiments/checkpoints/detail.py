@@ -17,7 +17,7 @@ class CheckpointsDetailHandler(TrainingRunHandler):
     super().__init__(services, request, experiment_id=experiment_id, training_run_id=training_run_id)
     self._checkpoint_id = checkpoint_id
 
-  def handle(self):
+  def handle(self):  # type: ignore
     assert self.training_run is not None
 
     checkpoint = self.services.checkpoint_service.find_by_id(self._checkpoint_id)
@@ -33,7 +33,7 @@ class CheckpointsDetailMultiHandler(TrainingRunHandler):
   def parse_params(self, request):
     return request
 
-  def handle(self, request):
+  def handle(self, request):  # type: ignore
     paging = request.get_paging()
     ascending = request.optional_bool_param("ascending") or False
     query = self.services.database_service.query(Checkpoint).filter(Checkpoint.training_run_id == self.training_run_id)

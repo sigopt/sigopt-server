@@ -145,7 +145,7 @@ class ExperimentsListHandler(BaseExperimentsListHandler):
   authenticator = client_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
 
     return self.do_handle(params, [self.auth.current_client.id], params.user)
@@ -164,7 +164,7 @@ class ClientsExperimentsHandler(ClientHandler, BaseExperimentsListHandler):
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.client is not None
 
     return self.do_handle(params, [self.client.id], params.user)
@@ -174,7 +174,7 @@ class ClientsProjectsExperimentsHandler(ProjectHandler, BaseExperimentsListHandl
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     return self.do_handle(params, [self.client_id], params.user, project=self.project)
 
 
@@ -182,7 +182,7 @@ class UsersExperimentsHandler(UserHandler, BaseExperimentsListHandler):
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.user is not None
 
     member_client_ids = [r.client_id for r in self.services.permission_service.find_by_user_id(self.user.id)]

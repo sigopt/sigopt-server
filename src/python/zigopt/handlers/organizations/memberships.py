@@ -28,7 +28,7 @@ class OrganizationsMembershipsListDetailHandler(OrganizationHandler):
     membership_type = validate_membership_type(membership_type)
     return self.Params(membership_type)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.organization is not None
 
     query = self.services.database_service.query(Membership).filter_by(organization_id=self.organization.id)

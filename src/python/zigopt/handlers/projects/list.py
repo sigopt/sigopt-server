@@ -102,7 +102,7 @@ class ClientsProjectsListHandler(ClientHandler):
       deleted=request.optional_bool_param("deleted"),
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     query = self.services.database_service.query(Project, *params.Field)
     query = query.filter(Project.client_id == self.client_id)
     if params.user:

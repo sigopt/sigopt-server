@@ -193,7 +193,7 @@ class TrainingRunsCreateFileHandler(TrainingRunHandler, FileCreateHandler):
   authenticator = api_token_authentication
   required_permissions = WRITE
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     current_user: User | None = self.auth.current_user
 

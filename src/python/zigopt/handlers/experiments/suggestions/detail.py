@@ -18,7 +18,7 @@ class SuggestionsDetailHandler(SuggestionHandler):
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self):
+  def handle(self):  # type: ignore
     return SuggestionJsonBuilder.json(self.experiment, self.suggestion, self.auth)
 
 
@@ -29,7 +29,7 @@ class SuggestionsDetailMultiHandler(ExperimentHandler):
   def parse_params(self, request):
     return request
 
-  def handle(self, request):
+  def handle(self, request):  # type: ignore
     assert self.auth is not None
     assert self.experiment is not None
 

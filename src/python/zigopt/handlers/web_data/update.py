@@ -21,7 +21,7 @@ class WebDataUpdateHandler(WebDataBaseHandler):
 
     return raw_params
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     parent_resource_type = params["parent_resource_type"]
     web_data_type = params["web_data_type"]
     parent_resource_id = params["parent_resource_id"]

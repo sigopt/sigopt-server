@@ -100,7 +100,7 @@ class BaseExperimentsCreateHandler(Handler):
     self.validate_json_params(data)
     return self.parse_validated_params(data)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
 
     experiment_name = params.name

@@ -60,7 +60,7 @@ class OrganizationsUpdateHandler(OrganizationHandler):
       allow_signup_from_email_domains=allow_signup_from_email_domains,
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.organization is not None
 

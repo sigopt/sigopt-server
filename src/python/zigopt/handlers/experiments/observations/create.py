@@ -142,7 +142,7 @@ class ObservationsCreateHandler(CreatesObservationsMixin, ExperimentHandler):
   def parse_params(self, request):
     return request
 
-  def handle(self, request):
+  def handle(self, request):  # type: ignore
     assert self.auth is not None
     assert self.experiment is not None
 
@@ -233,7 +233,7 @@ class ObservationsCreateMultiHandler(CreatesObservationsMixin, ExperimentHandler
       no_optimize=get_opt_with_validation(data, "no_optimize", ValidationType.boolean) or False,
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.experiment is not None
 
     observations = params.observations

@@ -48,7 +48,7 @@ class TrainingRunsAddTagHandler(BaseTrainingRunsTagHandler):
       params[key] = get_with_validation(provided_params, key, validator)
     return params
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.training_run is not None
 
     tag_id = params[self.ID_PARAM]
@@ -111,7 +111,7 @@ class TrainingRunsRemoveTagHandler(BaseTrainingRunsTagHandler):
   def parse_params(self, request):
     return None
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.tag is not None
 
     update_clause = {

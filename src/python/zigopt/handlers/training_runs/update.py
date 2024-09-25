@@ -148,7 +148,7 @@ class TrainingRunsUpdateHandler(CreatesObservationsMixin, TrainingRunHandler):
         return
       self._create_observation_from_suggestion(training_run, updated_timestamp)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.training_run is not None
     assert self.project is not None

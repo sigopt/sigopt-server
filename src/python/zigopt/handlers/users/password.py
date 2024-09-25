@@ -25,7 +25,7 @@ class UsersChangePasswordHandler(BaseSessionHandler):
     new_plaintext_password = validate_user_password(request.required_param("new_password"))
     return self.Params(new_plaintext_password=new_plaintext_password)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
 
     new_user_token = self.update_password(
@@ -87,7 +87,7 @@ class UsersResetPasswordHandler(Handler):
   def parse_params(self, request):
     return validate_email(request.required_param("email"))
 
-  def handle(self, email):
+  def handle(self, email):  # type: ignore
     if user := self.services.user_service.find_by_email(email):
       if user.hashed_password:
         code = self.services.user_service.set_password_reset_code(user)

@@ -28,7 +28,7 @@ class ExperimentsBestAssignmentsHandler(ExperimentHandler):
       self.services.observation_service.all_data(self.experiment),
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.experiment is not None
 
     best_observations = self.best_observations()

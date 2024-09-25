@@ -26,7 +26,7 @@ class OrganizationsUninviteHandler(OrganizationHandler):
     email = validate_email(email)
     return OrganizationsUninviteHandler.Params(email=email)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.organization is not None
 

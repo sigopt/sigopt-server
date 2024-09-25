@@ -14,7 +14,7 @@ class ObservationsDeleteHandler(ObservationHandler):
   def parse_params(self, request):
     return request.optional_bool_param("no_optimize")
 
-  def handle(self, no_optimize):
+  def handle(self, no_optimize):  # type: ignore
     assert self.observation is not None
     assert self.experiment is not None
 
@@ -35,7 +35,7 @@ class ObservationsDeleteAllHandler(ExperimentHandler):
   authenticator = api_token_authentication
   required_permissions = WRITE
 
-  def handle(self):
+  def handle(self):  # type: ignore
     assert self.experiment is not None
 
     self.services.observation_service.delete_all_for_experiment(self.experiment)

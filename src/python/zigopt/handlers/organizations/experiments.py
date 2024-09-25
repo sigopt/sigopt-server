@@ -13,7 +13,7 @@ class OrganizationsExperimentsListDetailHandler(OrganizationHandler, BaseExperim
   # able to see all the organization's experiments.
   required_permissions = ADMIN
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.organization is not None
 
     client_ids = [c.id for c in self.services.client_service.find_by_organization_id(self.organization.id)]

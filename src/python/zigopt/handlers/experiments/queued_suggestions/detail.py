@@ -13,7 +13,7 @@ class QueuedSuggestionsDetailHandler(QueuedSuggestionHandler):
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self):
+  def handle(self):  # type: ignore
     return QueuedSuggestionJsonBuilder.json(self.experiment, self.queued_suggestion)
 
 
@@ -24,7 +24,7 @@ class QueuedSuggestionsDetailMultiHandler(ExperimentHandler):
   def parse_params(self, request):
     return request.get_paging()
 
-  def handle(self, paging):
+  def handle(self, paging):  # type: ignore
     assert self.experiment is not None
 
     query = self.services.queued_suggestion_service.query_by_experiment_id(self.experiment.id)

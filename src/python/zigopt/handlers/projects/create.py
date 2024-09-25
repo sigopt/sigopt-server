@@ -132,7 +132,7 @@ class ClientsProjectsCreateHandler(ClientHandler):
       metadata=napply(get_opt_with_validation(data, "metadata", ValidationType.metadata), validate_metadata),
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.client is not None
 

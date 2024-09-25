@@ -26,7 +26,7 @@ class UsersPermissionsHandler(UserHandler):
       organization = self.services.organization_service.find_by_id(organization_id)
     return self.Params(organization=organization)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.user is not None
 
     owner_memberships = self.services.membership_service.find_owners_by_user_id(self.user.id)
@@ -75,7 +75,7 @@ class UsersRequestPermissionsHandler(UserHandler):
     client_id = get_with_validation(request.params(), "client", ValidationType.id)
     return client_id
 
-  def handle(self, client_id):
+  def handle(self, client_id):  # type: ignore
     assert self.user is not None
     if not self.services.email_verification_service.has_verified_email_if_needed(self.user):
       raise ForbiddenError("You must verify your email")

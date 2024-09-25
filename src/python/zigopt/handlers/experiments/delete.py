@@ -64,7 +64,7 @@ class ExperimentsDeleteHandler(ExperimentHandler):
       raise SigoptValidationError(f"Invalid option for {self.INCLUDE_RUNS_KEY}: {include_runs_option}")
     return {self.INCLUDE_RUNS_KEY: include_runs_option}
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     if not self.experiment:
       return {}
     if params[self.INCLUDE_RUNS_KEY] == self.INCLUDE_RUNS_OPTION_TRUE:

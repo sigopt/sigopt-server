@@ -134,7 +134,7 @@ class CreateSessionHandler(BaseSessionHandler):
   authenticator = login_authentication
   required_permissions = NONE
 
-  def handle(self):
+  def handle(self):  # type: ignore
     assert self.auth is not None
 
     user = self.auth.current_user
@@ -161,7 +161,7 @@ class SessionHandler(BaseSessionHandler):
     preferred_client_id = get_opt_with_validation(request.params(), "preferred_client_id", ValidationType.id)
     return preferred_client_id
 
-  def handle(self, preferred_client_id):
+  def handle(self, preferred_client_id):  # type: ignore
     assert self.auth is not None
 
     if self.auth.api_token:
