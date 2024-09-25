@@ -19,7 +19,7 @@
     "@types/react": "^16.9.23",
     "babel-loader": "^8.0.6",
     "body-parser": "^1.20.2",
-    "bootstrap": "3.4.1",
+    "bootstrap": "4.0.0",
     "btoa": "^1.1.2",
     "buffer": "^6.0.3",
     "cartesian": "^1.0.1",
