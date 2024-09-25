@@ -18,7 +18,7 @@ class ClientsCreateHandler(Handler):
   def parse_params(self, request):
     return request.params()
 
-  def handle(self, data):
+  def handle(self, data):  # type: ignore
     assert self.auth is not None
 
     name = get_with_validation(data, "name", ValidationType.string)

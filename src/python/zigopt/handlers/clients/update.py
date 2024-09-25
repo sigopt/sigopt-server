@@ -29,7 +29,7 @@ class ClientsUpdateHandler(ClientHandler):
 
     return params
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.client is not None
 

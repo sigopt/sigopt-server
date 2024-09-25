@@ -35,7 +35,7 @@ class ClientsTagsListHandler(ClientHandler):
       Field=Field,
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     query = self.services.tag_service.find_by_client_id_query(self.client_id)
     tags, new_before, new_after = self.services.query_pager.fetch_page(
       q=query,

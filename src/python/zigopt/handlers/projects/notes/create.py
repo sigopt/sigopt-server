@@ -21,7 +21,7 @@ class ClientsProjectsNotesCreateHandler(ProjectHandler):
     validate_note_json_dict(data)
     return self.Params(contents=data.get("contents"))
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.client is not None
     assert self.project is not None

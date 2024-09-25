@@ -53,7 +53,7 @@ class ClientsTokensDeleteHandler(TokenHandler):
   authenticator = api_token_authentication
   required_permissions = WRITE
 
-  def handle(self):
+  def handle(self):  # type: ignore
     assert self.token is not None
     if not self.token.expiration_timestamp and self.token.all_experiments:
       raise ForbiddenError("Cannot delete root token")
@@ -76,7 +76,7 @@ class ClientsTokensUpdateHandler(TokenHandler):
       expires=get_opt_with_validation(data, "expires", ValidationType.string),
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.token is not None
 

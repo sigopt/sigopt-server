@@ -36,7 +36,7 @@ class ClientsTagsCreateHandler(ClientHandler):
       color=get_with_validation(data, "color", ValidationType.color_hex),
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.client is not None
 
     name = params.name

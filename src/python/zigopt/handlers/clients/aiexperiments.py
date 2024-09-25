@@ -57,7 +57,7 @@ class AiExperimentsListHandler(BaseAiExperimentsListHandler):
   authenticator = client_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     return self.do_handle(params, [self.auth.current_client.id], params.user)
 
@@ -120,7 +120,7 @@ class ClientsAiExperimentsListHandler(ClientHandler, BaseAiExperimentsListHandle
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.client is not None
     return self.do_handle(params, [self.client.id], params.user)
 
@@ -129,5 +129,5 @@ class ClientsProjectsAiExperimentsListHandler(ProjectHandler, BaseAiExperimentsL
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     return self.do_handle(params, [self.client_id], params.user, project=self.project)

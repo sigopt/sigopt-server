@@ -18,7 +18,7 @@ class QueuedSuggestionsCreateHandler(ExperimentHandler):
   def parse_params(self, request):
     return request.params()
 
-  def handle(self, json_dict):
+  def handle(self, json_dict):  # type: ignore
     assert self.experiment is not None
 
     if self.experiment.deleted:

@@ -41,7 +41,7 @@ class OrganizationsCreateInviteHandler(OrganizationsModifyInviteHandler):
     email, membership_type, client_invites, client_map = OrganizationsModifyInviteHandler.unpack_params(self, params)
     return email, membership_type, client_invites, client_map
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     email, membership_type, client_invites, client_map = self.unpack_params(params)
 
     self.check_can_invite(

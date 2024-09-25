@@ -304,7 +304,7 @@ class ClientsTrainingRunsDetailMultiHandler(BaseTrainingRunsDetailMultiHandler, 
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     return self._generate_response(params, client=self.client, project=None, organization=None)
 
 
@@ -401,7 +401,7 @@ class ProjectsTrainingRunsDetailMultiHandler(BaseTrainingRunsDetailMultiHandler,
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     return self._generate_response(
       params,
       client=self.client,
@@ -414,7 +414,7 @@ class OrganizationsTrainingRunsDetailMultiHandler(BaseTrainingRunsDetailMultiHan
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     return self._generate_response(
       params,
       organization=self.organization,

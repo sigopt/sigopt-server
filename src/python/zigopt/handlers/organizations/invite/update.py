@@ -8,7 +8,7 @@ from zigopt.json.builder import InviteJsonBuilder
 
 
 class OrganizationsUpdateInviteHandler(OrganizationsInviteHandler, OrganizationsModifyInviteHandler):
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     email, membership_type, client_invites, client_map = self.unpack_params(params)
 
     self.check_can_invite(

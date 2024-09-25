@@ -19,7 +19,7 @@ class ObservationsDetailHandler(ObservationHandler):
   authenticator = api_token_authentication
   required_permissions = READ
 
-  def handle(self):
+  def handle(self):  # type: ignore
     assert self.experiment is not None
     assert self.observation is not None
 
@@ -73,7 +73,7 @@ class ObservationsDetailMultiHandler(ExperimentHandler):
       return lambda o: (o.task.cost, o.metric_value(self.experiment, optimized_metric_name), o.id)
     raise SigoptValidationError(f"Invalid sort: {sort.field}")
 
-  def handle(self, args):
+  def handle(self, args):  # type: ignore
     # pylint: disable=too-many-locals,unnecessary-lambda-assignment
     assert self.experiment is not None
     experiment = self.experiment

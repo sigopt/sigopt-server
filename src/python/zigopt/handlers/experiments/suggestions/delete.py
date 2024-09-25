@@ -12,7 +12,7 @@ class SuggestionsDeleteHandler(SuggestionHandler):
   authenticator = api_token_authentication
   required_permissions = WRITE
 
-  def handle(self):
+  def handle(self):  # type: ignore
     assert self.experiment is not None
     assert self.suggestion is not None
 
@@ -27,7 +27,7 @@ class SuggestionsDeleteAllHandler(ExperimentHandler):
   def parse_params(self, request):
     return validate_state(request.optional_param("state"))
 
-  def handle(self, state):
+  def handle(self, state):  # type: ignore
     assert self.experiment is not None
 
     if state is None:

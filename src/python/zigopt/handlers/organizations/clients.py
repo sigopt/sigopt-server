@@ -19,7 +19,7 @@ class OrganizationsClientsListDetailHandler(OrganizationHandler):
   authenticator = user_token_authentication
   required_permissions = READ
 
-  def handle(self):
+  def handle(self):  # type: ignore
     assert self.auth is not None
     assert self.organization is not None
 
@@ -47,7 +47,7 @@ class OrganizationsClientsCreateHandler(OrganizationHandler):
     name = validate_client_name(name)
     return OrganizationsClientsCreateHandler.Params(name=name)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.organization is not None
 

@@ -318,7 +318,7 @@ class ProjectsTrainingRunsCreateHandler(ProjectHandler, BaseTrainingRunsCreateHa
 
   authenticator = api_token_authentication
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     return self.handle_batch([params])[0]
 
   def handle_batch(self, batch):
@@ -426,5 +426,5 @@ class ProjectsTrainingRunsBatchCreateHandler(ProjectsTrainingRunsCreateHandler):
       )
     return [self.parse_request(self.DummyRequest(run)) for run in runs]
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     return PaginationJsonBuilder(data=self.handle_batch(params))

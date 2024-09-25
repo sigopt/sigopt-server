@@ -144,7 +144,7 @@ class Handler:
   # The return value of this is serialized and becomes the API response.
   # Provided the return value of `parse_params` as the only parameter, unless `parse_params` returns
   # the default value of NO_PARAMS
-  def handle(self):
+  def handle(self):  # type: ignore
     raise NotImplementedError()
 
   # Fetches objects from the database that will be used in this endpoint.

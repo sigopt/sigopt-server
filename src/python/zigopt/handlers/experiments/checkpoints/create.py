@@ -61,7 +61,7 @@ class CheckpointsCreateHandler(TrainingRunHandler):
       ),
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.training_run is not None
 
     if self.experiment and self.experiment.deleted:

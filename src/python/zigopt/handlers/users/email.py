@@ -17,7 +17,7 @@ class BaseResendVerificationEmailHandler(Handler):
 class UsersResendVerificationEmailHandler(BaseResendVerificationEmailHandler, UserHandler):
   authenticator = user_token_authentication
 
-  def handle(self):
+  def handle(self):  # type: ignore
     self.send_verification_email_to_user(self.user)
     return {}
 
@@ -29,7 +29,7 @@ class ResendVerificationEmailHandler(BaseResendVerificationEmailHandler, Handler
   def parse_params(self, request):
     return request.required_param("email")
 
-  def handle(self, email):
+  def handle(self, email):  # type: ignore
     user = self.services.user_service.find_by_email(email)
     if user and not self.services.email_verification_service.has_verified_email(user):
       self.send_verification_email_to_user(user)

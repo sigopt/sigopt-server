@@ -61,7 +61,7 @@ class UsersUpdateHandler(UserHandler):
       planned_usage=planned_usage,
     )
 
-  def handle(self, uploaded_user):
+  def handle(self, uploaded_user):  # type: ignore
     assert self.auth is not None
     assert self.user is not None
 

@@ -303,7 +303,7 @@ class ExperimentsUpdateHandler(ExperimentHandler):
       new_meta,
     )
 
-  def handle(self, json_dict):
+  def handle(self, json_dict):  # type: ignore
     assert self.auth is not None
     assert self.experiment is not None
 

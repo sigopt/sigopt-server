@@ -118,7 +118,7 @@ class ClientsProjectsUpdateHandler(ProjectHandler):
       deleted=deleted,
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.project is not None
 
     data = None

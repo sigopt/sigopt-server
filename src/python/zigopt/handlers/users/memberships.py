@@ -27,7 +27,7 @@ class UsersMembershipsListDetailHandler(UserHandler):
       organization = self.services.organization_service.find_by_id(organization_id)
     return self.Params(organization=organization)
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.user is not None
 
     memberships: Sequence[Membership] = []

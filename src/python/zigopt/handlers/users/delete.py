@@ -17,7 +17,7 @@ class UsersDeleteHandler(UserHandler):
   def parse_params(self, request):
     return request.optional_param("password")
 
-  def handle(self, password):
+  def handle(self, password):  # type: ignore
     assert self.auth is not None
     assert self.user is not None
 

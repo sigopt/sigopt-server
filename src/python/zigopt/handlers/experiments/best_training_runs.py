@@ -47,7 +47,7 @@ class ExperimentsBestTrainingRunsHandler(ExperimentHandler):
       Field=Field,
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.experiment is not None
 
     project = self.services.project_service.find_by_client_and_id(

@@ -245,7 +245,7 @@ class UsersCreateHandler(BaseUsersCreateHandler):
       has_verified_email=False,
     )
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     if verified_invite := self.get_verified_invite(params.user_attributes.email, params.invite_code):
       has_verified_email = params.has_verified_email or verified_invite.invite_code == params.invite_code
       user = self.create_user_by_invite(params.user_attributes, verified_invite, has_verified_email)

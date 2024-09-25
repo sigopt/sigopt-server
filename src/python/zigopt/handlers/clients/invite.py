@@ -45,7 +45,7 @@ class ClientsCreateInviteHandler(BaseSetPermissionHandler, InviteHandler):
   def parse_params(self, request):
     return request
 
-  def handle(self, request):
+  def handle(self, request):  # type: ignore
     # pylint: disable=too-many-locals
     assert self.auth is not None
     assert self.client is not None
@@ -116,7 +116,7 @@ class ClientsUninviteHandler(BaseSetPermissionHandler):
     data = request.params()
     return validate_email(get_with_validation(data, "email", ValidationType.string))
 
-  def handle(self, email):
+  def handle(self, email):  # type: ignore
     assert self.auth is not None
     assert self.client is not None
 

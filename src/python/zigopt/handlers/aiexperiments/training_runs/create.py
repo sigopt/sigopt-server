@@ -134,7 +134,7 @@ class AiExperimentTrainingRunsCreateHandler(
     suggestion, assignments_update = self.maybe_create_suggestion(training_run_params)
     return suggestion, None, assignments_update
 
-  def handle(self, params):
+  def handle(self, params):  # type: ignore
     assert self.auth is not None
     assert self.experiment is not None
 
