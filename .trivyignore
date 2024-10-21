@@ -1,12 +1,40 @@
-CVE-2023-52425 # 2023       :: trivy-scan-zigopt :: libexpat1 :: no fix yet
-CVE-2023-7104  # 2023       :: trivy-scan-zigopt :: libsqlite3-0 :: no fix yet
-CVE-2023-45853 # 2023       :: trivy-scan-zigopt :: zlib1g :: no fix yet
-CVE-2023-42282 # 2024-02-20 :: trivy-scan-web    :: ip (package.json) :: no-fix-yet
-CVE-2024-26462 # 2024-02-29 :: trivy-scan-zigopt :: libgssapi-krb5-2, libk5crypto3, libkrb5, libkrb5support0 :: no-fix-yet
-CVE-2023-50387 # 2024-02-29 :: trivy-scan-zigopt :: libsystemd0, libudev1 :: no-fix-yet
-CVE-2023-50868 # 2024-02-29 :: trivy-scan-zigopt :: libsystemd0, libudev1 :: no-fix-yet
-CVE-2024-33599 # 2024-04-29 :: trivy-scan-zigopt :: libc-bin, libc6 :: no-fix-yet
-CVE-2024-6484  # 2024-08-19 :: trivy-scan-aux    :: bootstrap :: no-fix-yet on version
-CVE-2024-45490 # 2024-09-11 :: trivy-scan-zigopt :: libexpat1 :: no-fix-yet
-CVE-2024-45491 # 2024-09-11 :: trivy-scan-zigopt :: libexpat1 :: no-fix-yet
-CVE-2024-45492 # 2024-09-11 :: trivy-scan-zigopt :: libexpat1 :: no-fix-yet
+CVE-2023-52425 # 2024       :: trivy-scan-zigopt :: libexpat1     :: no fix yet
+CVE-2024-26462 # 2024       :: trivy-scan-zigopt :: krb5          :: no fix yet
+CVE-2023-2953  # 2024       :: trivy-scan-zigopt :: libldap       :: no fix yet
+CVE-2023-31484 # 2024       :: trivy-scan-zigopt :: libperl       :: no fix yet
+CVE-2023-7104  # 2024       :: trivy-scan-zigopt :: libsqlite3    :: no fix yet
+CVE-2013-7445  # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: will not fix
+CVE-2019-19449 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: fix_deferred
+CVE-2019-19814 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2021-3847  # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2021-3864  # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2023-52452 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2023-52590 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2023-52751 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2023-52827 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-21803 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-25742 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-25743 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-26669 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-26913 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-26930 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-26952 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-36013 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-38570 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-38630 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-39479 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-39508 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-41013 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-41061 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-41071 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-42162 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-44941 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-44942 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-44949 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: won't fix
+CVE-2024-44951 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-46786 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-46811 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-46813 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2024-46833 # 2024       :: trivy-scan-zigopt :: linux-libc-dev:: no fix yet
+CVE-2023-31484 # 2024       :: trivy-scan-zigopt :: perl          :: no fix yet
+CVE-2023-45853 # 2024       :: trivy-scan-zigopt :: zlib1g        :: no fix yet
