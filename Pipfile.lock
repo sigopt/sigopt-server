@@ -94,12 +94,12 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:4ed28ab03675bb008a290c452c5ddd7aaa5d4e3fa1912aadbdf93057ee84362b",
-                "sha256:f8e3ae0d84214eff3fb69cb4dc51cea6c43d3bde82027a94d00c52b941d6c3d5"
+                "sha256:07d0c1325fdbfa49a4a054413dbdeab0a6030449b2aa66099241af2dac48afd8",
+                "sha256:aed4d3643afd702920792b68fbe712a8c3847993820d1048cd238a6469354da1"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==1.35.29"
+            "version": "==1.35.49"
         },
         "cffi": {
             "hashes": [
