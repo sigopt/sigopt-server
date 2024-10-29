@@ -6,11 +6,11 @@ ARG PYTHON_MINOR
 
 
 # hadolint ignore=DL3006
-FROM debian:buster AS protobuf
+FROM debian:bookworm AS protobuf
 
 RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+  ; apt-get update -y >/dev/null \
+  ; apt-get install -y --no-install-recommends --no-install-suggests \
       ca-certificates=* \
       curl=* \
       unzip=* \
@@ -36,12 +36,12 @@ RUN set -ex \
 FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-slim-bookworm
 
 RUN set -ex \
-  ; apt-get update -yqq >dev/null \
-  ; apt-get upgrade -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+  ; apt-get update -y >dev/null \
+  ; apt-get upgrade -y >/dev/null \
+  ; apt-get install -y --no-install-recommends --no-install-suggests \
       gcc=* \
       git=* \
-      libstdc++-12-dev=* \
+      libstdc++-11-dev=* \
   ; rm -rf /var/lib/apt/lists/* \
   ; :
 
@@ -58,15 +58,6 @@ RUN set -ex \
   ; pip install --upgrade --no-cache-dir "pipenv>=2023.3.20" \
   ; pipenv sync\
   ; pipenv --clear \
-  ; :
-
-RUN set -ex \
-  ; apt-get purge -yqq --allow-remove-essential \
-      gcc \
-      git \
-      linux-libc-dev \
-      perl* \
-  ; apt-get autoremove -yqq \
   ; :
 
 ENV PATH "/sigopt-server/.venv/bin:$PATH"

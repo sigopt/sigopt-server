@@ -35,11 +35,11 @@ RUN ./scripts/compile/generate_routes.sh config/
 
 
 # hadolint ignore=DL3006
-FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-buster AS test-runner-base
+FROM python:${PYTHON_MAJOR}.${PYTHON_MINOR}-bookworm AS test-runner-base
 
 RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+  ; apt-get update -y >/dev/null \
+  ; apt-get install -y --no-install-recommends --no-install-suggests \
       ca-certificates=* \
       curl=7.* \
       procps=2:* \
@@ -57,16 +57,16 @@ RUN set -ex \
 WORKDIR /sigopt-server
 
 RUN set -ex \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+  ; apt-get update -y >/dev/null \
+  ; apt-get install -y --no-install-recommends --no-install-suggests \
       gcc=4:* \
       git=1:* \
       libc6-dev=2.* \
-      libssl-dev=1.* \
+      libssl-dev=3.* \
       libxml2-dev=2.* \
       libxml2=2.* \
       make=4.* \
-      pkg-config=0.* \
+      pkg-config=1.* \
       sqlite3=3.* \
       >/dev/null \
   ; rm -rf /var/lib/apt/lists/* \
@@ -93,8 +93,8 @@ RUN set -ex \
   ; :
 
 RUN : \
-  ; apt-get update -yqq >/dev/null \
-  ; apt-get install -yqq --no-install-recommends --no-install-suggests \
+  ; apt-get update -y >/dev/null \
+  ; apt-get install -y --no-install-recommends --no-install-suggests \
       chromium-driver=* \
       chromium=* \
       lxde=* \
