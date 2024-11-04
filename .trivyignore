@@ -110,4 +110,3 @@ CVE-2024-50088
 CVE-2023-31484 # 2024       :: trivy-scan-zigopt :: perl          :: no fix yet
 CVE-2023-45853 # 2024       :: trivy-scan-zigopt :: zlib1g        :: no fix yet
 CVE-2024-6484  # 2024-08-19 :: trivy-scan-aux    :: bootstrap :: no-fix-yet on version
-CVE-2024-47764 # 2024       :: trivy-scan-fs     :: cookie        :: big change
