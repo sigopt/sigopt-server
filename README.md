@@ -22,6 +22,10 @@ Intel has ceased development and contributions including, but not limited to, ma
 Intel no longer accepts patches to this project.
 If you have an ongoing need to use this project, are interested in independently developing it, or would like to maintain patches for the open source software community, please create your own fork of this project.
 
+If you are still interested in optimizing parameters using the Sigopt algorithms, please checkout [Sigoptlite](https://github.com/sigopt/sigoptlite). That will implement most of Sigopt's tuning and optimizing algorithms, but all done locally. The downside is you won't get any of the visualizations, and if you want to know what parameter combinations were run by Sigopt (and which ones performed best) you will have to store that yourself. And it can't handle multiple experiments running in parallel. Other than that, it should give you a useful version of Sigopt.
+
+# Introduction
+
 Sigopt-Server is an open-source tool for managing adaptive experiments, especially for hyperparameter optimization. It uses algorithms to determine the best spots in parameter space for metric optimization, and includes web visualizations so you can improve your models. For more information you can [read about our service offering](https://sigopt.com/). Our documentation is [here](https://docs.sigopt.com/)
 
 # Installation
